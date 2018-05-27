@@ -30,4 +30,10 @@ public class SmartContract {
 		return null;
 	}
 	
+
+	public boolean hasTransaction(DateTime atTime) {
+		return false;
+	}
+
+	
 }

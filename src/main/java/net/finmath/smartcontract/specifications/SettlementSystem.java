@@ -1,6 +1,10 @@
 package net.finmath.smartcontract.specifications;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import org.joda.time.DateTime;
+
 import net.finmath.smartcontract.specifications.*;
 import net.finmath.smartcontract.specifications.Transaction.TransactionTypes;
 import net.finmath.smartcontract.specifications.Wallet.BufferTypes;
@@ -20,7 +24,7 @@ public class SettlementSystem {
 		this.oracleInstance = oracleInstance;
 	}
 	
-	SettlementSystem	updateAtTime(double time) {
+	SettlementSystem	updateAtTime(DateTime time) {
 		Set<Transaction> transactionsToSettle =  contractSet.stream().filter(contract->contract.hasTransaction(time)).map(contract->contract.getTransaction(time)).collect(Collectors.toSet());
 		transactionsToSettle.stream().forEach(transaction->this.settleTransaction(transaction));
 		return this; /*Should be a clone with updated wallets */
@@ -32,6 +36,7 @@ public class SettlementSystem {
 				
 		sourceWallet = sourceWallet.addAmount(BufferTypes.Default, transaction.getAmount());
 		targetWallet = targetWallet.subtractAmount(BufferTypes.Default, transaction.getAmount());
+		return this;
 		
 	}
 	
