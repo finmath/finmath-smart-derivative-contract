@@ -9,6 +9,7 @@ public class Wallet {
 	final private String address;
 	
 	public static enum BufferTypes{
+		Default,
 		CouponCashflowBuffer,
 		VariationMarginBuffer,
 		PenaltyMarginBuffer
@@ -35,7 +36,8 @@ public class Wallet {
 	public 	Double getCurrentBalance(BufferTypes bufferType){
 		return this.bufferMap.get(bufferType);
 	}
-	
+
+
 	public Wallet	addAmount(BufferTypes bufferType, Double Amount){
 		Wallet walletClone = new Wallet(this);
 		Double newAmount = this.getCurrentBalance(bufferType)+Amount;
@@ -44,12 +46,13 @@ public class Wallet {
 		
 	}
 	
-	public Wallet	settleTransaction(Transaction transaction){
+	public Wallet	subtractAmount(BufferTypes bufferType, Double Amount){
 		Wallet walletClone = new Wallet(this);
+		Double newAmount = this.getCurrentBalance(bufferType)-Amount;
+		walletClone.bufferMap.put(bufferType, newAmount);
 		return walletClone;
+		
 	}
-	
-	
 	
 
 	

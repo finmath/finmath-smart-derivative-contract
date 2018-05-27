@@ -5,6 +5,7 @@ package net.finmath.smartcontract.specifications;
 public class Transaction {
 	
 	public static enum TransactionTypes{
+		Default,
 		CouponCashflow,
 		VariationMargin
 	}
