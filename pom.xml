@@ -44,6 +44,11 @@
 			<version>3.3.2</version>
 		</dependency>
 		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -74,7 +79,7 @@
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
-					 <argLine>-mx6G</argLine>
+					<argLine>-mx6G</argLine>
 				</configuration>
 			</plugin>
 
