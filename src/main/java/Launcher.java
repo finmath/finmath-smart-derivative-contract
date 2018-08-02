@@ -1,6 +1,6 @@
 import java.util.UUID;
 
-import net.finmath.smartcontract.specifications.*;
+import net.finmath.smartcontract.specifications.Wallet;
 
 public class Launcher {
 	public static void main(String[] args) {

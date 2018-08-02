@@ -3,13 +3,13 @@ package net.finmath.smartcontract.specifications;
 
 
 public class Transaction {
-	
+
 	public static enum TransactionTypes{
 		Default,
 		CouponCashflow,
 		VariationMargin
 	}
-	
+
 	final String sourceWalletAdress;
 	final String targetWalletAdress;
 	final Double Amount;
@@ -27,5 +27,5 @@ public class Transaction {
 	public Double getAmount() {
 		return Amount;
 	}
-	
+
 }
