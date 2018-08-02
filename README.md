@@ -9,4 +9,4 @@ The project provides tools and analytics related to smart derivative contracts.
 
 ## Literature
 
-See https://ssrn.com/abstract=3163074 
+See https://ssrn.com/abstract=3163074

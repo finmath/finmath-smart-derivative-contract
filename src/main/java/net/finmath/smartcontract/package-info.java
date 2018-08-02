@@ -5,7 +5,8 @@
  */
 
 /**
+ * Classes related to smart derivatice contracts.
+ * 
  * @author Christian Fries
- *
  */
 package net.finmath.smartcontract;
