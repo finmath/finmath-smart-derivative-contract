@@ -2,15 +2,15 @@ package net.finmath.smartcontract.specifications;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 public class SmartContract {
 	
-	DateTime maturityTime;
-	DateTime initialisationTime;
-	List<DateTime> fixingDates;
-	List<DateTime> fixPaymentDates;
-	List<DateTime> floatPaymentDates;
+	ZonedDateTime maturityTime;
+	ZonedDateTime initialisationTime;
+	List<ZonedDateTime> fixingDates;
+	List<ZonedDateTime> fixPaymentDates;
+	List<ZonedDateTime> floatPaymentDates;
 	List<Double> fixCoupons;
 
 	
@@ -18,20 +18,20 @@ public class SmartContract {
 		
 	}
 	
-	Transaction		getTransaction(DateTime time) {
+	Transaction		getTransaction(ZonedDateTime time) {
 		return null;
 	}
 	
-	Transaction		getMarginTransaction(DateTime time, DateTime timeLast, Oracle oracle) {
+	Transaction		getMarginTransaction(ZonedDateTime time,ZonedDateTime timeLast, Oracle oracle) {
 		return null;
 	}
 	
-	Transaction		getCouponTransaction(DateTime time, Oracle oracle) {
+	Transaction		getCouponTransaction(ZonedDateTime time, Oracle oracle) {
 		return null;
 	}
 	
 
-	public boolean hasTransaction(DateTime atTime) {
+	public boolean hasTransaction(ZonedDateTime atTime) {
 		return false;
 	}
 
