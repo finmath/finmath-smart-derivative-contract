@@ -9,13 +9,53 @@
 	<packaging>jar</packaging>
 
 	<name>finmath-smart-derivative-contract</name>
-	<url>http://maven.apache.org</url>
+	<description>
+		Project to implement a smart derivative contract.
+	</description>
+	<url>http://www.finmath.net/finmath-lib</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<src.main.java.dir>src/main/java</src.main.java.dir>
+		<src.test.java.dir>src/test/java</src.test.java.dir>
+		<src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
+		<src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
+		<kotlin.version>1.2.0</kotlin.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
+			<version>${kotlin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.finmath</groupId>
+			<artifactId>finmath-lib</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
+		<defaultGoal>clean install javadoc:javadoc</defaultGoal>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<sourceDirectory>${src.main.java.dir}</sourceDirectory>
+		<testSourceDirectory>${src.test.java.dir}</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -27,20 +67,33 @@
 					<compilerVersion>1.8</compilerVersion>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.21.0</version>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					 <argLine>-mx6G</argLine>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<configLocation>finmath-checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.finmath</groupId>
-			<artifactId>finmath-lib</artifactId>
-			<version>3.1.5</version>
-		</dependency>
-	</dependencies>
+	<scm>
+		<url>https://github.com/finmath/finmath-smart-derivative-contract</url>
+		<connection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</connection>
+		<developerConnection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 </project>
