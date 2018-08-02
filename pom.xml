@@ -32,6 +32,27 @@
 		</license>
 	</licenses>
 
+	<repositories>
+		<repository>
+			<id>maven-central</id>
+			<name>Maven Central</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>spring-plugins</id>
+			<name>Spring Plugins Repository</name>
+			<url>http://repo.spring.io/plugins-release/</url>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>corda</id>
+			<url>https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
@@ -41,13 +62,45 @@
 		<dependency>
 			<groupId>net.finmath</groupId>
 			<artifactId>finmath-lib</artifactId>
-			<version>3.3.2</version>
+			<version>3.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.corda</groupId>
 			<artifactId>corda</artifactId>
 			<version>3.2-corda</version>
 		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-core</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-finance</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-jackson</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-rpc</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-webserver</artifactId>
+			<version>3.2-corda</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
