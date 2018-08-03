@@ -94,6 +94,23 @@
 			<artifactId>corda-webserver</artifactId>
 			<version>3.2-corda</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-war</artifactId>
+			<version>1.6.0</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>net.corda</groupId>
+			<artifactId>corda-webserver-impl</artifactId>
+			<version>3.2-corda</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jolokia</groupId>
+					<artifactId>jolokia-war</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
