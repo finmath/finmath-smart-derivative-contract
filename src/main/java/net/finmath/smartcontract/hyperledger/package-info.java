@@ -5,7 +5,7 @@
  */
 
 /**
- * Prototype realzing the smart derivative contract on Hyperledger.
+ * Prototype realizing the smart derivative contract on Hyperledger.
  *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
