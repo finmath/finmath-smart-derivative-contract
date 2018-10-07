@@ -8,13 +8,7 @@ package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-import net.finmath.exception.CalculationException;
-import net.finmath.montecarlo.BrownianMotion;
-import net.finmath.montecarlo.assetderivativevaluation.BlackScholesModel;
-import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
-import net.finmath.montecarlo.process.ProcessEulerScheme;
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;

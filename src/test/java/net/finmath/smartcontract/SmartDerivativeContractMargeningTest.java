@@ -6,8 +6,6 @@
 
 package net.finmath.smartcontract;
 
-import static org.junit.Assert.*;
-
 import java.time.LocalDateTime;
 
 import org.junit.Test;
