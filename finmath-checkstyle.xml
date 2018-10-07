@@ -3,7 +3,10 @@
 
 <!--
 	finmath lib checkstyle configuration.
+	
 	Adapted from the sun coding conventions.
+	Adapted from the Eclipse coding conventions (using tabs for indentation).
+	
 	Currently many checks are disabled as we are slowing adding our own conventions.
 	For updates check the finmath lib project home page. 
 -->
