@@ -22,12 +22,12 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
  * @author Christian Fries
  * @see net.finmath.smartcontract.oracle.ValuationOracle
  */
-public class SmartDerivativeContractMargening {
+public class SmartDerivativeContractMargining {
 
 	private final ValuationOracle derivativeValuationOracle;
 	private final ValuationOracle collateralValuationOracle;
 
-	public SmartDerivativeContractMargening(ValuationOracle derivativeValuationOracle, ValuationOracle collateralValuationOracle) {
+	public SmartDerivativeContractMargining(ValuationOracle derivativeValuationOracle, ValuationOracle collateralValuationOracle) {
 		super();
 		this.derivativeValuationOracle = derivativeValuationOracle;
 		this.collateralValuationOracle = collateralValuationOracle;

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
-import net.finmath.smartcontract.contract.SmartDerivativeContractMargening;
+import net.finmath.smartcontract.contract.SmartDerivativeContractMargining;
 import net.finmath.smartcontract.oracle.ContinouslyCompoundedBankAccountOracle;
 import net.finmath.smartcontract.oracle.GeometricBrownianMotionOracle;
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
@@ -35,7 +35,7 @@ public class SmartDerivativeContractMargeningTest {
 		StochasticValuationOracle stoachasticOracleForCollateral = new ContinouslyCompoundedBankAccountOracle(initialTime);
 		ValuationOracle collateralOracle = new ValuationOracleSamplePath(stoachasticOracleForCollateral, path);
 		
-		SmartDerivativeContractMargening smartDerivativeContractMargening = new SmartDerivativeContractMargening(valuationOracle, collateralOracle);
+		SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle, collateralOracle);
 
 		LocalDateTime previousTime = initialTime;
 		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
