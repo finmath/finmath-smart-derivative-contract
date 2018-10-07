@@ -1,0 +1,64 @@
+/*
+ * (c) Copyright Christian P. Fries, Germany. Contact: email@christianfries.com.
+ *
+ * Created on 7 Oct 2018
+ */
+
+package net.finmath.smartcontract.contract;
+
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import net.finmath.smartcontract.oracle.ValuationOracle;
+
+/**
+ * The margin agreement of a smart derivative contract.
+ * The agreement consists of
+ * <ul>
+ * <li>a valuation oracle, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
+ * <li>a collateral accrual account, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
+ * 
+ * @author Christian Fries
+ * @see net.finmath.smartcontract.oracle.ValuationOracle
+ */
+public class SmartDerivativeContractMargening {
+
+	private final ValuationOracle derivativeValuationOracle;
+	private final ValuationOracle collateralValuationOracle;
+
+	public SmartDerivativeContractMargening(ValuationOracle derivativeValuationOracle, ValuationOracle collateralValuationOracle) {
+		super();
+		this.derivativeValuationOracle = derivativeValuationOracle;
+		this.collateralValuationOracle = collateralValuationOracle;
+	}
+
+	/**
+	 * Get the margin of the contract based on the valuation oracles.
+	 * 
+	 * @param marginPeriodStart Period start time of the margin period.
+	 * @param marginPeriodEnd Period end time of the margin period.
+	 * @return The margin.
+	 */
+	public Optional<Double> getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
+
+		try {
+			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd).get();
+			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodStart).get();
+
+			double valueCollateralCurrent = collateralValuationOracle.getValue(marginPeriodEnd).get();
+			double valueCollateralPrevious = collateralValuationOracle.getValue(marginPeriodStart).get();
+
+			double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
+			double collateralChange = valueDerivativePrevious * (valueCollateralCurrent/valueCollateralPrevious - 1.0);
+
+			double margin = valuationChange - collateralChange;
+
+			return Optional.ofNullable(margin);
+		}
+		catch(NoSuchElementException e) {
+			return Optional.empty();
+		}
+	}
+
+}

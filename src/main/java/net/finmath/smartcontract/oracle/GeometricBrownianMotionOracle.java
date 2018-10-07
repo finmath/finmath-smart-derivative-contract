@@ -100,11 +100,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 
 		RandomVariableInterface value = null;
 		try {
-			RandomVariableInterface assetValue = simulation.getAssetValue(timeOfLastFixing, 0);
-			RandomVariableInterface assetValueInitial = simulation.getAssetValue(0.0, 0);
-			RandomVariableInterface bankAccountValue = simulation.getNumeraire(time);
-
-			value = assetValue.div(bankAccountValue.mult(assetValueInitial));
+			value = simulation.getAssetValue(timeOfLastFixing, 0);
 		}
 		catch(CalculationException e) {
 			Logger.getLogger("net.finmath.smartcontract").warning("Oracle valuation failed with " + e.getCause());
