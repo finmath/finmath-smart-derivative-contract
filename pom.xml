@@ -64,59 +64,6 @@
 			<artifactId>finmath-lib</artifactId>
 			<version>3.3.1</version>
 		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-core</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-finance</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-jackson</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-rpc</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-webserver</artifactId>
-			<version>3.2-corda</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jolokia</groupId>
-			<artifactId>jolokia-war</artifactId>
-			<version>1.6.0</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>net.corda</groupId>
-			<artifactId>corda-webserver-impl</artifactId>
-			<version>3.2-corda</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jolokia</groupId>
-					<artifactId>jolokia-war</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
