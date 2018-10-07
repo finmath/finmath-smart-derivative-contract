@@ -56,12 +56,26 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	 * Using a given initial time and default parameters.
 	 */
 	public GeometricBrownianMotionOracle(LocalDateTime initialTime) {
-		this(new TimeDiscretization(0.0, 20.0, 0.001, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
+		this(initialTime,
+				1.0 /* initialValue */,
+				20.0 /* timeHorizon */,
+				0.02 /* riskFreeRate */,
+				0.10 /* volatility */,
+				1000 /* numberOfPaths */);
+	}
+
+	/**
+	 * A dummy oracle which generates values using a geometric Brownian motion.
+	 *
+	 * Using a given initial time and default parameters.
+	 */
+	public GeometricBrownianMotionOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate, double volatility, int numberOfPaths) {
+		this(new TimeDiscretization(0.0, timeHorizon, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
-				1.0,
-				0.02,
-				0.20,
-				1000);
+				initialValue,
+				riskFreeRate,
+				volatility,
+				numberOfPaths);
 	}
 
 	public GeometricBrownianMotionOracle(TimeDiscretizationInterface timeDiscretization, LocalDateTime initialTime,
