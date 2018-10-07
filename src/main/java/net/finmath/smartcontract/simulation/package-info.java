@@ -6,7 +6,7 @@
 
 /**
  * Classes providing benchmark simulations of the smart contract.
- * 
+ *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
  */

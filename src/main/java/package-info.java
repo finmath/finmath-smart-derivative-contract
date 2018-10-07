@@ -6,7 +6,7 @@
 
 /**
  * Provides Launcher.class to run the demo.
- * 
+ *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
  */

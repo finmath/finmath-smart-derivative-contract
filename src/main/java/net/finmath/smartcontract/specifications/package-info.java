@@ -6,7 +6,7 @@
 
 /**
  * Components defining a smart derivative contract.
- * 
+ *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
  */
