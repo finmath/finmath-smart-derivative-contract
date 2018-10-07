@@ -21,7 +21,7 @@ import net.finmath.smartcontract.oracle.ValuationOracleSamplePath;
  * @author Christian Fries
  *
  */
-public class SmartDerivativeContractMargeningTest {
+public class SmartDerivativeContractMarginingTest {
 
 	@Test
 	public void test() {
