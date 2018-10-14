@@ -1,117 +1,31 @@
-About finmath lib
+About finmath smart-derivative-contract
 ==========
 
 
 ****************************************
 
-**Mathematical Finance Library: Algorithms and methodologies related to mathematical finance.**
+**Algorithms and methodologies related to smart derivative contracts.**
 
 ****************************************
 
-The finmath lib libraries provides (JVM) implementations of methodologies related to mathematical finance, but applicable to other fields. Examples are
-
-- General numerical algorithms like
-    - Generation of random numbers
-    - Optimization (a Levenberg–Marquardt algorithm is provided)
-- Valuation using **Fourier transforms** / **characteristic functions**
-	- Black-Scholes model
-	- Heston model
-	- Bates model
-	- Two factor Bates model
-- **Finite difference methods**
-	- Numerical schemes using finite differences
-		- Theta-scheme
-	- Models
-		- Black-Scholes model
-	- Products
-		- European option
-- **Monte-Carlo simulation** of multi-dimensional, multi-factor stochastic differential equations (SDEs)
-    - LIBOR Market Model
-    - Black-Scholes type multi-asset model (multi-factor, multi-dimensional geometric Brownian motion)
-    - Equity Hybrid LIBOR Market Model
-    - Hull-White Short Rate Model (with time dependent parameters)
-    - Merton Model (as Monte-Carlo Simulation)
-    - Heston Model (as Monte-Carlo Simulation)
-- **American Monte-Carlo**: Estimation of conditional expectations in a Monte-Carlo framework
-- **Stochastic Automatic Differentiation** (AAD) (part of the package `net.finmath.montecarlo.automaticdifferentiation`)
-- **Monte-Carlo Simulation on GPGPUs** (via Cuda) (requires finmath-lib-cuda-extensions https://github.com/finmath/finmath-lib-cuda-extensions )
-- Dependency injection on numerical algorithms (Monte-Carlo simulations) with custom return type priorities (see http://ssrn.com/abstract=3246127 ).
-- **Calibration** of market data objects like curves (discount and forward curve) or volatility surfaces
-	- **Multi-curve interest rate curve calibration** (OIS discounting, basis-swaps, cross-currency-swaps).
-	- **Bond curve calibration** using local linear regression (see https://ssrn.com/abstract=3073942 ).
-    - Various interpolation methods (linear, cubic spline, harmonic spline, Akima).
-    - Various interpolation entities (value, log-value, rate, etc.).
-    - Parametric curves like Nelson-Siegel and Nelson-Siegel-Svensson.
-- Simulation of interest rate term structure models (LIBOR market model with local and stochastic volatility)
-- Calibration of the **LIBOR market model**
-- Valuation of complex derivatives
-    - Bermudan options / multi-callables lower bound via regression estimation of the conditional expectation
-    - Bermudan options / multi-callables upper bound via dual method
-- Hedge Simulation
-- Margin Valuation Adjustments (MVA) though forward ISDA SIMM simulation (this is currently a separate project at https://github.com/finmath ).
+The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart derivative contracts.
+For a description of the concept of a smart derivative contract see https://ssrn.com/abstract=3163074
 
 Languages and Build
 --------------------------------------
 
-The library is available for Java 8 and Java 6. We are starting to provide examples in Kotlin.
+The library requires Java 8 or better.
 
 The Maven build file is provide. Import the project as Maven project.
-
-The default Maven profile is Java 8 without Kotlin. To enable Java 6 version select the Maven profile 'java-6'. To enable Kotlin select the Maven profile 'kotlin'.
 
 Distribution
 --------------------------------------
 
-finmath lib is distributed through the central maven repository. It's coordinates are:
-
-For the Java 6 version:
+finmath smart-derivative-contract is distributed through the central maven repository. It's coordinates are:
 
 	<groupId>net.finmath</groupId>
-	<artifactId>finmath-lib</artifactId>
+	<artifactId>finmath-smart-derivative-contract</artifactId>
 	<version>${project.version}</version>
-	<classifier>java6</classifier>
-
-For the Java 8 version:
-
-	<groupId>net.finmath</groupId>
-	<artifactId>finmath-lib</artifactId>
-	<version>${project.version}</version>
-	
-You may build the Java 8 version via Maven using
-
-	mvn -P java-8
-
-and the Java 6 version using
-
-	mvn -P java-6
-	
-Source code
--------------------------------------
-
-The finmath lib Java library comes in two flavors which have a slightly different code base: a Java 8/9 version and a Java 6 version.
-We will use Java 8 and Java 9 concepts in the future and try to provide Java 6 compatibility where possible.
-
-For that reason, the source code is duplicated:
--    src/main/java				contains the Java 8 compatible source files
--    src/main/java6				contains the Java 6 compatible source files
-
-Although the two folder share some/many identical source files, we prefer this two folder layout
-over one with a third folder like java-common.
-
-
-### Building finmath lib
-
--    To build finmath lib for Java 8 use src/main/java
--    To build finmath lib for java 6 use src/main/java-6
-
-These builds may be performed via Maven the profiles "java-8" and "java-6".
-The eclipse project file is pre-configured to Java 8.
-
-#### Maven build
-
-The maven pom defaults to the Java 8 build. To build finmath lib for Java 6 use the maven profile "java-6".
-
-
 
 Repositories
 -------------------------------------
@@ -133,8 +47,6 @@ Source code and demos are provided via Github repository.
 					</ul>
 				</li>
 			</ul>
-
-Although not recommended, the repository contains an Eclipse project and classpath file including all dependencies.
 
 Documentation
 -------
@@ -163,14 +75,6 @@ The code of "finmath lib" and "finmath experiments" (packages
   [finmath.net special topics]: http://www.finmath.net/topics
   [Apache License version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
 
-
-Extensions
--------------------------------------
-
-The finmath-lib-cuda-extensions implement the RandomVariableInterface via Cuda GPU code. This allows to perform Monte-Carlo simulations on the GPUs with a minimal change: a replacement of the random variable factory.
-
-The finmath-lib-automaticdifferentiation-extensions implement the RandomVariableInterface via an AAD enabled version. This allows to access automatic differentiations with a minimal change: a replacement of the random variable factory.
-Starting with version 3.3.1 the finmath-lib-automaticdifferentiation-extensions is part of finmath-lib.
 
 Coding Conventions
 -------------------------------------
