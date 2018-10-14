@@ -2,6 +2,13 @@ package net.finmath.smartcontract.simulation.curvecalibration;
 
 import java.time.LocalDate;
 
+/**
+ * A calibration context in terms of a reference date and calibration info.
+ *
+ * @author Luca Del Re
+ * @author Peter Kohl-Landgraf
+ * @author Christian Fries
+ */
 public class CalibrationContextImpl implements CalibrationContext {
 	private LocalDate referenceDate;
 	private double accuracy;

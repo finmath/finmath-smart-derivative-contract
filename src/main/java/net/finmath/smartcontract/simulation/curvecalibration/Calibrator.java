@@ -15,6 +15,13 @@ import net.finmath.optimizer.SolverException;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
 
+/**
+ * An object calibrating models from a stream of calibration spec providers
+ *
+ * @author Luca Del Re
+ * @author Peter Kohl-Landgraf
+ * @author Christian Fries
+ */
 public class Calibrator {
 
 	public static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
@@ -23,6 +30,7 @@ public class Calibrator {
 	 * @param providers Stream providing calibration specs (calibration instruments)
 	 * @param ctx The context providing reference date and accuracy.
 	 * @return If the calibration problem can be solved the optional wraps a AnalyticModelInterface implementation with the calibrated model; if the problem is not solvable with respect to the given accuracy, the optional will be empty.
+	 * @throws CloneNotSupportedException Thrown if model calibration fails.
 	 * @see net.finmath.marketdata.model.AnalyticModelInterface
 	 */
 	public Optional<CalibrationResult> calibrateModel(Stream<CalibrationSpecProvider> providers, CalibrationContext ctx) throws CloneNotSupportedException {

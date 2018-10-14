@@ -54,6 +54,8 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	 * A dummy oracle which generates values using a geometric Brownian motion.
 	 *
 	 * Using a given initial time and default parameters.
+	 * 
+	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
 	public BrownianMotionOracle(LocalDateTime initialTime) {
 		this(initialTime,
@@ -68,6 +70,13 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	 * A dummy oracle which generates values using a geometric Brownian motion.
 	 *
 	 * Using a given initial time and default parameters.
+	 * 
+	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
+	 * @param initialValue The initial value.
+	 * @param timeHorizon The time horizon in ACT/365 from initialTime.
+	 * @param riskFreeRate The drift.
+	 * @param volatility The volatility.
+	 * @param numberOfPaths The number of simulation path to generate.
 	 */
 	public BrownianMotionOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate, double volatility, int numberOfPaths) {
 		this(new TimeDiscretization(0.0, timeHorizon, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),

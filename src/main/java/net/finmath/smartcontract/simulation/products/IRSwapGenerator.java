@@ -15,7 +15,7 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
  */
 public class IRSwapGenerator {
 
-	public final static Swap generateAnalyticSwapObject(LocalDate startDate, String maturityLabel, double fixRate,boolean isReceiveFix, String forwardCurveName, String discountCurveName){
+	public static final Swap generateAnalyticSwapObject(LocalDate startDate, String maturityLabel, double fixRate,boolean isReceiveFix, String forwardCurveName, String discountCurveName){
 
 		String frequencyLabel = forwardCurveName.contains("3M") ? "quarterly" : forwardCurveName.contains("6M") ? "semiannual" : forwardCurveName.contains("1M") ? "monthly" : "annual";
 

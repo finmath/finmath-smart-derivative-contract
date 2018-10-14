@@ -18,10 +18,11 @@ public class IRCurveData {
 	public Set<CalibrationDatapoint> curveDataPointSet;
 	private String curveKey;
 
-
 	/**
 	 * Curve Key and Map will be provided. Map maps Each productType (e.g. FRA/SWAP) to Map of MaturityKeys and Rates)
 	 *
+	 * @param curveKey Key identifying the curve.
+	 * @param typeCurveMap Map from product type to a map of maturities to calibration data.
 	 */
 	public IRCurveData(String curveKey, Map<String,Map<String,Double>> typeCurveMap){
 		this.curveKey = curveKey;
@@ -33,6 +34,8 @@ public class IRCurveData {
 	/**
 	 * Returns Stream of calibration data points for a given product type
 	 *
+	 * @param productType String identifying the product type.
+	 * @return Stream of calibration data points.
 	 */
 	public Stream<CalibrationDatapoint> getDataPointStreamForProductType(String productType){
 		return curveDataPointSet.stream().filter(dataPoint->dataPoint.getProductName().equals(productType));

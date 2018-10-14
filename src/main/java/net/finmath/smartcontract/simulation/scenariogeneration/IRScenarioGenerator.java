@@ -1,6 +1,7 @@
 package net.finmath.smartcontract.simulation.scenariogeneration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,8 +24,12 @@ public class IRScenarioGenerator {
 	/**
 	 * Static method which parses a json file and converts it to a list of market data scenarios
 	 *
+	 * @param fileName Name of the input file.
+	 * @param dateFormatter Date formatter to be used.
+	 * @return List of <code>IRMarketDataScenario</code>
+	 * @throws FileNotFoundException Thrown if the file is not found.
 	 */
-	public final static List<IRMarketDataScenario> getScenariosFromJsonFile(String fileName, DateTimeFormatter dateFormatter) throws Exception {
+	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(String fileName, DateTimeFormatter dateFormatter) throws FileNotFoundException {
 		String content = new Scanner(new File(fileName)).next();
 		Gson gson = new Gson();
 
@@ -37,10 +42,9 @@ public class IRScenarioGenerator {
 			LocalDateTime dateTime = date.atTime(17,0);
 			IRMarketDataScenario scenario = new IRMarketDataScenario(map, dateTime);
 			return scenario;
-		}).sorted((S1, S2) -> S1.getDate().compareTo(S2.getDate())).collect(Collectors.toList());
+		}).sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate())).collect(Collectors.toList());
 
 		return scenarioList;
-
 	}
 
 }

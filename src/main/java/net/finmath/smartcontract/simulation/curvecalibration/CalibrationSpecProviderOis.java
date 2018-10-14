@@ -5,6 +5,13 @@ import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.ScheduleInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
+/**
+ * A calibration spec provider for OIS swaps.
+ *
+ * @author Luca Del Re
+ * @author Peter Kohl-Landgraf
+ * @author Christian Fries
+ */
 public class CalibrationSpecProviderOis implements CalibrationSpecProvider {
 	private String maturityLabel;
 	private String frequency;

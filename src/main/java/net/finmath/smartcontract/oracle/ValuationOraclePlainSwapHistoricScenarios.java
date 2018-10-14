@@ -33,6 +33,9 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
 	 *
+	 * @param product The underlying swap product.
+	 * @param notionalAmount The notional of the product.
+	 * @param scenarioList The list of market data scenarios to be used for valuation.
 	 */
 	public ValuationOraclePlainSwapHistoricScenarios(Swap product, double notionalAmount, List<IRMarketDataScenario> scenarioList){
 		this.notionalAmount = notionalAmount;
@@ -42,8 +45,11 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	/**
-	 * Returns evaluation time based on product start date and scenario Date
+	 * Returns evaluation time based on product start date and scenario date
+	 * @TODO: Change to ACT/365 using FloatingpointDate.
 	 *
+	 * @param scenarioDate The scenario date.
+	 * @return The time as double relative to the product start date.
 	 */
 	private double  getEvaluationTimeFromScenarioDate(LocalDateTime scenarioDate){
 		double timeSinceStart = (double) ChronoUnit.DAYS.between(this.productStartDate, scenarioDate) / (scenarioDate.toLocalDate().isLeapYear() ? 366. : 365.);

@@ -5,6 +5,13 @@ import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.ScheduleInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
+/**
+ * A calibration spec provider for swaps.
+ *
+ * @author Luca Del Re
+ * @author Peter Kohl-Landgraf
+ * @author Christian Fries
+ */
 public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
 	private String tenorLabel;
 	private String frequencyLabel;
@@ -14,8 +21,8 @@ public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
 	/**
 	 * @param tenorLabel The tenor label of the IBOR.
 	 * @param frequencyLabel The frequency label for the floating leg (fixed leg is assumed to be annual).
-	 * @param maturityLabel
-	 * @param swapRate
+	 * @param maturityLabel The maturity label (like 1Y, 2Y).
+	 * @param swapRate The par swap rate (use 0.05 for 5%).
 	 */
 	public CalibrationSpecProviderSwap(String tenorLabel, String frequencyLabel, String maturityLabel, double swapRate) {
 		this.tenorLabel = tenorLabel;

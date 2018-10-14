@@ -18,6 +18,7 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
  * <ul>
  * <li>a valuation oracle, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
  * <li>a collateral accrual account, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
+ * </ul>
  *
  * @author Christian Fries
  * @see net.finmath.smartcontract.oracle.ValuationOracle

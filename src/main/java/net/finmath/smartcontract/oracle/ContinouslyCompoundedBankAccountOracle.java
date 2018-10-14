@@ -42,6 +42,8 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * A dummy oracle which generates values as initalValue * Math.exp(r T).
 	 *
 	 * Using a given initial time and default parameters.
+	 * 
+	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
 	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime) {
 		this(new TimeDiscretization(0.0, 20.0, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
@@ -54,6 +56,11 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * A dummy oracle which generates values as initalValue * Math.exp(r T).
 	 *
 	 * Using a given initial time and default parameters.
+	 * 
+	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
+	 * @param initialValue The initial value.
+	 * @param timeHorizon The time horizon in ACT/365 from initialTime.
+	 * @param riskFreeRate The drift.
 	 */
 	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate) {
 		this(new TimeDiscretization(0.0, timeHorizon, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
