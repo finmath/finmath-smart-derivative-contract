@@ -115,8 +115,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 			}
 		}
 
-		// TODO: We use rounding to a days here!
-		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime.toLocalDate(), evaluationTime.toLocalDate());
+		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
 
 		int timeIndexOfLastFixing = timeDiscretization.getTimeIndexNearestLessOrEqual(time);
 		double timeOfLastFixing = timeDiscretization.getTime(timeIndexOfLastFixing);
