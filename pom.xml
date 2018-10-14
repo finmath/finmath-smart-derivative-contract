@@ -27,6 +27,7 @@
 		<src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
 		<kotlin.version>1.2.0</kotlin.version>
 		<junit.version>4.12</junit.version>
+		<finmath-lib.version>3.4.1</finmath-lib.version>
 	</properties>
 
 	<licenses>
@@ -67,7 +68,7 @@
 		<dependency>
 			<groupId>net.finmath</groupId>
 			<artifactId>finmath-lib</artifactId>
-			<version>3.4.0</version>
+			<version>${finmath-lib.version}</version>
 		</dependency>
 
 		<dependency>
