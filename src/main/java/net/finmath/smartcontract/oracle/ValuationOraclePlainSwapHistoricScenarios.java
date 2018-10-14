@@ -3,6 +3,7 @@ package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDa
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;
 import net.finmath.smartcontract.simulation.curvecalibration.Calibrator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+import net.finmath.time.FloatingpointDate;
 
 
 /**
@@ -46,14 +48,12 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 
 	/**
 	 * Returns evaluation time based on product start date and scenario date
-	 * @TODO: Change to ACT/365 using FloatingpointDate.
 	 *
 	 * @param scenarioDate The scenario date.
 	 * @return The time as double relative to the product start date.
 	 */
 	private double  getEvaluationTimeFromScenarioDate(LocalDateTime scenarioDate){
-		double timeSinceStart = (double) ChronoUnit.DAYS.between(this.productStartDate, scenarioDate) / (scenarioDate.toLocalDate().isLeapYear() ? 366. : 365.);
-		return timeSinceStart;
+		return FloatingpointDate.getFloatingPointDateFromDate(LocalDateTime.of(productStartDate, LocalTime.of(0,0)), scenarioDate);
 	}
 
 	@Override
