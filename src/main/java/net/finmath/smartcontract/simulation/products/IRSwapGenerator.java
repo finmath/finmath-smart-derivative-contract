@@ -1,18 +1,12 @@
 package net.finmath.smartcontract.simulation.products;
 
+import java.time.LocalDate;
+
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
-import net.finmath.time.Period;
-import net.finmath.time.Schedule;
 import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.ScheduleInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import net.finmath.time.daycount.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Scenario Generator provides static method for generating an analytic swap object

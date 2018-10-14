@@ -5,7 +5,7 @@
  */
 
 /**
- * Classes related to smart derivatice contracts.
+ * Classes related to smart derivative contracts.
  *
  * @author Christian Fries
  */

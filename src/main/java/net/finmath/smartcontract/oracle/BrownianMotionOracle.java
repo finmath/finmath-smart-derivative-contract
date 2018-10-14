@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import net.finmath.exception.CalculationException;
 import net.finmath.montecarlo.BrownianMotion;
 import net.finmath.montecarlo.assetderivativevaluation.BachelierModel;
-import net.finmath.montecarlo.assetderivativevaluation.BlackScholesModel;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.process.ProcessEulerScheme;
 import net.finmath.stochastic.RandomVariableInterface;

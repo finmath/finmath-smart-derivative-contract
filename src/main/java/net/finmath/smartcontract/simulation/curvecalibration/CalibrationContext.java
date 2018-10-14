@@ -3,7 +3,7 @@ package net.finmath.smartcontract.simulation.curvecalibration;
 import java.time.LocalDate;
 
 public interface CalibrationContext {
-    LocalDate getReferenceDate();
+	LocalDate getReferenceDate();
 
-    double getAccuracy();
+	double getAccuracy();
 }

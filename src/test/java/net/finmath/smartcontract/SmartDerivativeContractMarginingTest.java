@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractMargining;
-import net.finmath.smartcontract.oracle.BrownianMotionOracle;
 import net.finmath.smartcontract.oracle.ContinouslyCompoundedBankAccountOracle;
 import net.finmath.smartcontract.oracle.GeometricBrownianMotionOracle;
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
@@ -31,12 +30,12 @@ public class SmartDerivativeContractMarginingTest {
 		int path = 0;
 
 		StochasticValuationOracle stoachasticOracleForValuation = new GeometricBrownianMotionOracle(initialTime);
-//		StochasticValuationOracle stoachasticOracleForValuation = new BrownianMotionOracle(initialTime);
+		//		StochasticValuationOracle stoachasticOracleForValuation = new BrownianMotionOracle(initialTime);
 		ValuationOracle valuationOracle = new ValuationOracleSamplePath(stoachasticOracleForValuation, path);
 
 		StochasticValuationOracle stoachasticOracleForCollateral = new ContinouslyCompoundedBankAccountOracle(initialTime);
 		ValuationOracle collateralOracle = new ValuationOracleSamplePath(stoachasticOracleForCollateral, path);
-		
+
 		SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle, collateralOracle);
 
 		LocalDateTime previousTime = initialTime;
