@@ -8,7 +8,6 @@ import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.ScheduleInterface;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import net.finmath.time.daycount.*;
-;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,24 +15,24 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Scenario Generator provides static method for genearting an analytic swap object
+ * Scenario Generator provides static method for generating an analytic swap object
  *
  * @author Peter Kohl-Landgraf
  */
 public class IRSwapGenerator {
 
-    public final static Swap generateAnalyticSwapObject(LocalDate startDate, String maturityLabel, double fixRate,boolean isReceiveFix, String forwardCurveName, String discountCurveName){
+	public final static Swap generateAnalyticSwapObject(LocalDate startDate, String maturityLabel, double fixRate,boolean isReceiveFix, String forwardCurveName, String discountCurveName){
 
-        String frequencyLabel = forwardCurveName.contains("3M") ? "quarterly" : forwardCurveName.contains("6M") ? "semiannual" : forwardCurveName.contains("1M") ? "monthly" : "annual";
+		String frequencyLabel = forwardCurveName.contains("3M") ? "quarterly" : forwardCurveName.contains("6M") ? "semiannual" : forwardCurveName.contains("1M") ? "monthly" : "annual";
 
-        ScheduleInterface scheduleFloat = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityLabel, frequencyLabel, "act/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
-        ScheduleInterface scheduleFix = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityLabel, "annual", "E30/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
-        SwapLeg floatLeg = new SwapLeg(scheduleFloat,forwardCurveName,0.0,discountCurveName);
-        SwapLeg fixLeg = new SwapLeg(scheduleFix,"",fixRate,discountCurveName);
+		ScheduleInterface scheduleFloat = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityLabel, frequencyLabel, "act/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		ScheduleInterface scheduleFix = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityLabel, "annual", "E30/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		SwapLeg floatLeg = new SwapLeg(scheduleFloat,forwardCurveName,0.0,discountCurveName);
+		SwapLeg fixLeg = new SwapLeg(scheduleFix,"",fixRate,discountCurveName);
 
-        Swap swap = isReceiveFix ? new Swap(fixLeg,floatLeg) : new Swap(floatLeg,fixLeg);
-        return swap;
-    }
+		Swap swap = isReceiveFix ? new Swap(fixLeg,floatLeg) : new Swap(floatLeg,fixLeg);
+		return swap;
+	}
 
 
 }
