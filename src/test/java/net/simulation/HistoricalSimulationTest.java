@@ -42,10 +42,8 @@ public class HistoricalSimulationTest {
 			List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).collect(Collectors.toList());
 
 			scenarioDates.stream().forEach(scenario->{
-				System.out.println("ScenarioDate: " + scenario + " Value of Swap : " + oracle.getValue(scenario).get());
+				System.out.println("ScenarioDate: " + scenario + " Value of Swap : " + oracle.getValue(scenario));
 			});
-
-
 		}
 		catch(Exception e){
 

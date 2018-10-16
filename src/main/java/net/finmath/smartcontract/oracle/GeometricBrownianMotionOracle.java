@@ -108,7 +108,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	}
 
 	@Override
-	public Optional<RandomVariableInterface> getValue(LocalDateTime evaluationTime) {
+	public RandomVariableInterface getValue(LocalDateTime evaluationTime) {
 		synchronized (simulationLazyInitLock) {
 			if(simulation == null) {
 				init();
@@ -128,6 +128,6 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 			Logger.getLogger("net.finmath.smartcontract").warning("Oracle valuation failed with " + e.getCause());
 		}
 
-		return Optional.ofNullable(value);
+		return value;
 	}
 }

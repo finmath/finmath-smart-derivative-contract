@@ -40,9 +40,9 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	 */
 	public ValuationOraclePlainSwapHistoricScenarios(Swap product, double notionalAmount, List<IRMarketDataScenario> scenarioList){
 		this.notionalAmount = notionalAmount;
-		this.product=product;
-		this.productStartDate =  ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
-		this.scenarioList=scenarioList;
+		this.product = product;
+		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
+		this.scenarioList = scenarioList;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	@Override
-	public Optional<Double> getValue(LocalDateTime evaluationTime){
+	public Double getValue(LocalDateTime evaluationTime){
 		Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(evaluationTime)).findAny();
 		if ( optionalScenario.isPresent()) {
 			IRMarketDataScenario scenario = optionalScenario.get();
@@ -68,14 +68,14 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 
 				double valueWithCurves = product.getValue(getEvaluationTimeFromScenarioDate(evaluationTime), calibratedModel)*notionalAmount;
 				calibratedModel = null;
-				return Optional.of(valueWithCurves);
+				return valueWithCurves;
 			}
 			catch(Exception e){
-				return Optional.empty();
+				return null;
 			}
 		}
 		else{
-			return  Optional.empty();
+			return null;
 		}
 	}
 }

@@ -33,7 +33,7 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	}
 
 	@Override
-	public Optional<Double> getValue(LocalDateTime evaluationTime) {
-		return stochasticValuationOracle.getValue(evaluationTime).map(x -> x.get(path));
+	public Double getValue(LocalDateTime evaluationTime) {
+		return stochasticValuationOracle.getValue(evaluationTime).get(path);
 	}
 }

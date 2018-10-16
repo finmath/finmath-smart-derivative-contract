@@ -26,5 +26,5 @@ public interface StochasticValuationOracle {
 	 *
 	 * @return The value.
 	 */
-	Optional<RandomVariableInterface> getValue(LocalDateTime evaluationTime);
+	RandomVariableInterface getValue(LocalDateTime evaluationTime);
 }

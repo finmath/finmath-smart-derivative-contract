@@ -79,10 +79,10 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	}
 
 	@Override
-	public Optional<RandomVariableInterface> getValue(LocalDateTime evaluationTime) {
+	public RandomVariableInterface getValue(LocalDateTime evaluationTime) {
 
 		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
 
-		return Optional.of(new Scalar(initialValue * Math.exp(riskFreeRate * time)));
+		return new Scalar(initialValue * Math.exp(riskFreeRate * time));
 	}
 }

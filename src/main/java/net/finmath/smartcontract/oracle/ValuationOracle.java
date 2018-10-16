@@ -23,5 +23,5 @@ public interface ValuationOracle {
 	 *
 	 * @return The value.
 	 */
-	Optional<Double> getValue(LocalDateTime evaluationTime);
+	Double getValue(LocalDateTime evaluationTime);
 }
