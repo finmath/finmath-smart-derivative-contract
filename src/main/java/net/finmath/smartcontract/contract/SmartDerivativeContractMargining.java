@@ -41,24 +41,24 @@ public class SmartDerivativeContractMargining {
 	 * @param marginPeriodEnd Period end time of the margin period.
 	 * @return The margin.
 	 */
-	public Optional<Double> getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
+	public Double getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
 
 		try {
-			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd).get();
-			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodStart).get();
+			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd);
+			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodStart);
 
-			double valueCollateralCurrent = collateralValuationOracle.getValue(marginPeriodEnd).get();
-			double valueCollateralPrevious = collateralValuationOracle.getValue(marginPeriodStart).get();
+			double valueCollateralCurrent = collateralValuationOracle.getValue(marginPeriodEnd);
+			double valueCollateralPrevious = collateralValuationOracle.getValue(marginPeriodStart);
 
 			double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
 			double collateralChange = valueDerivativePrevious * (valueCollateralCurrent/valueCollateralPrevious - 1.0);
 
 			double margin = valuationChange - collateralChange;
 
-			return Optional.ofNullable(margin);
+			return margin;
 		}
 		catch(NoSuchElementException e) {
-			return Optional.empty();
+			return null;
 		}
 	}
 
