@@ -7,7 +7,6 @@
 package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import net.finmath.stochastic.RandomVariableInterface;
 

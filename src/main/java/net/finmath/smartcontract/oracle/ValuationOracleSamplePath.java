@@ -7,7 +7,6 @@
 package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  * A valuation oracle constructed from a simulation providing a stochastic valuation oracle
@@ -23,7 +22,7 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	/**
 	 * Create a valuation oracle from a simulation providing a stochastic valuation oracle
 	 * by extracting a given sample path.
-	 * 
+	 *
 	 * @param stochasticValuationOracle A given stochastic oracle.
 	 * @param path The sample path to extract from the stochastic oracle.
 	 */

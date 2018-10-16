@@ -7,7 +7,6 @@
 package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import net.finmath.exception.CalculationException;
@@ -54,7 +53,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	 * A dummy oracle which generates values using a geometric Brownian motion.
 	 *
 	 * Using a given initial time and default parameters.
-	 * 
+	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
 	public GeometricBrownianMotionOracle(LocalDateTime initialTime) {
@@ -70,7 +69,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	 * A dummy oracle which generates values using a geometric Brownian motion.
 	 *
 	 * Using a given initial time and default parameters.
-	 * 
+	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 * @param initialValue The initial value.
 	 * @param timeHorizon The time horizon in ACT/365 from initialTime.

@@ -8,7 +8,6 @@ package net.finmath.smartcontract.contract;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import net.finmath.smartcontract.oracle.ValuationOracle;
 

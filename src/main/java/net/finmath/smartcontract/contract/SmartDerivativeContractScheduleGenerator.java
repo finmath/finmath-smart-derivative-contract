@@ -12,18 +12,24 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**
+ * Generates schedules for smart derivative contracts.
+ * The schedule consists of settlement, account access and margin checks.
+ * 
  * @author Christian Fries
- *
  */
 public class SmartDerivativeContractScheduleGenerator {
 
+	/**
+	 * Simple POJO implementation of <code>SmartDerivativeContractSchedule.EventTimes</code>.
+	 * 
+	 * @author Christian Fries
+	 */
 	public static class EventTimesImpl implements SmartDerivativeContractSchedule.EventTimes {
 		private final LocalDateTime settementTime;
 		private final LocalDateTime accountAccessAllowedStart;
@@ -68,6 +74,11 @@ public class SmartDerivativeContractScheduleGenerator {
 		}
 	}
 
+	/**
+	 * Simple list based implementation of <code>SmartDerivativeContractSchedule</code>.
+	 * 
+	 * @author Christian Fries
+	 */
 	public static class SimpleSchedule implements SmartDerivativeContractSchedule {
 		private final List<SmartDerivativeContractSchedule.EventTimes> eventTimes;
 
@@ -87,7 +98,7 @@ public class SmartDerivativeContractScheduleGenerator {
 	 * accountAccessStart is one minute after settlementTime,
 	 * accountAccessEnd is accountAccessAllowedDuration after accountAccessStart,
 	 * marginCheckTime is one minute after accountAccessEnd.
-	 * 
+	 *
 	 * @param calendar
 	 * @param startDate
 	 * @param maturity

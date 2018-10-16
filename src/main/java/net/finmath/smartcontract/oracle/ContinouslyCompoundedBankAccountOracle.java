@@ -7,7 +7,6 @@
 package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import net.finmath.stochastic.RandomVariableInterface;
 import net.finmath.stochastic.Scalar;
@@ -42,7 +41,7 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * A dummy oracle which generates values as initalValue * Math.exp(r T).
 	 *
 	 * Using a given initial time and default parameters.
-	 * 
+	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
 	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime) {
@@ -56,7 +55,7 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * A dummy oracle which generates values as initalValue * Math.exp(r T).
 	 *
 	 * Using a given initial time and default parameters.
-	 * 
+	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 * @param initialValue The initial value.
 	 * @param timeHorizon The time horizon in ACT/365 from initialTime.

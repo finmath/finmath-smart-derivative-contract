@@ -27,9 +27,9 @@ public class SmartDerivativeContractScheduleGeneratorTest {
 		LocalDate maturity = LocalDate.of(2028, 9, 15);
 		LocalTime settlementTime = LocalTime.of(17, 30);
 		Duration accountAccessAllowedDuration = Duration.ofSeconds(10*60);
-		
+
 		SmartDerivativeContractSchedule schedule = SmartDerivativeContractScheduleGenerator.getScheduleForBusinessDays("target2", startDate, maturity, settlementTime, accountAccessAllowedDuration);
-		
+
 		for(SmartDerivativeContractSchedule.EventTimes event : schedule.getEventTimes()) {
 			LocalDateTime settementTime = event.getSettementTime();
 			LocalDateTime accountAccessAllowedStart = event.getAccountAccessAllowedStart();
@@ -41,7 +41,7 @@ public class SmartDerivativeContractScheduleGeneratorTest {
 			System.out.println("Account access end....:" + accountAccessAllowedEnd);
 			System.out.println("Margin check..........:" + marginCheckTime);
 			System.out.println();
-			
+
 			Assert.assertTrue("Access after settlement", accountAccessAllowedStart.isAfter(settementTime));
 			Assert.assertTrue("Account access", accountAccessAllowedEnd.isAfter(accountAccessAllowedStart));
 			Assert.assertTrue("Margin check after account access", marginCheckTime.isAfter(accountAccessAllowedEnd));
