@@ -25,14 +25,15 @@ public class ChartDataGeneratorMarketValue implements ChartDataGenerator {
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;
 		dataMap=new LinkedHashMap<>();
+		dataMap.put(scenarioDates.get(0).toLocalDate().toString(),this.oracle.getValue(scenarioDates.get(0)));
 	}
 
 	@Override
 	public ChartData generatedChartData(final ActionEvent event){
 
 		final DefaultCategoryDataset result = new DefaultCategoryDataset();
-		double marketValue = this.oracle.getValue(scenarioDates.get(0));
-		dataMap.put(scenarioDates.get(0).toLocalDate().toString(),marketValue);
+		double marketValue = this.oracle.getValue(scenarioDates.get(1));
+		dataMap.put(scenarioDates.get(1).toLocalDate().toString(),marketValue);
 		dataMap.entrySet().stream().forEach(entry->{
 			result.addValue(entry.getValue(),"MarketValue",entry.getKey());
 		});

@@ -37,7 +37,7 @@ public class StackedBarchartGenerator implements PlotGenerator {
 		CategoryDataset categoryDataset = (CategoryDataset) chartData.getDataset();
 
 		final JFreeChart chart = ChartFactory.createStackedBarChart(
-				chartData.getPropertyChartTitle(), "", "Balance",
+				chartData.getPropertyChartTitle(), "", "Account Balance",
 				categoryDataset, PlotOrientation.VERTICAL, false, true, false);
 
 		chart.setBackgroundPaint(backGroundPaintColor);
