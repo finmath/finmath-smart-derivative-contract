@@ -12,15 +12,6 @@ package net.finmath.smartcontract.contract;
  */
 public class SmartDerivativeContract {
 
-	public enum EventsTypes {
-		INIT,
-		SETTLEMENT,
-		ACCOUNTS_ACCESSIBLE_START,
-		ACCOUNTS_ACCESSIBLE_END,
-		CHECK_MARGIN,
-		MATURED,
-	}
-
 	/**
 	 *
 	 */
