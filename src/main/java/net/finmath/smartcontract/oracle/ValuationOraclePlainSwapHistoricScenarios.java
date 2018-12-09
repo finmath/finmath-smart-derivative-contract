@@ -7,6 +7,13 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+
+import org.javamoney.moneta.CurrencyUnitBuilder;
+import org.javamoney.moneta.Money;
+
 import net.finmath.marketdata.model.AnalyticModelInterface;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
@@ -26,10 +33,11 @@ import net.finmath.time.FloatingpointDate;
 
 public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracle {
 
-	List<IRMarketDataScenario> scenarioList;
-	Swap product;
-	LocalDate productStartDate;
-	double notionalAmount;
+	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
+	private List<IRMarketDataScenario> scenarioList;
+	private Swap product;
+	private LocalDate productStartDate;
+	private double notionalAmount;
 
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
@@ -63,7 +71,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 			CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
 			Calibrator calibrator = new Calibrator();
 			try {
-				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(LocalDate.now(), 1E-6));
+				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(evaluationTime.toLocalDate(), 1E-6));
 				AnalyticModelInterface calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
 				double valueWithCurves = product.getValue(getEvaluationTimeFromScenarioDate(evaluationTime), calibratedModel)*notionalAmount;
@@ -77,5 +85,10 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 		else{
 			return null;
 		}
+	}
+
+	@Override
+	public MonetaryAmount getAmount(LocalDateTime evaluationTime) {
+		return Money.of(getValue(evaluationTime), currency);
 	}
 }

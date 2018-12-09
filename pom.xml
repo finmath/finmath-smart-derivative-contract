@@ -72,6 +72,16 @@
 			<artifactId>finmath-lib</artifactId>
 			<version>${finmath-lib.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>net.finmath</groupId>
+			<artifactId>finmath-lib-plot-extensions</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.javamoney</groupId>
+			<artifactId>moneta</artifactId>
+			<version>1.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
