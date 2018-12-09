@@ -1,7 +1,9 @@
 package net.finmath.smartcontract.demo.plotgeneration;
 
-import net.finmath.smartcontract.demo.chartdatageneration.ChartData;
-import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGenerator;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.util.List;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -9,9 +11,8 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.util.List;
+import net.finmath.smartcontract.demo.chartdatageneration.ChartData;
+import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGenerator;
 
 
 /**

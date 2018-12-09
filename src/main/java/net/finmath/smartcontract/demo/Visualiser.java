@@ -1,19 +1,21 @@
 package net.finmath.smartcontract.demo;
 
-import net.finmath.smartcontract.demo.plotgeneration.PlotGenerator;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.ui.ApplicationFrame;
 
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import net.finmath.smartcontract.demo.plotgeneration.PlotGenerator;
 
 /**
  *  Visualiser is an abstract class which handles the automatic update of an Event.
@@ -30,7 +32,7 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 	private final int verticalLenght=500;
 
 
-	private Timer timer = new Timer(1000, this);
+	private Timer timer = new Timer(200, this);
 
 	public Visualiser(final String title, List<PlotGenerator> chartGeneratorList) {
 		super(title);
@@ -51,7 +53,6 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 		//final CategoryAxis domainAxis = new CategoryAxis("Category");
 		final CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
 		//plot.setOrientation(PlotOrientation.VERTICAL);
-		chartGeneratorList.stream().map(generator->generator.createPlot(event)).forEach(subplot->plot.add(subplot,1));
 
 
 		final JFreeChart chart = new JFreeChart(
@@ -65,17 +66,29 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 		chart.setBackgroundPaint(Color.LIGHT_GRAY);
 
 		//Created JPanel to show graph on screen
-		content = new JPanel(new BorderLayout());
+		content = new JPanel(new FlowLayout());
 
 		//Created Chartpanel for chart area
 		chartPanel = new ChartPanel(chart);
 
+		chartGeneratorList.stream().map(generator->generator.createPlot(event)).forEach(subplot->
+		 {
+			 ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
+				this.getTitle(),
+				new Font("Arial", Font.BOLD, 12),
+				subplot,
+				false
+		));
+			chartPanel2.setPreferredSize(new java.awt.Dimension(horizontalLength, verticalLenght));
+			chartPanel2.repaint();
+			content.add(chartPanel2);
+		 }
+		 );
+
 		//Added chartpanel to main panel
-		content.add(chartPanel);
+	//	content.add(chartPanel);
 
 		//Sets the size of whole window (JPanel)
-		chartPanel.setPreferredSize(new java.awt.Dimension(horizontalLength, verticalLenght));
-		chartPanel.repaint();
 
 		//Puts the whole content on a Frame
 		setContentPane(content);
