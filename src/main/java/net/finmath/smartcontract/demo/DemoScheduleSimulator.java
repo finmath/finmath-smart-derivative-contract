@@ -1,15 +1,16 @@
 package net.finmath.smartcontract.demo;
 
-import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
-import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
+import javax.swing.Timer;
+
+import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
 
 /**
  *  Very basic schedule simulator which maps an eventtime on a schedule time

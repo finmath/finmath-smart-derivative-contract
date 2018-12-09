@@ -1,12 +1,12 @@
 package net.finmath.smartcontract.demo.chartdatageneration;
 
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.Dataset;
-
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.Dataset;
 
 
 /**
