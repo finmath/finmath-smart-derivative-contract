@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>net.finmath</groupId>
 			<artifactId>finmath-lib-plot-extensions</artifactId>
-			<version>0.0.3-SNAPSHOT</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javamoney</groupId>
