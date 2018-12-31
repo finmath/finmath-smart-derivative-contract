@@ -32,6 +32,26 @@
 		<finmath-lib.version>3.4.1</finmath-lib.version>
 	</properties>
 
+	<developers>
+		<developer>
+			<id>fries</id>
+			<name>Christian Fries</name>
+			<email>email@christian-fries.de</email>
+			<url>http://www.christian-fries.de</url>
+			<timezone>1</timezone>
+		</developer>
+		<developer>
+			<id>pekola</id>
+			<name>Peter Kohl-Landgraf</name>
+			<timezone>1</timezone>
+		</developer>
+		<developer>
+			<id>delre</id>
+			<name>Luca Del Re</name>
+			<timezone>1</timezone>
+		</developer>
+	</developers>
+
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
