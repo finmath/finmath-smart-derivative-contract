@@ -29,6 +29,7 @@ import net.finmath.time.FloatingpointDate;
  * An oracle for swap valuation which generates values using externally provided historical market data scenarios.
  *
  * @author Peter Kohl-Landgraf
+ * @author Christian Fries
  */
 
 public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracle {
@@ -53,28 +54,19 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 		this.scenarioList = scenarioList;
 	}
 
-	/**
-	 * Returns evaluation time based on product start date and scenario date
-	 *
-	 * @param scenarioDate The scenario date.
-	 * @return The time as double relative to the product start date.
-	 */
-	private double  getEvaluationTimeFromScenarioDate(LocalDateTime scenarioDate){
-		return FloatingpointDate.getFloatingPointDateFromDate(LocalDateTime.of(productStartDate, LocalTime.of(0,0)), scenarioDate);
-	}
-
 	@Override
-	public Double getValue(LocalDateTime evaluationTime){
-		Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(evaluationTime)).findAny();
-		if ( optionalScenario.isPresent()) {
+	public Double getValue(LocalDateTime evaluationDate, LocalDateTime marketDataTime) {
+		Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(marketDataTime)).findAny();
+		if (optionalScenario.isPresent()) {
 			IRMarketDataScenario scenario = optionalScenario.get();
 			CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
 			Calibrator calibrator = new Calibrator();
 			try {
-				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(evaluationTime.toLocalDate(), 1E-6));
+				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
 				AnalyticModelInterface calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
-				double valueWithCurves = product.getValue(getEvaluationTimeFromScenarioDate(evaluationTime), calibratedModel)*notionalAmount;
+				double evaluationTime = 0.0;	// Time relative to models reference date (which agrees with evaluationDate).
+				double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
 				calibratedModel = null;
 				return valueWithCurves;
 			}
@@ -88,7 +80,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	@Override
-	public MonetaryAmount getAmount(LocalDateTime evaluationTime) {
-		return Money.of(getValue(evaluationTime), currency);
+	public MonetaryAmount getAmount(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+		return Money.of(getValue(evaluationTime, marketDataTime), currency);
 	}
 }

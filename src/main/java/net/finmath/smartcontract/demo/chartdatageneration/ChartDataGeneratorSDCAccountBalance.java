@@ -84,8 +84,8 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			System.out.println("Current Time Index  = " + eventTime.toString() + ": Margin Check");
 			LocalDateTime scenarioLast = this.scenarioDates.get(0);
 			LocalDateTime scenarioActual = this.scenarioDates.get(1);
-			double valueLast = oracle.getValue(scenarioLast);
-			double valueActual = oracle.getValue(scenarioActual);
+			double valueLast = oracle.getValue(scenarioLast, scenarioLast);
+			double valueActual = oracle.getValue(scenarioActual, scenarioActual);
 			double value = valueActual - valueLast;
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data.length; j++) {
@@ -110,8 +110,8 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			System.out.println("Current Time = " + eventTime.toString() + ": Settlement");
 			LocalDateTime scenarioLast = this.scenarioDates.get(0);
 			LocalDateTime scenarioActual = this.scenarioDates.get(1);
-			double valueLast = oracle.getValue(scenarioLast);
-			double valueActual = oracle.getValue(scenarioActual);
+			double valueLast = oracle.getValue(scenarioLast, scenarioLast);
+			double valueActual = oracle.getValue(scenarioActual, scenarioActual);
 			double value = valueActual - valueLast;
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data.length; j++) {

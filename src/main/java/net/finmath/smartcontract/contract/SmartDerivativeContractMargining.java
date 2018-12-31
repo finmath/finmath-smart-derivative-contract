@@ -16,8 +16,10 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
  * The agreement consists of
  * <ul>
  * <li>a valuation oracle, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
- * <li>a collateral accrual account, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
  * </ul>
+ * 
+ * The accrual of the collateral is assumed to e consistent with the valuation, hence, the accrued collateral
+ * can be determined from calling <code>getValue(marginPeriodEnd, marginPeriodStart)</code>.
  *
  * @author Christian Fries
  * @see net.finmath.smartcontract.oracle.ValuationOracle
@@ -25,12 +27,10 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
 public class SmartDerivativeContractMargining {
 
 	private final ValuationOracle derivativeValuationOracle;
-	private final ValuationOracle collateralValuationOracle;
 
-	public SmartDerivativeContractMargining(ValuationOracle derivativeValuationOracle, ValuationOracle collateralValuationOracle) {
+	public SmartDerivativeContractMargining(ValuationOracle derivativeValuationOracle) {
 		super();
 		this.derivativeValuationOracle = derivativeValuationOracle;
-		this.collateralValuationOracle = collateralValuationOracle;
 	}
 
 	/**
@@ -43,16 +43,12 @@ public class SmartDerivativeContractMargining {
 	public Double getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
 
 		try {
-			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd);
-			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodStart);
-
-			double valueCollateralCurrent = collateralValuationOracle.getValue(marginPeriodEnd);
-			double valueCollateralPrevious = collateralValuationOracle.getValue(marginPeriodStart);
+			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
+			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
 
 			double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
-			double collateralChange = valueDerivativePrevious * (valueCollateralCurrent/valueCollateralPrevious - 1.0);
 
-			double margin = valuationChange - collateralChange;
+			double margin = valuationChange;
 
 			return margin;
 		}
@@ -60,5 +56,4 @@ public class SmartDerivativeContractMargining {
 			return null;
 		}
 	}
-
 }

@@ -33,10 +33,7 @@ public class SmartDerivativeContractMarginingTest {
 		//		StochasticValuationOracle stoachasticOracleForValuation = new BrownianMotionOracle(initialTime);
 		ValuationOracle valuationOracle = new ValuationOracleSamplePath(stoachasticOracleForValuation, path);
 
-		StochasticValuationOracle stoachasticOracleForCollateral = new ContinouslyCompoundedBankAccountOracle(initialTime);
-		ValuationOracle collateralOracle = new ValuationOracleSamplePath(stoachasticOracleForCollateral, path);
-
-		SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle, collateralOracle);
+		SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle);
 
 		LocalDateTime previousTime = initialTime;
 		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {

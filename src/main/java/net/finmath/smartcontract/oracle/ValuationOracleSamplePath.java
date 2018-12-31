@@ -39,12 +39,12 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	}
 
 	@Override
-	public Double getValue(LocalDateTime evaluationTime) {
+	public Double getValue(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
 		return stochasticValuationOracle.getValue(evaluationTime).get(path);
 	}
 
 	@Override
-	public MonetaryAmount getAmount(LocalDateTime evaluationTime) {
-		return Money.of(getValue(evaluationTime), currency);
+	public MonetaryAmount getAmount(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+		return Money.of(getValue(evaluationTime, marketDataTime), currency);
 	}
 }

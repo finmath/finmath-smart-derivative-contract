@@ -29,6 +29,7 @@ import net.finmath.plots.Plot2DFX;
 import net.finmath.plots.Plotable2D;
 import net.finmath.plots.PlotableCategories;
 import net.finmath.plots.Point2D;
+import net.finmath.smartcontract.contract.SmartDerivativeContractMargining;
 import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGeneratorMarketValue;
 import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGeneratorSDCAccountBalance;
 import net.finmath.smartcontract.oracle.ValuationOraclePlainSwapHistoricScenarios;
@@ -68,16 +69,17 @@ public class VisualiserSDC {
 		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
 		double notional = 1.0E7;
-		String MaturityKey = "5Y";
+		String maturityKey = "5Y";
 		String forwardCurveKey = "forward-EUR-6M";
 		String discountCurveKey = "discount-EUR-OIS";
-		LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
+		LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate().minusDays(170);
 
-		double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(MaturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
-		Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,MaturityKey,fixRate, false, forwardCurveKey,discountCurveKey);
+		double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(maturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
+		Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey,discountCurveKey);
 
 		ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
-
+		SmartDerivativeContractMargining margin = new SmartDerivativeContractMargining(oracle);
+		
 		List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).sorted().collect(Collectors.toList());
 
 		VisualiserSDC sdcVisual = new VisualiserSDC();
@@ -88,7 +90,8 @@ public class VisualiserSDC {
 		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
 		Thread.sleep(1000);
 		for(int i=0; i<scenarioDates.size(); i++) {
-			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
+			double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i-1), scenarioDates.get(i)) : 0.0;
+//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall);
 			marketValue += marginCall;
