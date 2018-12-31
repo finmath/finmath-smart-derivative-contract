@@ -20,14 +20,14 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
 /**
  * Generates schedules for smart derivative contracts.
  * The schedule consists of settlement, account access and margin checks.
- * 
+ *
  * @author Christian Fries
  */
 public class SmartDerivativeContractScheduleGenerator {
 
 	/**
 	 * Simple POJO implementation of <code>SmartDerivativeContractSchedule.EventTimes</code>.
-	 * 
+	 *
 	 * @author Christian Fries
 	 */
 	public static class EventTimesImpl implements SmartDerivativeContractSchedule.EventTimes {
@@ -76,7 +76,7 @@ public class SmartDerivativeContractScheduleGenerator {
 
 	/**
 	 * Simple list based implementation of <code>SmartDerivativeContractSchedule</code>.
-	 * 
+	 *
 	 * @author Christian Fries
 	 */
 	public static class SimpleSchedule implements SmartDerivativeContractSchedule {

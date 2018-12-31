@@ -61,8 +61,8 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
 		if (initTime==null){
 			data = new double[][]{
-					{initialBalance, initialBalance},
-					{0, 0},
+				{initialBalance, initialBalance},
+				{0, 0},
 			};
 			this.nextProcessState = processStates.marginCheck;
 			this.initTime=LocalDateTime.now();

@@ -30,7 +30,7 @@ public interface SmartDerivativeContractSchedule {
 	/**
 	 * Interface for a smart derivative event time set consisting of
 	 * settlement, account access (start and duration) and margin check.
-	 * 
+	 *
 	 * @author Christian Fries
 	 */
 	public interface EventTimes {

@@ -29,7 +29,7 @@ public class TimeSeriesChartGenerator implements PlotGenerator {
 		ChartData chartData = this.chartDataGenerator.generatedChartData(e);
 
 		CategoryDataset dataset = (CategoryDataset) chartData.getDataset();
-	final LineAndShapeRenderer renderer1 = new LineAndShapeRenderer();
+		final LineAndShapeRenderer renderer1 = new LineAndShapeRenderer();
 		renderer1.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
 
 		final NumberAxis rangeAxis1 = new NumberAxis("Market Value");

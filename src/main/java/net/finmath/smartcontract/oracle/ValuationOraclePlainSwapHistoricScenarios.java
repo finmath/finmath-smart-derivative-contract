@@ -3,7 +3,6 @@ package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 
-import org.javamoney.moneta.CurrencyUnitBuilder;
 import org.javamoney.moneta.Money;
 
 import net.finmath.marketdata.model.AnalyticModelInterface;
@@ -22,7 +20,6 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDa
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;
 import net.finmath.smartcontract.simulation.curvecalibration.Calibrator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import net.finmath.time.FloatingpointDate;
 
 
 /**

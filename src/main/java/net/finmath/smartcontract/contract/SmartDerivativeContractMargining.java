@@ -17,7 +17,7 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
  * <ul>
  * <li>a valuation oracle, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
  * </ul>
- * 
+ *
  * The accrual of the collateral is assumed to e consistent with the valuation, hence, the accrued collateral
  * can be determined from calling <code>getValue(marginPeriodEnd, marginPeriodStart)</code>.
  *

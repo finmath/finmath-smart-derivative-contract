@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * Observable smart derivative contract event.
- * 
+ *
  * @author Christian Fries
  */
 public class SmartDerivativeContractEvent {

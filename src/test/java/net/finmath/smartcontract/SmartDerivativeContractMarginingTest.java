@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractMargining;
-import net.finmath.smartcontract.oracle.ContinouslyCompoundedBankAccountOracle;
 import net.finmath.smartcontract.oracle.GeometricBrownianMotionOracle;
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracle;

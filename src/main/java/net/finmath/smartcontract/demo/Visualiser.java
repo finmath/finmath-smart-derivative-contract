@@ -48,7 +48,7 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 	private    void     generatePlot(final ActionEvent event){
 
 
-//		final JFreeChart chart = chartGenerator.createPlot(chartData);
+		//		final JFreeChart chart = chartGenerator.createPlot(chartData);
 
 		//final CategoryAxis domainAxis = new CategoryAxis("Category");
 		final CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
@@ -60,7 +60,7 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 				new Font("Arial", Font.BOLD, 12),
 				plot,
 				false
-		);
+				);
 
 		//Sets background color of chart
 		chart.setBackgroundPaint(Color.LIGHT_GRAY);
@@ -72,21 +72,21 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 		chartPanel = new ChartPanel(chart);
 
 		chartGeneratorList.stream().map(generator->generator.createPlot(event)).forEach(subplot->
-		 {
-			 ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
-				this.getTitle(),
-				new Font("Arial", Font.BOLD, 12),
-				subplot,
-				false
-		));
+		{
+			ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
+					this.getTitle(),
+					new Font("Arial", Font.BOLD, 12),
+					subplot,
+					false
+					));
 			chartPanel2.setPreferredSize(new java.awt.Dimension(horizontalLength, verticalLenght));
 			chartPanel2.repaint();
 			content.add(chartPanel2);
-		 }
-		 );
+		}
+				);
 
 		//Added chartpanel to main panel
-	//	content.add(chartPanel);
+		//	content.add(chartPanel);
 
 		//Sets the size of whole window (JPanel)
 
