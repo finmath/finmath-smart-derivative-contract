@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
+import net.finmath.time.businessdaycalendar.AbstractBusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**
@@ -119,7 +119,7 @@ public class SmartDerivativeContractScheduleGenerator {
 			Duration accountAccessAllowedDuration,
 			LocalTime marginCheckTime) {
 
-		BusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
+		AbstractBusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 
 		List<EventTimes> eventTimesList = new ArrayList<EventTimes>();
 		LocalDate settlementDate = startDate;

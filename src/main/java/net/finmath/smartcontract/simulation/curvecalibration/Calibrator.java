@@ -13,7 +13,7 @@ import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
 import net.finmath.marketdata.model.curves.ForwardCurveInterface;
 import net.finmath.optimizer.SolverException;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarInterface;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 
 /**
  * An object calibrating models from a stream of calibration spec providers
@@ -58,14 +58,14 @@ public class Calibrator {
 	}
 
 	private ForwardCurveInterface get3MForwardCurve(CalibrationContext ctx) {
-		return new ForwardCurve("forward-EUR-3M", ctx.getReferenceDate(), "3M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendarInterface.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
+		return new ForwardCurve("forward-EUR-3M", ctx.getReferenceDate(), "3M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 
 	private ForwardCurveInterface get6MForwardCurve(CalibrationContext ctx) {
-		return new ForwardCurve("forward-EUR-6M", ctx.getReferenceDate(), "6M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendarInterface.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
+		return new ForwardCurve("forward-EUR-6M", ctx.getReferenceDate(), "6M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 
 	private ForwardCurveInterface get1MForwardCurve(CalibrationContext ctx) {
-		return new ForwardCurve("forward-EUR-1M", ctx.getReferenceDate(), "1M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendarInterface.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
+		return new ForwardCurve("forward-EUR-1M", ctx.getReferenceDate(), "1M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, Curve.InterpolationMethod.LINEAR, Curve.ExtrapolationMethod.CONSTANT, Curve.InterpolationEntity.VALUE, ForwardCurve.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 }
