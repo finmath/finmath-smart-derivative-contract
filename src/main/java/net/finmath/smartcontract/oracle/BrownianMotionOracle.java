@@ -13,7 +13,7 @@ import net.finmath.exception.CalculationException;
 import net.finmath.montecarlo.BrownianMotionLazyInit;
 import net.finmath.montecarlo.assetderivativevaluation.BachelierModel;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
-import net.finmath.montecarlo.process.ProcessEulerScheme;
+import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretizationFromArray;
@@ -103,7 +103,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 
 		simulation = new MonteCarloAssetModel(
 				new BachelierModel(initialValue, riskFreeRate, volatility),
-				new ProcessEulerScheme(new BrownianMotionLazyInit(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
+				new EulerSchemeFromProcessModel(new BrownianMotionLazyInit(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
 	}
 
 	@Override
