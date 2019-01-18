@@ -19,18 +19,14 @@ import com.google.gson.Gson;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 
-
-
 public class DataRetrieverTest {
-
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	@Ignore
 	@Test
 	public void testDataImport(){
-		try {
-
-			String content = new Scanner(new File("timeseriesdatamap.json")).next();
+		try(Scanner scanner = new Scanner(new File("timeseriesdatamap.json"))) {
+			String content = scanner.next();
 			Gson gson = new Gson();
 			//Class aClass = new HashMap<String,Map<String,Map<String,Pair<String,Double>>>>().getClass();
 			Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
@@ -43,15 +39,10 @@ public class DataRetrieverTest {
 				return scenario;
 			}).sorted((S1, S2) -> S1.getDate().compareTo(S2.getDate())).collect(Collectors.toList());
 
-
-
 			Assert.assertNotNull(timeSeriesDatamap);
-
 		}
 		catch(Exception e){
 			System.out.println(e);
 		}
 	}
-
-
 }
