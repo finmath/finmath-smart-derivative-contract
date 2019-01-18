@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;
+import net.finmath.time.TimeDiscretizationFromArray;
 import net.finmath.time.TimeDiscretization;
-import net.finmath.time.TimeDiscretizationInterface;
 
 /**
  * A dummy oracle which generates values as initalValue * Math.exp(r T).
@@ -21,7 +21,7 @@ import net.finmath.time.TimeDiscretizationInterface;
  */
 public class ContinouslyCompoundedBankAccountOracle implements StochasticValuationOracle {
 
-	private final TimeDiscretizationInterface timeDiscretization;
+	private final TimeDiscretization timeDiscretization;
 
 	private final LocalDateTime initialTime;
 	private final double initialValue;
@@ -45,7 +45,7 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
 	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime) {
-		this(new TimeDiscretization(0.0, 20.0, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
+		this(new TimeDiscretizationFromArray(0.0, 20.0, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				1.0,
 				0.02);
@@ -62,13 +62,13 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * @param riskFreeRate The drift.
 	 */
 	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate) {
-		this(new TimeDiscretization(0.0, timeHorizon, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
+		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				initialValue,
 				riskFreeRate);
 	}
 
-	public ContinouslyCompoundedBankAccountOracle(TimeDiscretizationInterface timeDiscretization, LocalDateTime initialTime,
+	public ContinouslyCompoundedBankAccountOracle(TimeDiscretization timeDiscretization, LocalDateTime initialTime,
 			double initialValue, double riskFreeRate) {
 		super();
 		this.timeDiscretization = timeDiscretization;

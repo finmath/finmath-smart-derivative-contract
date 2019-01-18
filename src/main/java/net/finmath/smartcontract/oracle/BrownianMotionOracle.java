@@ -16,8 +16,8 @@ import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.process.ProcessEulerScheme;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
+import net.finmath.time.TimeDiscretizationFromArray;
 import net.finmath.time.TimeDiscretization;
-import net.finmath.time.TimeDiscretizationInterface;
 
 /**
  * A dummy oracle which generates values using a geometric Brownian motion.
@@ -26,7 +26,7 @@ import net.finmath.time.TimeDiscretizationInterface;
  */
 public class BrownianMotionOracle implements StochasticValuationOracle {
 
-	private final TimeDiscretizationInterface timeDiscretization;
+	private final TimeDiscretization timeDiscretization;
 
 	private final LocalDateTime initialTime;
 	private final double initialValue;
@@ -78,7 +78,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	 * @param numberOfPaths The number of simulation path to generate.
 	 */
 	public BrownianMotionOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate, double volatility, int numberOfPaths) {
-		this(new TimeDiscretization(0.0, timeHorizon, 1.0/365.0, TimeDiscretization.ShortPeriodLocation.SHORT_PERIOD_AT_END),
+		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				initialValue,
 				riskFreeRate,
@@ -86,7 +86,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 				numberOfPaths);
 	}
 
-	public BrownianMotionOracle(TimeDiscretizationInterface timeDiscretization, LocalDateTime initialTime,
+	public BrownianMotionOracle(TimeDiscretization timeDiscretization, LocalDateTime initialTime,
 			double initialValue, double riskFreeRate, double volatility, int numberOfPaths) {
 		super();
 		this.timeDiscretization = timeDiscretization;
