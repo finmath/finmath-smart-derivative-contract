@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import net.finmath.exception.CalculationException;
-import net.finmath.montecarlo.BrownianMotion;
+import net.finmath.montecarlo.BrownianMotionLazyInit;
 import net.finmath.montecarlo.assetderivativevaluation.BachelierModel;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.process.ProcessEulerScheme;
-import net.finmath.stochastic.RandomVariableInterface;
+import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationInterface;
@@ -103,11 +103,11 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 
 		simulation = new MonteCarloAssetModel(
 				new BachelierModel(initialValue, riskFreeRate, volatility),
-				new ProcessEulerScheme(new BrownianMotion(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
+				new ProcessEulerScheme(new BrownianMotionLazyInit(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
 	}
 
 	@Override
-	public RandomVariableInterface getValue(LocalDateTime evaluationTime) {
+	public RandomVariable getValue(LocalDateTime evaluationTime) {
 		synchronized (simulationLazyInitLock) {
 			if(simulation == null) {
 				init();
@@ -119,7 +119,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 		int timeIndexOfLastFixing = timeDiscretization.getTimeIndexNearestLessOrEqual(time);
 		double timeOfLastFixing = timeDiscretization.getTime(timeIndexOfLastFixing);
 
-		RandomVariableInterface value = null;
+		RandomVariable value = null;
 		try {
 			value = simulation.getAssetValue(timeOfLastFixing, 0);
 		}

@@ -8,7 +8,7 @@ package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
 
-import net.finmath.stochastic.RandomVariableInterface;
+import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;
@@ -78,7 +78,7 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	}
 
 	@Override
-	public RandomVariableInterface getValue(LocalDateTime evaluationTime) {
+	public RandomVariable getValue(LocalDateTime evaluationTime) {
 
 		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
 
