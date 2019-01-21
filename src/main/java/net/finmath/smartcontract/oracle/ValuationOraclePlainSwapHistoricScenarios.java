@@ -12,7 +12,7 @@ import javax.money.MonetaryAmount;
 
 import org.javamoney.moneta.Money;
 
-import net.finmath.marketdata.model.AnalyticModelInterface;
+import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationContextImpl;
@@ -60,7 +60,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 			Calibrator calibrator = new Calibrator();
 			try {
 				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
-				AnalyticModelInterface calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
+				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
 				double evaluationTime = 0.0;	// Time relative to models reference date (which agrees with evaluationDate).
 				double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;

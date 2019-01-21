@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;
-import net.finmath.time.TimeDiscretizationFromArray;
 import net.finmath.time.TimeDiscretization;
+import net.finmath.time.TimeDiscretizationFromArray;
 
 /**
  * A dummy oracle which generates values as initalValue * Math.exp(r T).

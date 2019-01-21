@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
-import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.Schedule;
+import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**

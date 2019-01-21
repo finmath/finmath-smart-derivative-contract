@@ -16,8 +16,8 @@ import net.finmath.montecarlo.assetderivativevaluation.models.BachelierModel;
 import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
-import net.finmath.time.TimeDiscretizationFromArray;
 import net.finmath.time.TimeDiscretization;
+import net.finmath.time.TimeDiscretizationFromArray;
 
 /**
  * A dummy oracle which generates values using a geometric Brownian motion.

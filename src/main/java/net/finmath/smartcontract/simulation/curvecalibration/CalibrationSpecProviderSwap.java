@@ -1,8 +1,8 @@
 package net.finmath.smartcontract.simulation.curvecalibration;
 
 import net.finmath.marketdata.calibration.CalibratedCurves;
-import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.Schedule;
+import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**

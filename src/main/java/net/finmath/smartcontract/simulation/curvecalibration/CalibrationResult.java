@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 
 import net.finmath.marketdata.calibration.CalibratedCurves;
-import net.finmath.marketdata.model.AnalyticModelInterface;
+import net.finmath.marketdata.model.AnalyticModel;
 
 /**
  * Contains the result of a calibration adding additional statistics to the calibrated model.
@@ -20,7 +20,7 @@ public class CalibrationResult {
 		this.freshness = LocalTime.now();
 	}
 
-	public AnalyticModelInterface getCalibratedModel() {
+	public AnalyticModel getCalibratedModel() {
 		return calibration.getModel();
 	}
 
