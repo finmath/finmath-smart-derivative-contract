@@ -2,6 +2,10 @@ package net.finmath.smartcontract.simulation.scenariogeneration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,10 +31,11 @@ public class IRScenarioGenerator {
 	 * @param fileName Name of the input file.
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws FileNotFoundException Thrown if the file is not found.
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(String fileName, DateTimeFormatter dateFormatter) throws FileNotFoundException {
-		String content = new Scanner(new File(fileName)).next();
+	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(String fileName, DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
+		String content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
 		Gson gson = new Gson();
 
 		Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
