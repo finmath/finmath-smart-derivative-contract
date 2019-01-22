@@ -91,9 +91,10 @@ public class VisualiserSDC {
 			double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i-1), scenarioDates.get(i)) : 0.0;
 			//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
-			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall);
 			marketValue += marginCall;
+			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall);
 			// The null will result in no update for the market value plot
+			Thread.sleep(500);
 			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i, null, 0);
 		}
 	}
