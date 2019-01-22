@@ -42,18 +42,13 @@ public class SmartDerivativeContractMargining {
 	 */
 	public Double getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
 
-		try {
-			double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
-			double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
+		double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
+		double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
 
-			double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
+		double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
 
-			double margin = valuationChange;
+		double margin = valuationChange;
 
-			return margin;
-		}
-		catch(NoSuchElementException e) {
-			return null;
-		}
+		return margin;
 	}
 }
