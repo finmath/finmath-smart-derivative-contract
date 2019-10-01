@@ -19,12 +19,12 @@ import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
  */
 public class DemoScheduleSimulator implements ActionListener{
 
-	private SmartDerivativeContractSchedule schedule;
-	private Timer timer = new Timer(1000, this);
-	private LocalDateTime initTime;
+	private final SmartDerivativeContractSchedule schedule;
+	private final Timer timer = new Timer(1000, this);
+	private final LocalDateTime initTime;
 	private int eventTimeIndex;
 
-	public DemoScheduleSimulator(SmartDerivativeContractSchedule schedule){
+	public DemoScheduleSimulator(final SmartDerivativeContractSchedule schedule){
 		this.schedule=schedule;
 		this.initTime=LocalDateTime.now();
 		timer.start();
@@ -33,11 +33,11 @@ public class DemoScheduleSimulator implements ActionListener{
 
 	public void actionPerformed(final ActionEvent event)
 	{
-		SmartDerivativeContractSchedule.EventTimes actualEventTime = this.schedule.getEventTimes().get(eventTimeIndex);
-		LocalDateTime eventTime =
+		final SmartDerivativeContractSchedule.EventTimes actualEventTime = this.schedule.getEventTimes().get(eventTimeIndex);
+		final LocalDateTime eventTime =
 				LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getWhen()), ZoneId.systemDefault());
-		int index = (int) initTime.until(eventTime,SECONDS);
-		int eventIndex = index % 3;
+		final int index = (int) initTime.until(eventTime,SECONDS);
+		final int eventIndex = index % 3;
 		if ( eventIndex==0) {
 			System.out.println(index + " - " + actualEventTime.getMarginCheckTime());
 		}

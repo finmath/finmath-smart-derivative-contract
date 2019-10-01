@@ -33,39 +33,39 @@ public class Calibrator {
 	 * @throws CloneNotSupportedException Thrown if model calibration fails.
 	 * @see net.finmath.marketdata.model.AnalyticModel
 	 */
-	public Optional<CalibrationResult> calibrateModel(Stream<CalibrationSpecProvider> providers, CalibrationContext ctx) throws CloneNotSupportedException {
-		AnalyticModelFromCurvesAndVols model = new AnalyticModelFromCurvesAndVols(getCalibrationCurves(ctx));
-		CalibratedCurves.CalibrationSpec[] specs = providers.map(c -> c.getCalibrationSpec(ctx)).toArray(CalibratedCurves.CalibrationSpec[]::new);
+	public Optional<CalibrationResult> calibrateModel(final Stream<CalibrationSpecProvider> providers, final CalibrationContext ctx) throws CloneNotSupportedException {
+		final AnalyticModelFromCurvesAndVols model = new AnalyticModelFromCurvesAndVols(getCalibrationCurves(ctx));
+		final CalibratedCurves.CalibrationSpec[] specs = providers.map(c -> c.getCalibrationSpec(ctx)).toArray(CalibratedCurves.CalibrationSpec[]::new);
 
 		try {
 			return Optional.of(new CalibrationResult(new CalibratedCurves(specs, model, ctx.getAccuracy()), specs));
-		} catch (SolverException e) {
+		} catch (final SolverException e) {
 			return Optional.empty();
 		}
 	}
 
-	private Curve[] getCalibrationCurves(CalibrationContext ctx)
+	private Curve[] getCalibrationCurves(final CalibrationContext ctx)
 	{
 		return new Curve[] { getOisDiscountCurve(ctx), getOisForwardCurve(ctx), get1MForwardCurve(ctx), get3MForwardCurve(ctx), get6MForwardCurve(ctx) };
 	}
 
-	private DiscountCurveInterpolation getOisDiscountCurve(CalibrationContext ctx) {
+	private DiscountCurveInterpolation getOisDiscountCurve(final CalibrationContext ctx) {
 		return DiscountCurveInterpolation.createDiscountCurveFromDiscountFactors(DISCOUNT_EUR_OIS, ctx.getReferenceDate(), new double[]{0.0}, new double[]{1.0}, new boolean[]{false}, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.LOG_OF_VALUE);
 	}
 
-	private ForwardCurve getOisForwardCurve(CalibrationContext ctx) {
+	private ForwardCurve getOisForwardCurve(final CalibrationContext ctx) {
 		return new ForwardCurveFromDiscountCurve("forward-EUR-OIS", DISCOUNT_EUR_OIS, ctx.getReferenceDate(), "3M");
 	}
 
-	private ForwardCurve get3MForwardCurve(CalibrationContext ctx) {
+	private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {
 		return new ForwardCurveInterpolation("forward-EUR-3M", ctx.getReferenceDate(), "3M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE, ForwardCurveInterpolation.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 
-	private ForwardCurve get6MForwardCurve(CalibrationContext ctx) {
+	private ForwardCurve get6MForwardCurve(final CalibrationContext ctx) {
 		return new ForwardCurveInterpolation("forward-EUR-6M", ctx.getReferenceDate(), "6M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE, ForwardCurveInterpolation.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 
-	private ForwardCurve get1MForwardCurve(CalibrationContext ctx) {
+	private ForwardCurve get1MForwardCurve(final CalibrationContext ctx) {
 		return new ForwardCurveInterpolation("forward-EUR-1M", ctx.getReferenceDate(), "1M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE, ForwardCurveInterpolation.InterpolationEntityForward.FORWARD, DISCOUNT_EUR_OIS);
 	}
 }

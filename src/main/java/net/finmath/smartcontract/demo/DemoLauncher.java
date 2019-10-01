@@ -33,37 +33,37 @@ public class DemoLauncher {
 
 		//
 
-		LocalDate startDate = LocalDate.of(2007, 1, 1);
-		LocalDate maturity = LocalDate.of(2012, 1, 3);
-		String fileName = "timeseriesdatamap.json";
-		DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+		final LocalDate startDate = LocalDate.of(2007, 1, 1);
+		final LocalDate maturity = LocalDate.of(2012, 1, 3);
+		final String fileName = "timeseriesdatamap.json";
+		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
-		double notional = 1.0E7;
-		String MaturityKey = "5Y";
-		String forwardCurveKey = "forward-EUR-6M";
-		String discountCurveKey = "discount-EUR-OIS";
-		LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
+		final double notional = 1.0E7;
+		final String MaturityKey = "5Y";
+		final String forwardCurveKey = "forward-EUR-6M";
+		final String discountCurveKey = "discount-EUR-OIS";
+		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 
-		double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(MaturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
-		Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,MaturityKey,fixRate,true,forwardCurveKey,discountCurveKey);
+		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(MaturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,MaturityKey,fixRate,true,forwardCurveKey,discountCurveKey);
 
-		ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
+		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
 
-		List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).collect(Collectors.toList());
+		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).collect(Collectors.toList());
 
-		ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance = new ChartDataGeneratorSDCAccountBalance(30000,oracle,scenarioDates);
+		final ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance = new ChartDataGeneratorSDCAccountBalance(30000,oracle,scenarioDates);
 		//ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance2 = new ChartDataGeneratorSDCAccountBalance(30000,oracle,scenarioDates);
-		ChartDataGeneratorMarketValue marketValues = new ChartDataGeneratorMarketValue(oracle,scenarioDates);
-		StackedBarchartGenerator barchartGenerator = new StackedBarchartGenerator(chartDataGeneratorSDCAccountBalance);
+		final ChartDataGeneratorMarketValue marketValues = new ChartDataGeneratorMarketValue(oracle,scenarioDates);
+		final StackedBarchartGenerator barchartGenerator = new StackedBarchartGenerator(chartDataGeneratorSDCAccountBalance);
 		//StackedBarchartGenerator barchartGenerator2 = new StackedBarchartGenerator(chartDataGeneratorSDCAccountBalance2);
-		TimeSeriesChartGenerator timeSeriesChartGenerator = new TimeSeriesChartGenerator(marketValues);
-		List<PlotGenerator> generatorList = new ArrayList<>();
+		final TimeSeriesChartGenerator timeSeriesChartGenerator = new TimeSeriesChartGenerator(marketValues);
+		final List<PlotGenerator> generatorList = new ArrayList<>();
 		generatorList.add(timeSeriesChartGenerator);
 		generatorList.add(barchartGenerator);
 		//generatorList.add(barchartGenerator2);
 
-		Visualiser visualiser = new Visualiser("Smart Contract Simulation", generatorList);
+		final Visualiser visualiser = new Visualiser("Smart Contract Simulation", generatorList);
 		visualiser.pack();
 		RefineryUtilities.centerFrameOnScreen(visualiser);
 		visualiser.setVisible(true);

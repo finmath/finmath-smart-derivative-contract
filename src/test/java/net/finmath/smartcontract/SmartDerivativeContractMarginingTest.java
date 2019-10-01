@@ -24,20 +24,20 @@ public class SmartDerivativeContractMarginingTest {
 
 	@Test
 	public void test() {
-		LocalDateTime initialTime = LocalDateTime.of(2018, 8, 12, 12, 00);
-		LocalDateTime finalTime = LocalDateTime.of(2028, 8, 12, 12, 00);
-		int path = 0;
+		final LocalDateTime initialTime = LocalDateTime.of(2018, 8, 12, 12, 00);
+		final LocalDateTime finalTime = LocalDateTime.of(2028, 8, 12, 12, 00);
+		final int path = 0;
 
-		StochasticValuationOracle stoachasticOracleForValuation = new GeometricBrownianMotionOracle(initialTime);
+		final StochasticValuationOracle stoachasticOracleForValuation = new GeometricBrownianMotionOracle(initialTime);
 		//		StochasticValuationOracle stoachasticOracleForValuation = new BrownianMotionOracle(initialTime);
-		ValuationOracle valuationOracle = new ValuationOracleSamplePath(stoachasticOracleForValuation, path);
+		final ValuationOracle valuationOracle = new ValuationOracleSamplePath(stoachasticOracleForValuation, path);
 
-		SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle);
+		final SmartDerivativeContractMargining smartDerivativeContractMargening = new SmartDerivativeContractMargining(valuationOracle);
 
 		LocalDateTime previousTime = initialTime;
 		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
-			double value = smartDerivativeContractMargening.getMargin(previousTime, time);
+			final double value = smartDerivativeContractMargening.getMargin(previousTime, time);
 			System.out.println(time.toLocalDate() + "\t" + value);
 			previousTime = time;
 		}

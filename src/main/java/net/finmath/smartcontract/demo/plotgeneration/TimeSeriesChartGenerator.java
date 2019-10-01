@@ -20,15 +20,15 @@ import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGenerator;
 public class TimeSeriesChartGenerator implements PlotGenerator {
 	private final ChartDataGenerator chartDataGenerator;
 
-	public TimeSeriesChartGenerator(ChartDataGenerator chartDataGenerator){
+	public TimeSeriesChartGenerator(final ChartDataGenerator chartDataGenerator){
 		this.chartDataGenerator=chartDataGenerator;
 	}
 
 	@Override
-	public CategoryPlot createPlot(ActionEvent e) {
-		ChartData chartData = this.chartDataGenerator.generatedChartData(e);
+	public CategoryPlot createPlot(final ActionEvent e) {
+		final ChartData chartData = this.chartDataGenerator.generatedChartData(e);
 
-		CategoryDataset dataset = (CategoryDataset) chartData.getDataset();
+		final CategoryDataset dataset = (CategoryDataset) chartData.getDataset();
 		final LineAndShapeRenderer renderer1 = new LineAndShapeRenderer();
 		renderer1.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
 

@@ -26,22 +26,22 @@ public class DataRetrieverTest {
 	@Test
 	public void testDataImport(){
 		try(Scanner scanner = new Scanner(new File("timeseriesdatamap.json"))) {
-			String content = scanner.next();
-			Gson gson = new Gson();
+			final String content = scanner.next();
+			final Gson gson = new Gson();
 			//Class aClass = new HashMap<String,Map<String,Map<String,Pair<String,Double>>>>().getClass();
-			Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
+			final Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
 
-			List<IRMarketDataScenario> scenarioSet = timeSeriesDatamap.entrySet().stream().map(scenarioData->{
-				Map<String,IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->new IRCurveData(entry.getKey(),entry.getValue())));
-				String dateTime = scenarioData.getKey();
-				LocalDateTime time = LocalDate.parse(dateTime,formatter).atTime(17,0);
-				IRMarketDataScenario scenario = new IRMarketDataScenario(map, time);
+			final List<IRMarketDataScenario> scenarioSet = timeSeriesDatamap.entrySet().stream().map(scenarioData->{
+				final Map<String,IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->new IRCurveData(entry.getKey(),entry.getValue())));
+				final String dateTime = scenarioData.getKey();
+				final LocalDateTime time = LocalDate.parse(dateTime,formatter).atTime(17,0);
+				final IRMarketDataScenario scenario = new IRMarketDataScenario(map, time);
 				return scenario;
 			}).sorted((S1, S2) -> S1.getDate().compareTo(S2.getDate())).collect(Collectors.toList());
 
 			Assert.assertNotNull(timeSeriesDatamap);
 		}
-		catch(Exception e){
+		catch(final Exception e){
 			System.out.println(e);
 		}
 	}

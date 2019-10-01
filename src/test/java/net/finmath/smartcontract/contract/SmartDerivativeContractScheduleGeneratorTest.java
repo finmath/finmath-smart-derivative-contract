@@ -23,18 +23,18 @@ public class SmartDerivativeContractScheduleGeneratorTest {
 
 	@Test
 	public void test() {
-		LocalDate startDate = LocalDate.of(2018, 9, 15);
-		LocalDate maturity = LocalDate.of(2028, 9, 15);
-		LocalTime settlementTime = LocalTime.of(17, 30);
-		Duration accountAccessAllowedDuration = Duration.ofSeconds(10*60);
+		final LocalDate startDate = LocalDate.of(2018, 9, 15);
+		final LocalDate maturity = LocalDate.of(2028, 9, 15);
+		final LocalTime settlementTime = LocalTime.of(17, 30);
+		final Duration accountAccessAllowedDuration = Duration.ofSeconds(10*60);
 
-		SmartDerivativeContractSchedule schedule = SmartDerivativeContractScheduleGenerator.getScheduleForBusinessDays("target2", startDate, maturity, settlementTime, accountAccessAllowedDuration);
+		final SmartDerivativeContractSchedule schedule = SmartDerivativeContractScheduleGenerator.getScheduleForBusinessDays("target2", startDate, maturity, settlementTime, accountAccessAllowedDuration);
 
-		for(SmartDerivativeContractSchedule.EventTimes event : schedule.getEventTimes()) {
-			LocalDateTime settementTime = event.getSettementTime();
-			LocalDateTime accountAccessAllowedStart = event.getAccountAccessAllowedStart();
-			LocalDateTime accountAccessAllowedEnd = event.getAccountAccessAllowedStart().plusSeconds(event.getAccountAccessAllowedPeriod().getSeconds());
-			LocalDateTime marginCheckTime = event.getMarginCheckTime();
+		for(final SmartDerivativeContractSchedule.EventTimes event : schedule.getEventTimes()) {
+			final LocalDateTime settementTime = event.getSettementTime();
+			final LocalDateTime accountAccessAllowedStart = event.getAccountAccessAllowedStart();
+			final LocalDateTime accountAccessAllowedEnd = event.getAccountAccessAllowedStart().plusSeconds(event.getAccountAccessAllowedPeriod().getSeconds());
+			final LocalDateTime marginCheckTime = event.getMarginCheckTime();
 
 			System.out.println("Settlement............:" + settementTime);
 			System.out.println("Account access start..:" + accountAccessAllowedStart);

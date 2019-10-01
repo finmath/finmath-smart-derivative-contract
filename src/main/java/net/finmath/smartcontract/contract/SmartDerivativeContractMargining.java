@@ -7,7 +7,6 @@
 package net.finmath.smartcontract.contract;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
 import net.finmath.smartcontract.oracle.ValuationOracle;
 
@@ -28,7 +27,7 @@ public class SmartDerivativeContractMargining {
 
 	private final ValuationOracle derivativeValuationOracle;
 
-	public SmartDerivativeContractMargining(ValuationOracle derivativeValuationOracle) {
+	public SmartDerivativeContractMargining(final ValuationOracle derivativeValuationOracle) {
 		super();
 		this.derivativeValuationOracle = derivativeValuationOracle;
 	}
@@ -40,14 +39,14 @@ public class SmartDerivativeContractMargining {
 	 * @param marginPeriodEnd Period end time of the margin period.
 	 * @return The margin.
 	 */
-	public Double getMargin(LocalDateTime marginPeriodStart, LocalDateTime marginPeriodEnd) {
+	public Double getMargin(final LocalDateTime marginPeriodStart, final LocalDateTime marginPeriodEnd) {
 
-		double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
-		double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
+		final double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
+		final double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
 
-		double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
+		final double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
 
-		double margin = valuationChange;
+		final double margin = valuationChange;
 
 		return margin;
 	}

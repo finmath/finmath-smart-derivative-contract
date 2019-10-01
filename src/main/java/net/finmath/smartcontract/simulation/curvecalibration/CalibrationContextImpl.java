@@ -10,10 +10,10 @@ import java.time.LocalDate;
  * @author Christian Fries
  */
 public class CalibrationContextImpl implements CalibrationContext {
-	private LocalDate referenceDate;
-	private double accuracy;
+	private final LocalDate referenceDate;
+	private final double accuracy;
 
-	public CalibrationContextImpl(LocalDate referenceDate, double accuracy) {
+	public CalibrationContextImpl(final LocalDate referenceDate, final double accuracy) {
 		this.referenceDate = referenceDate;
 		this.accuracy = accuracy;
 	}

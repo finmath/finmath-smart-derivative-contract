@@ -16,7 +16,7 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoin
 public class IRCurveData {
 
 	public Set<CalibrationDatapoint> curveDataPointSet;
-	private String curveKey;
+	private final String curveKey;
 
 	/**
 	 * CurveFromInterpolationPoints Key and Map will be provided. Map maps Each productType (e.g. FRA/SWAP) to Map of MaturityKeys and Rates)
@@ -24,7 +24,7 @@ public class IRCurveData {
 	 * @param curveKey Key identifying the curve.
 	 * @param typeCurveMap Map from product type to a map of maturities to calibration data.
 	 */
-	public IRCurveData(String curveKey, Map<String,Map<String,Double>> typeCurveMap){
+	public IRCurveData(final String curveKey, final Map<String,Map<String,Double>> typeCurveMap){
 		this.curveKey = curveKey;
 		curveDataPointSet = typeCurveMap.entrySet().stream().flatMap(entry->entry.getValue().entrySet().stream().map(
 				curvePointEntry->new CalibrationDatapoint(curveKey,entry.getKey(),curvePointEntry.getKey(),curvePointEntry.getValue()))).collect(Collectors.toSet());
@@ -37,7 +37,7 @@ public class IRCurveData {
 	 * @param productType String identifying the product type.
 	 * @return Stream of calibration data points.
 	 */
-	public Stream<CalibrationDatapoint> getDataPointStreamForProductType(String productType){
+	public Stream<CalibrationDatapoint> getDataPointStreamForProductType(final String productType){
 		return curveDataPointSet.stream().filter(dataPoint->dataPoint.getProductName().equals(productType));
 	}
 

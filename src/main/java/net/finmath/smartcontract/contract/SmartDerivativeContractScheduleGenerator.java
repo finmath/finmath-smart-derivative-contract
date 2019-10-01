@@ -36,8 +36,8 @@ public class SmartDerivativeContractScheduleGenerator {
 		private final Duration accountAccessAllowedPeriod;
 		private final LocalDateTime marginCheckTime;
 
-		public EventTimesImpl(LocalDateTime settementTime, LocalDateTime accountAccessAllowedStart,
-				Duration accountAccessAllowedPeriod, LocalDateTime marginCheckTime) {
+		public EventTimesImpl(final LocalDateTime settementTime, final LocalDateTime accountAccessAllowedStart,
+				final Duration accountAccessAllowedPeriod, final LocalDateTime marginCheckTime) {
 			super();
 			this.settementTime = settementTime;
 			this.accountAccessAllowedStart = accountAccessAllowedStart;
@@ -82,7 +82,7 @@ public class SmartDerivativeContractScheduleGenerator {
 	public static class SimpleSchedule implements SmartDerivativeContractSchedule {
 		private final List<SmartDerivativeContractSchedule.EventTimes> eventTimes;
 
-		public SimpleSchedule(List<EventTimes> eventTimes) {
+		public SimpleSchedule(final List<EventTimes> eventTimes) {
 			super();
 			this.eventTimes = eventTimes;
 		}
@@ -106,25 +106,25 @@ public class SmartDerivativeContractScheduleGenerator {
 	 * @param accountAccessAllowedDuration
 	 * @return A new schedule corresponding to the given meta data.
 	 */
-	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(String calendar, LocalDate startDate, LocalDate maturity,
-			LocalTime settlementTime,
-			Duration accountAccessAllowedDuration) {
+	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(final String calendar, final LocalDate startDate, final LocalDate maturity,
+			final LocalTime settlementTime,
+			final Duration accountAccessAllowedDuration) {
 
 		return getScheduleForBusinessDays(calendar, startDate, maturity, settlementTime, settlementTime.plusMinutes(1), accountAccessAllowedDuration, settlementTime.plusMinutes(1).plusSeconds(accountAccessAllowedDuration.getSeconds()).plusMinutes(1));
 	}
 
-	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(String calendar, LocalDate startDate, LocalDate maturity,
-			LocalTime settlementTime,
-			LocalTime accountAccessAllowedStartTime,
-			Duration accountAccessAllowedDuration,
-			LocalTime marginCheckTime) {
+	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(final String calendar, final LocalDate startDate, final LocalDate maturity,
+			final LocalTime settlementTime,
+			final LocalTime accountAccessAllowedStartTime,
+			final Duration accountAccessAllowedDuration,
+			final LocalTime marginCheckTime) {
 
-		AbstractBusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
+		final AbstractBusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 
-		List<EventTimes> eventTimesList = new ArrayList<EventTimes>();
+		final List<EventTimes> eventTimesList = new ArrayList<EventTimes>();
 		LocalDate settlementDate = startDate;
 		while(!settlementDate.isAfter(maturity)) {
-			SmartDerivativeContractSchedule.EventTimes event = new EventTimesImpl(
+			final SmartDerivativeContractSchedule.EventTimes event = new EventTimesImpl(
 					settlementDate.atTime(settlementTime),
 					settlementDate.atTime(accountAccessAllowedStartTime),
 					accountAccessAllowedDuration,

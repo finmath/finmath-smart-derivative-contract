@@ -1,7 +1,5 @@
 package net.finmath.smartcontract.simulation.scenariogeneration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -12,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -31,21 +28,21 @@ public class IRScenarioGenerator {
 	 * @param fileName Name of the input file.
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
 	 */
-	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(String fileName, DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
-		String content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
-		Gson gson = new Gson();
+	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
+		final String content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
+		final Gson gson = new Gson();
 
-		Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
+		final Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content,new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
 
-		List<IRMarketDataScenario> scenarioList = timeSeriesDatamap.entrySet().stream().map(scenarioData->{
-			Map<String,IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->new IRCurveData(entry.getKey(),entry.getValue())));
-			String dateString = scenarioData.getKey();
-			LocalDate date = LocalDate.parse(dateString,dateFormatter);
-			LocalDateTime dateTime = date.atTime(17,0);
-			IRMarketDataScenario scenario = new IRMarketDataScenario(map, dateTime);
+		final List<IRMarketDataScenario> scenarioList = timeSeriesDatamap.entrySet().stream().map(scenarioData->{
+			final Map<String,IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->new IRCurveData(entry.getKey(),entry.getValue())));
+			final String dateString = scenarioData.getKey();
+			final LocalDate date = LocalDate.parse(dateString,dateFormatter);
+			final LocalDateTime dateTime = date.atTime(17,0);
+			final IRMarketDataScenario scenario = new IRMarketDataScenario(map, dateTime);
 			return scenario;
 		}).sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate())).collect(Collectors.toList());
 

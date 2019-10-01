@@ -29,10 +29,10 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 	private final Color colorXSettlement = new Color(65, 127, 255);
 	private final Color colorXPrecheck = new Color(255, 93, 86);
 
-	private ValuationOraclePlainSwapHistoricScenarios oracle;
-	private List<LocalDateTime> scenarioDates;
+	private final ValuationOraclePlainSwapHistoricScenarios oracle;
+	private final List<LocalDateTime> scenarioDates;
 	private SmartDerivativeContractSchedule schedule;
-	private double initialBalance;
+	private final double initialBalance;
 	private processStates nextProcessState;
 	private LocalDateTime initTime;
 
@@ -43,7 +43,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 		refill
 	}
 
-	public ChartDataGeneratorSDCAccountBalance(double initialBalance, ValuationOraclePlainSwapHistoricScenarios oracle, List<LocalDateTime> scenarioDates) {
+	public ChartDataGeneratorSDCAccountBalance(final double initialBalance, final ValuationOraclePlainSwapHistoricScenarios oracle, final List<LocalDateTime> scenarioDates) {
 		this.initialBalance=initialBalance;
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;
@@ -55,7 +55,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
 
 		double[][] data = new double[2][2];
-		List<Color> accountColors = new ArrayList<>() ;
+		final List<Color> accountColors = new ArrayList<>() ;
 		String title = "Default";
 
 
@@ -76,17 +76,17 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			nextProcessState = processStates.marginCheck;
 			return chartData;
 		}
-		LocalDateTime eventTime =
+		final LocalDateTime eventTime =
 				LocalDateTime.ofInstant(Instant.ofEpochMilli(event.getWhen()), ZoneId.systemDefault());
 
 		if (nextProcessState == processStates.marginCheck) /* Determine Booking Amount */ {
 			//int index = (int) initTime.until(eventTime,SECONDS);
 			System.out.println("Current Time Index  = " + eventTime.toString() + ": Margin Check");
-			LocalDateTime scenarioLast = this.scenarioDates.get(0);
-			LocalDateTime scenarioActual = this.scenarioDates.get(1);
-			double valueLast = oracle.getValue(scenarioLast, scenarioLast);
-			double valueActual = oracle.getValue(scenarioActual, scenarioActual);
-			double value = valueActual - valueLast;
+			final LocalDateTime scenarioLast = this.scenarioDates.get(0);
+			final LocalDateTime scenarioActual = this.scenarioDates.get(1);
+			final double valueLast = oracle.getValue(scenarioLast, scenarioLast);
+			final double valueActual = oracle.getValue(scenarioActual, scenarioActual);
+			final double value = valueActual - valueLast;
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data.length; j++) {
 					//data[i][j] = data[i][j] * rand;
@@ -108,11 +108,11 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			nextProcessState = processStates.settlement;
 		} else if (nextProcessState == processStates.settlement) { /*BOOKING*/
 			System.out.println("Current Time = " + eventTime.toString() + ": Settlement");
-			LocalDateTime scenarioLast = this.scenarioDates.get(0);
-			LocalDateTime scenarioActual = this.scenarioDates.get(1);
-			double valueLast = oracle.getValue(scenarioLast, scenarioLast);
-			double valueActual = oracle.getValue(scenarioActual, scenarioActual);
-			double value = valueActual - valueLast;
+			final LocalDateTime scenarioLast = this.scenarioDates.get(0);
+			final LocalDateTime scenarioActual = this.scenarioDates.get(1);
+			final double valueLast = oracle.getValue(scenarioLast, scenarioLast);
+			final double valueActual = oracle.getValue(scenarioActual, scenarioActual);
+			final double value = valueActual - valueLast;
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data.length; j++) {
 					if (value < 0) {

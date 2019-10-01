@@ -13,10 +13,10 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
  * @author Christian Fries
  */
 public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
-	private String tenorLabel;
-	private String frequencyLabel;
-	private String maturityLabel;
-	private double swapRate;
+	private final String tenorLabel;
+	private final String frequencyLabel;
+	private final String maturityLabel;
+	private final double swapRate;
 
 	/**
 	 * @param tenorLabel The tenor label of the IBOR.
@@ -24,7 +24,7 @@ public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
 	 * @param maturityLabel The maturity label (like 1Y, 2Y).
 	 * @param swapRate The par swap rate (use 0.05 for 5%).
 	 */
-	public CalibrationSpecProviderSwap(String tenorLabel, String frequencyLabel, String maturityLabel, double swapRate) {
+	public CalibrationSpecProviderSwap(final String tenorLabel, final String frequencyLabel, final String maturityLabel, final double swapRate) {
 		this.tenorLabel = tenorLabel;
 		this.frequencyLabel = frequencyLabel;
 		this.maturityLabel = maturityLabel;
@@ -32,12 +32,12 @@ public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
 	}
 
 	@Override
-	public CalibratedCurves.CalibrationSpec getCalibrationSpec(CalibrationContext ctx) {
-		Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, frequencyLabel, "act/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
-		Schedule scheduleInterfacePay = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "annual", "E30/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
-		double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
+	public CalibratedCurves.CalibrationSpec getCalibrationSpec(final CalibrationContext ctx) {
+		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, frequencyLabel, "act/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		final Schedule scheduleInterfacePay = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "annual", "E30/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		final double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
 
-		String curveName = String.format("forward-EUR-%1$s", tenorLabel);
+		final String curveName = String.format("forward-EUR-%1$s", tenorLabel);
 
 		return new CalibratedCurves.CalibrationSpec("EUR-" + tenorLabel + maturityLabel, "Swap", scheduleInterfaceRec, curveName, 0.0, "discount-EUR-OIS", scheduleInterfacePay, "", swapRate, "discount-EUR-OIS", curveName, calibrationTime);
 	}

@@ -33,18 +33,18 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	 * @param stochasticValuationOracle A given stochastic oracle.
 	 * @param path The sample path to extract from the stochastic oracle.
 	 */
-	public ValuationOracleSamplePath(StochasticValuationOracle stochasticValuationOracle, int path) {
+	public ValuationOracleSamplePath(final StochasticValuationOracle stochasticValuationOracle, final int path) {
 		this.stochasticValuationOracle = stochasticValuationOracle;
 		this.path = path;
 	}
 
 	@Override
-	public Double getValue(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+	public Double getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
 		return stochasticValuationOracle.getValue(evaluationTime).get(path);
 	}
 
 	@Override
-	public MonetaryAmount getAmount(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+	public MonetaryAmount getAmount(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
 		return Money.of(getValue(evaluationTime, marketDataTime), currency);
 	}
 }

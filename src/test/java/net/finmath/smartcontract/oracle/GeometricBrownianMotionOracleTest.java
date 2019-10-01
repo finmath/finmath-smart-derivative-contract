@@ -17,17 +17,17 @@ public class GeometricBrownianMotionOracleTest {
 
 	@Test
 	public void test() {
-		LocalDateTime initialTime = LocalDateTime.of(2018, 8, 12, 12, 00);
-		LocalDateTime finalTime = LocalDateTime.of(2028, 8, 12, 12, 00);
-		int path = 0;
+		final LocalDateTime initialTime = LocalDateTime.of(2018, 8, 12, 12, 00);
+		final LocalDateTime finalTime = LocalDateTime.of(2028, 8, 12, 12, 00);
+		final int path = 0;
 
-		StochasticValuationOracle stoachasticOracle = new GeometricBrownianMotionOracle(initialTime);
+		final StochasticValuationOracle stoachasticOracle = new GeometricBrownianMotionOracle(initialTime);
 
-		ValuationOracle oracle = new ValuationOracleSamplePath(stoachasticOracle, path);
+		final ValuationOracle oracle = new ValuationOracleSamplePath(stoachasticOracle, path);
 
 		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
-			double value = oracle.getValue(time, time);
+			final double value = oracle.getValue(time, time);
 			System.out.println(time.toLocalDate() + "\t" + value);
 
 		}

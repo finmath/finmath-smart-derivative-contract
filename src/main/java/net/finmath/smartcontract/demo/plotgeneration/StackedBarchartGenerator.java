@@ -26,16 +26,16 @@ public class StackedBarchartGenerator implements PlotGenerator {
 	private final Color backGroundPaintColor = new Color(249, 231, 236);
 
 
-	public StackedBarchartGenerator(ChartDataGenerator chartDataGenerator) {
+	public StackedBarchartGenerator(final ChartDataGenerator chartDataGenerator) {
 		this.chartDataGenerator = chartDataGenerator;
 	}
 
 	@Override
 	public CategoryPlot createPlot(final ActionEvent e) {
 
-		ChartData chartData = this.chartDataGenerator.generatedChartData(e);
+		final ChartData chartData = this.chartDataGenerator.generatedChartData(e);
 
-		CategoryDataset categoryDataset = (CategoryDataset) chartData.getDataset();
+		final CategoryDataset categoryDataset = (CategoryDataset) chartData.getDataset();
 
 		final JFreeChart chart = ChartFactory.createStackedBarChart(
 				chartData.getPropertyChartTitle(), "", "Account Balance",
@@ -43,11 +43,11 @@ public class StackedBarchartGenerator implements PlotGenerator {
 
 		chart.setBackgroundPaint(backGroundPaintColor);
 
-		CategoryPlot plot = chart.getCategoryPlot();
-		List<Color> colorList = chartData.getPropertyColorListStackedBar();
+		final CategoryPlot plot = chart.getCategoryPlot();
+		final List<Color> colorList = chartData.getPropertyColorListStackedBar();
 		plot.getRenderer().setSeriesPaint(0, colorList.get(0));
 		plot.getRenderer().setSeriesPaint(1, colorList.get(1));
-		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setRange(0, 100000);
 
 		return plot;

@@ -32,9 +32,9 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 	private final int verticalLenght=500;
 
 
-	private Timer timer = new Timer(200, this);
+	private final Timer timer = new Timer(200, this);
 
-	public Visualiser(final String title, List<PlotGenerator> chartGeneratorList) {
+	public Visualiser(final String title, final List<PlotGenerator> chartGeneratorList) {
 		super(title);
 		this.chartGeneratorList=chartGeneratorList;
 		this.generatePlot(null); /*Default Initialisation of Chart*/
@@ -73,7 +73,7 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 
 		chartGeneratorList.stream().map(generator->generator.createPlot(event)).forEach(subplot->
 		{
-			ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
+			final ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
 					this.getTitle(),
 					new Font("Arial", Font.BOLD, 12),
 					subplot,

@@ -10,11 +10,11 @@ import net.finmath.marketdata.model.AnalyticModel;
  * Contains the result of a calibration adding additional statistics to the calibrated model.
  */
 public class CalibrationResult {
-	private LocalTime freshness;
-	private CalibratedCurves calibration;
-	private CalibratedCurves.CalibrationSpec[] calibrationSpecs;
+	private final LocalTime freshness;
+	private final CalibratedCurves calibration;
+	private final CalibratedCurves.CalibrationSpec[] calibrationSpecs;
 
-	public CalibrationResult(CalibratedCurves c, CalibratedCurves.CalibrationSpec... specs) {
+	public CalibrationResult(final CalibratedCurves c, final CalibratedCurves.CalibrationSpec... specs) {
 		this.calibration = c;
 		this.calibrationSpecs = specs;
 		this.freshness = LocalTime.now();

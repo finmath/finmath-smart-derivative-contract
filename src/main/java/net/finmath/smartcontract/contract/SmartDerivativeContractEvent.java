@@ -24,11 +24,11 @@ public class SmartDerivativeContractEvent {
 		MATURED,
 	}
 
-	private EventsTypes eventType;
-	private LocalDateTime eventTime;
-	private Object eventData;
+	private final EventsTypes eventType;
+	private final LocalDateTime eventTime;
+	private final Object eventData;
 
-	public SmartDerivativeContractEvent(EventsTypes eventType, LocalDateTime eventTime, Object eventData) {
+	public SmartDerivativeContractEvent(final EventsTypes eventType, final LocalDateTime eventTime, final Object eventData) {
 		super();
 		this.eventType = eventType;
 		this.eventTime = eventTime;

@@ -21,12 +21,12 @@ public class IRMarketDataScenario {
 
 	final String productKey = "Swap-Rate";
 
-	public IRMarketDataScenario(Map<String,IRCurveData> curveDataMap, LocalDateTime scenarioDate){
+	public IRMarketDataScenario(final Map<String,IRCurveData> curveDataMap, final LocalDateTime scenarioDate){
 		this.scenarioDate = scenarioDate;
 		this.curveDataMap = curveDataMap;
 	}
 
-	public IRCurveData getCurveData(String curveKey){
+	public IRCurveData getCurveData(final String curveKey){
 		return curveDataMap.get(curveKey);
 	}
 
@@ -39,10 +39,10 @@ public class IRMarketDataScenario {
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.
 	 */
-	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(CalibrationParser parser){
+	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(final CalibrationParser parser){
 
-		Stream<CalibrationDatapoint> calibrationDatapointStream = this.curveDataMap.entrySet().stream().flatMap(curveDataEntry -> {
-			Stream<CalibrationDatapoint> calibrationDatapointSet = curveDataEntry.getValue().getDataPointStreamForProductType(productKey);//.stream();//.entrySet().stream().map(entry->new CalibrationDatapoint(curveKey,entry.getKey(),entry.getValue()));//.collect(Collectors.toSet());
+		final Stream<CalibrationDatapoint> calibrationDatapointStream = this.curveDataMap.entrySet().stream().flatMap(curveDataEntry -> {
+			final Stream<CalibrationDatapoint> calibrationDatapointSet = curveDataEntry.getValue().getDataPointStreamForProductType(productKey);//.stream();//.entrySet().stream().map(entry->new CalibrationDatapoint(curveKey,entry.getKey(),entry.getValue()));//.collect(Collectors.toSet());
 			return calibrationDatapointSet;
 		});
 		return parser.parse(calibrationDatapointStream);

@@ -32,10 +32,10 @@ import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScena
 public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracle {
 
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
-	private List<IRMarketDataScenario> scenarioList;
-	private Swap product;
-	private LocalDate productStartDate;
-	private double notionalAmount;
+	private final List<IRMarketDataScenario> scenarioList;
+	private final Swap product;
+	private final LocalDate productStartDate;
+	private final double notionalAmount;
 
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
@@ -44,7 +44,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwapHistoricScenarios(Swap product, double notionalAmount, List<IRMarketDataScenario> scenarioList){
+	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataScenario> scenarioList){
 		this.notionalAmount = notionalAmount;
 		this.product = product;
 		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
@@ -52,22 +52,22 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	@Override
-	public Double getValue(LocalDateTime evaluationDate, LocalDateTime marketDataTime) {
-		Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(marketDataTime)).findAny();
+	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
+		final Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
-			IRMarketDataScenario scenario = optionalScenario.get();
-			CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
-			Calibrator calibrator = new Calibrator();
+			final IRMarketDataScenario scenario = optionalScenario.get();
+			final CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
+			final Calibrator calibrator = new Calibrator();
 			try {
-				Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
+				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
 				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
-				double evaluationTime = 0.0;	// Time relative to models reference date (which agrees with evaluationDate).
-				double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
+				final double evaluationTime = 0.0;	// Time relative to models reference date (which agrees with evaluationDate).
+				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
 				calibratedModel = null;
 				return valueWithCurves;
 			}
-			catch(Exception e){
+			catch(final Exception e){
 				return null;
 			}
 		}
@@ -77,7 +77,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	@Override
-	public MonetaryAmount getAmount(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+	public MonetaryAmount getAmount(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
 		return Money.of(getValue(evaluationTime, marketDataTime), currency);
 	}
 }

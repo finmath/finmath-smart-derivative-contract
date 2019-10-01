@@ -56,7 +56,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
-	public BrownianMotionOracle(LocalDateTime initialTime) {
+	public BrownianMotionOracle(final LocalDateTime initialTime) {
 		this(initialTime,
 				0.0 /* initialValue */,
 				20.0 /* timeHorizon */,
@@ -77,7 +77,7 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	 * @param volatility The volatility.
 	 * @param numberOfPaths The number of simulation path to generate.
 	 */
-	public BrownianMotionOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate, double volatility, int numberOfPaths) {
+	public BrownianMotionOracle(final LocalDateTime initialTime, final double initialValue, final double timeHorizon, final double riskFreeRate, final double volatility, final int numberOfPaths) {
 		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				initialValue,
@@ -86,8 +86,8 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 				numberOfPaths);
 	}
 
-	public BrownianMotionOracle(TimeDiscretization timeDiscretization, LocalDateTime initialTime,
-			double initialValue, double riskFreeRate, double volatility, int numberOfPaths) {
+	public BrownianMotionOracle(final TimeDiscretization timeDiscretization, final LocalDateTime initialTime,
+			final double initialValue, final double riskFreeRate, final double volatility, final int numberOfPaths) {
 		super();
 		this.timeDiscretization = timeDiscretization;
 		this.initialTime = initialTime;
@@ -107,23 +107,23 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	}
 
 	@Override
-	public RandomVariable getValue(LocalDateTime evaluationTime) {
+	public RandomVariable getValue(final LocalDateTime evaluationTime) {
 		synchronized (simulationLazyInitLock) {
 			if(simulation == null) {
 				init();
 			}
 		}
 
-		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
+		final double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
 
-		int timeIndexOfLastFixing = timeDiscretization.getTimeIndexNearestLessOrEqual(time);
-		double timeOfLastFixing = timeDiscretization.getTime(timeIndexOfLastFixing);
+		final int timeIndexOfLastFixing = timeDiscretization.getTimeIndexNearestLessOrEqual(time);
+		final double timeOfLastFixing = timeDiscretization.getTime(timeIndexOfLastFixing);
 
 		RandomVariable value = null;
 		try {
 			value = simulation.getAssetValue(timeOfLastFixing, 0);
 		}
-		catch(CalculationException e) {
+		catch(final CalculationException e) {
 			Logger.getLogger("net.finmath.smartcontract").warning("Oracle valuation failed with " + e.getCause());
 		}
 

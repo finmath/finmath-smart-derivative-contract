@@ -44,7 +44,7 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
 	 */
-	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime) {
+	public ContinouslyCompoundedBankAccountOracle(final LocalDateTime initialTime) {
 		this(new TimeDiscretizationFromArray(0.0, 20.0, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				1.0,
@@ -61,15 +61,15 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	 * @param timeHorizon The time horizon in ACT/365 from initialTime.
 	 * @param riskFreeRate The drift.
 	 */
-	public ContinouslyCompoundedBankAccountOracle(LocalDateTime initialTime, double initialValue, double timeHorizon, double riskFreeRate) {
+	public ContinouslyCompoundedBankAccountOracle(final LocalDateTime initialTime, final double initialValue, final double timeHorizon, final double riskFreeRate) {
 		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				initialValue,
 				riskFreeRate);
 	}
 
-	public ContinouslyCompoundedBankAccountOracle(TimeDiscretization timeDiscretization, LocalDateTime initialTime,
-			double initialValue, double riskFreeRate) {
+	public ContinouslyCompoundedBankAccountOracle(final TimeDiscretization timeDiscretization, final LocalDateTime initialTime,
+			final double initialValue, final double riskFreeRate) {
 		super();
 		this.timeDiscretization = timeDiscretization;
 		this.initialTime = initialTime;
@@ -78,9 +78,9 @@ public class ContinouslyCompoundedBankAccountOracle implements StochasticValuati
 	}
 
 	@Override
-	public RandomVariable getValue(LocalDateTime evaluationTime) {
+	public RandomVariable getValue(final LocalDateTime evaluationTime) {
 
-		double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
+		final double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
 
 		return new Scalar(initialValue * Math.exp(riskFreeRate * time));
 	}

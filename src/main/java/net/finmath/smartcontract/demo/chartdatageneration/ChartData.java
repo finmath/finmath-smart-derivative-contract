@@ -22,10 +22,10 @@ public class ChartData {
 		axisRange
 	}
 
-	private Dataset dataset;
-	private Map<propertyKey,Object>  chartPropertyMap;
+	private final Dataset dataset;
+	private final Map<propertyKey,Object>  chartPropertyMap;
 
-	public ChartData(CategoryDataset dataset) {
+	public ChartData(final CategoryDataset dataset) {
 		this.chartPropertyMap = new HashMap<>();
 		this.dataset = dataset;
 	}
@@ -38,12 +38,12 @@ public class ChartData {
 		return chartPropertyMap;
 	}
 
-	public ChartData addProperty(propertyKey key, Object value){
+	public ChartData addProperty(final propertyKey key, final Object value){
 		this.chartPropertyMap.put(key,value);
 		return this;
 	}
 
-	public ChartData addPropertyChartTitle(String title){
+	public ChartData addPropertyChartTitle(final String title){
 		this.chartPropertyMap.put(propertyKey.chartTitle,title);
 		return this;
 	}

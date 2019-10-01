@@ -18,11 +18,11 @@ import net.finmath.smartcontract.oracle.ValuationOraclePlainSwapHistoricScenario
  */
 public class ChartDataGeneratorMarketValue implements ChartDataGenerator {
 
-	private ValuationOraclePlainSwapHistoricScenarios oracle;
-	private List<LocalDateTime> scenarioDates;
-	private LinkedHashMap<String,Double> dataMap;
+	private final ValuationOraclePlainSwapHistoricScenarios oracle;
+	private final List<LocalDateTime> scenarioDates;
+	private final LinkedHashMap<String,Double> dataMap;
 
-	public ChartDataGeneratorMarketValue(ValuationOraclePlainSwapHistoricScenarios oracle, List<LocalDateTime> scenarioDates) {
+	public ChartDataGeneratorMarketValue(final ValuationOraclePlainSwapHistoricScenarios oracle, final List<LocalDateTime> scenarioDates) {
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;
 		dataMap=new LinkedHashMap<>();
@@ -33,7 +33,7 @@ public class ChartDataGeneratorMarketValue implements ChartDataGenerator {
 	public ChartData generatedChartData(final ActionEvent event){
 
 		final DefaultCategoryDataset result = new DefaultCategoryDataset();
-		double marketValue = this.oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
+		final double marketValue = this.oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
 		dataMap.put(scenarioDates.get(1).toLocalDate().toString(),marketValue);
 		dataMap.entrySet().stream().forEach(entry->{
 			result.addValue(entry.getValue(),"MarketValue",entry.getKey());
