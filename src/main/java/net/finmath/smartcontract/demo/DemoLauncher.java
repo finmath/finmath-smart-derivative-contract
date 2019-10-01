@@ -40,13 +40,13 @@ public class DemoLauncher {
 		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
 		final double notional = 1.0E7;
-		final String MaturityKey = "5Y";
+		final String maturityKey = "5Y";
 		final String forwardCurveKey = "forward-EUR-6M";
 		final String discountCurveKey = "discount-EUR-OIS";
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 
-		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(MaturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,MaturityKey,fixRate,true,forwardCurveKey,discountCurveKey);
+		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(maturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,maturityKey,fixRate,true,forwardCurveKey,discountCurveKey);
 
 		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
 
