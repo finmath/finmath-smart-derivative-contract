@@ -111,6 +111,7 @@ public class VisualiserSDC {
 				0.0,
 				3.0E5,
 				2.5E4, false);
+		plotMarginAccounts.setIsSeriesStacked(true);
 
 		plotMarketValue = new Plot2DFX();
 		plotMarketValue.setIsLegendVisible(false);
