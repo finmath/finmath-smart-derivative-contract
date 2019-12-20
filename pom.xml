@@ -81,11 +81,17 @@
 	</repositories>
 
 	<dependencies>
+		<!-- Java FX -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
 			<version>11.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11.0.2</version>
+		</dependency>		 
 
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
@@ -93,6 +99,7 @@
 			<version>${kotlin.version}</version>
 		</dependency>
 
+		<!-- finnmath lib -->
 		<dependency>
 			<groupId>net.finmath</groupId>
 			<artifactId>finmath-lib</artifactId>
