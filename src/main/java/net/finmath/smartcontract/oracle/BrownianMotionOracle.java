@@ -107,14 +107,14 @@ public class BrownianMotionOracle implements StochasticValuationOracle {
 	}
 
 	@Override
-	public RandomVariable getValue(final LocalDateTime evaluationTime) {
+	public RandomVariable getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
 		synchronized (simulationLazyInitLock) {
 			if(simulation == null) {
 				init();
 			}
 		}
 
-		final double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, evaluationTime);
+		final double time = FloatingpointDate.getFloatingPointDateFromDate(initialTime, marketDataTime);
 
 		final int timeIndexOfLastFixing = timeDiscretization.getTimeIndexNearestLessOrEqual(time);
 		final double timeOfLastFixing = timeDiscretization.getTime(timeIndexOfLastFixing);

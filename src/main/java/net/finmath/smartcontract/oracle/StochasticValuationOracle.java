@@ -22,8 +22,8 @@ public interface StochasticValuationOracle {
 	 * Provides that value of the Oracle at a given evaluation time.
 	 *
 	 * @param evaluationTime The evaluation time.
-	 *
+	 * @param marketDataTime The market data time.
 	 * @return The value.
 	 */
-	RandomVariable getValue(LocalDateTime evaluationTime);
+	RandomVariable getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime);
 }

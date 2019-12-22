@@ -40,7 +40,7 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 
 	@Override
 	public Double getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
-		return stochasticValuationOracle.getValue(evaluationTime).get(path);
+		return stochasticValuationOracle.getValue(evaluationTime, marketDataTime).get(path);
 	}
 
 	@Override
