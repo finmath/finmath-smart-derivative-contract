@@ -8,7 +8,9 @@ package net.finmath.smartcontract.statemachine;
 
 import java.util.EnumSet;
 
+import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.StateMachineBuilder;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
@@ -32,7 +34,7 @@ import org.springframework.statemachine.state.State;
  * Most of the time, a smart derivative contract is in the ACTIVE state. If a SETTLE event occurs the contract moves to the
  * SETTLEMENT state.
  * 
- * A settlement can be <i>partial</i>, which will lead to termination, or successful.
+ * A settlement can be <i>partial</i> or successful. A partial settlement will lead to termination.
  * 
  * After settlement, the machine checks the success of the settlement, checks for maturity, checks for pre-funding for the next period, then returns to the active state.
  * 
@@ -105,10 +107,11 @@ public class SmartContractStateMachine {
 
 		StateMachine<States, Events> stateMachine = sdcStateMachine.buildMachine();
 
-
 		/*
 		 * Example: perform some transitions, then terminate due to maturity.
 		 */
+
+		sdcStateMachine.setMatured(false).setPrefunded(true).setSettlementSuccessful(true);
 		stateMachine.start();
 		stateMachine.sendEvent(Events.INCEPT);
 		stateMachine.sendEvent(Events.SETTLE);
@@ -124,7 +127,7 @@ public class SmartContractStateMachine {
 		/*
 		 * Example: perform some transitions, then terminate due to insufficient pre-funding.
 		 */
-		sdcStateMachine.setMatured(false);
+		sdcStateMachine.setMatured(false).setPrefunded(true).setSettlementSuccessful(true);
 		stateMachine.start();
 		stateMachine.sendEvent(Events.INCEPT);
 		stateMachine.sendEvent(Events.SETTLE);
@@ -169,6 +172,7 @@ public class SmartContractStateMachine {
 		builder.configureStates()
 		.withStates()
 		.initial(States.INCEPTION)
+		.state(States.SETTLEMENT, performSettlement())
 		.states(EnumSet.allOf(States.class))
 		.junction(States.PREFUNDING_CHECK)
 		.junction(States.SETTLEMENT_CHECK)
@@ -199,7 +203,6 @@ public class SmartContractStateMachine {
 		return builder.build();
 	}
 
-
 	/**
 	 * @return the isPrefunded
 	 */
@@ -207,12 +210,12 @@ public class SmartContractStateMachine {
 		return isPrefunded;
 	}
 
-
 	/**
 	 * @param isPrefunded the isPrefunded to set
 	 */
-	public void setPrefunded(boolean isPrefunded) {
+	public SmartContractStateMachine setPrefunded(boolean isPrefunded) {
 		this.isPrefunded = isPrefunded;
+		return this;
 	}
 
 	/**
@@ -225,8 +228,9 @@ public class SmartContractStateMachine {
 	/**
 	 * @param isMatured the isMatured to set
 	 */
-	public void setMatured(boolean isMatured) {
+	public SmartContractStateMachine setMatured(boolean isMatured) {
 		this.isMatured = isMatured;
+		return this;
 	}
 
 	/**
@@ -239,22 +243,58 @@ public class SmartContractStateMachine {
 	/**
 	 * @param isSettlementSuccessful the isSettlementSuccessful to set
 	 */
-	public void setSettlementSuccessful(boolean isSettlementSuccessful) {
+	public SmartContractStateMachine setSettlementSuccessful(boolean isSettlementSuccessful) {
 		this.isSettlementSuccessful = isSettlementSuccessful;
+		return this;
 	}
 
-
+	/**
+	 * Test to be executed to check for successful settlement.
+	 * 
+	 * @return The test to be executed to check for successful settlement.
+	 */
 	public Guard<States, Events> settlementCheck() {
 		return ctx -> this.isSettlementSuccessful;
 	}
 
+	/**
+	 * Test to be executed to check for existing pre-funding.
+	 * 
+	 * @return The test to be executed to check for existing pre-funding.
+	 */
 	public Guard<States, Events> prefundingCheck() {
 		return ctx -> this.isPrefunded;
 	}
 
+	/**
+	 * Test to be executed to check for maturity.
+	 * 
+	 * @return The test to be executed to check for maturity.
+	 */
 	public Guard<States, Events> notMaturedCheck() {
 		return ctx -> !this.isMatured;
 	}
+
+	/**
+	 * Action performend if the settlement state is entered.
+	 * 
+	 * @return The action executed if settlement state is entered
+	 */
+	public Action<States, Events> performSettlement() {
+			return new Action<States, Events>() {
+
+				@Override
+				public void execute(StateContext<States, Events> context) {
+					/*
+					 * This is place where the settlement has to be performed:
+					 *	- Call valuation oracle.
+					 *  - Update accounts
+					 *  - Update status
+					 */
+					System.out.println("Performing Settlement.");
+				}
+			};
+		}
 
 	public class StateMachineListener extends StateMachineListenerAdapter {
 
