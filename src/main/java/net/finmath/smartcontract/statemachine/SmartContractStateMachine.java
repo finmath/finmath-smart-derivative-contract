@@ -25,11 +25,16 @@ import org.springframework.statemachine.state.State;
  * 	<li>a settlement test (Guard),</li>
  * 	<li>a maturity test (Guard),</li>
  * </ul>
- *
- * A settlement can be partially, which will lead to termination, or successful.
+ * See also {@link SmartContractStateMachine.States} and {@link SmartContractStateMachine.Events}.
  * 
- * Most of the time, a smart derivative contract is in the ACTIVE state. If a SETTLE event occurs the contract performs the settlement,
- * checks the success of the settlement, checks for maturity, checks for pre-funding for the next period, then returns to the active state.
+ * <p/>
+ * 
+ * Most of the time, a smart derivative contract is in the ACTIVE state. If a SETTLE event occurs the contract moves to the
+ * SETTLEMENT state.
+ * 
+ * A settlement can be <i>partial</i>, which will lead to termination, or successful.
+ * 
+ * After settlement, the machine checks the success of the settlement, checks for maturity, checks for pre-funding for the next period, then returns to the active state.
  * 
  * Hence, there are three different termination states.
  * 
@@ -97,10 +102,10 @@ public class SmartContractStateMachine {
 
 	public static void main(String[] args) throws Exception {
 		SmartContractStateMachine sdcStateMachine = new SmartContractStateMachine();
-		
+
 		StateMachine<States, Events> stateMachine = sdcStateMachine.buildMachine();
-		
-		
+
+
 		/*
 		 * Example: perform some transitions, then terminate due to maturity.
 		 */
@@ -149,7 +154,7 @@ public class SmartContractStateMachine {
 		stateMachine.sendEvent(Events.CONTINUE);
 		stateMachine.sendEvent(Events.SETTLE);
 		stateMachine.stop();
-}
+	}
 
 	private boolean isPrefunded = true;
 	private boolean isMatured =false;
@@ -178,23 +183,23 @@ public class SmartContractStateMachine {
 		.source(States.SETTLEMENT).target(States.SETTLEMENT_CHECK).event(Events.CONTINUE)
 		.and().withJunction()
 		.source(States.SETTLEMENT_CHECK)
-			.first(States.MATURITY_CHECK, settlementCheck())
-			.last(States.TERMINATED_BY_INSUFFICIENT_MARGIN)
+		.first(States.MATURITY_CHECK, settlementCheck())
+		.last(States.TERMINATED_BY_INSUFFICIENT_MARGIN)
 		.and().withJunction()
 		.source(States.MATURITY_CHECK)
-			.first(States.PREFUNDING_CHECK, notMaturedCheck())
-			.last(States.TERMINATED_BY_MATURITY)
+		.first(States.PREFUNDING_CHECK, notMaturedCheck())
+		.last(States.TERMINATED_BY_MATURITY)
 		.and().withJunction()
 		.source(States.PREFUNDING_CHECK)
-			.first(States.ACTIVE, prefundingCheck())
-			.last(States.TERMINATED_BY_INSUFFICIENT_PREFUNDING);
+		.first(States.ACTIVE, prefundingCheck())
+		.last(States.TERMINATED_BY_INSUFFICIENT_PREFUNDING);
 
 		builder.configureConfiguration().withConfiguration().listener(new StateMachineListener());
-		
+
 		return builder.build();
 	}
 
-	
+
 	/**
 	 * @return the isPrefunded
 	 */
