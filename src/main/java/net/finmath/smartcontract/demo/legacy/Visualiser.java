@@ -15,7 +15,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.ui.ApplicationFrame;
 
-import net.finmath.smartcontract.demo.plotgeneration.PlotGenerator;
+import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
 
 /**
  *  Visualiser is an abstract class which handles the automatic update of an Event.

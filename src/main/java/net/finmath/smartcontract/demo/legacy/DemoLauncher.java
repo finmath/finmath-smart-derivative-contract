@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 import org.jfree.ui.RefineryUtilities;
 
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGeneratorMarketValue;
-import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGeneratorSDCAccountBalance;
-import net.finmath.smartcontract.demo.plotgeneration.PlotGenerator;
-import net.finmath.smartcontract.demo.plotgeneration.StackedBarchartGenerator;
-import net.finmath.smartcontract.demo.plotgeneration.TimeSeriesChartGenerator;
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorMarketValue;
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorSDCAccountBalance;
+import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
+import net.finmath.smartcontract.demo.legacy.plotgeneration.StackedBarchartGenerator;
+import net.finmath.smartcontract.demo.legacy.plotgeneration.TimeSeriesChartGenerator;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;

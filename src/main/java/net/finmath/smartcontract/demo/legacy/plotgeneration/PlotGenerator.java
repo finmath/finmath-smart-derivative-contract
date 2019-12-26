@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.demo.plotgeneration;
+package net.finmath.smartcontract.demo.legacy.plotgeneration;
 
 import java.awt.event.ActionEvent;
 

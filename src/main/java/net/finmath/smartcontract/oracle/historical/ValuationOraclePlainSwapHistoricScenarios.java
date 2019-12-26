@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.oracle.historical;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +20,6 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDa
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;
 import net.finmath.smartcontract.simulation.curvecalibration.Calibrator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-
 
 /**
  * An oracle for swap valuation which generates values using externally provided historical market data scenarios.
@@ -53,6 +51,11 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	}
 
 	@Override
+	public MonetaryAmount getAmount(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
+		return Money.of(getValue(evaluationTime, marketDataTime), currency);
+	}
+
+	@Override
 	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
 		final Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
@@ -75,10 +78,5 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 		else{
 			return null;
 		}
-	}
-
-	@Override
-	public MonetaryAmount getAmount(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
-		return Money.of(getValue(evaluationTime, marketDataTime), currency);
 	}
 }

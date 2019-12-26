@@ -3,4 +3,4 @@
  *
  * @author Peter Kohl-Landgraf
  */
-package net.finmath.smartcontract.demo.chartdatageneration;
+package net.finmath.smartcontract.demo.legacy.chartdatageneration;

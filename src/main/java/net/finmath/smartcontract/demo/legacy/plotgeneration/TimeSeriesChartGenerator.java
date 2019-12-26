@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.demo.plotgeneration;
+package net.finmath.smartcontract.demo.legacy.plotgeneration;
 
 import java.awt.event.ActionEvent;
 
@@ -8,8 +8,8 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 
-import net.finmath.smartcontract.demo.chartdatageneration.ChartData;
-import net.finmath.smartcontract.demo.chartdatageneration.ChartDataGenerator;
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartData;
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGenerator;
 
 
 /**

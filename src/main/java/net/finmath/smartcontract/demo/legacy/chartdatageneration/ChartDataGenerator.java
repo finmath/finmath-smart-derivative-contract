@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.demo.chartdatageneration;
+package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 
 import java.awt.event.ActionEvent;
 
