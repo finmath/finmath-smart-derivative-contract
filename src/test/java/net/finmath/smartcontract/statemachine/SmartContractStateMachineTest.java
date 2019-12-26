@@ -6,10 +6,9 @@
 
 package net.finmath.smartcontract.statemachine;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.statemachine.StateMachine;
 
 import net.finmath.smartcontract.statemachine.SmartContractStateMachine.Events;
@@ -40,7 +39,7 @@ class SmartContractStateMachineTest {
 		stateMachine.sendEvent(Events.SETTLE);
 		sdcStateMachine.setMatured(true);
 		stateMachine.sendEvent(Events.CONTINUE);
-		
+
 		assertEquals(States.TERMINATED_BY_MATURITY, stateMachine.getState().getId(), "Terminated state");
 		stateMachine.stop();
 	}
@@ -88,8 +87,8 @@ class SmartContractStateMachineTest {
 		stateMachine.sendEvent(Events.SETTLE);
 		sdcStateMachine.setSettlementSuccessful(false);
 		stateMachine.sendEvent(Events.CONTINUE);
-		
+
 		assertEquals(States.TERMINATED_BY_INSUFFICIENT_MARGIN, stateMachine.getState().getId(), "Terminated state");
 		stateMachine.stop();
-	}	
+	}
 }

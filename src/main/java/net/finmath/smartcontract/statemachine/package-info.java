@@ -6,7 +6,7 @@
 
 /**
  * Modeling a smart derivative contract as a state machine.
- * 
+ *
  * @author Christian Fries
  */
 package net.finmath.smartcontract.statemachine;

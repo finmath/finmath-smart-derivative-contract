@@ -18,7 +18,7 @@ import org.springframework.statemachine.state.State;
 
 /**
  * State Machine Modeling of the Smart Derivative Contract.
- * 
+ *
  * This state machine models a smart derivative contract using a loop of the following core states:
  * <ul>
  * 	<li>a pre-funding test (Guard),</li>
@@ -28,25 +28,25 @@ import org.springframework.statemachine.state.State;
  * 	<li>a maturity test (Guard),</li>
  * </ul>
  * See also {@link SmartContractStateMachine.States} and {@link SmartContractStateMachine.Events}.
- * 
+ *
  * <p/>
- * 
+ *
  * Most of the time, a smart derivative contract is in the ACTIVE state. If a SETTLE event occurs the contract moves to the
  * SETTLEMENT state.
- * 
+ *
  * A settlement can be <i>partial</i> or successful. A partial settlement will lead to termination.
- * 
+ *
  * After settlement, the machine checks the success of the settlement, checks for maturity, checks for pre-funding for the next period, then returns to the active state.
- * 
+ *
  * Hence, there are three different termination states.
- * 
+ *
  * @author Christian Fries
  */
 public class SmartContractStateMachine {
 
 	/**
 	 * The state of a smart derivative contract.
-	 * 
+	 *
 	 * @author Christian Fries
 	 */
 	public static enum States {
@@ -90,7 +90,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * The events of a smart derivative contract. Events trigger the transitions between states.
-	 * 
+	 *
 	 * @author Christian Fries
 	 */
 	public static enum Events {
@@ -254,7 +254,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Test to be executed to check for successful settlement.
-	 * 
+	 *
 	 * @return The test to be executed to check for successful settlement.
 	 */
 	public Guard<States, Events> settlementCheck() {
@@ -263,7 +263,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Test to be executed to check for existing pre-funding.
-	 * 
+	 *
 	 * @return The test to be executed to check for existing pre-funding.
 	 */
 	public Guard<States, Events> prefundingCheck() {
@@ -272,7 +272,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Test to be executed to check for maturity.
-	 * 
+	 *
 	 * @return The test to be executed to check for maturity.
 	 */
 	public Guard<States, Events> notMaturedCheck() {
@@ -281,30 +281,30 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Action performend if the settlement state is entered.
-	 * 
+	 *
 	 * @return The action executed if settlement state is entered
 	 */
 	public Action<States, Events> performSettlement() {
-			return new Action<States, Events>() {
+		return new Action<States, Events>() {
 
-				@Override
-				public void execute(StateContext<States, Events> context) {
-					/*
-					 * This is place where the settlement has to be performed:
-					 *	- Call valuation oracle.
-					 *  - Update accounts
-					 *  - Update status
-					 */
-					System.out.println("Performing settlement.");
-				}
-			};
-		}
+			@Override
+			public void execute(StateContext<States, Events> context) {
+				/*
+				 * This is place where the settlement has to be performed:
+				 *	- Call valuation oracle.
+				 *  - Update accounts
+				 *  - Update status
+				 */
+				System.out.println("Performing settlement.");
+			}
+		};
+	}
 
 	public class StateMachineListener extends StateMachineListenerAdapter {
 
 		@Override
 		public void stateChanged(State from, State to) {
-			System.out.printf("Transitioned from %s to %s%n", from == null ? 
+			System.out.printf("Transitioned from %s to %s%n", from == null ?
 					"none" : from.getId(), to.getId());
 		}
 	}

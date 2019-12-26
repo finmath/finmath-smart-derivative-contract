@@ -24,6 +24,10 @@ import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
  */
 
 public class Visualiser extends ApplicationFrame implements ActionListener {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -6471748644006176197L;
 	private JPanel content;
 	private ChartPanel chartPanel;
 	private final List<PlotGenerator> chartGeneratorList;
