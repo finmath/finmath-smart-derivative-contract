@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.oracle.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;

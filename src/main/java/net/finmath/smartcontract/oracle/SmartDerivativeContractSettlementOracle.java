@@ -4,11 +4,9 @@
  * Created on 7 Oct 2018
  */
 
-package net.finmath.smartcontract.contract;
+package net.finmath.smartcontract.oracle;
 
 import java.time.LocalDateTime;
-
-import net.finmath.smartcontract.oracle.ValuationOracle;
 
 /**
  * The margin agreement of a smart derivative contract.
@@ -23,11 +21,11 @@ import net.finmath.smartcontract.oracle.ValuationOracle;
  * @author Christian Fries
  * @see net.finmath.smartcontract.oracle.ValuationOracle
  */
-public class SmartDerivativeContractMargining {
+public class SmartDerivativeContractSettlementOracle {
 
 	private final ValuationOracle derivativeValuationOracle;
 
-	public SmartDerivativeContractMargining(final ValuationOracle derivativeValuationOracle) {
+	public SmartDerivativeContractSettlementOracle(final ValuationOracle derivativeValuationOracle) {
 		super();
 		this.derivativeValuationOracle = derivativeValuationOracle;
 	}

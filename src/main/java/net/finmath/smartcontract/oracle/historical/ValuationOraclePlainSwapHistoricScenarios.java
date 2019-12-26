@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.oracle;
+package net.finmath.smartcontract.oracle.historical;
 
 
 import java.time.LocalDate;
@@ -15,6 +15,7 @@ import org.javamoney.moneta.Money;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
+import net.finmath.smartcontract.oracle.ValuationOracle;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationContextImpl;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDataPoints;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;

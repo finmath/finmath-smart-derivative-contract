@@ -4,7 +4,7 @@
  * Created on 6 Oct 2018
  */
 
-package net.finmath.smartcontract.oracle;
+package net.finmath.smartcontract.oracle.simulated;
 
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
@@ -14,6 +14,7 @@ import net.finmath.montecarlo.BrownianMotionLazyInit;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.assetderivativevaluation.models.BachelierModel;
 import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
+import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;

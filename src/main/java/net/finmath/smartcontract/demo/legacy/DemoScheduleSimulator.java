@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.demo;
+package net.finmath.smartcontract.demo.legacy;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 

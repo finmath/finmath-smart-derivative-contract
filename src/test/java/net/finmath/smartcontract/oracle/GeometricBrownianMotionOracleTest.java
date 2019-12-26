@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
+
 /**
  * @author Christian Fries
  */

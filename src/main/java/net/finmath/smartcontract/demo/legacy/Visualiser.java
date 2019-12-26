@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.demo;
+package net.finmath.smartcontract.demo.legacy;
 
 import java.awt.Color;
 import java.awt.FlowLayout;

@@ -4,10 +4,11 @@
  * Created on 6 Oct 2018
  */
 
-package net.finmath.smartcontract.oracle;
+package net.finmath.smartcontract.oracle.simulated;
 
 import java.time.LocalDateTime;
 
+import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import net.finmath.smartcontract.oracle.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 
 
 /**

@@ -12,7 +12,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
-import net.finmath.smartcontract.oracle.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 
 
 
