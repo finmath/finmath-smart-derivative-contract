@@ -89,7 +89,7 @@ public class SmartContractStateMachine {
 	}
 
 	/**
-	 * The events of a smart derivative contract.
+	 * The events of a smart derivative contract. Events trigger the transitions between states.
 	 * 
 	 * @author Christian Fries
 	 */
@@ -102,15 +102,19 @@ public class SmartContractStateMachine {
 		MATURE
 	}
 
+	/*
+	 * Example of using the <code>SmartContractStateMachine</code>.
+	 */
 	public static void main(String[] args) throws Exception {
+
 		SmartContractStateMachine sdcStateMachine = new SmartContractStateMachine();
 
+		// Create stateMachine. The state machine receives events.
 		StateMachine<States, Events> stateMachine = sdcStateMachine.buildMachine();
 
 		/*
-		 * Example: perform some transitions, then terminate due to maturity.
+		 * Example 1: perform some transitions, then terminate due to maturity.
 		 */
-
 		sdcStateMachine.setMatured(false).setPrefunded(true).setSettlementSuccessful(true);
 		stateMachine.start();
 		stateMachine.sendEvent(Events.INCEPT);
@@ -125,7 +129,7 @@ public class SmartContractStateMachine {
 		stateMachine.stop();
 
 		/*
-		 * Example: perform some transitions, then terminate due to insufficient pre-funding.
+		 * Example 2: perform some transitions, then terminate due to insufficient pre-funding.
 		 */
 		sdcStateMachine.setMatured(false).setPrefunded(true).setSettlementSuccessful(true);
 		stateMachine.start();
@@ -141,7 +145,7 @@ public class SmartContractStateMachine {
 		stateMachine.stop();
 
 		/*
-		 * Example: perform some transitions, then terminate due to insufficient settlement amounts.
+		 * Example 3: perform some transitions, then terminate due to insufficient settlement amounts.
 		 */
 		sdcStateMachine.setMatured(false);
 		sdcStateMachine.setPrefunded(true);
@@ -291,7 +295,7 @@ public class SmartContractStateMachine {
 					 *  - Update accounts
 					 *  - Update status
 					 */
-					System.out.println("Performing Settlement.");
+					System.out.println("Performing settlement.");
 				}
 			};
 		}
