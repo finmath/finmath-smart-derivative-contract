@@ -169,6 +169,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Building a smart derivative contract state machine.
+	 * @throws Exception Thrown when build of state machine fails. This is a severe internal error. It should not happen.
 	 */
 	public StateMachine<States, Events> buildMachine() throws Exception {
 		StateMachineBuilder.Builder<States, Events> builder = StateMachineBuilder.builder();
@@ -176,8 +177,11 @@ public class SmartContractStateMachine {
 		builder.configureStates()
 		.withStates()
 		.initial(States.INCEPTION)
+		.state(States.ACTIVE)
 		.state(States.SETTLEMENT, performSettlement())
-		.states(EnumSet.allOf(States.class))
+		.state(States.TERMINATED_BY_INSUFFICIENT_MARGIN)
+		.state(States.TERMINATED_BY_MATURITY)
+		.state(States.TERMINATED_BY_INSUFFICIENT_PREFUNDING)
 		.junction(States.PREFUNDING_CHECK)
 		.junction(States.SETTLEMENT_CHECK)
 		.junction(States.MATURITY_CHECK);
@@ -300,10 +304,10 @@ public class SmartContractStateMachine {
 		};
 	}
 
-	public class StateMachineListener extends StateMachineListenerAdapter {
+	public class StateMachineListener extends StateMachineListenerAdapter<States, Events> {
 
 		@Override
-		public void stateChanged(State from, State to) {
+		public void stateChanged(State<States, Events> from, State<States, Events> to) {
 			System.out.printf("Transitioned from %s to %s%n", from == null ?
 					"none" : from.getId(), to.getId());
 		}
