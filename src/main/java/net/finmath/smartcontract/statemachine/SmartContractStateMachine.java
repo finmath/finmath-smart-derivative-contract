@@ -6,8 +6,6 @@
 
 package net.finmath.smartcontract.statemachine;
 
-import java.util.EnumSet;
-
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.action.Action;
@@ -45,13 +43,13 @@ import org.springframework.statemachine.state.State;
 public class SmartContractStateMachine {
 
 	/**
-	 * The state of a smart derivative contract.
+	 * The states of a smart derivative contract.
 	 *
 	 * @author Christian Fries
 	 */
 	public static enum States {
 		/**
-		 * The initial state of the contract
+		 * The initial state of the contract, before it comes ACTIVE.
 		 */
 		INCEPTION,
 		/**
@@ -94,16 +92,26 @@ public class SmartContractStateMachine {
 	 * @author Christian Fries
 	 */
 	public static enum Events {
+		/**
+		 * The incept event will activate a smart derivative contract. Moving from INCEPTION to ACTIVE.
+		 */
 		INCEPT,
+		/**
+		 * The settle event will trigger settlement. Moving from ACTIVE to SETTLEMENT.
+		 */
 		SETTLE,
+		/**
+		 * The continue event will trigger testing if the contract ia allowed to continue.
+		 * Moving from SETTLEMENT to ACTIVE if all tests are passed.
+		 */
 		CONTINUE,
 		TERMINATE_BY_INSUFFICIENT_PREFUNDING,
 		TERMINATE_BY_INSUFFICIENT_MARGIN,
 		MATURE
 	}
 
-	/*
-	 * Example of using the <code>SmartContractStateMachine</code>.
+	/**
+	 * Example for using the <code>SmartContractStateMachine</code>.
 	 */
 	public static void main(String[] args) throws Exception {
 
