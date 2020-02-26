@@ -111,6 +111,9 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Example for using the <code>SmartContractStateMachine</code>.
+	 * 
+	 * @param args Not used.
+	 * @throws Exception General exception.
 	 */
 	public static void main(String[] args) throws Exception {
 
@@ -176,6 +179,7 @@ public class SmartContractStateMachine {
 
 	/**
 	 * Building a smart derivative contract state machine.
+	 * @return The state machine in terms of States and Events.
 	 * @throws Exception Thrown when build of state machine fails. This is a severe internal error. It should not happen.
 	 */
 	public StateMachine<States, Events> buildMachine() throws Exception {
@@ -219,14 +223,19 @@ public class SmartContractStateMachine {
 	}
 
 	/**
-	 * @return the isPrefunded
+	 * Check the state if the account is prefunded.
+	 * 
+	 * @return True, if the account has been verified to be pre-funded.
 	 */
 	public boolean isPrefunded() {
 		return isPrefunded;
 	}
 
 	/**
-	 * @param isPrefunded the isPrefunded to set
+	 * Set the state if the account is prefunded.
+	 * 
+	 * @param isPrefunded True, if the account has been verified to be pre-funded.
+	 * @return Self reference.
 	 */
 	public SmartContractStateMachine setPrefunded(boolean isPrefunded) {
 		this.isPrefunded = isPrefunded;
@@ -234,14 +243,19 @@ public class SmartContractStateMachine {
 	}
 
 	/**
-	 * @return the isMatured
+	 * Check the state if the contract is matured.
+	 * 
+	 * @return True, if the contract is matured.
 	 */
 	public boolean isMatured() {
 		return isMatured;
 	}
 
 	/**
-	 * @param isMatured the isMatured to set
+	 * Set the state if the contract is matured.
+	 * 
+	 * @param isMatured True, if the contract is matured.
+	 * @return Self reference.
 	 */
 	public SmartContractStateMachine setMatured(boolean isMatured) {
 		this.isMatured = isMatured;
@@ -249,14 +263,19 @@ public class SmartContractStateMachine {
 	}
 
 	/**
-	 * @return the isSettlementSuccessful
+	 * Check the state if the settlement has been successful.
+	 * 
+	 * @return True, if the settlement was successful.
 	 */
 	public boolean isSettlementSuccessful() {
 		return isSettlementSuccessful;
 	}
 
 	/**
-	 * @param isSettlementSuccessful the isSettlementSuccessful to set
+	 * Set the state if the settlement has been successful.
+	 * 
+	 * @param isSettlementSuccessful True, if the settlement has been successful.
+	 * @return Self reference.
 	 */
 	public SmartContractStateMachine setSettlementSuccessful(boolean isSettlementSuccessful) {
 		this.isSettlementSuccessful = isSettlementSuccessful;
