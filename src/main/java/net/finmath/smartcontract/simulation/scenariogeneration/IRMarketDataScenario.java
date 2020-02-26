@@ -34,7 +34,7 @@ public class IRMarketDataScenario {
 	/**
 	 * Returns a Stream of CalibrationSpecs, curveData provided as calibration data points, will be converted to calibration specs
 	 * Currently only Swap-Rates are used.
-	 * @TODO: Include Calibration Spec for FRAs
+	 * TODO: Include Calibration Spec for FRAs
 	 *
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.

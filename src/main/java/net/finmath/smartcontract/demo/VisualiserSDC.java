@@ -56,7 +56,7 @@ public class VisualiserSDC {
 	 * Run the demo.
 	 *
 	 * @param args Not used.
-	 * @throws Exception
+	 * @throws Exception General exception.
 	 */
 	public static void main(final String args[]) throws Exception {
 

@@ -99,11 +99,11 @@ public class SmartDerivativeContractScheduleGenerator {
 	 * accountAccessEnd is accountAccessAllowedDuration after accountAccessStart,
 	 * marginCheckTime is one minute after accountAccessEnd.
 	 *
-	 * @param calendar
-	 * @param startDate
-	 * @param maturity
-	 * @param settlementTime
-	 * @param accountAccessAllowedDuration
+	 * @param calendar A businessday calendar (e.g.: TARGET2)
+	 * @param startDate The start date.
+	 * @param maturity The maturity date.
+	 * @param settlementTime The settlement time.
+	 * @param accountAccessAllowedDuration The duration for account adjustment after settlement.
 	 * @return A new schedule corresponding to the given meta data.
 	 */
 	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(final String calendar, final LocalDate startDate, final LocalDate maturity,

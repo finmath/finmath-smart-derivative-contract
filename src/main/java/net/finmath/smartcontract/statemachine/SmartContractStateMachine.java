@@ -27,7 +27,6 @@ import org.springframework.statemachine.state.State;
  * </ul>
  * See also {@link SmartContractStateMachine.States} and {@link SmartContractStateMachine.Events}.
  *
- * <p/>
  *
  * Most of the time, a smart derivative contract is in the ACTIVE state. If a SETTLE event occurs the contract moves to the
  * SETTLEMENT state.

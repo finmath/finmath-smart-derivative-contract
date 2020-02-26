@@ -28,8 +28,8 @@ public class IRScenarioGenerator {
 	 * @param fileName Name of the input file.
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException
-	 * @throws UnsupportedEncodingException
+	 * @throws IOException Thrown if market data file is not found.
+	 * @throws UnsupportedEncodingException Thrown if market data file is in wrong encoding.
 	 */
 	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
 		try {
