@@ -27,7 +27,7 @@
 		<src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
 		<kotlin.version>1.2.0</kotlin.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
-		<finmath-lib.version>4.0.5</finmath-lib.version>
+		<finmath-lib.version>5.0.6</finmath-lib.version>
 		<finmath-lib-plot-extensions.version>0.0.6</finmath-lib-plot-extensions.version>
 		<spring-statemachine.version>2.0.2.RELEASE</spring-statemachine.version>
 	</properties>
