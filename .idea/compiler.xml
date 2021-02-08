@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="finmath-smart-derivative-contract" target="1.8" />
+      <module name="finmath-smart-derivative-contract" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
