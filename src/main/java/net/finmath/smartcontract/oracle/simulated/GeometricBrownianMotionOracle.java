@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import net.finmath.exception.CalculationException;
-import net.finmath.montecarlo.BrownianMotionLazyInit;
+import net.finmath.montecarlo.BrownianMotionFromMersenneRandomNumbers;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
 import net.finmath.montecarlo.assetderivativevaluation.models.BlackScholesModel;
 import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
@@ -103,8 +103,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 		final int seed = 31415;
 
 		simulation = new MonteCarloAssetModel(
-				new BlackScholesModel(initialValue, riskFreeRate, volatility),
-				new EulerSchemeFromProcessModel(new BrownianMotionLazyInit(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
+				new EulerSchemeFromProcessModel(new BlackScholesModel(initialValue, riskFreeRate, volatility), new BrownianMotionFromMersenneRandomNumbers(timeDiscretization, numberOfFactors, numberOfPaths, seed)));
 	}
 
 	@Override
