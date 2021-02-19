@@ -19,6 +19,17 @@ public class IRCurveData {
 	private final String curveKey;
 
 	/**
+	 * CurveFromInterpolationPoints Key and CurveDAtaPointSet to be provided
+	 *
+	 * @param curveKey Key identifying the curve.
+	 * @param datapoints Map from product type to a map of maturities to calibration data.
+	 */
+	public IRCurveData(final String curveKey, final Set<CalibrationDatapoint> datapoints){
+		this.curveKey = curveKey;
+		curveDataPointSet = datapoints;
+	}
+
+	/**
 	 * CurveFromInterpolationPoints Key and Map will be provided. Map maps Each productType (e.g. FRA/SWAP) to Map of MaturityKeys and Rates)
 	 *
 	 * @param curveKey Key identifying the curve.
