@@ -44,7 +44,7 @@ public class IRScenarioGenerator {
 	public static final List<IRMarketDataScenario> getScenariosFromCSVFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
 		CsvMapper mapper = new CsvMapper();
 		CsvSchema csvSchema = mapper.typedSchemaFor(MarketDataObservationPojo.class).withHeader();
-		MappingIterator<MarketDataObservationPojo> iterator = mapper.readerFor(MarketDataObservationPojo.class).with(csvSchema).readValues(new FileReader("C:\\Temp\\marktdata.csv"));
+		MappingIterator<MarketDataObservationPojo> iterator = mapper.readerFor(MarketDataObservationPojo.class).with(csvSchema).readValues(new FileReader(fileName));
 		List<MarketDataObservationPojo> asPojoList = iterator.readAll();
 
 		Map<String, Map<String, Set<MarketDataObservationPojo>> > mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataObservationPojo::getScenarioDate,groupingBy(MarketDataObservationPojo::getCurveKey,toSet())));
@@ -56,6 +56,7 @@ public class IRScenarioGenerator {
 							final Map<String,IRCurveData> map = rawMap.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->{
 								return new IRCurveData(e.getKey(),e.getValue().stream().map(x->x.toCalibrationDataPoint()).collect(Collectors.toSet()));
 							}));
+							//final String productKey = scenarioData
 							final String dateString = scenarioData.getKey();
 							final LocalDate date = LocalDate.parse(dateString,dateFormatter);
 							final LocalDateTime dateTime = date.atTime(17,0);
@@ -63,7 +64,7 @@ public class IRScenarioGenerator {
 
 							return scenario;
 						})
-				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
+				//.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
 				.collect(Collectors.toList());
 
 
