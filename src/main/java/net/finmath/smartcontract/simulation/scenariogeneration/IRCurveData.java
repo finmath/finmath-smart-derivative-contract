@@ -52,5 +52,9 @@ public class IRCurveData {
 		return curveDataPointSet.stream().filter(dataPoint->dataPoint.getProductName().equals(productType));
 	}
 
+	public Stream<CalibrationDatapoint> getDataPointStream(){
+		return curveDataPointSet.stream();
+	}
+
 
 }

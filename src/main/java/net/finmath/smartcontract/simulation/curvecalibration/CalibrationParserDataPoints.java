@@ -31,11 +31,11 @@ public class CalibrationParserDataPoints implements CalibrationParser {
 			else
 				return Optional.empty();
 		case "Euribor6M":
-			if (datapoint.getProductName().equals("Swap-Rate"))
+			if (datapoint.getProductName().equalsIgnoreCase("Swap-Rate"))
 				return Optional.of(new CalibrationSpecProviderSwap("6M", "semiannual", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-			if (datapoint.getProductName().equals("Forward-Rate-Agreement"))
+			if (datapoint.getProductName().equalsIgnoreCase("Forward-Rate-Agreement"))
 				return Optional.of(new CalibrationSpecProviderFRA("6M",datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-			if (datapoint.getProductName().equals("Cash"))
+			if (datapoint.getProductName().equalsIgnoreCase("Cash"))
 				return Optional.of(new CalibrationSpecProviderDeposit("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
 			else
 				return Optional.empty();
