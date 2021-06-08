@@ -10,7 +10,7 @@
 
 	<groupId>net.finmath</groupId>
 	<artifactId>finmath-smart-derivative-contract</artifactId>
-	<version>0.1.6</version>
+	<version>0.1.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>finmath-smart-derivative-contract</name>
@@ -219,7 +219,7 @@
 					</header>
 					<footer>
 			   			<![CDATA[
-						<i>Copyright &copy; 2021 finmath.net.</i>
+						<i>Copyright &copy; 2018 finmath.net.</i>
 			   			]]>
 					</footer>
 					<tags>
@@ -238,7 +238,7 @@
 						<link>http://commons.apache.org/proper/commons-lang/javadocs/api-release</link>
 						<link>http://commons.apache.org/proper/commons-math/javadocs/api-3.3</link>
 					</links>
-					<detectLinks>false</detectLinks>
+					<detectLinks>true</detectLinks>
 					<additionalOptions>
 						<additionalOption>--allow-script-in-comments</additionalOption>
 					</additionalOptions>
@@ -427,6 +427,6 @@
 		<url>https://github.com/finmath/finmath-smart-derivative-contract</url>
 		<connection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</connection>
 		<developerConnection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</developerConnection>
-		<tag>finmath-smart-derivative-contract-0.1.6</tag>
+		<tag>HEAD</tag>
 	</scm>
 </project>
