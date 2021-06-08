@@ -40,6 +40,7 @@ public class IRScenarioGenerator {
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
 	 * @throws IOException Thrown if market data file is not found.
+	 * @throws UnsupportedEncodingException Thrown if market data file has wrong encoding.
 	 */
 	public static final List<IRMarketDataScenario> getScenariosFromCSVFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
 		CsvMapper mapper = new CsvMapper();
