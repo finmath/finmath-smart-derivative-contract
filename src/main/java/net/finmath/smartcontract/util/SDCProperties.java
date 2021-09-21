@@ -72,9 +72,9 @@ public class SDCProperties {
 		
 	}
 	/**
-	 * The URL_TIMEOUE property
+	 * The URL_TIMEOUT property
 	 *
-	 * @return The URL_TIMEOUE property as <code>int<code>
+	 * @return The URL_TIMEOUT property as int
 	 */
 	public static int getURL_TIMEOUT() {
 		return Integer.parseInt(SDCProperties.getProperty(SDCConstants.URL_TIMEOUT));

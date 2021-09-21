@@ -65,6 +65,7 @@ public class SettlementValuationController {
 	 * Request mapping for the settlementvaluationForProductAsFPML
 	 * 
 	 * @param tradeAsFPML Trade FPML string
+	 * @param tradeId Trade ID
 	 * @param marketDataAsJson1 Market data Json string
 	 * @param marketDataAsJson2 Market data Json string
 	 * @return String Json representing the valuation.
@@ -242,6 +243,7 @@ public class SettlementValuationController {
 	/**
 	 * Request mapping for lastmargincalculationfpml
 	 * 
+	 * @param tradeId Trade ID
 	 * @return String representing trade as fpml.
 	 * @throws IOException the exception
 	 */
