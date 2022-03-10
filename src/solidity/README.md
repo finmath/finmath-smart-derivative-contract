@@ -1,7 +1,7 @@
-# DZ @ Solidity 
+# SDC Solidity implementation
 
 ## Description
-This little project aims to implement businesst logic in a very lean way using an integrative solidity implementation and according unit tests
+This sdc implementation aims to implement process logic in a very lean way using an integrative solidity implementation and according unit tests
 
 ## Provided Contracts
 ### 1. Smart Derivative Contract
