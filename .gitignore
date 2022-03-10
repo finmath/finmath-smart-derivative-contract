@@ -256,4 +256,14 @@ $RECYCLE.BIN/
 *.lnk
 
 
+#solidity and js and hardhat
+node_modules
+.env
+coverage
+coverage.json
+typechain
+package-lock.json
+cache
+artifacts
+
 # End of https://www.gitignore.io/api/java,linux,macos,maven,windows,eclipse,intellij
