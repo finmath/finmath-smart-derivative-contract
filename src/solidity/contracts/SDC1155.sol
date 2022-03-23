@@ -9,8 +9,8 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 contract SDC1155 is IERC1155 {
 
     // const int ids for several token - i.e. account balance - types
-    uint public constant TO_DEPOSIT         = 0;
-    uint public constant TO_WITHDRAW        = 1;
+//    uint public constant TO_DEPOSIT         = 0;
+//    uint public constant TO_WITHDRAW        = 1;
     uint public constant CASH_BUFFER        = 2;
     uint public constant MARGIN_BUFFER      = 3;
     uint public constant TERMINATIONFEE     = 4;
@@ -49,13 +49,13 @@ contract SDC1155 is IERC1155 {
     event TradeActive(bytes32 id);
     event TradeTerminated(bytes32 id, address causingParty);
     event TradeSettlementSuccessful(bytes32 id);
-    event ValuationRequest();
+    event ValuationRequested(string[] fpml_data );
     event TerminationRequested(address fromAddress, bytes32 trade_id);
     event TerminationConfirmed(address fromAddress, bytes32 trade_id);
 
     // Transfer Events
-    event DepositRequested();
-    event WithdrawalRequested();
+    event DepositRequested(address cp, uint amount);
+    event WithdrawalRequested(address cp, uint amount);
 
     // Modifiers to control access to external functions below
     modifier onlyCounterparty { 
@@ -100,7 +100,6 @@ contract SDC1155 is IERC1155 {
     
     ////// SECTION: EXTERNAL SDC LIVE CYCLE FUNCTIONS (to be called from authorised addresses only) ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     /*@notice: External Function to Incept a Trade with FPML data and margin and buffer amounts */
     function inceptTrade(string memory fpml_data, address payerSwapAddress, uint256 terminationFee, uint256 marginBuffer) external onlyCounterparty returns(bool){ 
         bytes32 id = keccak256(abi.encode(fpml_data));
@@ -126,13 +125,13 @@ contract SDC1155 is IERC1155 {
         return isConfirmed;
     }
 
-    /* @notice: SDC - External Function to trigger a settlement for all active trades only triggered by a counterparty */
-    function requestSettlement() external onlyCounterparty { 
-        emit ValuationRequest();
+    /* @notice: SDC - External Function to trigger a settlement for all active trades */
+    function requestSettlement() external  { 
+        emit ValuationRequested(fpmlData);
     }
 
     
-    /*@notice: SDC - Externalö Function to trigger a settlement with already know settlement amounts called by e.g. an external oracle service */
+    /*@notice: SDC - External Function to trigger a settlement with already know settlement amounts called by e.g. an external oracle service */
     function settle(bytes32[] memory trade_ids, int[] memory _marginAmounts ) external onlyValuationProvider returns(bool)  { 
         for (uint i=0; i< trade_ids.length; i++){
             require(refTradeSpecs[trade_ids[i]].addressPayerSwap != address(0x0),"settle: trade id not defined");
@@ -234,27 +233,35 @@ contract SDC1155 is IERC1155 {
 
     /* @notice: Counterparty to trigger a deposit request to margin account*/
     function depositRequest(uint256 amount) external virtual onlyCounterparty {
-        balances[TO_DEPOSIT][msg.sender] += amount;
-        emit DepositRequested();
+        emit DepositRequested(msg.sender, amount);
     }
 
     /* @notice: Counterparty to trigger a withdraw request to margin account*/
     function withdrawRequest(uint256 amount) external virtual onlyCounterparty {
         require(balances[CASH_BUFFER  ][msg.sender] >= amount, "withdrawRequest: Not sufficient balance!");
-        balances[CASH_BUFFER  ][msg.sender] -= amount;
-        balances[TO_WITHDRAW][msg.sender] += amount;
-        emit WithdrawalRequested();
+        emit WithdrawalRequested(msg.sender, amount);
+    }
+
+    function deposit(address cpAdress, uint256 amount) external virtual onlyTokenManager{
+        require(cpAdress == counterparty1Address || cpAdress == counterparty2Address, "Address not known");
+        balances[CASH_BUFFER][cpAdress] += amount;
+    }
+
+    function withdrawal(address cpAdress, uint256 amount) external virtual onlyTokenManager{
+        require(cpAdress == counterparty1Address || cpAdress == counterparty2Address, "Address not known");
+        require(balances[CASH_BUFFER  ][msg.sender] >= amount, "withdrawRequest: Not sufficient balance!");
+        balances[CASH_BUFFER][cpAdress] -= amount;
     }
 
     /* @notice: Function for token manager to manage deposit and withdrawal requests and allocate according liquidity*/
-    function allocateLiquidity() external virtual onlyTokenManager {
+    /*function allocateLiquidity(address cpAdress, int amount) external virtual onlyTokenManager {
         balances[TO_WITHDRAW  ][counterparty1Address] = 0;  // burn
         balances[TO_WITHDRAW  ][counterparty2Address] = 0;  // burn
         uint amountToDepositCP1 = balances[TO_DEPOSIT  ][counterparty1Address];
         uint amountToDepositCP2 = balances[TO_DEPOSIT  ][counterparty2Address];
         _performTransfer(counterparty1Address, counterparty1Address, TO_DEPOSIT, CASH_BUFFER,amountToDepositCP1); // allocate to buffer
         _performTransfer(counterparty2Address, counterparty2Address, TO_DEPOSIT, CASH_BUFFER,amountToDepositCP2); // allocate to buffer
-    }
+    }*/
 
     /*@notice: Internal function to perform a cross token transfer */
     function _performTransfer(address from, address to, uint256 id_from, uint256 id_to, uint256 amount) internal {
