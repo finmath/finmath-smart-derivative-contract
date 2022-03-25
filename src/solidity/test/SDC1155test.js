@@ -42,15 +42,6 @@ describe("SDC functionaly as ERC1155 Token", () => {
     expect(await sdc1155.balanceOf(counterparty2.address,sdc1155.CASH_BUFFER())).to.equal(amount2);
   });
 
-  /*it("Counterparty2 requests withdraw of 1000", async () => {
-    await sdc1155.connect(counterparty2).withdrawRequest(1000);
-    expect(await sdc1155.balanceOf(counterparty2.address,sdc1155.CASH_BUFFER())).to.equal(1000);
-    expect(await sdc1155.balanceOf(counterparty2.address,sdc1155.TO_WITHDRAW())).to.equal(1000);
-    await sdc1155.connect(tokenManager).allocateLiquidity();
-    expect(await sdc1155.balanceOf(counterparty2.address,sdc1155.TO_WITHDRAW())).to.equal(0);
-  });
-
-  */
   it("Counterparty1 incepts a trade with payer party Counterparty2", async () => {
     trade_id =  Keccak256(abiCoder.encode(["string"], [fpml_data]));
     const incept_call = await sdc1155.connect(counterparty1).inceptTrade(fpml_data, counterparty2.address, 200, 50);

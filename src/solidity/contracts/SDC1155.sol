@@ -93,9 +93,9 @@ contract SDC1155 is IERC1155 {
     }
 
      /*@notice: SDC - Communication with Oracle - External function to return fpml array  */
-    function getFPMLData() external onlyValuationProvider view  returns (string[] memory) {
+    /*function getFPMLData() external onlyValuationProvider view  returns (string[] memory) {
         return fpmlData;
-    }
+    }*/
 
     
     ////// SECTION: EXTERNAL SDC LIVE CYCLE FUNCTIONS (to be called from authorised addresses only) ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
