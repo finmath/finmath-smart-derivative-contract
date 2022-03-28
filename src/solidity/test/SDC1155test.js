@@ -3,7 +3,7 @@ const mlog = require('mocha-logger');
 const AbiCoder = ethers.utils.AbiCoder;
 const Keccak256 = ethers.utils.keccak256;
 
-describe("SDC functionaly as ERC1155 Token", () => {
+/*describe("SDC functionaly as ERC1155 Token", () => {
 
   const abiCoder = new AbiCoder();
   const fpml_data = "<fpml><trade>test-trade</trade></fpml>";
@@ -23,7 +23,7 @@ describe("SDC functionaly as ERC1155 Token", () => {
     counterparty1 = _counterparty1;
     counterparty2 = _counterparty2;
     valuationProvider = _valuationProvider;
-    const SDCER20Factory = await ethers.getContractFactory("SDC1155");
+    const SDCER20Factory = await ethers.getContractFactory("SDCLight");
     sdc1155 = await SDCER20Factory.deploy("SDCToken",counterparty1.address, counterparty2.address, tokenManager.address, valuationProvider.address);
     await sdc1155.deployed();
   });
@@ -83,4 +83,4 @@ describe("SDC functionaly as ERC1155 Token", () => {
   });
 
 
-});
+});*/

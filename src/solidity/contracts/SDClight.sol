@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 
-contract SDC {
+contract SDCLight {
 
     ////// 1. Section: INVOLVED PARTIES: SDC need threee addresses as token minting and burning is executed by a central authority
     address private counterparty1Address;
@@ -53,7 +53,7 @@ contract SDC {
     function performTransfer(address from, address to, uint256 id_from, uint256 id_to, uint256 amount) internal {    /*@notice: Internal function to perform a cross token transfer */
         require(to != address(0x0), "_transfer: transfer to the zero address");
         uint256 fromBalance = balances[id_from][from];
-        require(fromBalance >= amount, "_transfer: insufficient balance for transfer");
+        require(fromBalance >= amount, "performTransfer: insufficient balance for transfer");
         balances[id_from][from] = fromBalance - amount;
         balances[id_to][to] += amount;
     }
@@ -131,7 +131,7 @@ contract SDC {
         emit ValuationRequested(fpmlData);
     }
    
-    function settle(uint256 settlement_amount, address address_of_creditor) external returns(bool)  {        /*@notice: SDC - External Function to trigger a settlement with already know settlement amounts called by e.g. an external oracle service */
+    function settle(uint256 settlement_amount, address address_of_creditor) external   {        /*@notice: SDC - External Function to trigger a settlement with already know settlement amounts called by e.g. an external oracle service */
         require(settlement_amount > 0, "Settlement amount should be positive");
         require(address_of_creditor == counterparty1Address || address_of_creditor == counterparty2Address, "Creditor Address should be either CP1 oder CP");
         address address_of_debitor = address_of_creditor == counterparty1Address ? counterparty2Address : counterparty1Address;
@@ -141,7 +141,6 @@ contract SDC {
                 performTransfer(address_of_debitor, address_of_debitor, CASH_BUFFER, MARGIN_BUFFER, settlement_amount);     // autodebit
                 performTransfer(address_of_creditor, address_of_creditor, MARGIN_BUFFER, CASH_BUFFER, settlement_amount); // autocredit
                  emit TradeSettlementSuccessful();
-                return true;
             }
         }
         performTermination(address_of_debitor);
@@ -152,9 +151,8 @@ contract SDC {
         address address_fee_receiver = causing_party_address == counterparty1Address ? counterparty2Address : counterparty1Address;
         performTransfer(causing_party_address, address_fee_receiver, MARGIN_BUFFER, CASH_BUFFER,marginBuffer); // book max margin amount
         performTransfer(causing_party_address, address_fee_receiver, TERMINATIONFEE, CASH_BUFFER,terminationFee); // book termination fee from causing party to cash of receiving party
-        performTransfer(causing_party_address, address_fee_receiver, TERMINATIONFEE, CASH_BUFFER, terminationFee); // transfer locked termination fee of receving party
-        performTransfer(address(this), counterparty1Address, MARGIN_BUFFER, CASH_BUFFER, marginBuffer); // release margin amounts to cash
-        performTransfer(address(this), counterparty2Address, MARGIN_BUFFER, CASH_BUFFER, marginBuffer); // release margin amounts to cash
+        performTransfer(address_fee_receiver, address_fee_receiver, MARGIN_BUFFER, CASH_BUFFER, marginBuffer); // release margin amounts to cash
+        performTransfer(address_fee_receiver, address_fee_receiver, TERMINATIONFEE, CASH_BUFFER, terminationFee); // release margin amounts to cash
         tradeStatus = TradeStatus.DEAD;
         return true;
     }
