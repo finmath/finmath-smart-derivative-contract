@@ -120,15 +120,11 @@ contract SDC {
     }
 
     function marginCheck(address cpAddress) internal view returns(bool){  /*@notice: SDC - Check Margin */
-        if ( balances[CASH_BUFFER][cpAddress] >= marginBuffer )
-            return true;
-        else
-            return false;
+        return (balances[CASH_BUFFER][cpAddress] >= marginBuffer);
     }
 
     function settlementCheck(uint256 amount) internal view returns(bool){  /*@notice: SDC - Check Settlement */
-        if (marginBuffer >= amount) return true;
-        else return false;
+        return (marginBuffer >= amount);
     }
 
     function requestSettlement() external  {     /* @notice: SDC - External Function to trigger a settlement for all active trades */
