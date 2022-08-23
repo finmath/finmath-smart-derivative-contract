@@ -6,15 +6,14 @@
 
 package net.finmath.smartcontract;
 
-import java.time.LocalDateTime;
-
-import org.junit.Test;
-
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracleSamplePath;
 import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
+import org.junit.Test;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Christian Fries

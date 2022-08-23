@@ -3,8 +3,6 @@ package net.finmath.smartcontract.simulation.scenariogeneration;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
 
-import java.time.LocalDateTime;
-
 @JsonPropertyOrder({ "scenarioDate", "curveKey", "productKey", "maturityKey","value" })
 public class MarketDataObservationPojo {
 

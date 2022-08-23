@@ -6,16 +6,16 @@
 
 package net.finmath.smartcontract.contract;
 
+import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
+import net.finmath.time.businessdaycalendar.AbstractBusinessdayCalendar;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
-import net.finmath.time.businessdaycalendar.AbstractBusinessdayCalendar;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**
  * Generates schedules for smart derivative contracts.

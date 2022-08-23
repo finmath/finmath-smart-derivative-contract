@@ -1,5 +1,12 @@
 package net.simulation;
 
+import com.google.gson.Gson;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,15 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.google.gson.Gson;
-
-import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 
 public class DataRetrieverTest {
 

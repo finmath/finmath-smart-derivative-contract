@@ -2,6 +2,21 @@
 package net.finmath.smartcontract.valuation;
 
 
+import com.google.gson.Gson;
+import net.finmath.marketdata.products.Swap;
+import net.finmath.marketdata.products.SwapLeg;
+import net.finmath.modelling.DescribedProduct;
+import net.finmath.modelling.ProductDescriptor;
+import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
+import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
+import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
+import net.finmath.smartcontract.descriptor.TradeDescriptor;
+import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
+import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+import net.finmath.smartcontract.util.SDCConstants;
+import net.finmath.smartcontract.valuation.scenariogeneration.IRScenarioGenerator;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -9,25 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
-
-import net.finmath.marketdata.products.Swap;
-import net.finmath.marketdata.products.SwapLeg;
-import net.finmath.modelling.DescribedProduct;
-import net.finmath.modelling.ProductDescriptor;
-import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
-import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
-import net.finmath.smartcontract.descriptor.TradeDescriptor;
-import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
-import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
-
-import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
-
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import net.finmath.smartcontract.util.SDCConstants;
-import net.finmath.smartcontract.valuation.scenariogeneration.IRScenarioGenerator;
 
 
 /**

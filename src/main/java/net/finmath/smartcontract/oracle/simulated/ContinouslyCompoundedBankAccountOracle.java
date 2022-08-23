@@ -6,14 +6,14 @@
 
 package net.finmath.smartcontract.oracle.simulated;
 
-import java.time.LocalDateTime;
-
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
+
+import java.time.LocalDateTime;
 
 /**
  * A dummy oracle which generates values as initalValue * Math.exp(r T).

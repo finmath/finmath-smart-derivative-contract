@@ -1,14 +1,5 @@
 package net.finmath.smartcontract.demo.legacy;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.jfree.ui.RefineryUtilities;
-
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorMarketValue;
 import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorSDCAccountBalance;
@@ -19,6 +10,14 @@ import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHisto
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
+import org.jfree.ui.RefineryUtilities;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**

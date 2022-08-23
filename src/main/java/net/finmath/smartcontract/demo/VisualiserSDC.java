@@ -2,8 +2,21 @@
 package net.finmath.smartcontract.demo;
 
 
-import java.awt.BasicStroke;
-import java.awt.Color;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.layout.FlowPane;
+import net.finmath.marketdata.products.Swap;
+import net.finmath.plots.*;
+import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -12,28 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.layout.FlowPane;
-import net.finmath.marketdata.products.Swap;
-import net.finmath.plots.Category2D;
-import net.finmath.plots.GraphStyle;
-import net.finmath.plots.Plot2DBarFX;
-import net.finmath.plots.Plot2DFX;
-import net.finmath.plots.Plotable2D;
-import net.finmath.plots.PlotableCategories;
-import net.finmath.plots.Point2D;
-import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
-import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
 
 /**
  * Visualization of the settlement using Smart Derivative Contract with a 10Y swap,

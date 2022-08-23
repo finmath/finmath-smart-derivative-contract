@@ -6,9 +6,6 @@
 
 package net.finmath.smartcontract.oracle.simulated;
 
-import java.time.LocalDateTime;
-import java.util.logging.Logger;
-
 import net.finmath.exception.CalculationException;
 import net.finmath.montecarlo.BrownianMotionFromMersenneRandomNumbers;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
@@ -19,6 +16,9 @@ import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
+
+import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 /**
  * A dummy oracle which generates values using a geometric Brownian motion.

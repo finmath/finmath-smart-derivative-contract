@@ -6,10 +6,9 @@
 
 package net.finmath.smartcontract.service;
 
+import net.finmath.smartcontract.util.SDCStarter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import net.finmath.smartcontract.util.SDCStarter;
 
 
 @SpringBootApplication

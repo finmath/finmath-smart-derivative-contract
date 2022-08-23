@@ -1,32 +1,22 @@
 package net.finmath.smartcontract.client;
 
-import java.io.File;
-
-import java.nio.file.Files;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCProperties;
 import net.finmath.smartcontract.util.SDCStarter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.File;
+import java.nio.file.Files;
 
 
 /**
@@ -39,8 +29,7 @@ import net.finmath.smartcontract.util.SDCStarter;
 public class ValuationClient {
 	
 	private static String ENDPOINT_URL;
-	
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 	
 	public static void main(String[] args) {
@@ -91,9 +80,6 @@ public class ValuationClient {
 		
 		logger.info(gson.toJson(json));
 	}
-	
-	
-
 	
 	private ResponseEntity<String> getValuation(FileSystemResource marketDataAsJson1, FileSystemResource marketDataAsJson2, FileSystemResource tradeAsFPML) {
 

@@ -1,19 +1,14 @@
 package net.finmath.smartcontract.simulation.curvecalibration;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
-import net.finmath.marketdata.model.curves.Curve;
-import net.finmath.marketdata.model.curves.CurveInterpolation;
-import net.finmath.marketdata.model.curves.DiscountCurveInterpolation;
-import net.finmath.marketdata.model.curves.ForwardCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
+import net.finmath.marketdata.model.curves.*;
 import net.finmath.optimizer.SolverException;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * An object calibrating models from a stream of calibration spec providers

@@ -6,9 +6,8 @@
 
 package net.finmath.smartcontract.oracle;
 
-import java.time.LocalDateTime;
-
 import javax.money.MonetaryAmount;
+import java.time.LocalDateTime;
 
 /**
  * Interface for Oracles providing a valuation at a given time.

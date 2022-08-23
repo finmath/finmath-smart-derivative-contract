@@ -1,8 +1,8 @@
 package net.finmath.smartcontract.demo.legacy.plotgeneration;
 
-import java.awt.event.ActionEvent;
-
 import org.jfree.chart.plot.CategoryPlot;
+
+import java.awt.event.ActionEvent;
 
 
 /**

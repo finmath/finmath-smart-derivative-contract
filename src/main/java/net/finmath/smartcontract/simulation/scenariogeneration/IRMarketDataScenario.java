@@ -1,12 +1,12 @@
 package net.finmath.smartcontract.simulation.scenariogeneration;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParser;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationSpecProvider;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * IR Market Data Scenario Class holds a SecnarioDate an a Map containing CurveData

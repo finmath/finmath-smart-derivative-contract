@@ -1,13 +1,12 @@
 package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import org.jfree.data.category.DefaultCategoryDataset;
-
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 
 
 /**

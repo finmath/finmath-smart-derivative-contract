@@ -1,15 +1,14 @@
 package net.finmath.smartcontract.demo.legacy.plotgeneration;
 
-import java.awt.event.ActionEvent;
-
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartData;
+import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGenerator;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 
-import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartData;
-import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGenerator;
+import java.awt.event.ActionEvent;
 
 
 /**

@@ -1,18 +1,17 @@
 package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 
-import java.awt.Color;
+import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
+import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.DatasetUtilities;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.DatasetUtilities;
-
-import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 
 
 

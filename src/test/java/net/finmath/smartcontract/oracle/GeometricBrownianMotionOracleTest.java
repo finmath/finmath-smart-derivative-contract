@@ -6,11 +6,10 @@
 
 package net.finmath.smartcontract.oracle;
 
-import java.time.LocalDateTime;
-
+import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
 import org.junit.Test;
 
-import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
+import java.time.LocalDateTime;
 
 /**
  * @author Christian Fries

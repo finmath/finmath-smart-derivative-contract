@@ -1,5 +1,9 @@
 package net.finmath.smartcontract.valuation.scenariogeneration;
 
+import com.google.gson.Gson;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -11,11 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
-
-import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 
 /**
  * Scenario Generator generates IRScenarios from a given json file

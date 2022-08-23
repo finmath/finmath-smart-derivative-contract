@@ -1,12 +1,12 @@
 package net.finmath.smartcontract.simulation.curvecalibration;
 
+import com.google.common.collect.Streams;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import com.google.common.collect.Streams;
 
 /**
  * Parses calibration data points and converts it to calibration specs

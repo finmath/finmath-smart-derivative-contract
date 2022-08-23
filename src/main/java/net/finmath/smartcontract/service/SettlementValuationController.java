@@ -7,20 +7,13 @@
 
 package net.finmath.smartcontract.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
+import net.finmath.smartcontract.util.SDCConstants;
+import net.finmath.smartcontract.util.SDCDateUtil;
+import net.finmath.smartcontract.util.SDCProperties;
+import net.finmath.smartcontract.valuation.MarginCalculator;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,24 +24,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-
-import net.finmath.smartcontract.valuation.ContractValuation;
-import net.finmath.smartcontract.valuation.MarginCalculator;
-
-import net.finmath.smartcontract.util.SDCConstants;
-import net.finmath.smartcontract.util.SDCDateUtil;
-
-import net.finmath.smartcontract.util.SDCProperties;
-import net.finmath.smartcontract.util.SDCRounding;
-import net.finmath.smartcontract.util.SDCXMLUtil;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.HashMap;
 
 /**
- * Controller for the settlement valuation REST service. Maps URLs to methods calls.
+ * Controller for the settlement valuation REST service.
  *
+ * @author Christian Fries
+ * @author Peter Kohl-Landgraf
  * @author Dietmar Schnabel
  */
 @RestController

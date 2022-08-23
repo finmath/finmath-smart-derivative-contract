@@ -1,21 +1,16 @@
 package net.finmath.smartcontract.demo.legacy;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
+import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.ui.ApplicationFrame;
 
-import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  *  Visualiser is an abstract class which handles the automatic update of an Event.
