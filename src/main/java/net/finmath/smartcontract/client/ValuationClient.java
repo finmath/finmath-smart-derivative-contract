@@ -68,8 +68,7 @@ public class ValuationClient {
 		FileSystemResource marketDataAsJson1 = new FileSystemResource(new File(jsonFile1));
 		FileSystemResource marketDataAsJson2 = new FileSystemResource(new File(jsonFile2));
 		FileSystemResource tradeAsFPML  = new FileSystemResource(new File(fpmlFile1));
-	    
-		
+
 		ResponseEntity<String> response = valuationClient.getValuation(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
 		
 				
