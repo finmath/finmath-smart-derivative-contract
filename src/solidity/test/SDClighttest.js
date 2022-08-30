@@ -3,7 +3,8 @@ const mlog = require('mocha-logger');
 const AbiCoder = ethers.utils.AbiCoder;
 const Keccak256 = ethers.utils.keccak256;
 
-describe("SDC functionaly as ERC1155 Token", () => {
+
+/*describe("SDC functionaly as ERC1155 Token", () => {
 
   const abiCoder = new AbiCoder();
   const fpml_data = "<fpml><trade>test-trade</trade></fpml>";
@@ -59,7 +60,7 @@ describe("SDC functionaly as ERC1155 Token", () => {
   /*it("Settlement with 40 in favor to CP2 is performed", async () => {
     const settle_call = await sdc_object.connect(counterparty2).settle(40,counterparty2.address);
     await expect(settle_call).to.emit(sdc_object, "TradeSettlementSuccessful");
-  });*/
+  });
 
   it("Settlement with 100 in favor to couterparty1 leads to termination", async () => {
     const settle_call2 = await sdc_object.connect(counterparty1).settle(100,counterparty1.address);
@@ -81,7 +82,7 @@ describe("SDC functionaly as ERC1155 Token", () => {
     await expect(settle_call).to.emit(sdc1155, "TradeSettlementSuccessful");
     expect(await sdc1155.balanceOf(counterparty1.address,sdc1155.CASH_BUFFER())).to.equal(amount1-250-marginAmount);
     expect(await sdc1155.balanceOf(counterparty2.address,sdc1155.CASH_BUFFER())).to.equal(amount2-250+marginAmount);
-  });*/
+  });
 
 
-});
+});*/
