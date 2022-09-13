@@ -39,7 +39,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * Calculation of the settlement using Smart Derivative Contract with an Swap contained in a FPML,
  * using a valuation oracle with historic market data.
