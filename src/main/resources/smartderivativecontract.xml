@@ -1,0 +1,46 @@
+<smartderivativecontract>
+    <parties>
+        <party>
+            <name>DZ</name>
+            <id>1</id>
+            <marginAccount>
+                <type>constant</type>
+                <value>10.0</value>
+            </marginAccount>
+            <penaltyFee>
+                <type>constant</type>
+                <value>10.0</value>
+            </penaltyFee>
+        </party>
+        <party>
+            <name>UI</name>
+            <id>2</id>
+            <marginAccount>
+                <type>constant</type>
+                <value>10.0</value>
+            </marginAccount>
+            <penaltyFee>
+                <type>constant</type>
+                <value>10.0</value>
+            </penaltyFee>
+        </party>
+    </parties>
+    <settlement>
+        <settlementTime>
+            <type>daily</type>
+            <value>17:00</value>
+        </settlementTime>
+        <marketdata>
+            <provider>xyz</provider>
+            <symbols>
+                <symbol>IREUR1Y</symbol>
+                <symbol>IREUR2Y</symbol>
+                <symbol>IREUR3Y</symbol>
+                <symbol>IREUR4Y</symbol>
+            </symbols>
+        </marketdata>
+    </settlement>
+    <underlying>
+        <!-- fpml here -->
+    </underlying>
+</smartderivativecontract>
