@@ -33,7 +33,7 @@ public interface SmartDerivativeContractSchedule {
 	 *
 	 * @author Christian Fries
 	 */
-	public interface EventTimes {
+	interface EventTimes {
 		LocalDateTime getSettementTime();
 		LocalDateTime getAccountAccessAllowedStart();
 		Duration getAccountAccessAllowedPeriod();

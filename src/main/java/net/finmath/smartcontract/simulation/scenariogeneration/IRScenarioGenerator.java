@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -80,7 +81,7 @@ public class IRScenarioGenerator {
 	 */
 	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
 		try {
-			final String content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
+			final String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
 			final Gson gson = new Gson();
 
 			final Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content, new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());

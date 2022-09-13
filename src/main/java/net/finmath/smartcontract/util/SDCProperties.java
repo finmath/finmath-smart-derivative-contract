@@ -20,7 +20,7 @@ import java.util.Properties;
  * */
 public class SDCProperties {
 	
-	private static Logger logger = LoggerFactory.getLogger(SDCProperties.class);
+	private static final Logger logger = LoggerFactory.getLogger(SDCProperties.class);
 	
 	private static Properties properties;
 	

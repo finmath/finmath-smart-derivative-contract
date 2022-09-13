@@ -2,7 +2,16 @@
 package net.finmath.smartcontract.valuation;
 
 
+
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.gson.Gson;
+
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.modelling.DescribedProduct;
@@ -14,9 +23,14 @@ import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.util.SDCConstants;
+import net.finmath.smartcontract.util.SDCDateUtil;
+import net.finmath.smartcontract.util.SDCXMLUtil;
 import net.finmath.smartcontract.valuation.scenariogeneration.IRScenarioGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -39,13 +53,14 @@ import java.util.stream.Collectors;
  */
 public class MarginCalculator {
 
+	private static final Logger logger = LoggerFactory.getLogger(MarginCalculator.class);
+
 	private  FPMLParser parser;
 	private  InterestRateSwapProductDescriptor productDescriptor;
 	private  ContractValuation contractValuation;
 	private  boolean isTradeStartToday; 
-	
-		
-	private static DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+	private static final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 	
 	
 	
@@ -80,6 +95,8 @@ public class MarginCalculator {
 	 */
     public double getValue (String jsonString1, String jsonString2, String fpmlString) throws Exception {
     	parser = new FPMLParser("party1", "discount-EUR-OIS","forward-EUR-6M", fpmlString);
+    	isTradeStartToday = validateStartDate(fpmlString);
+    	
     	return calculateMarginFromString(jsonString1, jsonString2);
     }
     /**
@@ -210,7 +227,29 @@ public class MarginCalculator {
 		
 	}
 
-	
-	
-	
+
+
+	public boolean validateStartDate(String fpml) {
+
+//		String startDate = SDCXMLUtil.getXMLElement(fpml, SDCConstants.XPATH_FPML_SWAP_LEG1 + SDCConstants.XPATH_FPML_SWAP_START_DATE );
+		String startDate = SDCXMLUtil.getXMLElement(fpml, SDCConstants.XPATH_FPML_TRADE_DATE);
+		logger.info("Trade date = " + startDate);
+		LocalDate date = SDCDateUtil.getDateFromString(startDate, SDCConstants.DATE_FORMAT_yyyy_MM_dd);
+		LocalDate now = LocalDate.now();
+
+//        if(date.isAfter(now)) {
+////        if(date.isBefore(before) || date.equals(before)) {
+//        	logger.info("Startdate of the trade is after: " + now + ", trade will not be valued!");
+//        	return false;
+//        }
+
+		if(date.equals(now)){
+			logger.info("Trade date of the trade is: " + now + ".  The trade will  be valued with T - 0!");
+			return true;
+		}
+		logger.info("Trade date of the trade is  " + date + ".  The trade will  be valued with T and T-1!");
+		return false;
+	}
+
+
 }

@@ -21,10 +21,7 @@ public class SDCUtil {
 	 * @return true, if is empty
 	 */
 	public static boolean isEmpty(String string) {
-		if (string == null || string.equals("")) {
-			return true;
-		}
-		return false;
+		return string == null || string.equals("");
 	}
 	
 	/**

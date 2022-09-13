@@ -45,15 +45,15 @@ public class FPMLParser  implements XMLParser{
 	private double notional;
 	private LocalDate startDate;
 	private LocalDate maturityDate;
-	private HashMap productFields = new HashMap();
+	private final HashMap productFields = new HashMap();
 	private TradeDescriptor tradeDescriptor = null;
 	private ProductDescriptor productDescriptor = null;
 
-	private AbstractBusinessdayCalendar abstractBusinessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
-	private ShortPeriodConvention shortPeriodConvention= ScheduleGenerator.ShortPeriodConvention.LAST;
+	private final AbstractBusinessdayCalendar abstractBusinessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
+	private final ShortPeriodConvention shortPeriodConvention= ScheduleGenerator.ShortPeriodConvention.LAST;
 	
-	private FPMLParser() {/* no default constructor */ };
-	
+	private FPMLParser() {/* no default constructor */ }
+
 	/**
 	 * Construct the parser.
 	 *

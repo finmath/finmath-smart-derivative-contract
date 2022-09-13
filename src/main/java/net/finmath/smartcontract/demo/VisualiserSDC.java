@@ -49,7 +49,7 @@ public class VisualiserSDC {
 	 * @param args Not used.
 	 * @throws Exception General exception.
 	 */
-	public static void main(final String args[]) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
 		final LocalDate startDate = LocalDate.of(2008, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);

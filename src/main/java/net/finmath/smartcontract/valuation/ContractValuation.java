@@ -1,5 +1,6 @@
 package net.finmath.smartcontract.valuation;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 

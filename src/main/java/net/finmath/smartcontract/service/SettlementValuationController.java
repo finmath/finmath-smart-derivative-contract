@@ -42,10 +42,10 @@ public class SettlementValuationController {
 	
 	private  static String curve1 = "NONE";
 	private  static String curve2 = "NONE";
-	private  static HashMap<String, String> fpml = new HashMap<String, String>();
-	private  static HashMap<String, String> result = new HashMap<String, String>();
+	private  static final HashMap<String, String> fpml = new HashMap<String, String>();
+	private  static final HashMap<String, String> result = new HashMap<String, String>();
 	
-	private Logger logger = LoggerFactory.getLogger(SettlementValuationController.class);
+	private final Logger logger = LoggerFactory.getLogger(SettlementValuationController.class);
 	
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML

@@ -30,7 +30,7 @@ public class ValuationClient {
 	
 	private static String ENDPOINT_URL;
 
-	private static Logger logger = LoggerFactory.getLogger(ValuationClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 	
 	public static void main(String[] args) {
 		SDCStarter.init(args);
