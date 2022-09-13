@@ -61,15 +61,9 @@ public class MarginCalculator {
 	private  boolean isTradeStartToday; 
 
 	private static final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-	
-	
-	
-	public MarginCalculator() {
-		
-		
-	}
 
-	
+	public MarginCalculator() { }
+
 	/**
 	 * Calculates the margin between t_2 and t_1.
 	 *
@@ -95,16 +89,18 @@ public class MarginCalculator {
 	 */
     public double getValue (String jsonString1, String jsonString2, String fpmlString) throws Exception {
     	parser = new FPMLParser("party1", "discount-EUR-OIS","forward-EUR-6M", fpmlString);
-    	isTradeStartToday = validateStartDate(fpmlString);
+//    	isTradeStartToday = validateStartDate(fpmlString);
     	
     	return calculateMarginFromString(jsonString1, jsonString2);
     }
+
     /**
 	 * @return the ContractValuation.
 	 */
     public ContractValuation getContractValuation() {
     	return contractValuation;
     }
+
     /**
 	 * @return the ContractValuation as JSON.
 	 */
@@ -153,9 +149,7 @@ public class MarginCalculator {
 		
 		final LocalDate startDate = parser.getStartDate().plusDays(-1);
 		final LocalDate maturity = parser.getMaturityDate().plusDays(1);
-		
-		
-		
+
 		// Generate the scenario list
 		
 //		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonString(jsonString1,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());

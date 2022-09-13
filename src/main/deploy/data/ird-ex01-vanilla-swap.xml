@@ -7,9 +7,7 @@
   == Financial Products Markup Language is subject to the FpML public license.
   == A copy of this license is available at http://www.fpml.org/license/license.html
   -->
-<dataDocument xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              fpmlVersion="5-9"
-              xsi:schemaLocation="http://www.fpml.org/FpML-5/confirmation ../../fpml-main-5-9.xsd http://www.w3.org/2000/09/xmldsig# ../../xmldsig-core-schema.xsd">
+<dataDocument xmlns="http://www.fpml.org/FpML-5/confirmation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fpmlVersion="5-9" xsi:schemaLocation="http://www.fpml.org/FpML-5/confirmation ../../fpml-main-5-9.xsd http://www.w3.org/2000/09/xmldsig# ../../xmldsig-core-schema.xsd">
   <trade>
     <tradeHeader>
       <partyTradeIdentifier>
@@ -20,7 +18,7 @@
         <partyReference href="party2" />
         <tradeId tradeIdScheme="http://www.barclays.com/swaps/trade-id">SW2000</tradeId>
       </partyTradeIdentifier>
-      <tradeDate>2021-04-20</tradeDate>
+      <tradeDate>2008-01-01</tradeDate>
     </tradeHeader>
     <swap>
 <!-- Party A pays the floating rate every 6 months, based on 6M EUR-LIBOR-BBA,
@@ -30,13 +28,13 @@
         <receiverPartyReference href="party2" />
         <calculationPeriodDates id="floatingCalcPeriodDates">
           <effectiveDate>
-            <unadjustedDate>2021-04-24</unadjustedDate>
+            <unadjustedDate>2008-01-03</unadjustedDate>
             <dateAdjustments>
               <businessDayConvention>NONE</businessDayConvention>
             </dateAdjustments>
           </effectiveDate>
           <terminationDate>
-            <unadjustedDate>2022-12-30</unadjustedDate>
+            <unadjustedDate>2025-12-30</unadjustedDate>
             <dateAdjustments>
               <businessDayConvention>MODFOLLOWING</businessDayConvention>
               <businessCenters id="primaryBusinessCenters">
@@ -92,7 +90,7 @@
           <calculation>
             <notionalSchedule>
               <notionalStepSchedule>
-                <initialValue>100000.00</initialValue>
+                <initialValue>10000000.00</initialValue>
                 <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR</currency>
               </notionalStepSchedule>
             </notionalSchedule>
@@ -113,13 +111,13 @@
         <receiverPartyReference href="party1" />
         <calculationPeriodDates id="fixedCalcPeriodDates">
           <effectiveDate>
-            <unadjustedDate>2021-04-24</unadjustedDate>
+            <unadjustedDate>2008-01-03</unadjustedDate>
             <dateAdjustments>
               <businessDayConvention>NONE</businessDayConvention>
             </dateAdjustments>
           </effectiveDate>
           <terminationDate>
-            <unadjustedDate>2022-12-30</unadjustedDate>
+            <unadjustedDate>2025-12-30</unadjustedDate>
             <dateAdjustments>
               <businessDayConvention>FOLLOWING</businessDayConvention>
               <businessCentersReference href="primaryBusinessCenters" />
@@ -151,12 +149,12 @@
           <calculation>
             <notionalSchedule>
               <notionalStepSchedule>
-                <initialValue>100000.00</initialValue>
+                <initialValue>10000000.00</initialValue>
                 <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR</currency>
               </notionalStepSchedule>
             </notionalSchedule>
             <fixedRateSchedule>
-              <initialValue>0.01</initialValue>
+              <initialValue>0.04</initialValue>
             </fixedRateSchedule>
             <dayCountFraction>30E/360</dayCountFraction>
           </calculation>
@@ -167,10 +165,18 @@
   <party id="party1">
     <partyId>DZ</partyId>
     <partyName>DZ</partyName>
+	<marginM>10000</marginM>
+	<marginP>50000</marginP>
+	<address>0x938ACd0AD9f423E5cDd97c7c880d59799Dc4fDA0</address>
+	<privateKey>b23a98e4b1bbd15dd65a2e1534096ca83280281f7a19c70eebfdd4d3119d05a7</privateKey>
   </party>
   <party id="party2">
-    <partyId>BLB</partyId>
-	<partyName>BLB</partyName>
+    <partyId>UI</partyId>
+	<partyName>UI</partyName>
+	<marginM>10000</marginM>
+	<marginP>50000</marginP>
+	<address>0xCE7E5Abf9A42730345716e16c145592e679Ef15a</address>
+	<privateKey>8c3695bd04dd1a6a7d322a0e4897d75c206bd93043a0c7099bcde49b7001dc22</privateKey>
   </party>
 </dataDocument>
 
