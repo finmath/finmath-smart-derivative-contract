@@ -92,7 +92,13 @@ public class FPMLParser  implements XMLParser{
 		parseFPML(fpmlFile);
 		getProductDescriptorFromFile(fpmlFile);
 	}
-	
+
+	public FPMLParser(String homePartyId, String discountCurveName, String forwardCurveName) {
+		this.homePartyId = homePartyId;
+		this.discountCurveName = discountCurveName;
+		this.forwardCurveName = forwardCurveName;
+	}
+
 	/**
 	 * Parses the FPML file.
 	 * @param file FPML file.
@@ -152,7 +158,50 @@ public class FPMLParser  implements XMLParser{
 		generateTradeDescriptor();
 		return generateProductDescriptor();
 	}
-	
+
+	/**
+	 * Generates a product descriptor from an already existing Document.
+	 *
+	 * @return ProductDescriptor
+	 * @throws IllegalArgumentException Thrown id the document is not an FpML 5 document.
+	 */
+	public ProductDescriptor generateProductDescriptor(Node node)  {
+
+
+		//Check compatibility and assign proper parser
+//		if(! node.getNodeName().equalsIgnoreCase("dataDocument")) {
+//			throw new IllegalArgumentException("This parser is meant for XML of type dataDocument, according to FpML 5, but file is "+doc.getDocumentElement().getNodeName()+".");
+//		}
+
+//		if(! node.getAttributes().getNamedItem("fpmlVersion").getNodeValue().split("-")[0].equals("5")) {
+//			throw new IllegalArgumentException("This parser is meant for FpML of version 5.*, file is version "+ doc.getDocumentElement().getAttribute("fpmlVersion"));
+//		}
+
+		//Isolate trade node
+		Element trade = null;
+		String tradeName = null;
+
+		NodeList tradeWrapper = node.getOwnerDocument().getElementsByTagName("trade").item(0).getChildNodes();
+		for(int index = 0; index < tradeWrapper.getLength(); index++) {
+			if(tradeWrapper.item(index).getNodeType() != Node.ELEMENT_NODE) {
+				continue;
+			}
+			if(tradeWrapper.item(index).getNodeName().equalsIgnoreCase("tradeHeader")) {
+				continue;
+			}
+			trade = (Element) tradeWrapper.item(index);
+			tradeName		= trade.getNodeName().toUpperCase();
+			break;
+		}
+
+
+		switch (tradeName) {
+			case "SWAP" : return getSwapProductDescriptor(trade);
+			default: throw new IllegalArgumentException("This FpML parser is not set up to process trades of type "+tradeName+".");
+		}
+
+	}
+
 	/**
 	 * Generates a product descriptor from an already existing Document.
 	 * 
@@ -321,6 +370,7 @@ public class FPMLParser  implements XMLParser{
 
 			boolean isPayer = leg.getElementsByTagName("payerPartyReference").item(0).getAttributes().getNamedItem("href").getNodeValue().equals(homePartyId);
 
+			/*
 			if(isPayer) {
 				tradeDescriptor.setLegReceiver("party2");
 				legPayer = getSwapLegProductDescriptor(leg);
@@ -328,6 +378,7 @@ public class FPMLParser  implements XMLParser{
 				tradeDescriptor.setLegReceiver("party1");
 				legReceiver = getSwapLegProductDescriptor(leg);
 			}
+			*/
 		}
 		
 		productDescriptor = new InterestRateSwapProductDescriptor(legReceiver, legPayer);

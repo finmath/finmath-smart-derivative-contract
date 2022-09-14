@@ -99,9 +99,7 @@ public class SDCXMLParser {
 		TradeDescriptor tradeDescriptor = new TradeDescriptor();
 
 		String tradeDateString = document.getElementsByTagName("settlementDateInitial").item(0).getTextContent();
-
 		settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());
-
 
 		/*
 		 * Counterparties

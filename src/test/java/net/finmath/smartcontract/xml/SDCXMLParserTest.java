@@ -1,7 +1,10 @@
 package net.finmath.smartcontract.xml;
 
+import net.finmath.modelling.ProductDescriptor;
+import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,7 +22,12 @@ class SDCXMLParserTest {
 
 		SDCXMLParser.SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 		
-		String party1 = sdc.getTradeDate().toString();
-		System.out.println(party1);
+		String date = sdc.getTradeDate().toString();
+		System.out.println(date);
+
+		Node underlying = sdc.getUnderlying();
+
+		// This needs cleaning
+		ProductDescriptor productDescriptor = new FPMLParser("", "", "").generateProductDescriptor(underlying);
 	}
 }
