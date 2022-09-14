@@ -13,15 +13,10 @@ import java.util.HashMap;
  */
 public class TradeDescriptor  {
 
-	
-
 	private  HashMap<String,String>   				  legalEntitiesExternalReferences;
 	private  HashMap<String,HashMap<String,String>>   legalEntitiesNames;
 	private  LocalDate 		   		  				  tradeDate;
 	private  String 		   		  				  legReceiver;
-
-	
-
 
 	/**
 	 * Return the set of legal entity, external references of this trade.
@@ -32,7 +27,6 @@ public class TradeDescriptor  {
 		return legalEntitiesExternalReferences;
 	}
 
-	
 	/**
 	 * Set the set of legal external references of this trade.
 	 *

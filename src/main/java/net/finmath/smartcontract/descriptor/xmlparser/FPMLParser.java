@@ -38,9 +38,10 @@ import java.util.HashMap;
  */
 public class FPMLParser  implements XMLParser{
 
-	private String homePartyId = null;
-	private String discountCurveName = null;
-	private String forwardCurveName;
+	private final String homePartyId;
+	private final String discountCurveName;
+	private final String forwardCurveName;
+
 	private Document doc;
 	private double notional;
 	private LocalDate startDate;
@@ -52,8 +53,6 @@ public class FPMLParser  implements XMLParser{
 	private final AbstractBusinessdayCalendar abstractBusinessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 	private final ShortPeriodConvention shortPeriodConvention= ScheduleGenerator.ShortPeriodConvention.LAST;
 	
-	private FPMLParser() {/* no default constructor */ }
-
 	/**
 	 * Construct the parser.
 	 *
