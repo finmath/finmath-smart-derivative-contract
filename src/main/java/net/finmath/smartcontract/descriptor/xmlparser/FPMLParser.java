@@ -165,17 +165,17 @@ public class FPMLParser  implements XMLParser{
 	 * @return ProductDescriptor
 	 * @throws IllegalArgumentException Thrown id the document is not an FpML 5 document.
 	 */
-	public ProductDescriptor generateProductDescriptor(Node node)  {
+	public ProductDescriptor getProductDescriptor(Node node)  {
 
 
 		//Check compatibility and assign proper parser
-//		if(! node.getNodeName().equalsIgnoreCase("dataDocument")) {
-//			throw new IllegalArgumentException("This parser is meant for XML of type dataDocument, according to FpML 5, but file is "+doc.getDocumentElement().getNodeName()+".");
-//		}
+		if(! node.getNodeName().equalsIgnoreCase("dataDocument")) {
+			throw new IllegalArgumentException("This parser is meant for XML of type dataDocument, according to FpML 5, but file is "+doc.getDocumentElement().getNodeName()+".");
+		}
 
-//		if(! node.getAttributes().getNamedItem("fpmlVersion").getNodeValue().split("-")[0].equals("5")) {
-//			throw new IllegalArgumentException("This parser is meant for FpML of version 5.*, file is version "+ doc.getDocumentElement().getAttribute("fpmlVersion"));
-//		}
+		if(! node.getAttributes().getNamedItem("fpmlVersion").getNodeValue().split("-")[0].equals("5")) {
+			throw new IllegalArgumentException("This parser is meant for FpML of version 5.*, file is version "+ doc.getDocumentElement().getAttribute("fpmlVersion"));
+		}
 
 		//Isolate trade node
 		Element trade = null;

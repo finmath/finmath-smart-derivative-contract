@@ -28,6 +28,6 @@ class SDCXMLParserTest {
 		Node underlying = sdc.getUnderlying();
 
 		// This needs cleaning
-		ProductDescriptor productDescriptor = new FPMLParser("", "", "").generateProductDescriptor(underlying);
+		ProductDescriptor productDescriptor = new FPMLParser("", "", "").getProductDescriptor(underlying.getFirstChild().getNextSibling());
 	}
 }
