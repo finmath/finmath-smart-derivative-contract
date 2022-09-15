@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class SDCDateUtil {
 	
-	private static Logger logger = LoggerFactory.getLogger(SDCDateUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(SDCDateUtil.class);
 	
 	public static String MARKET_DATA_AS_JSON_1 = "marketDataAsJson1";
 	public static String MARKET_DATA_AS_JSON_2 = "marketDataAsJson2";
@@ -190,10 +190,7 @@ public class SDCDateUtil {
 	public static boolean isMatured(String date, String format) {
 		LocalDate now = LocalDate.now();
 		LocalDate maturity = getDateFromString(date, format);
-		if(now.isAfter(maturity.minusDays(1))) {
-			return true;
-		}
-		return false;
+		return now.isAfter(maturity.minusDays(1));
 	}
 
 }

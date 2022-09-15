@@ -1,11 +1,8 @@
 package net.finmath.smartcontract.valuation.scenariogeneration;
 
-import com.google.gson.Gson;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -15,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
+
+import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 
 /**
  * Scenario Generator generates IRScenarios from a given json file
@@ -37,7 +39,7 @@ public class IRScenarioGenerator {
 		final String content;
 	
 		try {
-			content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
+			content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
 		}
 		catch(IOException e) {
 				System.out.println("Please provide the market data file " + fileName);

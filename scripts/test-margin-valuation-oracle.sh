@@ -1,8 +1,10 @@
 echo "Note: The valuation oracle has to run."
 
-SCRIPTDIR=$(dirname $0)
-export SDC_HOME=$SCRIPTDIR/../src/main/deploy
+# Move to top level
+SCRIPT_PATH="$(dirname "$0")"
+cd $SCRIPT_PATH/../
+echo $PWD
 
-cd $SCRIPTDIR/..
+export SDC_HOME=$SCRIPT_PATH/../src/main/deploy
 
 mvn exec:java -Dexec.mainClass=net.finmath.smartcontract.client.ValuationClient -Dexec.args=sdc

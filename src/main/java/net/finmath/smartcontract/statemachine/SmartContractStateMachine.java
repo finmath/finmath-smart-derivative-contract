@@ -46,7 +46,7 @@ public class SmartContractStateMachine {
 	 *
 	 * @author Christian Fries
 	 */
-	public static enum States {
+	public enum States {
 		/**
 		 * The initial state of the contract, before it comes ACTIVE.
 		 */
@@ -90,7 +90,7 @@ public class SmartContractStateMachine {
 	 *
 	 * @author Christian Fries
 	 */
-	public static enum Events {
+	public enum Events {
 		/**
 		 * The incept event will activate a smart derivative contract. Moving from INCEPTION to ACTIVE.
 		 */

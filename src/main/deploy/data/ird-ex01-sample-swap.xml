@@ -168,15 +168,13 @@
 	<marginM>10000</marginM>
 	<marginP>50000</marginP>
 	<address>0x938ACd0AD9f423E5cDd97c7c880d59799Dc4fDA0</address>
-	<privateKey>b23a98e4b1bbd15dd65a2e1534096ca83280281f7a19c70eebfdd4d3119d05a7</privateKey>
-  </party>
+</party>
   <party id="party2">
     <partyId>UI</partyId>
 	<partyName>UI</partyName>
 	<marginM>10000</marginM>
 	<marginP>50000</marginP>
 	<address>0xCE7E5Abf9A42730345716e16c145592e679Ef15a</address>
-	<privateKey>8c3695bd04dd1a6a7d322a0e4897d75c206bd93043a0c7099bcde49b7001dc22</privateKey>
-  </party>
+</party>
 </dataDocument>
 

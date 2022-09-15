@@ -30,7 +30,7 @@ public class ValuationClient {
 	
 	private static String ENDPOINT_URL;
 
-	private static Logger logger = LoggerFactory.getLogger(ValuationClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 	
 	public static void main(String[] args) {
 		SDCStarter.init(args);
@@ -70,10 +70,11 @@ public class ValuationClient {
 		FileSystemResource tradeAsFPML  = new FileSystemResource(new File(fpmlFile1));
 
 		ResponseEntity<String> response = valuationClient.getValuation(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
-		
+
+		String body = response.getBody();
 				
 		JsonParser parser = new JsonParser();
-		JsonObject json = parser.parse(response.getBody()).getAsJsonObject();
+		JsonObject json = parser.parse(body).getAsJsonObject();
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		

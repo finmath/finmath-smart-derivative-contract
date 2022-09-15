@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- Schema definiton of a smart derivative contract -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="smartderivativecontract">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="parties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="party" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="name"/>
+                                        <xs:element type="xs:string" name="id"/>
+                                        <xs:element name="marginAccount">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="type"/>
+                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:string" name="currency"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="penaltyFee">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="type"/>
+                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:string" name="currency"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="settlement">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="settlementTime">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="type"/>
+                                        <xs:element type="xs:string" name="value"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="marketdata">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="provider"/>
+                                        <xs:element name="symbols">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="symbol" maxOccurs="unbounded" minOccurs="0"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element type="xs:string" name="underlying">
+                    <xs:annotation>
+                        <xs:documentation> fpml here </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

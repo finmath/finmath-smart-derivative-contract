@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class SDCStarter {
 	
-	private static Logger logger = LoggerFactory.getLogger(SDCStarter.class);
+	private static final Logger logger = LoggerFactory.getLogger(SDCStarter.class);
 
 	/**
 	 * Inits the.
