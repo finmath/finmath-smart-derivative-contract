@@ -370,15 +370,13 @@ public class FPMLParser  implements XMLParser{
 
 			boolean isPayer = leg.getElementsByTagName("payerPartyReference").item(0).getAttributes().getNamedItem("href").getNodeValue().equals(homePartyId);
 
-			/*
 			if(isPayer) {
-				tradeDescriptor.setLegReceiver("party2");
+//				tradeDescriptor.setLegReceiver("party2");
 				legPayer = getSwapLegProductDescriptor(leg);
 			} else {
-				tradeDescriptor.setLegReceiver("party1");
+//				tradeDescriptor.setLegReceiver("party1");
 				legReceiver = getSwapLegProductDescriptor(leg);
 			}
-			*/
 		}
 		
 		productDescriptor = new InterestRateSwapProductDescriptor(legReceiver, legPayer);

@@ -113,8 +113,8 @@ public class SDCXMLParser {
 		for(Node partyNode : partyNodes) {
 
 			Party party = new Party(
-					nodeValueByName(partyNode, "name", String.class),
 					nodeValueByName(partyNode, "id", String.class),
+					nodeValueByName(partyNode, "name", String.class),
 					null
 					);
 
