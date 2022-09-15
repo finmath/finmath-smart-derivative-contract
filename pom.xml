@@ -25,7 +25,7 @@
 		<src.test.java.dir>src/test/java</src.test.java.dir>
 		<src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
 		<src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
-		<kotlin.version>1.2.0</kotlin.version>
+		<kotlin.version>1.6.0</kotlin.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
 		<finmath-lib.version>5.0.6</finmath-lib.version>
 		<finmath-lib-plot-extensions.version>0.0.6</finmath-lib-plot-extensions.version>
