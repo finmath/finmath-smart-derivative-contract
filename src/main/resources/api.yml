@@ -1,0 +1,166 @@
+openapi: "3.0.0"
+
+info:
+  version: 1.0.0
+  title: Swagger
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:9090/
+
+paths:
+  /settlementValuation/test:
+    get:
+      summary: Test Endpoint
+      operationId: test
+
+      responses:
+        '200':
+          description: Conncetion successfull
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /settlementValuation/margincalulationForProductOnChain:
+    post:
+      summary: Request mapping for the settlementvaluationForProductAsFPML
+      operationId: settlementvaluationForProductAsFPMLOnChain
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                marketDataAsJson1:
+                  type: string
+                marketDataAsJson2:
+                  type: string
+                tradeAsFPML:
+                  type: string
+                tradeId:
+                  type: string
+      responses:
+        '200':
+          description: Trade was incepted
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /settlementValuation/margincalulationForProductAsFPMLOneCurve:
+    post:
+      summary: Request mapping for the settlementvaluationForProductAsFPMLOneCurve
+      operationId: settlementvaluationForProductAsFPMLOneCurve
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                marketDataAsJson1:
+                  type: string
+                  format: binary
+                tradeAsFPML:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Trade was incepted
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /settlementValuation/margincalulationForProductAsFPML:
+    post:
+      summary: Request mapping for the settlementvaluationForProductAsFPML
+      operationId: settlementvaluationForProductAsFPML
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                marketDataAsJson1:
+                  type: string
+                  format: binary
+                marketDataAsJson2:
+                  type: string
+                  format: binary
+                tradeAsFPML:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Trade was incepted
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /settlementValuation/lastmargincalculationfpml:
+    get:
+      summary: Request mapping for the lastmargincalculationfpml
+      operationId: settlementvaluationProductAsFPML
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                tradeId:
+                  type: string
+
+      responses:
+        '200':
+          description: Trade was incepted
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
