@@ -26,7 +26,7 @@ public class GeometricBrownianMotionOracleTest {
 
 		final ValuationOracle oracle = new ValuationOracleSamplePath(stoachasticOracle, path);
 
-		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
+		for (LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
 			final double value = oracle.getValue(time, time);
 			System.out.println(time.toLocalDate() + "\t" + value);

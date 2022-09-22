@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 
 /**
  * @author Christian Fries
- *
  */
 public class SmartDerivativeContractMarginingTest {
 
@@ -34,7 +33,7 @@ public class SmartDerivativeContractMarginingTest {
 		final SmartDerivativeContractSettlementOracle smartDerivativeContractMargening = new SmartDerivativeContractSettlementOracle(valuationOracle);
 
 		LocalDateTime previousTime = initialTime;
-		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
+		for (LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
 			final double value = smartDerivativeContractMargening.getMargin(previousTime, time);
 			System.out.println(time.toLocalDate() + "\t" + value);

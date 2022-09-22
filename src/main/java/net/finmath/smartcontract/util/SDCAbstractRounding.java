@@ -2,9 +2,8 @@
  * SDC Project
  *
  * @author Dietmar Schnabel
- * 
+ * <p>
  * This class implements some number rounding according to business conventions.
- *
  */
 package net.finmath.smartcontract.util;
 
@@ -18,18 +17,17 @@ import java.math.RoundingMode;
  */
 public abstract class SDCAbstractRounding {
 
-	
 
 	protected int scale;
-	
+
 	protected RoundingMode roundingMode;
-	
+
 	private BigDecimal round(double var) {
 		String s = Double.toString(var);
 		BigDecimal bd = new BigDecimal(s).setScale(scale, roundingMode);
 		return bd;
 	}
-	
+
 	/**
 	 * Round double.
 	 *
@@ -39,13 +37,13 @@ public abstract class SDCAbstractRounding {
 	public double roundDouble(double var) {
 		return round(var).doubleValue();
 	}
-	
+
 	private String getAsIntString(BigDecimal var) {
 		String margin = var.toString();
-		String marginString = margin.replace(".",""); 
+		String marginString = margin.replace(".", "");
 		return marginString;
 	}
-	
+
 	/**
 	 * Returns an integer value, the double left shifted
 	 *
@@ -56,7 +54,7 @@ public abstract class SDCAbstractRounding {
 		BigDecimal x = round(var);
 		return getAsIntString(x);
 	}
-	
+
 	/**
 	 * Gets the double from the left shifted integer String
 	 *
@@ -65,17 +63,17 @@ public abstract class SDCAbstractRounding {
 	 */
 	public double getDoubleFromIntegerString(String s) {
 		String sf = null;
-		
-		if (s.length()==1) {
+
+		if (s.length() == 1) {
 			sf = "0.0" + s; //TODO introduce scale
-		} else if (s.length()==2) {
+		} else if (s.length() == 2) {
 			sf = "0." + s;
 		} else {
-			int i1 = s.length() - scale -1;
-			int i2 = s.length()  -1;
-			sf = s.substring(0,i1+1) + "." + s.substring(i1+1,i2+1);
+			int i1 = s.length() - scale - 1;
+			int i2 = s.length() - 1;
+			sf = s.substring(0, i1 + 1) + "." + s.substring(i1 + 1, i2 + 1);
 		}
-		
+
 		double x = Double.parseDouble(sf);
 		return roundDouble(x);
 	}

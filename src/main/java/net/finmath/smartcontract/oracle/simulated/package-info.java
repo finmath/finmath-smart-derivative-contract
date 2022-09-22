@@ -6,6 +6,5 @@
 
 /**
  * @author Christian Fries
- *
  */
 package net.finmath.smartcontract.oracle.simulated;

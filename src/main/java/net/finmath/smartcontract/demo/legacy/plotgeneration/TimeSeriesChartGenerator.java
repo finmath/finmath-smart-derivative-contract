@@ -12,15 +12,15 @@ import java.awt.event.ActionEvent;
 
 
 /**
- *  A simple generator for generating a time series chart
+ * A simple generator for generating a time series chart
  *
  * @author Peter Kohl-Landgraf
  */
 public class TimeSeriesChartGenerator implements PlotGenerator {
 	private final ChartDataGenerator chartDataGenerator;
 
-	public TimeSeriesChartGenerator(final ChartDataGenerator chartDataGenerator){
-		this.chartDataGenerator=chartDataGenerator;
+	public TimeSeriesChartGenerator(final ChartDataGenerator chartDataGenerator) {
+		this.chartDataGenerator = chartDataGenerator;
 	}
 
 	@Override

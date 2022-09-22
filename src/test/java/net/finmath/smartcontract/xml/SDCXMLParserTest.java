@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.xml;
 
-import net.finmath.modelling.InterestRateProductDescriptor;
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
@@ -40,7 +39,7 @@ class SDCXMLParserTest {
 		ProductDescriptor productDescriptor = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-3M").getProductDescriptor(underlying.getFirstChild().getNextSibling());
 		System.out.println(productDescriptor.name());
 
-		InterestRateSwapProductDescriptor irs = (InterestRateSwapProductDescriptor)productDescriptor;
+		InterestRateSwapProductDescriptor irs = (InterestRateSwapProductDescriptor) productDescriptor;
 		System.out.println(irs.getLegPayer());
 		System.out.println(irs.getLegReceiver());
 	}

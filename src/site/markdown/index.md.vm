@@ -8,8 +8,9 @@ About finmath smart-derivative-contract
 
 ****************************************
 
-The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart derivative contracts.
-For a description of the concept of a smart derivative contract see https://ssrn.com/abstract=3163074
+The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
+derivative contracts. For a description of the concept of a smart derivative contract
+see https://ssrn.com/abstract=3163074
 
 Languages and Build
 --------------------------------------
@@ -31,54 +32,56 @@ Repositories
 -------------------------------------
 
 Source code and demos are provided via Github repository.
-			<ul>
-				<li>
-					<i>Git</i> repositories with Java code:
-					<ul>
-						<li>
-							finmath lib: [https://github.com/finmath/finmath-lib](https://github.com/finmath/finmath-lib)
-						</li>
-						<li>
-							finmath experiments: [https://github.com/finmath/finmath-experiments](https://github.com/finmath/finmath-experiments)
-						</li>
-						<li>
-							finmath spreadsheets: [https://github.com/finmath/finmath-spreadsheets](https://github.com/finmath/finmath-spreadsheets)
-						</li>
-					</ul>
-				</li>
-			</ul>
+<ul>
+<li>
+<i>Git</i> repositories with Java code:
+<ul>
+<li>
+finmath lib: [https://github.com/finmath/finmath-lib](https://github.com/finmath/finmath-lib)
+</li>
+<li>
+finmath experiments: [https://github.com/finmath/finmath-experiments](https://github.com/finmath/finmath-experiments)
+</li>
+<li>
+finmath spreadsheets: [https://github.com/finmath/finmath-spreadsheets](https://github.com/finmath/finmath-spreadsheets)
+</li>
+</ul>
+</li>
+</ul>
 
 Documentation
 -------
 
 For documentation please check out
 
--   [finmath lib Project documentation][]  
-    provides the documentation of the library api.
--   [finmath lib API documentation][]  
-    provides the documentation of the library api.
--   [finmath.net special topics][]  
-    cover some selected topics with demo spreadsheets and uml diagrams.
-    Some topics come with additional documentations (technical papers).
-
+- [finmath lib Project documentation][]
+  provides the documentation of the library api.
+- [finmath lib API documentation][]
+  provides the documentation of the library api.
+- [finmath.net special topics][]
+  cover some selected topics with demo spreadsheets and uml diagrams. Some topics come with additional documentations (
+  technical papers).
 
 License
 -------
 
 The code of "finmath lib" and "finmath experiments" (packages
-`net.finmath.*`) are distributed under the [Apache License version
-2.0][], unless otherwise explicitly stated.
- 
+`net.finmath.*`) are distributed under the [Apache License version 2.0][], unless otherwise explicitly stated.
 
-  [finmath lib Project documentation]: http://finmath.net/finmath-lib/ 
-  [finmath lib API documentation]: http://finmath.net/finmath-lib/apidocs/
-  [finmath.net special topics]: http://www.finmath.net/topics
-  [Apache License version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
+
+[finmath lib Project documentation]: http://finmath.net/finmath-lib/
+
+[finmath lib API documentation]: http://finmath.net/finmath-lib/apidocs/
+
+[finmath.net special topics]: http://www.finmath.net/topics
+
+[Apache License version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
 
 
 Coding Conventions
 -------------------------------------
 
-We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding conventions. See https://wiki.eclipse.org/Coding_Conventions
+We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
+conventions. See https://wiki.eclipse.org/Coding_Conventions
 
 We deviate in some places. See [[codingconventions]] for details.

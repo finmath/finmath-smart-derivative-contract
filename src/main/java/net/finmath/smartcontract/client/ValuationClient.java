@@ -27,14 +27,14 @@ import java.nio.file.Files;
  * @author Dietmar Schnabel
  */
 public class ValuationClient {
-	
+
 	private static String ENDPOINT_URL;
 
 	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
-	
+
 	public static void main(String[] args) {
 		SDCStarter.init(args);
-		
+
 		logger.info("Starting Valuation Client");
 		ValuationClient valuationClient = new ValuationClient();
 
@@ -43,48 +43,48 @@ public class ValuationClient {
 		String jsonFile2 = mdFileStart + SDCProperties.getProperty(SDCConstants.JSON_FILE_2);
 		String fpmlFile1 = SDCProperties.getProperty(SDCConstants.DATA_PATH) + File.separator + SDCProperties.getProperty(SDCConstants.FPML_FILE_1);
 		ENDPOINT_URL = SDCProperties.getProperty(SDCConstants.URL_ENDPOINT_TWO_CURVES);
-		
-		logger.info("Using REST endpoint: " + ENDPOINT_URL );
-		
-		if(!Files.exists(new File(jsonFile1).toPath())) {
+
+		logger.info("Using REST endpoint: " + ENDPOINT_URL);
+
+		if (!Files.exists(new File(jsonFile1).toPath())) {
 			logger.error(jsonFile1 + " does not exist!!");
 			System.exit(1);
 		} else {
 			logger.info("Found: " + jsonFile1);
 		}
-		if(!Files.exists(new File(jsonFile2).toPath())) {
+		if (!Files.exists(new File(jsonFile2).toPath())) {
 			logger.error(jsonFile2 + " does not exist!!");
 			System.exit(1);
 		} else {
 			logger.info("Found: " + jsonFile2);
 		}
-		if(!Files.exists(new File(fpmlFile1).toPath())) {
+		if (!Files.exists(new File(fpmlFile1).toPath())) {
 			logger.error(fpmlFile1 + " does not exist!!");
 			System.exit(1);
 		} else {
 			logger.info("Found: " + fpmlFile1);
 		}
-		
+
 		FileSystemResource marketDataAsJson1 = new FileSystemResource(new File(jsonFile1));
 		FileSystemResource marketDataAsJson2 = new FileSystemResource(new File(jsonFile2));
-		FileSystemResource tradeAsFPML  = new FileSystemResource(new File(fpmlFile1));
+		FileSystemResource tradeAsFPML = new FileSystemResource(new File(fpmlFile1));
 
 		ResponseEntity<String> response = valuationClient.getValuation(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
 
 		String body = response.getBody();
-				
+
 		JsonParser parser = new JsonParser();
 		JsonObject json = parser.parse(body).getAsJsonObject();
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
+
 		logger.info(gson.toJson(json));
 	}
-	
+
 	private ResponseEntity<String> getValuation(FileSystemResource marketDataAsJson1, FileSystemResource marketDataAsJson2, FileSystemResource tradeAsFPML) {
 
 		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
-		
+
 		bodyMap.add(SDCConstants.MARKET_DATA_AS_JSON_1, marketDataAsJson1);
 		bodyMap.add(SDCConstants.MARKET_DATA_AS_JSON_2, marketDataAsJson2);
 		bodyMap.add(SDCConstants.TRADE_AS_FPML, tradeAsFPML);
@@ -93,8 +93,8 @@ public class ValuationClient {
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(ENDPOINT_URL,HttpMethod.POST, requestEntity, String.class);
-		
+		ResponseEntity<String> response = restTemplate.exchange(ENDPOINT_URL, HttpMethod.POST, requestEntity, String.class);
+
 		return response;
-    }
+	}
 }

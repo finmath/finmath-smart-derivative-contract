@@ -1,4 +1,3 @@
-
 package net.finmath.smartcontract.demo;
 
 
@@ -55,7 +54,7 @@ public class VisualiserSDC {
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
 		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 		// CSV Method returns same List
 		// final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromCSVFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
@@ -66,13 +65,13 @@ public class VisualiserSDC {
 		final String discountCurveKey = "discount-EUR-OIS";
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate().minusDays(170);
 
-		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(maturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey,discountCurveKey);
+		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e -> e.getMaturity().equals(maturityKey)).mapToDouble(e -> e.getQuote()).findAny().getAsDouble() / 100.;
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
 
-		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
+		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
-		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).sorted().collect(Collectors.toList());
+		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());
 
 		final VisualiserSDC sdcVisual = new VisualiserSDC();
 		sdcVisual.start();
@@ -81,8 +80,8 @@ public class VisualiserSDC {
 		final double marginBuffer = 120000;
 		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
 		Thread.sleep(1000);
-		for(int i=0; i<scenarioDates.size(); i++) {
-			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i-1), scenarioDates.get(i)) : 0.0;
+		for (int i = 0; i < scenarioDates.size(); i++) {
+			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;
 			//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;
@@ -143,16 +142,16 @@ public class VisualiserSDC {
 
 	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment) throws InterruptedException {
 		final List<Category2D> marginBase = new ArrayList<>();
-		marginBase.add(new Category2D("We", base+Math.min(0,+increment)));
-		marginBase.add(new Category2D("Counterpart", base+Math.min(0,-increment)));
+		marginBase.add(new Category2D("We", base + Math.min(0, +increment)));
+		marginBase.add(new Category2D("Counterpart", base + Math.min(0, -increment)));
 
 		final List<Category2D> marginRemoved = new ArrayList<>();
-		marginRemoved.add(new Category2D("We", -Math.min(0,+increment)));
-		marginRemoved.add(new Category2D("Counterpart", -Math.min(0,-increment)));
+		marginRemoved.add(new Category2D("We", -Math.min(0, +increment)));
+		marginRemoved.add(new Category2D("Counterpart", -Math.min(0, -increment)));
 
 		final List<Category2D> marginExcessed = new ArrayList<>();
-		marginExcessed.add(new Category2D("We", Math.max(0,+increment)));
-		marginExcessed.add(new Category2D("Counterpart", Math.max(0,-increment)));
+		marginExcessed.add(new Category2D("We", Math.max(0, +increment)));
+		marginExcessed.add(new Category2D("Counterpart", Math.max(0, -increment)));
 
 		final List<PlotableCategories> plotables = new ArrayList<>();
 		plotables.add(new PlotableCategories() {
@@ -164,7 +163,7 @@ public class VisualiserSDC {
 
 			@Override
 			public GraphStyle getStyle() {
-				return new GraphStyle(new Ellipse2D.Float(-1.0f,-1.0f,2.0f,2.0f), new BasicStroke(1.0f), new Color(0.0f, 0.0f, 1.0f));
+				return new GraphStyle(new Ellipse2D.Float(-1.0f, -1.0f, 2.0f, 2.0f), new BasicStroke(1.0f), new Color(0.0f, 0.0f, 1.0f));
 			}
 
 			@Override
@@ -211,7 +210,7 @@ public class VisualiserSDC {
 
 		plotMarginAccounts.update(plotables);
 
-		if(value != null) {
+		if (value != null) {
 			final List<Plotable2D> plotables2 = new ArrayList<>();
 			plotables2.add(new Plotable2D() {
 
@@ -222,7 +221,7 @@ public class VisualiserSDC {
 
 				@Override
 				public GraphStyle getStyle() {
-					return new GraphStyle(new Ellipse2D.Float(-3.0f,-3.0f,6.0f,6.0f), new BasicStroke(1.0f), new Color(1.0f, 0.0f, 0.0f));
+					return new GraphStyle(new Ellipse2D.Float(-3.0f, -3.0f, 6.0f, 6.0f), new BasicStroke(1.0f), new Color(1.0f, 0.0f, 0.0f));
 				}
 
 				@Override
@@ -234,7 +233,7 @@ public class VisualiserSDC {
 			seriesMarketValues.add(new Point2D(x, value));
 
 			plotMarketValue.update(plotables2);
-			plotMarketValue.setTitle("Market Value (01.05.2008-" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +")");
+			plotMarketValue.setTitle("Market Value (01.05.2008-" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ")");
 		}
 
 		Thread.sleep(500);

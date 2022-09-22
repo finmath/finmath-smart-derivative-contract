@@ -20,33 +20,33 @@ public class CalibrationParserDataPoints implements CalibrationParser {
 	}
 
 	private Optional<CalibrationSpecProvider> parseDatapointIfPresent(final CalibrationDatapoint datapoint) {
-		if (!maturityGrid.contains(datapoint.getMaturity()))
-		{
+		if (!maturityGrid.contains(datapoint.getMaturity())) {
 			return Optional.empty();
 		}
 		switch (datapoint.getCurveName()) {
-		case "ESTR": case "EONIA":
-			if (datapoint.getProductName().equals("Swap-Rate"))
-				return Optional.of(new CalibrationSpecProviderOis(datapoint.getMaturity(), "annual", datapoint.getQuote() / 100.0));
-			else
-				return Optional.empty();
-		case "Euribor6M":
-			if (datapoint.getProductName().equalsIgnoreCase("Swap-Rate"))
-				return Optional.of(new CalibrationSpecProviderSwap("6M", "semiannual", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-			if (datapoint.getProductName().equalsIgnoreCase("Forward-Rate-Agreement"))
-				return Optional.of(new CalibrationSpecProviderFRA("6M",datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-			if (datapoint.getProductName().equalsIgnoreCase("Cash"))
-				return Optional.of(new CalibrationSpecProviderDeposit("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-			else
-				return Optional.empty();
-		case "Euribor1M":
-			return Optional.of(new CalibrationSpecProviderSwap("1M", "monthly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
-		case "Euribor3M":
-			return Optional.of(new CalibrationSpecProviderSwap("3M", "quarterly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+			case "ESTR":
+			case "EONIA":
+				if (datapoint.getProductName().equals("Swap-Rate"))
+					return Optional.of(new CalibrationSpecProviderOis(datapoint.getMaturity(), "annual", datapoint.getQuote() / 100.0));
+				else
+					return Optional.empty();
+			case "Euribor6M":
+				if (datapoint.getProductName().equalsIgnoreCase("Swap-Rate"))
+					return Optional.of(new CalibrationSpecProviderSwap("6M", "semiannual", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+				if (datapoint.getProductName().equalsIgnoreCase("Forward-Rate-Agreement"))
+					return Optional.of(new CalibrationSpecProviderFRA("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+				if (datapoint.getProductName().equalsIgnoreCase("Cash"))
+					return Optional.of(new CalibrationSpecProviderDeposit("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+				else
+					return Optional.empty();
+			case "Euribor1M":
+				return Optional.of(new CalibrationSpecProviderSwap("1M", "monthly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+			case "Euribor3M":
+				return Optional.of(new CalibrationSpecProviderSwap("3M", "quarterly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
 
-		default:
-			//TODO: Log that we ignore something
-			return Optional.empty();
+			default:
+				//TODO: Log that we ignore something
+				return Optional.empty();
 		}
 	}
 }

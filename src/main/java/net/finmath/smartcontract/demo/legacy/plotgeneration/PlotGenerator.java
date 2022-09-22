@@ -6,13 +6,12 @@ import java.awt.event.ActionEvent;
 
 
 /**
- *  Interface for generationg a JFREEChart
+ * Interface for generationg a JFREEChart
  *
  * @author Peter Kohl-Landgraf
  */
 public interface PlotGenerator {
 	/**
-	 *
 	 * @param event action event
 	 * @return a new plot
 	 */

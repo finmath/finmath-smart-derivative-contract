@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 
 /**
- *  Demo Launcher, generating historical Scenarios, building a DataGenerator, and starting Visualiser
+ * Demo Launcher, generating historical Scenarios, building a DataGenerator, and starting Visualiser
  *
  * @author Peter Kohl-Landgraf
  */
@@ -36,7 +36,7 @@ public class DemoLauncher {
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
 		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
 		final double notional = 1.0E7;
 		final String maturityKey = "5Y";
@@ -44,16 +44,16 @@ public class DemoLauncher {
 		final String discountCurveKey = "discount-EUR-OIS";
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 
-		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e->e.getMaturity().equals(maturityKey)).mapToDouble(e->e.getQuote()).findAny().getAsDouble() / 100.;
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate,maturityKey,fixRate,true,forwardCurveKey,discountCurveKey);
+		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e -> e.getMaturity().equals(maturityKey)).mapToDouble(e -> e.getQuote()).findAny().getAsDouble() / 100.;
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
 
-		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
+		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);
 
-		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).collect(Collectors.toList());
+		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).collect(Collectors.toList());
 
-		final ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance = new ChartDataGeneratorSDCAccountBalance(30000,oracle,scenarioDates);
+		final ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance = new ChartDataGeneratorSDCAccountBalance(30000, oracle, scenarioDates);
 		//ChartDataGeneratorSDCAccountBalance chartDataGeneratorSDCAccountBalance2 = new ChartDataGeneratorSDCAccountBalance(30000,oracle,scenarioDates);
-		final ChartDataGeneratorMarketValue marketValues = new ChartDataGeneratorMarketValue(oracle,scenarioDates);
+		final ChartDataGeneratorMarketValue marketValues = new ChartDataGeneratorMarketValue(oracle, scenarioDates);
 		final StackedBarchartGenerator barchartGenerator = new StackedBarchartGenerator(chartDataGeneratorSDCAccountBalance);
 		//StackedBarchartGenerator barchartGenerator2 = new StackedBarchartGenerator(chartDataGeneratorSDCAccountBalance2);
 		final TimeSeriesChartGenerator timeSeriesChartGenerator = new TimeSeriesChartGenerator(marketValues);
