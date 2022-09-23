@@ -2,7 +2,7 @@ a {
     color: #900;
 }
 
-.nav-list>.active>a, .nav-list>.active>a:hover {
+.nav-list > .active > a, .nav-list > .active > a:hover {
     color: #fff;
     background-color: #900;
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!-- Schema definiton of a smart derivative contract -->
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="smartderivativecontract">
         <xs:complexType>
             <xs:sequence>
@@ -54,7 +55,8 @@
                                         <xs:element name="symbols">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element type="xs:string" name="symbol" maxOccurs="unbounded" minOccurs="0"/>
+                                                    <xs:element type="xs:string" name="symbol" maxOccurs="unbounded"
+                                                                minOccurs="0"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -66,7 +68,7 @@
                 </xs:element>
                 <xs:element type="xs:string" name="underlying">
                     <xs:annotation>
-                        <xs:documentation> fpml here </xs:documentation>
+                        <xs:documentation>fpml here</xs:documentation>
                     </xs:annotation>
                 </xs:element>
             </xs:sequence>

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * <ul>
  * <li>a valuation oracle, implementing <code>net.finmath.smartcontract.oracle.ValuationOracle</code></li>
  * </ul>
- *
+ * <p>
  * The accrual of the collateral is assumed to e consistent with the valuation, hence, the accrued collateral
  * can be determined from calling <code>getValue(marginPeriodEnd, marginPeriodStart)</code>.
  *
@@ -34,7 +34,7 @@ public class SmartDerivativeContractSettlementOracle {
 	 * Get the margin of the contract based on the valuation oracles.
 	 *
 	 * @param marginPeriodStart Period start time of the margin period.
-	 * @param marginPeriodEnd Period end time of the margin period.
+	 * @param marginPeriodEnd   Period end time of the margin period.
 	 * @return The margin.
 	 */
 	public Double getMargin(final LocalDateTime marginPeriodStart, final LocalDateTime marginPeriodEnd) {

@@ -34,10 +34,10 @@ public class IRScenarioGenerator {
 	/**
 	 * Static method which parses a csv file - using jackson csv mapper - and converts it to a list of market data scenarios
 	 *
-	 * @param fileName Name of the input file.
+	 * @param fileName      Name of the input file.
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException Thrown if market data file is not found.
+	 * @throws IOException                  Thrown if market data file is not found.
 	 * @throws UnsupportedEncodingException Thrown if market data file has wrong encoding.
 	 */
 	public static final List<IRMarketDataScenario> getScenariosFromCSVFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
@@ -46,19 +46,19 @@ public class IRScenarioGenerator {
 		MappingIterator<MarketDataObservationPojo> iterator = mapper.readerFor(MarketDataObservationPojo.class).with(csvSchema).readValues(new FileReader(fileName));
 		List<MarketDataObservationPojo> asPojoList = iterator.readAll();
 
-		Map<String, Map<String, Set<MarketDataObservationPojo>> > mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataObservationPojo::getScenarioDate,groupingBy(MarketDataObservationPojo::getCurveKey,toSet())));
+		Map<String, Map<String, Set<MarketDataObservationPojo>>> mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataObservationPojo::getScenarioDate, groupingBy(MarketDataObservationPojo::getCurveKey, toSet())));
 
 		final List<IRMarketDataScenario> scenarioList = mapCalibDatapointsPerDate.entrySet().stream()
 				.map(
-						scenarioData->{
-							final Map<String,Set<MarketDataObservationPojo> > rawMap = scenarioData.getValue();
-							final Map<String,IRCurveData> map = rawMap.entrySet().stream().collect(Collectors.toMap(e->e.getKey(),e->{
-								return new IRCurveData(e.getKey(),e.getValue().stream().map(x->x.toCalibrationDataPoint()).collect(Collectors.toSet()));
+						scenarioData -> {
+							final Map<String, Set<MarketDataObservationPojo>> rawMap = scenarioData.getValue();
+							final Map<String, IRCurveData> map = rawMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
+								return new IRCurveData(e.getKey(), e.getValue().stream().map(x -> x.toCalibrationDataPoint()).collect(Collectors.toSet()));
 							}));
 							//final String productKey = scenarioData
 							final String dateString = scenarioData.getKey();
-							final LocalDate date = LocalDate.parse(dateString,dateFormatter);
-							final LocalDateTime dateTime = date.atTime(17,0);
+							final LocalDate date = LocalDate.parse(dateString, dateFormatter);
+							final LocalDateTime dateTime = date.atTime(17, 0);
 							final IRMarketDataScenario scenario = new IRMarketDataScenario(map, dateTime);
 
 							return scenario;
@@ -73,10 +73,10 @@ public class IRScenarioGenerator {
 	/**
 	 * Static method which parses a json file and converts it to a list of market data scenarios
 	 *
-	 * @param fileName Name of the input file.
+	 * @param fileName      Name of the input file.
 	 * @param dateFormatter Date formatter to be used.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException Thrown if market data file is not found.
+	 * @throws IOException                  Thrown if market data file is not found.
 	 * @throws UnsupportedEncodingException Thrown if market data file is in wrong encoding.
 	 */
 	public static final List<IRMarketDataScenario> getScenariosFromJsonFile(final String fileName, final DateTimeFormatter dateFormatter) throws UnsupportedEncodingException, IOException {
@@ -84,15 +84,15 @@ public class IRScenarioGenerator {
 			final String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
 			final Gson gson = new Gson();
 
-			final Map<String,Map<String,Map<String,Map<String,Double>>>>  timeSeriesDatamap = gson.fromJson(content, new HashMap<String,Map<String,Map<String,Map<String,Double>>>>().getClass());
+			final Map<String, Map<String, Map<String, Map<String, Double>>>> timeSeriesDatamap = gson.fromJson(content, new HashMap<String, Map<String, Map<String, Map<String, Double>>>>().getClass());
 
 			final List<IRMarketDataScenario> scenarioList = timeSeriesDatamap.entrySet().stream()
 					.map(
-							scenarioData->{
-								final Map<String,IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->new IRCurveData(entry.getKey(),entry.getValue())));
+							scenarioData -> {
+								final Map<String, IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> new IRCurveData(entry.getKey(), entry.getValue())));
 								final String dateString = scenarioData.getKey();
-								final LocalDate date = LocalDate.parse(dateString,dateFormatter);
-								final LocalDateTime dateTime = date.atTime(17,0);
+								final LocalDate date = LocalDate.parse(dateString, dateFormatter);
+								final LocalDateTime dateTime = date.atTime(17, 0);
 								final IRMarketDataScenario scenario = new IRMarketDataScenario(map, dateTime);
 
 								return scenario;
@@ -101,8 +101,7 @@ public class IRScenarioGenerator {
 					.collect(Collectors.toList());
 
 			return scenarioList;
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
 		}

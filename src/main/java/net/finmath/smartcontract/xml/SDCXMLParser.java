@@ -53,7 +53,7 @@ public class SDCXMLParser {
 
 		private final LocalDateTime tradeDate;
 		private final List<Party> counterparties;
-		private final Map<String, Double>  marginAccountInitialByPartyID;
+		private final Map<String, Double> marginAccountInitialByPartyID;
 		private final Map<String, Double> penaltyFeeInitialByPartyID;
 
 		private final Node underlying;
@@ -87,7 +87,10 @@ public class SDCXMLParser {
 		}
 	}
 
-	private SDCXMLParser() {};
+	private SDCXMLParser() {
+	}
+
+	;
 
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
@@ -110,16 +113,16 @@ public class SDCXMLParser {
 
 		NodeList partiesNodeList = document.getElementsByTagName("parties").item(0).getChildNodes();
 		List<Node> partyNodes = nodeChildsByName(document.getElementsByTagName("parties").item(0), "party");
-		for(Node partyNode : partyNodes) {
+		for (Node partyNode : partyNodes) {
 
 			Party party = new Party(
 					nodeValueByName(partyNode, "id", String.class),
 					nodeValueByName(partyNode, "name", String.class),
 					null
-					);
+			);
 
-			Double marginAccountInitial = nodeValueByName(nodeChildByName(partyNode, "marginAccount"),"value", Double.class);
-			Double penaltyFeeInitial = nodeValueByName(nodeChildByName(partyNode, "penaltyFee"),"value", Double.class);
+			Double marginAccountInitial = nodeValueByName(nodeChildByName(partyNode, "marginAccount"), "value", Double.class);
+			Double penaltyFeeInitial = nodeValueByName(nodeChildByName(partyNode, "penaltyFee"), "value", Double.class);
 
 			parties.add(party);
 			marginAccountInitialByPartyID.put(party.getId(), marginAccountInitial);
@@ -134,9 +137,9 @@ public class SDCXMLParser {
 		// Iterate
 		List<Node> nodes = new ArrayList<>();
 		NodeList childs = node.getChildNodes();
-		for(int i=0; i<childs.getLength(); i++) {
+		for (int i = 0; i < childs.getLength(); i++) {
 			Node childNode = childs.item(i);
-			if(name.equals(childNode.getNodeName())) {
+			if (name.equals(childNode.getNodeName())) {
 				nodes.add(childNode);
 			}
 		}
@@ -146,9 +149,9 @@ public class SDCXMLParser {
 	private static Node nodeChildByName(Node node, String name) {
 		// Iterate
 		NodeList nodes = node.getChildNodes();
-		for(int i=0; i<nodes.getLength(); i++) {
+		for (int i = 0; i < nodes.getLength(); i++) {
 			Node childNode = nodes.item(i);
-			if(name.equals(childNode.getNodeName())) {
+			if (name.equals(childNode.getNodeName())) {
 				return childNode;
 			}
 		}
@@ -160,17 +163,15 @@ public class SDCXMLParser {
 
 		// Iterate
 		NodeList nodes = node.getChildNodes();
-		for(int i=0; i<nodes.getLength(); i++) {
+		for (int i = 0; i < nodes.getLength(); i++) {
 			Node childNode = nodes.item(i);
-			if(name.equals(childNode.getNodeName())) {
+			if (name.equals(childNode.getNodeName())) {
 				String value = childNode.getTextContent();
-				if(type.equals(String.class)) {
-					return (T)value;
-				}
-				else if(type.equals(Double.class)) {
-					return (T)Double.valueOf(value);
-				}
-				else {
+				if (type.equals(String.class)) {
+					return (T) value;
+				} else if (type.equals(Double.class)) {
+					return (T) Double.valueOf(value);
+				} else {
 					throw new IllegalArgumentException("Type not supported");
 				}
 			}

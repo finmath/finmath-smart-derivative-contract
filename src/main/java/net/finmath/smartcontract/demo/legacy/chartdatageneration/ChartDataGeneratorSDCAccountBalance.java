@@ -14,12 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
- *  This is a very simple dataset generator which generates ChartData (based on an ActionEvent) for a SDC Account Balance Simulation
+ * This is a very simple dataset generator which generates ChartData (based on an ActionEvent) for a SDC Account Balance Simulation
  *
  * @author Peter Kohl-Landgraf
- *
  */
 public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
@@ -35,7 +33,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 	private processStates nextProcessState;
 	private LocalDateTime initTime;
 
-	enum processStates{
+	enum processStates {
 		initialisation,
 		marginCheck,
 		settlement,
@@ -43,7 +41,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 	}
 
 	public ChartDataGeneratorSDCAccountBalance(final double initialBalance, final ValuationOraclePlainSwapHistoricScenarios oracle, final List<LocalDateTime> scenarioDates) {
-		this.initialBalance=initialBalance;
+		this.initialBalance = initialBalance;
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;
 		nextProcessState = processStates.initialisation;
@@ -54,23 +52,23 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
 
 		double[][] data = new double[2][2];
-		final List<Color> accountColors = new ArrayList<>() ;
+		final List<Color> accountColors = new ArrayList<>();
 		String title = "Default";
 
 
-		if (initTime==null){
+		if (initTime == null) {
 			data = new double[][]{
-				{initialBalance, initialBalance},
-				{0, 0},
+					{initialBalance, initialBalance},
+					{0, 0},
 			};
 			this.nextProcessState = processStates.marginCheck;
-			this.initTime=LocalDateTime.now();
+			this.initTime = LocalDateTime.now();
 
 			ChartData chartData = new ChartData(DatasetUtilities.createCategoryDataset("Buffer ", "Bank", data));
 			title = "Initialisation";
 			accountColors.add(colorMarginBuffer);
 			accountColors.add(colorMarginBuffer);
-			chartData.addProperty(ChartData.propertyKey.chartTitle,title);
+			chartData.addProperty(ChartData.propertyKey.chartTitle, title);
 			chartData = chartData.addProperty(ChartData.propertyKey.colorListStackedBar, accountColors);
 			nextProcessState = processStates.marginCheck;
 			return chartData;
@@ -151,14 +149,12 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			nextProcessState = processStates.marginCheck;
 		} else {
 		}
-		final CategoryDataset dataset =  DatasetUtilities.createCategoryDataset("Buffer ", "Bank", data);
+		final CategoryDataset dataset = DatasetUtilities.createCategoryDataset("Buffer ", "Bank", data);
 		ChartData chartData = new ChartData(dataset);
-		chartData.addProperty(ChartData.propertyKey.chartTitle,title);
+		chartData.addProperty(ChartData.propertyKey.chartTitle, title);
 		chartData = chartData.addProperty(ChartData.propertyKey.colorListStackedBar, accountColors);
 		return chartData;
 	}
-
-
 
 
 }

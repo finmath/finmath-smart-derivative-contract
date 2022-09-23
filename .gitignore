@@ -257,3 +257,9 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/java,linux,macos,maven,windows,eclipse,intellij
+/finmath-smart-derivative-contract.iml
+/.idea/compiler.xml
+/.idea/encodings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml

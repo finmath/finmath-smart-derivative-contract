@@ -1,17 +1,7 @@
-
 package net.finmath.smartcontract.valuation;
 
 
-
-import java.io.File;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.google.gson.Gson;
-
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.modelling.DescribedProduct;
@@ -23,7 +13,6 @@ import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
-
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCDateUtil;
@@ -54,14 +43,15 @@ public class MarginCalculator {
 
 	private static final Logger logger = LoggerFactory.getLogger(MarginCalculator.class);
 
-	private  FPMLParser parser;
-	private  InterestRateSwapProductDescriptor productDescriptor;
-	private  ContractValuation contractValuation;
-	private  boolean isTradeStartToday; 
+	private FPMLParser parser;
+	private InterestRateSwapProductDescriptor productDescriptor;
+	private ContractValuation contractValuation;
+	private boolean isTradeStartToday;
 
 	private static final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-	public MarginCalculator() { }
+	public MarginCalculator() {
+	}
 
 	/**
 	 * Calculates the margin between t_2 and t_1.
@@ -72,43 +62,44 @@ public class MarginCalculator {
 	 * @return the margin (Float).
 	 * @throws Exception Exception
 	 */
-    public double getValue (String jsonFileName1, String jsonFileName2, File fpmlFile) throws Exception {
-    	parser = new FPMLParser("party1", "discount-EUR-OIS","forward-EUR-6M", fpmlFile);
-    	return calculateMarginFromFile(jsonFileName1, jsonFileName2);
-    }
-    
-    /**
+	public double getValue(String jsonFileName1, String jsonFileName2, File fpmlFile) throws Exception {
+		parser = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-6M", fpmlFile);
+		return calculateMarginFromFile(jsonFileName1, jsonFileName2);
+	}
+
+	/**
 	 * Calculates the margin between t_2 and t_1.
 	 *
 	 * @param jsonString1 Curve name at time t_1.
 	 * @param jsonString2 Curve name at time t_2.
-	 * @param fpmlString      Trade.
+	 * @param fpmlString  Trade.
 	 * @return the margin (Float).
 	 * @throws Exception Exception
 	 */
-    public double getValue (String jsonString1, String jsonString2, String fpmlString) throws Exception {
-    	parser = new FPMLParser("party1", "discount-EUR-OIS","forward-EUR-6M", fpmlString);
+	public double getValue(String jsonString1, String jsonString2, String fpmlString) throws Exception {
+		parser = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-6M", fpmlString);
 //    	isTradeStartToday = validateStartDate(fpmlString);
-    	
-    	return calculateMarginFromString(jsonString1, jsonString2);
-    }
 
-    /**
+		return calculateMarginFromString(jsonString1, jsonString2);
+	}
+
+	/**
 	 * @return the ContractValuation.
 	 */
-    public ContractValuation getContractValuation() {
-    	return contractValuation;
-    }
+	public ContractValuation getContractValuation() {
+		return contractValuation;
+	}
 
-    /**
+	/**
 	 * @return the ContractValuation as JSON.
 	 */
-    public String getContractValuationAsJSON() {
-    	
-    	Gson gson = new Gson();
-    	String json = gson.toJson(contractValuation);
-    	return json;
-    }
+	public String getContractValuationAsJSON() {
+
+		Gson gson = new Gson();
+		String json = gson.toJson(contractValuation);
+		return json;
+	}
+
 	/**
 	 * Calculates the margin between t_2 and t_1.
 	 *
@@ -118,22 +109,22 @@ public class MarginCalculator {
 	 * @throws Exception Exception
 	 */
 	private double calculateMarginFromFile(String jsonFileName1, String jsonFileName2) throws Exception {
-		
+
 		productDescriptor = (InterestRateSwapProductDescriptor) parser.getProductDescriptor();
-		
+
 		final LocalDate startDate = parser.getStartDate().plusDays(-1);
 		final LocalDate maturity = parser.getMaturityDate().plusDays(1);
-		
+
 		// Generate the scenario list
-		
-		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(jsonFileName1,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-		List<IRMarketDataScenario> scenarioList2 = IRScenarioGenerator.getScenariosFromJsonFile(jsonFileName2,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+
+		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(jsonFileName1, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		List<IRMarketDataScenario> scenarioList2 = IRScenarioGenerator.getScenariosFromJsonFile(jsonFileName2, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 		scenarioList.addAll(scenarioList2);
-		
-		return calculateMargin( scenarioList);
-		
-	}	
-	
+
+		return calculateMargin(scenarioList);
+
+	}
+
 	/**
 	 * Calculates the margin between t_2 and t_1.
 	 *
@@ -142,26 +133,26 @@ public class MarginCalculator {
 	 * @return A String containing t_2 (Date) and the margin (Float).
 	 * @throws Exception Exception
 	 */
-	private  double calculateMarginFromString(String jsonString1, String jsonString2) throws Exception {
-		
+	private double calculateMarginFromString(String jsonString1, String jsonString2) throws Exception {
+
 		productDescriptor = (InterestRateSwapProductDescriptor) parser.getProductDescriptor();
-		
+
 		final LocalDate startDate = parser.getStartDate().plusDays(-1);
 		final LocalDate maturity = parser.getMaturityDate().plusDays(1);
 
 		// Generate the scenario list
-		
+
 //		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonString(jsonString1,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 //		List<IRMarketDataScenario> scenarioList2 = IRScenarioGenerator.getScenariosFromJsonString(jsonString2,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonString(jsonString1,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-		List<IRMarketDataScenario> scenarioList2 = IRScenarioGenerator.getScenariosFromJsonString(jsonString2,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());		
-		
+		List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonString(jsonString1, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		List<IRMarketDataScenario> scenarioList2 = IRScenarioGenerator.getScenariosFromJsonString(jsonString2, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+
 		scenarioList.addAll(scenarioList2);
-		
-		return calculateMargin( scenarioList);
-		
+
+		return calculateMargin(scenarioList);
+
 	}
-	
+
 	/**
 	 * Calculates the margin for a list of market data scenarios.
 	 *
@@ -169,57 +160,56 @@ public class MarginCalculator {
 	 * @return A String containing the last date and the margin (Float).
 	 * @throws Exception Exception
 	 */
-	private  double calculateMargin(List<IRMarketDataScenario> scenarioList) throws Exception {
-		
-		
+	private double calculateMargin(List<IRMarketDataScenario> scenarioList) throws Exception {
+
+
 		TradeDescriptor tradeDescriptor = parser.getTradeDescriptor();
-		
+
 		LocalDate referenceDate = tradeDescriptor.getTradeDate();
-		InterestRateSwapLegProductDescriptor legReceiver	= (InterestRateSwapLegProductDescriptor) productDescriptor.getLegReceiver();
-		InterestRateSwapLegProductDescriptor legPayer		= (InterestRateSwapLegProductDescriptor) productDescriptor.getLegPayer();
+		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) productDescriptor.getLegReceiver();
+		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) productDescriptor.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
 		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
 		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
 
-		Swap swap = new Swap((SwapLeg)legReceiverProduct, (SwapLeg)legPayerProduct);
-		
+		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
 
-		double notional=parser.getNotional();
-		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap,notional,scenarioList);
+
+		double notional = parser.getNotional();
+		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
-		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario->scenario.getDate()).sorted().collect(Collectors.toList());
+		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());
 
-		
+
 		double valueWithCurves1 = 0.0;
 		double valueWithCurves2 = 0.0;
 		double marginCall = 0.0;
-		
+
 		if (!isTradeStartToday) {
 			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
 			valueWithCurves2 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(0));
-			marginCall 		 = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); // to remove
+			marginCall = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); // to remove
 		} else {
 			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
 			marginCall = valueWithCurves1;
 		}
-		
+
 //		valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
 //		valueWithCurves2 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(0));
 //		marginCall 		 = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); 	// to remove
 		//String result = "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(1)).toString() + "\t" + String.valueOf(marginCall);
-		
 
-		contractValuation = new ContractValuation(LocalDateTime.now() , tradeDescriptor.getLegalEntitiesExternalReferences(), tradeDescriptor.getLegalEntitiesNames(), valueWithCurves1, valueWithCurves2, marginCall);
+
+		contractValuation = new ContractValuation(LocalDateTime.now(), tradeDescriptor.getLegalEntitiesExternalReferences(), tradeDescriptor.getLegalEntitiesNames(), valueWithCurves1, valueWithCurves2, marginCall);
 //		contractValuation = new ContractValuation(scenarioDates.get(1), tradeDescriptor.getLegalEntitiesExternalReferences(), tradeDescriptor.getLegalEntitiesNames(), valueWithCurves1, valueWithCurves2, marginCall);
 		contractValuation.setStartDate(parser.getStartDate().format(DateTimeFormatter.ofPattern(SDCConstants.DATE_FORMAT_yyyyMMdd)));
 		contractValuation.setMaturityDate(parser.getMaturityDate().format(DateTimeFormatter.ofPattern(SDCConstants.DATE_FORMAT_yyyyMMdd)));
 		contractValuation.setLegReceiver(tradeDescriptor.getLegReceiver());
-		
-		return marginCall;
-		
-	}
 
+		return marginCall;
+
+	}
 
 
 	public boolean validateStartDate(String fpml) {
@@ -236,7 +226,7 @@ public class MarginCalculator {
 //        	return false;
 //        }
 
-		if(date.equals(now)){
+		if (date.equals(now)) {
 			logger.info("Trade date of the trade is: " + now + ".  The trade will  be valued with T - 0!");
 			return true;
 		}

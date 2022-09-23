@@ -9,8 +9,8 @@ public class CalibrationDatapoint {
 	private final String maturity;
 	private final double quote;
 
-	public CalibrationDatapoint(final String curveName,final String productName, final String maturity, final double quote) {
-		this.curveName=curveName;
+	public CalibrationDatapoint(final String curveName, final String productName, final String maturity, final double quote) {
+		this.curveName = curveName;
 		this.productName = productName;
 		this.maturity = maturity;
 		this.quote = quote;

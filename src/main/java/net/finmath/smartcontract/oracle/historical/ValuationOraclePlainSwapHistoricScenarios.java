@@ -37,11 +37,11 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
 	 *
-	 * @param product The underlying swap product.
+	 * @param product        The underlying swap product.
 	 * @param notionalAmount The notional of the product.
-	 * @param scenarioList The list of market data scenarios to be used for valuation.
+	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataScenario> scenarioList){
+	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataScenario> scenarioList) {
 		this.notionalAmount = notionalAmount;
 		this.product = product;
 		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
@@ -55,7 +55,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 
 	@Override
 	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
-		final Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario->scenario.getDate().equals(marketDataTime)).findAny();
+		final Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
 			final IRMarketDataScenario scenario = optionalScenario.get();
 			final CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
@@ -64,16 +64,14 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
 				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
-				final double evaluationTime = 0.0;	// Time relative to models reference date (which agrees with evaluationDate).
+				final double evaluationTime = 0.0;    // Time relative to models reference date (which agrees with evaluationDate).
 				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
 				calibratedModel = null;
 				return valueWithCurves;
-			}
-			catch(final Exception e){
+			} catch (final Exception e) {
 				return null;
 			}
-		}
-		else{
+		} else {
 			return null;
 		}
 	}

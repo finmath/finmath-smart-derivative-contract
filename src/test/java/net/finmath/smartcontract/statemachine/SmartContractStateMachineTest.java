@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Christian Fries
- *
  */
 class SmartContractStateMachineTest {
 

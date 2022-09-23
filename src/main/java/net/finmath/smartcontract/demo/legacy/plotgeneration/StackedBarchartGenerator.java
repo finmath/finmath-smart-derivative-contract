@@ -15,7 +15,7 @@ import java.util.List;
 
 
 /**
- *  A simple generator for generating a stacked bar chart
+ * A simple generator for generating a stacked bar chart
  *
  * @author Peter Kohl-Landgraf
  */

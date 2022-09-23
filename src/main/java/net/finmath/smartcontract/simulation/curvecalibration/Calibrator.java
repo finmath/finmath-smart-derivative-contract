@@ -23,7 +23,7 @@ public class Calibrator {
 
 	/**
 	 * @param providers Stream providing calibration specs (calibration instruments)
-	 * @param ctx The context providing reference date and accuracy.
+	 * @param ctx       The context providing reference date and accuracy.
 	 * @return If the calibration problem can be solved the optional wraps a AnalyticModel implementation with the calibrated model; if the problem is not solvable with respect to the given accuracy, the optional will be empty.
 	 * @throws CloneNotSupportedException Thrown if model calibration fails.
 	 * @see net.finmath.marketdata.model.AnalyticModel
@@ -39,9 +39,8 @@ public class Calibrator {
 		}
 	}
 
-	private Curve[] getCalibrationCurves(final CalibrationContext ctx)
-	{
-		return new Curve[] { getOisDiscountCurve(ctx), getOisForwardCurve(ctx), get1MForwardCurve(ctx), get3MForwardCurve(ctx), get6MForwardCurve(ctx) };
+	private Curve[] getCalibrationCurves(final CalibrationContext ctx) {
+		return new Curve[]{getOisDiscountCurve(ctx), getOisForwardCurve(ctx), get1MForwardCurve(ctx), get3MForwardCurve(ctx), get6MForwardCurve(ctx)};
 	}
 
 	private DiscountCurveInterpolation getOisDiscountCurve(final CalibrationContext ctx) {

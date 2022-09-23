@@ -17,17 +17,17 @@ import java.util.stream.Stream;
 public class IRMarketDataScenario {
 
 	LocalDateTime scenarioDate;
-	Map<String,IRCurveData>  curveDataMap;
+	Map<String, IRCurveData> curveDataMap;
 
 	//final String productKey; // = "Swap-Rate";
 
-	public IRMarketDataScenario(final Map<String,IRCurveData> curveDataMap, final LocalDateTime scenarioDate){
+	public IRMarketDataScenario(final Map<String, IRCurveData> curveDataMap, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
 		this.curveDataMap = curveDataMap;
 		//this.productKey = productKey;
 	}
 
-	public IRCurveData getCurveData(final String curveKey){
+	public IRCurveData getCurveData(final String curveKey) {
 		return curveDataMap.get(curveKey);
 	}
 
@@ -39,7 +39,7 @@ public class IRMarketDataScenario {
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.
 	 */
-	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(final CalibrationParser parser){
+	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(final CalibrationParser parser) {
 
 		final Stream<CalibrationDatapoint> calibrationDatapointStream = this.curveDataMap.entrySet().stream().flatMap(curveDataEntry -> {
 			final Stream<CalibrationDatapoint> calibrationDatapointSet = curveDataEntry.getValue().getDataPointStream();//.stream();//.entrySet().stream().map(entry->new CalibrationDatapoint(curveKey,entry.getKey(),entry.getValue()));//.collect(Collectors.toSet());
@@ -49,7 +49,7 @@ public class IRMarketDataScenario {
 
 	}
 
-	public LocalDateTime getDate(){
+	public LocalDateTime getDate() {
 		return scenarioDate;
 	}
 }

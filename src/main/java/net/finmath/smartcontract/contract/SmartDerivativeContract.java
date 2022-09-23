@@ -8,7 +8,6 @@ package net.finmath.smartcontract.contract;
 
 /**
  * @author Christian Fries
- *
  */
 public class SmartDerivativeContract {
 

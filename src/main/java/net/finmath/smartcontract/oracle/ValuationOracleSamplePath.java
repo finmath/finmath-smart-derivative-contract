@@ -30,7 +30,7 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	 * by extracting a given sample path.
 	 *
 	 * @param stochasticValuationOracle A given stochastic oracle.
-	 * @param path The sample path to extract from the stochastic oracle.
+	 * @param path                      The sample path to extract from the stochastic oracle.
 	 */
 	public ValuationOracleSamplePath(final StochasticValuationOracle stochasticValuationOracle, final int path) {
 		this.stochasticValuationOracle = stochasticValuationOracle;

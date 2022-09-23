@@ -19,7 +19,7 @@ import java.util.List;
  * <li> \( t^{\text{marginCheck}}_{i} \) - the time at which the margin accounts are checked for validity</li>
  * <li> \( [ t^{\text{accountAccessStart}}_{i}, t^{\text{accountAccessEnd}}_{i} \) - the time interval at which the margin accounts may be accessed</li>
  * </ul>
- *
+ * <p>
  * The interface provides these times in a collection. Note that the time \( t^{\text{accountAccessEnd}}_{i} \) is provided
  * as an offset from \( t^{\text{accountAccessStart}}_{i} \).
  *
@@ -35,8 +35,11 @@ public interface SmartDerivativeContractSchedule {
 	 */
 	interface EventTimes {
 		LocalDateTime getSettementTime();
+
 		LocalDateTime getAccountAccessAllowedStart();
+
 		Duration getAccountAccessAllowedPeriod();
+
 		LocalDateTime getMarginCheckTime();
 	}
 

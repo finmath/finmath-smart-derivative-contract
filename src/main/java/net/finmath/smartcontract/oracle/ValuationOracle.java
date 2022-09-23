@@ -18,7 +18,7 @@ public interface ValuationOracle {
 
 	/**
 	 * Provides the value of the Oracle at a given evaluation time using market data from a given time.
-	 *
+	 * <p>
 	 * Note: The use of two different dates allows to model the accrual/discounting at a (market data given) accrual rate.
 	 *
 	 * @param evaluationTime The evaluation time.
@@ -29,12 +29,11 @@ public interface ValuationOracle {
 
 	/**
 	 * Provides the value of the Oracle at a given evaluation time.
-	 *
+	 * <p>
 	 * Note: The use of two different dates allows to model the accrual/discounting at a (market data given) accrual rate.
 	 *
 	 * @param evaluationTime The evaluation time.
 	 * @param marketDataTime The market data time.
-	 *
 	 * @return The amount.
 	 */
 	MonetaryAmount getAmount(LocalDateTime evaluationTime, LocalDateTime marketDataTime);

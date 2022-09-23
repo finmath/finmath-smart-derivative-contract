@@ -1,5 +1,5 @@
 /*
- * 
+ *
  *
  * @author Dietmar Schnabel
  */
@@ -18,7 +18,7 @@ import java.util.Arrays;
  * General startup class for all applications.
  */
 public class SDCStarter {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(SDCStarter.class);
 
 	/**
@@ -28,21 +28,21 @@ public class SDCStarter {
 	 */
 	public static void init(String[] args) {
 
-		if(args.length==0) {
+		if (args.length == 0) {
 			logger.error("You must start the application with the <property file> parameter! Args: {}", Arrays.toString(args));
 			System.exit(1);
 		}
 		logger.info("Running with args {}", Arrays.toString(args));
 
-		if(SDCUtil.isEmpty(System.getenv(SDCConstants.SDC_HOME))) {
+		if (SDCUtil.isEmpty(System.getenv(SDCConstants.SDC_HOME))) {
 			logger.error("You must define the " + SDCConstants.SDC_HOME + " environment variable!!");
 			System.exit(1);
 		}
 		logger.info("SDC_HOME = " + System.getenv(SDCConstants.SDC_HOME));
-		
+
 		String propFile = System.getenv(SDCConstants.SDC_HOME) + File.separator + "etc" + File.separator + args[0] + ".properties";
 		logger.info("Searching for properties file : " + propFile);
-		if(!Files.exists(new File(propFile).toPath())) {
+		if (!Files.exists(new File(propFile).toPath())) {
 			logger.error("Property file: " + propFile + " does not exist!!");
 			System.exit(1);
 		}
