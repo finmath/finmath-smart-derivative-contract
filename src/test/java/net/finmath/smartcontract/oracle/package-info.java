@@ -3,4 +3,4 @@
  *
  * @author Christian Fries
  */
-package net.finmath.smartcontract.oracle.service;
+package net.finmath.smartcontract.oracle;
