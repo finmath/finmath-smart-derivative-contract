@@ -14,19 +14,32 @@ module net.finmath.smartderivativecontract {
 	opens com.google.gson.internal.refelct;
 	opens java.time;
 	opens java.base;
+	requires io.swagger.v3.oas.annotations;
+
+	requires java.datatransfer;
 	requires java.logging;
-	requires com.google.gson;
-	requires org.slf4j;
+	requires java.validation;
+	requires java.annotation;
+	requires java.desktop;
+
 	requires spring.core;
 	requires spring.web;
+	requires spring.context;
+	requires spring.security.core;
+	requires spring.security.web;
+	requires spring.security.config;
+	requires spring.statemachine.core;
+
+	requires jackson.databind.nullable;
+	requires org.apache.tomcat.embed.core;
+	requires com.google.gson;
+	requires org.slf4j;
 	requires net.finmath.lib;
 	requires money.api;
-	requires java.desktop;
 	requires moneta;
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.dataformat.csv;
 	requires com.fasterxml.jackson.databind;
-	requires spring.statemachine.core;
 	requires javafx.swing;
 	requires spring.boot.autoconfigure;
 	requires spring.boot;
