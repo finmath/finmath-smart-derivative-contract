@@ -10,7 +10,6 @@ import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHisto
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
-import org.jfree.ui.RefineryUtilities;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,7 +63,7 @@ public class DemoLauncher {
 
 		final Visualiser visualiser = new Visualiser("Smart Contract Simulation", generatorList);
 		visualiser.pack();
-		RefineryUtilities.centerFrameOnScreen(visualiser);
+//		RefineryUtilities.centerFrameOnScreen(visualiser);
 		visualiser.setVisible(true);
 	}
 }

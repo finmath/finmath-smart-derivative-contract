@@ -29,3 +29,11 @@ settlement amount for a smart derivative contract. The package contains also an 
 The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract. This is a Java FX
 application.
 
+## Docker
+To run Docker Container execute following commands
+```
+mvn clean package
+docker build -t valuation_service
+docker run -p 8080:8080 valuation_service
+```
+

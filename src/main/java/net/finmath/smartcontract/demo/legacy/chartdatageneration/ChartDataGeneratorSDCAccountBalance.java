@@ -3,7 +3,7 @@ package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.DatasetUtilities;
+import org.jfree.data.general.DatasetUtils;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -64,7 +64,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			this.nextProcessState = processStates.marginCheck;
 			this.initTime = LocalDateTime.now();
 
-			ChartData chartData = new ChartData(DatasetUtilities.createCategoryDataset("Buffer ", "Bank", data));
+			ChartData chartData = new ChartData(DatasetUtils.createCategoryDataset("Buffer ", "Bank", data));
 			title = "Initialisation";
 			accountColors.add(colorMarginBuffer);
 			accountColors.add(colorMarginBuffer);
@@ -149,7 +149,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			nextProcessState = processStates.marginCheck;
 		} else {
 		}
-		final CategoryDataset dataset = DatasetUtilities.createCategoryDataset("Buffer ", "Bank", data);
+		final CategoryDataset dataset = DatasetUtils.createCategoryDataset("Buffer ", "Bank", data);
 		ChartData chartData = new ChartData(dataset);
 		chartData.addProperty(ChartData.propertyKey.chartTitle, title);
 		chartData = chartData.addProperty(ChartData.propertyKey.colorListStackedBar, accountColors);
