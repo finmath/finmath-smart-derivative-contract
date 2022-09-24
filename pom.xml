@@ -259,8 +259,6 @@
                         </tag>
                     </tags>
                     <links>
-                        <link>http://commons.apache.org/proper/commons-lang/javadocs/api-release</link>
-                        <link>http://commons.apache.org/proper/commons-math/javadocs/api-3.3</link>
                     </links>
                     <detectLinks>false</detectLinks>
                     <additionalOptions>
@@ -279,11 +277,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
+                <version>3.0.0-M7</version>
                 <configuration>
-                    <forkCount>1</forkCount>
+                    <forkCount>0</forkCount>
                     <reuseForks>false</reuseForks>
-                    <argLine>-mx6G</argLine>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 
@@ -397,7 +395,6 @@
                         </tag>
                     </tags>
                     <links>
-                        <link>http://commons.apache.org/proper/commons-math/javadocs/api-3.2/</link>
                     </links>
                     <detectLinks>false</detectLinks>
                     <additionalOptions>
