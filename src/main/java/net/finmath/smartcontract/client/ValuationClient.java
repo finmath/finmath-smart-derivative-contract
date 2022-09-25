@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Base64;
 
 
 /**
@@ -88,8 +89,15 @@ public class ValuationClient {
 		bodyMap.add(SDCConstants.MARKET_DATA_AS_JSON_1, marketDataAsJson1);
 		bodyMap.add(SDCConstants.MARKET_DATA_AS_JSON_2, marketDataAsJson2);
 		bodyMap.add(SDCConstants.TRADE_AS_FPML, tradeAsFPML);
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+		// create auth credentials
+		String authString = "user:password";
+		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
+		headers.add("Authorization", "Basic " + base64Creds);
+
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
 		RestTemplate restTemplate = new RestTemplate();

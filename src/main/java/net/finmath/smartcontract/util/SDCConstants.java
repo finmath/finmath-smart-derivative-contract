@@ -9,9 +9,7 @@ import java.io.File;
 
 
 /**
- * The Class  SDCConstants
- * <p>
- * Static strings and property names are collected here.
+ * Static strings and property names.
  */
 public class SDCConstants {
 
