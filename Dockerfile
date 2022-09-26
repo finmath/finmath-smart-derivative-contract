@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:17
 
 COPY src/main/deploy/etc/sdc.properties src/main/deploy/etc/sdc.properties
 COPY target/finmath-smart-derivative-contract-0.1.7-SNAPSHOT.jar .
