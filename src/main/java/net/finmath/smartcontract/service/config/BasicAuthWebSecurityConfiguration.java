@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.config;
+package net.finmath.smartcontract.service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
