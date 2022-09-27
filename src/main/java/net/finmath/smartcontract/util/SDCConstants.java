@@ -97,4 +97,7 @@ public class SDCConstants {
 	public static String FPML_NAMESPACE = "FPML_NAMESPACE";
 	public static String OKHTTP_TIMEOUT = "OKHTTP_TIMEOUT";
 
+	public static String USERNAME = "USERNAME";
+	public static String PASSWORD = "PASSWORD";
+
 }
