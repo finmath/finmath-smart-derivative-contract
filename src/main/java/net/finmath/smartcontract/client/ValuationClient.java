@@ -94,7 +94,7 @@ public class ValuationClient {
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
 		// create auth credentials
-		String authString = "user:password";
+		String authString = "user_dz:password_dz";
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
