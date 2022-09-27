@@ -32,8 +32,8 @@ application.
 ## Docker
 To run Docker Container execute following commands
 ```
-mvn clean package
-docker build -t valuation_service
+mvn clean package spring-boot:repackage
+docker build -t valuation_service .
 docker run -p 8080:8080 valuation_service
 ```
 
