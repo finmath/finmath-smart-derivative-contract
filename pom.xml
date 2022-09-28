@@ -26,7 +26,7 @@
         <java.version>17</java.version>
         <src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
         <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
-        <kotlin.version>1.2.0</kotlin.version>
+        <kotlin.version>1.7.10</kotlin.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
         <finmath-lib.version>6.0.2</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
@@ -92,12 +92,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>11.0.2</version>
+            <version>19</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
-            <version>11.0.2</version>
+            <version>19</version>
         </dependency>
 
 		<dependency>
@@ -168,7 +168,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
+            <version>31.1-jre</version>
         </dependency>
 
         <dependency>
@@ -189,7 +189,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.11.1</version>
+            <version>2.13.4</version>
         </dependency>
 
         <!-- Spring boot -->
@@ -204,12 +204,12 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>2.2.1</version>
+			<version>2.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
-			<version>0.2.2</version>
+			<version>0.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -221,13 +221,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-			<version>2.7.2</version>
+			<version>2.7.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
-			<version>2.7.2</version>
+			<version>2.7.3</version>
 		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -328,7 +328,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M7</version>
                 <configuration>
-                    <forkCount>0</forkCount>
+                    <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                     <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED</argLine>
                 </configuration>
@@ -442,7 +442,28 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/java</source>
+                                <source>target/generated-sources/annotations</source>
+                                <source>target/generated-sources/openapi/src/main/gen</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
 	</build>
 
     <issueManagement>
