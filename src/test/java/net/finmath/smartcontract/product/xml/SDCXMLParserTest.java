@@ -6,6 +6,7 @@ import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -34,6 +35,11 @@ class SDCXMLParserTest {
 		// Get parties
 		List<SDCXMLParser.Party> parties = sdc.getCounterparties();
 		parties.stream().map(SDCXMLParser.Party::getName).forEach(System.out::println);
+
+		// Get receiver party
+		String receiverParty = sdc.getUnderlyingReceiverPartyID();
+		System.out.println(receiverParty);
+		Assertions.assertEquals("party2", receiverParty, "Reciever party ID.");
 
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();

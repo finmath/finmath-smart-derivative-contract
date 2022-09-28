@@ -72,7 +72,6 @@ public class SDCXMLParser {
 		Map<String, Double> marginAccountInitialByPartyID = new HashMap<>();
 		Map<String, Double> penaltyFeeInitialByPartyID = new HashMap<>();
 
-		NodeList partiesNodeList = document.getElementsByTagName("parties").item(0).getChildNodes();
 		List<Node> partyNodes = nodeChildsByName(document.getElementsByTagName("parties").item(0), "party");
 		for (Node partyNode : partyNodes) {
 
@@ -91,7 +90,7 @@ public class SDCXMLParser {
 		}
 
 		// Receiver party ID
-		String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent();
+		String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent().trim();
 
 		// TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
 
@@ -138,9 +137,9 @@ public class SDCXMLParser {
 			if (name.equals(childNode.getNodeName())) {
 				String value = childNode.getTextContent();
 				if (type.equals(String.class)) {
-					return (T) value;
+					return type.cast(value);
 				} else if (type.equals(Double.class)) {
-					return (T) Double.valueOf(value);
+					return type.cast(Double.valueOf(value));
 				} else {
 					throw new IllegalArgumentException("Type not supported");
 				}

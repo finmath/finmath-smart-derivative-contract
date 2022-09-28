@@ -69,6 +69,5 @@ public class SmartDerivativeContractDescriptor {
 	 */
 	public String getUnderlyingReceiverPartyID() {
 		return recervicePartyID;
-;
 	}
 }
