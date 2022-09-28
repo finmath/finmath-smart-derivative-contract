@@ -8,11 +8,7 @@
 package net.finmath.smartcontract.service;
 
 import net.finmath.smartcontract.api.SettlementValuationApi;
-import net.finmath.smartcontract.util.SDCConstants;
-import net.finmath.smartcontract.util.SDCDateUtil;
-import net.finmath.smartcontract.util.SDCProperties;
 import net.finmath.smartcontract.valuation.MarginCalculator;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -20,12 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.time.LocalDate;
 import java.util.HashMap;
 
 /**

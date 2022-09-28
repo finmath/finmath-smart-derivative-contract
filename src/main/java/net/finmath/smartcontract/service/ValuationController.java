@@ -7,7 +7,6 @@
 
 package net.finmath.smartcontract.service;
 
-import net.finmath.smartcontract.api.SettlementValuationApi;
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCDateUtil;
@@ -27,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.HashMap;
 
 /**
  * Controller for the settlement valuation REST service.

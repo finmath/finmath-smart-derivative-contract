@@ -8,12 +8,11 @@ import net.finmath.smartcontract.demo.legacy.plotgeneration.StackedBarchartGener
 import net.finmath.smartcontract.demo.legacy.plotgeneration.TimeSeriesChartGenerator;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

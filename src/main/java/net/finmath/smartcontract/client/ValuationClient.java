@@ -22,8 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 
 /**
  * Spring-boot application to demonstrate the REST service for the valuation oracle,
