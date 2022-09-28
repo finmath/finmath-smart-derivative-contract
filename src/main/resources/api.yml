@@ -4,12 +4,74 @@ info:
   version: 1.0.0
   title: Swagger
   license:
-    name: MIT
+    name: Apache 2.0
 
 servers:
   - url: http://localhost:9090/
 
 paths:
+  /valuation/value:
+    post:
+      summary: Request mapping for the settlementvaluationForProductAsFPML
+      operationId: value
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                marketData:
+                  type: string
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+      responses:
+        '200':
+          description: Margin was calculated
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/margin:
+    post:
+      summary: Request mapping for the settlementvaluationForProductAsFPML
+      operationId: margin
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                marketDataStart:
+                  type: string
+                marketDataEnd:
+                  type: string
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+      responses:
+        '200':
+          description: Margin was calculated
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /settlementValuation/test:
     get:
       summary: Test Endpoint
