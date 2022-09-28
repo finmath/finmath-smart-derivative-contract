@@ -83,7 +83,7 @@ public class IRMarketDataParser {
 		final String content;
 
 		try {
-			content = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
+			content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
 		}
 		catch(IOException e) {
 			System.out.println("Please provide the market data file " + fileName);

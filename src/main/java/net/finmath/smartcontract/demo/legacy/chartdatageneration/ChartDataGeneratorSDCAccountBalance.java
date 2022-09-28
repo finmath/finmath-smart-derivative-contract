@@ -78,7 +78,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
 		if (nextProcessState == processStates.marginCheck) /* Determine Booking Amount */ {
 			//int index = (int) initTime.until(eventTime,SECONDS);
-			System.out.println("Current Time Index  = " + eventTime.toString() + ": Margin Check");
+			System.out.println("Current Time Index  = " + eventTime + ": Margin Check");
 			final LocalDateTime scenarioLast = this.scenarioDates.get(0);
 			final LocalDateTime scenarioActual = this.scenarioDates.get(1);
 			final double valueLast = oracle.getValue(scenarioLast, scenarioLast);
@@ -104,7 +104,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 			accountColors.add(colorXPrecheck);
 			nextProcessState = processStates.settlement;
 		} else if (nextProcessState == processStates.settlement) { /*BOOKING*/
-			System.out.println("Current Time = " + eventTime.toString() + ": Settlement");
+			System.out.println("Current Time = " + eventTime + ": Settlement");
 			final LocalDateTime scenarioLast = this.scenarioDates.get(0);
 			final LocalDateTime scenarioActual = this.scenarioDates.get(1);
 			final double valueLast = oracle.getValue(scenarioLast, scenarioLast);
@@ -133,7 +133,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 
 			//System.out.println("Current Time in Milliseconds = Reset");
 		} else if (nextProcessState == processStates.refill) /*REfill*/ {
-			System.out.println("Current Time = " + eventTime.toString() + ": Reset");
+			System.out.println("Current Time = " + eventTime + ": Reset");
 			for (int i = 0; i < data.length; i++) {
 				for (int j = 0; j < data.length; j++) {
 					data[0][0] = initialBalance;

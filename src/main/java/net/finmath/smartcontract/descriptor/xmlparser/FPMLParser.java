@@ -194,12 +194,10 @@ public class FPMLParser implements XMLParser {
 		}
 
 
-		switch (tradeName) {
-			case "SWAP":
-				return getSwapProductDescriptor(trade);
-			default:
-				throw new IllegalArgumentException("This FpML parser is not set up to process trades of type " + tradeName + ".");
+		if ("SWAP".equals(tradeName)) {
+			return getSwapProductDescriptor(trade);
 		}
+		throw new IllegalArgumentException("This FpML parser is not set up to process trades of type " + tradeName + ".");
 
 	}
 
@@ -239,12 +237,10 @@ public class FPMLParser implements XMLParser {
 		}
 
 
-		switch (tradeName) {
-			case "SWAP":
-				return getSwapProductDescriptor(trade);
-			default:
-				throw new IllegalArgumentException("This FpML parser is not set up to process trades of type " + tradeName + ".");
+		if ("SWAP".equals(tradeName)) {
+			return getSwapProductDescriptor(trade);
 		}
+		throw new IllegalArgumentException("This FpML parser is not set up to process trades of type " + tradeName + ".");
 
 	}
 
@@ -357,8 +353,6 @@ public class FPMLParser implements XMLParser {
 		tradeDescriptor.setLegalEntitiesNames(legalEntitiesNames);
 
 		this.tradeDescriptor = tradeDescriptor;
-
-		return;
 
 	}
 
