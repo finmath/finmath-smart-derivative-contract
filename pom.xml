@@ -118,6 +118,13 @@
 			<version>${finmath-lib-plot-extensions.version}</version>
 		</dependency>
 
+        <!-- apache commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+
 		<!--Spring State Machine -->
 		<dependency>
 			<groupId>org.springframework.statemachine</groupId>
