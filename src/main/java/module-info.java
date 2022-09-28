@@ -4,7 +4,7 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.client;
 	exports net.finmath.smartcontract.util;
 	exports net.finmath.smartcontract.demo;
-	exports net.finmath.smartcontract.xml;
+	exports net.finmath.smartcontract.product.xml;
 	exports net.finmath.smartcontract.oracle;
 	exports net.finmath.smartcontract.oracle.historical;
 	exports net.finmath.smartcontract.simulation.scenariogeneration;
@@ -27,6 +27,7 @@ module net.finmath.smartderivativecontract {
 	requires spring.security.config;
 	requires spring.statemachine.core;
 
+	requires org.apache.commons.lang3;
 	requires jackson.databind.nullable;
 	requires org.apache.tomcat.embed.core;
 	requires com.google.gson;
