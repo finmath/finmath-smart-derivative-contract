@@ -38,13 +38,11 @@ import java.util.HashMap;
 @RestController
 public class SettlementValuationController implements SettlementValuationApi {
 	
-	private  static String curve1 = "NONE";
-	private  static String curve2 = "NONE";
 	private  static final HashMap<String, String> fpml = new HashMap<String, String>();
-	private  static final HashMap<String, String> result = new HashMap<String, String>();
-	
+
 	private final Logger logger = LoggerFactory.getLogger(SettlementValuationController.class);
-	
+
+
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
 	 * 
@@ -89,11 +87,8 @@ public class SettlementValuationController implements SettlementValuationApi {
 		}
 		String resultJSON = marginCalculator.getContractValuationAsJSON();
 		logger.info(resultJSON);
-		curve1 = marketDataAsJson1;
-		curve2 = marketDataAsJson2;
 		fpml.put(tradeId, tradeAsFPML);
-		result.put(tradeId, resultJSON);
-		
+
 		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
 	}
 	

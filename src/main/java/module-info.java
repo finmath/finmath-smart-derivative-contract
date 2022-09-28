@@ -10,10 +10,7 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.simulation.scenariogeneration;
 	exports net.finmath.smartcontract.simulation.curvecalibration;
 
-	opens net.finmath.smartcontract.service to java.base, java.lang;
-	opens com.google.gson.internal.refelct;
-	opens java.time;
-	opens java.base;
+	opens net.finmath.smartcontract.service to java.base;
 	requires io.swagger.v3.oas.annotations;
 
 	requires java.datatransfer;
@@ -45,5 +42,5 @@ module net.finmath.smartderivativecontract {
 	requires spring.boot;
 	requires com.google.common;
 	requires org.jfree.jfreechart;
-	requires finmath.lib.plot.extensions;
+	requires net.finmath.plots;
 }

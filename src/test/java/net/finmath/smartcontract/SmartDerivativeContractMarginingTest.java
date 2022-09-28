@@ -11,7 +11,7 @@ import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracleSamplePath;
 import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 

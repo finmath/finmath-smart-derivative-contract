@@ -5,7 +5,7 @@ import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHisto
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

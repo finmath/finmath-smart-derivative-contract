@@ -51,7 +51,7 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	public ResponseEntity<String> margin(String marketDataStart, String marketDataEnd, String tradeData, String valuationDate)
-		{
+	{
 		LocalDate marketDataStartDate = SDCDateUtil.getDateFromJSON(marketDataStart, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		LocalDate marketDataEndDate = SDCDateUtil.getDateFromJSON(marketDataEnd, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		

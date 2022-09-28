@@ -7,7 +7,7 @@
 package net.finmath.smartcontract.oracle;
 
 import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 

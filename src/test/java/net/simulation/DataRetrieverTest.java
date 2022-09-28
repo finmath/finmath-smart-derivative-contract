@@ -3,9 +3,9 @@ package net.simulation;
 import com.google.gson.Gson;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRCurveData;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ public class DataRetrieverTest {
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testDataImport() {
 		try (Scanner scanner = new Scanner(new File("timeseriesdatamap.json"))) {
@@ -38,7 +38,7 @@ public class DataRetrieverTest {
 				return scenario;
 			}).sorted((S1, S2) -> S1.getDate().compareTo(S2.getDate())).collect(Collectors.toList());
 
-			Assert.assertNotNull(timeSeriesDatamap);
+			Assertions.assertNotNull(timeSeriesDatamap);
 		} catch (final Exception e) {
 			System.out.println(e);
 		}

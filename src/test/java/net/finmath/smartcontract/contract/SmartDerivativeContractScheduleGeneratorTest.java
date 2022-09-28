@@ -6,8 +6,8 @@
 
 package net.finmath.smartcontract.contract;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -41,9 +41,9 @@ public class SmartDerivativeContractScheduleGeneratorTest {
 			System.out.println("Margin check..........:" + marginCheckTime);
 			System.out.println();
 
-			Assert.assertTrue("Access after settlement", accountAccessAllowedStart.isAfter(settementTime));
-			Assert.assertTrue("Account access", accountAccessAllowedEnd.isAfter(accountAccessAllowedStart));
-			Assert.assertTrue("Margin check after account access", marginCheckTime.isAfter(accountAccessAllowedEnd));
+			Assertions.assertTrue(accountAccessAllowedStart.isAfter(settementTime), "Access after settlement");
+			Assertions.assertTrue(accountAccessAllowedEnd.isAfter(accountAccessAllowedStart), "Account access");
+			Assertions.assertTrue(marginCheckTime.isAfter(accountAccessAllowedEnd), "Margin check after account access");
 		}
 	}
 
