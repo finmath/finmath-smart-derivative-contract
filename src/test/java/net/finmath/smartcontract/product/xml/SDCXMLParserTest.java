@@ -4,7 +4,6 @@ import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
@@ -15,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +24,7 @@ class SDCXMLParserTest {
 	@Test
 	void testParser() throws IOException, SAXException, ParserConfigurationException, URISyntaxException {
 
-		String sdcXML = FileUtils.readFileToString(new File(SDCXMLParserTest.class.getClassLoader().getResource("smartderivativecontract.xml").toURI()), StandardCharsets.UTF_8);
+		String sdcXML = Files.readString(Path.of(SDCXMLParserTest.class.getClassLoader().getResource("smartderivativecontract.xml").getPath()), StandardCharsets.UTF_8);
 
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 
