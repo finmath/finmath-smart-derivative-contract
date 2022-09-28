@@ -1,9 +1,9 @@
 module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.valuation;
-	exports net.finmath.smartcontract.valuation.scenariogeneration;
 	exports net.finmath.smartcontract.client;
 	exports net.finmath.smartcontract.util;
 	exports net.finmath.smartcontract.demo;
+	exports net.finmath.smartcontract.product;
 	exports net.finmath.smartcontract.product.xml;
 	exports net.finmath.smartcontract.oracle;
 	exports net.finmath.smartcontract.oracle.historical;

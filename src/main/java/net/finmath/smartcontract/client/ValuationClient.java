@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import net.finmath.smartcontract.service.Application;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCProperties;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -20,6 +19,7 @@ import java.io.File;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -42,10 +42,9 @@ public class ValuationClient {
 		String connectionPropertiesFile = Application.class.getClassLoader().getResource("sdc.properties").getPath();
 		URI test = new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI();
 		SDCProperties.init(connectionPropertiesFile);
-		String jsonFile1 = FileUtils.readFileToString(new File(new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI()), StandardCharsets.UTF_8);
-		String jsonFile2 = FileUtils.readFileToString(new File( new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI()), StandardCharsets.UTF_8);
-		String fpmlFile = FileUtils.readFileToString(new File( new File(Application.class.getClassLoader().getResource("vanilla-swap.xml").getPath()).toURI()), StandardCharsets.UTF_8);
-
+		String jsonFile1 = Files.readString(Path.of(Application.class.getClassLoader().getResource("md_testset1.json").getPath()), StandardCharsets.UTF_8);
+		String jsonFile2 = Files.readString(Path.of(Application.class.getClassLoader().getResource("md_testset1.json").getPath()), StandardCharsets.UTF_8);
+		String fpmlFile = Files.readString(Path.of(Application.class.getClassLoader().getResource("vanilla-swap.xml").getPath()), StandardCharsets.UTF_8);
 
 		String URL = "http://localhost:8080/settlementValuation/margincalulationForProductOnChain";
 

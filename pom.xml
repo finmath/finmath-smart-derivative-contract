@@ -125,7 +125,7 @@
             <version>3.12.0</version>
         </dependency>
 
-		<!--Spring State Machine -->
+        <!--Spring State Machine -->
 		<dependency>
 			<groupId>org.springframework.statemachine</groupId>
 			<artifactId>spring-statemachine-autoconfigure</artifactId>
