@@ -7,6 +7,7 @@
 
 package net.finmath.smartcontract.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.api.SettlementValuationApi;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
@@ -65,29 +66,19 @@ public class SettlementValuationController implements SettlementValuationApi {
 		}
 		logger.info("Starting Margin Calculation with dates " + ld1 + " and  " + ld2);*/
 		MarginCalculator marginCalculator = new MarginCalculator();
-				
-		/*double margin;
-		try {
-			marginCalculator.getValue(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
-		} catch (Exception e) {
-			logger.error("Failed to calculate margin.");
-			e.printStackTrace();
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("json1bytes: " + marketDataAsJson1);
-			logger.debug("json2bytes: " + marketDataAsJson2);
-			logger.debug("fpmlbytes: " + tradeAsFPML);			
-		}*/
-		String resultJSON = marginCalculator.getContractValuationAsJSON();
-		logger.info(resultJSON);
-		curve1 = marketDataAsJson1;
-		curve2 = marketDataAsJson2;
-		fpml.put(tradeId, tradeAsFPML);
-		result.put(tradeId, resultJSON);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		ValuationResult valuationResult;
+			try {
+				valuationResult = marginCalculator.getValue(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "MarginResult");
-		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
+		return new ResponseEntity<String>(objectMapper.valueToTree(valuationResult).toString(), responseHeaders, HttpStatus.OK);
 	}
 
 	/**

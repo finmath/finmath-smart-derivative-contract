@@ -12,6 +12,7 @@ import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.service.ValuationResult;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 import org.slf4j.Logger;
@@ -71,11 +72,15 @@ public class MarginCalculator {
 	 * @return the margin (Float).
 	 * @throws Exception Exception
 	 */
-	public double getValue(String jsonString1, String jsonString2, String fpmlString) throws Exception {
+	public ValuationResult getValue(String jsonString1, String jsonString2, String fpmlString) throws Exception {
 		parser = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-6M", fpmlString);
 //    	isTradeStartToday = validateStartDate(fpmlString);
 
-		return calculateMarginFromString(jsonString1, jsonString2);
+		Double value = calculateMarginFromString(jsonString1, jsonString2);
+		String currency = "EUR";
+		LocalDateTime valuationDate = LocalDateTime.now();
+
+		return new ValuationResult(value, currency, valuationDate.toString());
 	}
 
 	/**

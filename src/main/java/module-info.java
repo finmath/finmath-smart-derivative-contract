@@ -1,4 +1,5 @@
 module net.finmath.smartderivativecontract {
+	exports net.finmath.smartcontract.api;
 	exports net.finmath.smartcontract.valuation;
 	exports net.finmath.smartcontract.client;
 	exports net.finmath.smartcontract.util;
@@ -47,6 +48,8 @@ module net.finmath.smartderivativecontract {
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.dataformat.csv;
 	requires com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.datatype.jdk8;
+	requires com.fasterxml.jackson.datatype.jsr310;
 	requires com.google.common;
 
 	requires net.finmath.lib;
