@@ -1,6 +1,7 @@
-package net.finmath.smartcontract.xml;
+package net.finmath.smartcontract.product.xml;
 
 import net.finmath.smartcontract.descriptor.TradeDescriptor;
+import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,48 +50,8 @@ public class SDCXMLParser {
 		}
 	}
 
-	public static class SmartDerivativeContractDescriptor {
-
-		private final LocalDateTime tradeDate;
-		private final List<Party> counterparties;
-		private final Map<String, Double> marginAccountInitialByPartyID;
-		private final Map<String, Double> penaltyFeeInitialByPartyID;
-
-		private final Node underlying;
-
-		public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, Node underlying) {
-			this.tradeDate = tradeDate;
-			this.counterparties = counterparties;
-			this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
-			this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
-			this.underlying = underlying;
-		}
-
-		public LocalDateTime getTradeDate() {
-			return tradeDate;
-		}
-
-		public List<Party> getCounterparties() {
-			return counterparties;
-		}
-
-		public Double getMarginAccount(String partyID) {
-			return marginAccountInitialByPartyID.get(partyID);
-		}
-
-		public Double getPenaltyFee(String partyID) {
-			return penaltyFeeInitialByPartyID.get(partyID);
-		}
-
-		public Node getUnderlying() {
-			return underlying;
-		}
-	}
-
 	private SDCXMLParser() {
 	}
-
-	;
 
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
@@ -129,9 +90,18 @@ public class SDCXMLParser {
 			penaltyFeeInitialByPartyID.put(party.getId(), penaltyFeeInitial);
 		}
 
+		// Receiver party ID
+		String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent();
+
+		// TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
+
 		Node underlying = document.getElementsByTagName("underlying").item(0);
-		return new SmartDerivativeContractDescriptor(settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, underlying);
+		return new SmartDerivativeContractDescriptor(settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying);
 	}
+
+	/*
+	 * Private helpers
+	 */
 
 	private static List<Node> nodeChildsByName(Node node, String name) {
 		// Iterate

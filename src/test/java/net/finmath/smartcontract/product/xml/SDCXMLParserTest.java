@@ -1,8 +1,10 @@
-package net.finmath.smartcontract.xml;
+package net.finmath.smartcontract.product.xml;
 
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
+import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
@@ -23,7 +25,7 @@ class SDCXMLParserTest {
 
 		String sdcXML = FileUtils.readFileToString(new File(SDCXMLParserTest.class.getClassLoader().getResource("smartderivativecontract.xml").toURI()), StandardCharsets.UTF_8);
 
-		SDCXMLParser.SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
+		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 
 		// Get the date
 		LocalDateTime date = sdc.getTradeDate();
