@@ -1,0 +1,11 @@
+data:
+  sdc:
+    users:
+      -
+        username: user_union
+        password: password_union
+        role: USER_UNION
+      -
+        username: user_dz
+        password: password_dz
+        role: USER_DZ
