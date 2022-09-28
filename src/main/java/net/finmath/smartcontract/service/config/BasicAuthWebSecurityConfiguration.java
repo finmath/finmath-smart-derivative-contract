@@ -1,7 +1,6 @@
 package net.finmath.smartcontract.service.config;
 
 import net.finmath.smartcontract.service.utils.ApplicationProperties;
-import net.finmath.smartcontract.service.utils.SDCUser;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,14 +41,11 @@ public class BasicAuthWebSecurityConfiguration
    */
   private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
     List<UserDetails> userDetailsList = new ArrayList<>();
-    for (SDCUser sdcUser: applicationProperties.getSdcUsers()
-    ) {
-      userDetailsList.add(User
-              .withUsername(sdcUser.getUsername())
-              .password("{noop}"+sdcUser.getPassword())
-              .roles(sdcUser.getRole())
-              .build());
-    }
+    applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
+            .withUsername(sdcUser.getUsername())
+            .password("{noop}"+sdcUser.getPassword())
+            .roles(sdcUser.getRole())
+            .build()));
     return userDetailsList;
   }
 }

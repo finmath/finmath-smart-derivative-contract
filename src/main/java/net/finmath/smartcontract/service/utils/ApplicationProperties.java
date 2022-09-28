@@ -8,16 +8,16 @@ import java.util.List;
  * Implements list of sdcUsers from application.yml
  */
 @Component
-@ConfigurationProperties(prefix="data")
+@ConfigurationProperties(prefix="data.sdc")
 public class ApplicationProperties {
-	private List<SDCUser> sdcUsers;
+	private List<SDCUser> users;
 
-	public List<SDCUser> getSdcUsers() {
-		return sdcUsers;
+	public List<SDCUser> getUsers() {
+		return users;
 	}
 
-	public void setSdcUsers(List<SDCUser> sdcUsers) {
-		this.sdcUsers = sdcUsers;
+	public void setUsers(List<SDCUser> users) {
+		this.users = users;
 	}
 
 }
