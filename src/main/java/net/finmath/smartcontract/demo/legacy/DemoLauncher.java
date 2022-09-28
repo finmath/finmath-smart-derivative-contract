@@ -8,8 +8,8 @@ import net.finmath.smartcontract.demo.legacy.plotgeneration.StackedBarchartGener
 import net.finmath.smartcontract.demo.legacy.plotgeneration.TimeSeriesChartGenerator;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,8 +34,7 @@ public class DemoLauncher {
 		final LocalDate startDate = LocalDate.of(2007, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
-		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-		final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		final List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
 		final double notional = 1.0E7;
 		final String maturityKey = "5Y";

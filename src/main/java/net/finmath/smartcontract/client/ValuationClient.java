@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.finmath.smartcontract.service.Application;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCProperties;
-import net.finmath.smartcontract.util.SDCStarter;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -16,8 +17,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Base64;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 /**
@@ -33,44 +38,38 @@ public class ValuationClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 
-	public static void main(String[] args) {
-		SDCStarter.init(args);
+	public static void main(String[] args) throws Exception {
+		String connectionPropertiesFile = Application.class.getClassLoader().getResource("sdc.properties").getPath();
+		URI test = new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI();
+		SDCProperties.init(connectionPropertiesFile);
+		String jsonFile1 = FileUtils.readFileToString(new File(new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI()), StandardCharsets.UTF_8);
+		String jsonFile2 = FileUtils.readFileToString(new File( new File(Application.class.getClassLoader().getResource("md_testset1.json").getPath()).toURI()), StandardCharsets.UTF_8);
+		String fpmlFile = FileUtils.readFileToString(new File( new File(Application.class.getClassLoader().getResource("vanilla-swap.xml").getPath()).toURI()), StandardCharsets.UTF_8);
 
-		logger.info("Starting Valuation Client");
-		ValuationClient valuationClient = new ValuationClient();
 
-		String mdFileStart = SDCProperties.getProperty(SDCConstants.DATA_PATH) + File.separator + SDCProperties.getProperty(SDCConstants.MARKET_DATA_FILE_HEADER);
-		String jsonFile1 = mdFileStart + SDCProperties.getProperty(SDCConstants.JSON_FILE_1);
-		String jsonFile2 = mdFileStart + SDCProperties.getProperty(SDCConstants.JSON_FILE_2);
-		String fpmlFile1 = SDCProperties.getProperty(SDCConstants.DATA_PATH) + File.separator + SDCProperties.getProperty(SDCConstants.FPML_FILE_1);
-		ENDPOINT_URL = SDCProperties.getProperty(SDCConstants.URL_ENDPOINT_TWO_CURVES);
+		String URL = "http://localhost:8080/settlementValuation/margincalulationForProductOnChain";
 
-		logger.info("Using REST endpoint: " + ENDPOINT_URL);
 
-		if (!Files.exists(new File(jsonFile1).toPath())) {
-			logger.error(jsonFile1 + " does not exist!!");
-			System.exit(1);
-		} else {
-			logger.info("Found: " + jsonFile1);
-		}
-		if (!Files.exists(new File(jsonFile2).toPath())) {
-			logger.error(jsonFile2 + " does not exist!!");
-			System.exit(1);
-		} else {
-			logger.info("Found: " + jsonFile2);
-		}
-		if (!Files.exists(new File(fpmlFile1).toPath())) {
-			logger.error(fpmlFile1 + " does not exist!!");
-			System.exit(1);
-		} else {
-			logger.info("Found: " + fpmlFile1);
-		}
+		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
 
-		FileSystemResource marketDataAsJson1 = new FileSystemResource(new File(jsonFile1));
-		FileSystemResource marketDataAsJson2 = new FileSystemResource(new File(jsonFile2));
-		FileSystemResource tradeAsFPML = new FileSystemResource(new File(fpmlFile1));
+		bodyMap.add("marketDataAsJson1", jsonFile1);
+		bodyMap.add("marketDataAsJson2", jsonFile2);
+		bodyMap.add("tradeAsFPML", fpmlFile);
+		bodyMap.add("tradeId", "id");
 
-		ResponseEntity<String> response = valuationClient.getValuation(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+		// create auth credentials
+		String authString = "user:password";
+		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
+		headers.add("Authorization", "Basic " + base64Creds);
+
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		//restTemplate.exchange("http://localhost:8080/settlementValuation/test",HttpMethod.GET,requestEntity,String.class);
+		ResponseEntity<String> response = restTemplate.postForEntity(URL, requestEntity, String.class);
 
 		String body = response.getBody();
 

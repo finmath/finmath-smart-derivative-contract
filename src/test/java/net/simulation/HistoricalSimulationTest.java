@@ -3,8 +3,8 @@ package net.simulation;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRScenarioGenerator;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -22,8 +22,7 @@ public class HistoricalSimulationTest {
 			final String startDate = "20070101";
 			final String endDate = "20120103";
 			final String fileName = "timeseriesdatamap.json";
-			final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-			final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate, providedDateFormat))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate, providedDateFormat))).collect(Collectors.toList());
+			final List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate))).collect(Collectors.toList());
 
 			/*Generate Sample Product */
 			final double notional = 1.0E7;

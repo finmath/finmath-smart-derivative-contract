@@ -14,13 +14,13 @@
         <tradeHeader>
             <partyTradeIdentifier>
                 <partyReference href="party1"/>
-                <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">TW9235</tradeId>
+                <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">CP1</tradeId>
             </partyTradeIdentifier>
             <partyTradeIdentifier>
                 <partyReference href="party2"/>
-                <tradeId tradeIdScheme="http://www.barclays.com/swaps/trade-id">SW2000</tradeId>
+                <tradeId tradeIdScheme="http://www.partyB.com/swaps/trade-id">CP2</tradeId>
             </partyTradeIdentifier>
-            <tradeDate>2008-01-01</tradeDate>
+            <tradeDate>2022-09-05</tradeDate>
         </tradeHeader>
         <swap>
             <!-- Party A pays the floating rate every 6 months, based on 6M EUR-LIBOR-BBA,
@@ -30,13 +30,13 @@
                 <receiverPartyReference href="party2"/>
                 <calculationPeriodDates id="floatingCalcPeriodDates">
                     <effectiveDate>
-                        <unadjustedDate>2008-01-03</unadjustedDate>
+                        <unadjustedDate>2022-09-07</unadjustedDate>
                         <dateAdjustments>
                             <businessDayConvention>NONE</businessDayConvention>
                         </dateAdjustments>
                     </effectiveDate>
                     <terminationDate>
-                        <unadjustedDate>2025-12-30</unadjustedDate>
+                        <unadjustedDate>2032-09-07</unadjustedDate>
                         <dateAdjustments>
                             <businessDayConvention>MODFOLLOWING</businessDayConvention>
                             <businessCenters id="primaryBusinessCenters">
@@ -114,13 +114,13 @@
                 <receiverPartyReference href="party1"/>
                 <calculationPeriodDates id="fixedCalcPeriodDates">
                     <effectiveDate>
-                        <unadjustedDate>2008-01-03</unadjustedDate>
+                        <unadjustedDate>2022-09-07</unadjustedDate>
                         <dateAdjustments>
                             <businessDayConvention>NONE</businessDayConvention>
                         </dateAdjustments>
                     </effectiveDate>
                     <terminationDate>
-                        <unadjustedDate>2025-12-30</unadjustedDate>
+                        <unadjustedDate>2032-09-07</unadjustedDate>
                         <dateAdjustments>
                             <businessDayConvention>FOLLOWING</businessDayConvention>
                             <businessCentersReference href="primaryBusinessCenters"/>
@@ -158,7 +158,7 @@
                             </notionalStepSchedule>
                         </notionalSchedule>
                         <fixedRateSchedule>
-                            <initialValue>0.04</initialValue>
+                            <initialValue>0.0395</initialValue>
                         </fixedRateSchedule>
                         <dayCountFraction>30E/360</dayCountFraction>
                     </calculation>
@@ -166,19 +166,5 @@
             </swapStream>
         </swap>
     </trade>
-    <party id="party1">
-        <partyId>DZ</partyId>
-        <partyName>DZ</partyName>
-        <marginM>10000</marginM>
-        <marginP>50000</marginP>
-        <address>0x938ACd0AD9f423E5cDd97c7c880d59799Dc4fDA0</address>
-    </party>
-    <party id="party2">
-        <partyId>UI</partyId>
-        <partyName>UI</partyName>
-        <marginM>10000</marginM>
-        <marginP>50000</marginP>
-        <address>0xCE7E5Abf9A42730345716e16c145592e679Ef15a</address>
-    </party>
 </dataDocument>
 
