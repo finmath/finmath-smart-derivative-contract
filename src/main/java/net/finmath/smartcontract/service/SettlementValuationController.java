@@ -38,11 +38,13 @@ import java.util.HashMap;
 @RestController
 public class SettlementValuationController implements SettlementValuationApi {
 	
+	private  static String curve1 = "NONE";
+	private  static String curve2 = "NONE";
 	private  static final HashMap<String, String> fpml = new HashMap<String, String>();
-
+	private  static final HashMap<String, String> result = new HashMap<String, String>();
+	
 	private final Logger logger = LoggerFactory.getLogger(SettlementValuationController.class);
-
-
+	
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
 	 * 
@@ -54,7 +56,7 @@ public class SettlementValuationController implements SettlementValuationApi {
 	 */
 	public ResponseEntity<String> settlementvaluationForProductAsFPMLOnChain(String marketDataAsJson1, String marketDataAsJson2, String tradeAsFPML, String tradeId)
 		{
-		LocalDate ld1 = SDCDateUtil.getDateFromJSON(marketDataAsJson1, SDCConstants.DATE_FORMAT_yyyyMMdd);
+		/*LocalDate ld1 = SDCDateUtil.getDateFromJSON(marketDataAsJson1, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		LocalDate ld2 = SDCDateUtil.getDateFromJSON(marketDataAsJson2, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -70,10 +72,10 @@ public class SettlementValuationController implements SettlementValuationApi {
 			logger.error(message);
 			return new ResponseEntity<String>(message, responseHeaders, HttpStatus.BAD_REQUEST);
 		}
-		logger.info("Starting Margin Calculation with dates " + ld1 + " and  " + ld2);
+		logger.info("Starting Margin Calculation with dates " + ld1 + " and  " + ld2);*/
 		MarginCalculator marginCalculator = new MarginCalculator();
 				
-		double margin;
+		/*double margin;
 		try {
 			marginCalculator.getValue(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
 		} catch (Exception e) {
@@ -84,21 +86,27 @@ public class SettlementValuationController implements SettlementValuationApi {
 			logger.debug("json1bytes: " + marketDataAsJson1);
 			logger.debug("json2bytes: " + marketDataAsJson2);
 			logger.debug("fpmlbytes: " + tradeAsFPML);			
-		}
+		}*/
 		String resultJSON = marginCalculator.getContractValuationAsJSON();
 		logger.info(resultJSON);
+		curve1 = marketDataAsJson1;
+		curve2 = marketDataAsJson2;
 		fpml.put(tradeId, tradeAsFPML);
+		result.put(tradeId, resultJSON);
 
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "MarginResult");
 		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
 	}
-	
+
+
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPMLOneCurve
 	 * 
 	 * @param tradeAsFPML Trade FPML file
 	 * @param marketDataAsJson1 Market data Json file1
 	 * @return String Json representing the valuation.
-	 */
+
 	public ResponseEntity<String> settlementvaluationForProductAsFPMLOneCurve(MultipartFile marketDataAsJson1, MultipartFile tradeAsFPML)
 		{
 		
@@ -179,7 +187,6 @@ public class SettlementValuationController implements SettlementValuationApi {
 	 * @param marketDataAsJson1 Market data Json file1
 	 * @param marketDataAsJson2 Market data Json file2
 	 * @return String Json representing the valuation.
-	 */
 	public ResponseEntity<String> settlementvaluationForProductAsFPML(MultipartFile marketDataAsJson1, MultipartFile marketDataAsJson2, MultipartFile tradeAsFPML)
 		{
 		String json1String = null;
@@ -241,7 +248,7 @@ public class SettlementValuationController implements SettlementValuationApi {
 	 * 
 	 * @param tradeId Trade ID
 	 * @return String representing trade as fpml.
-	 */
+
 	public ResponseEntity<String> settlementvaluationProductAsFPML(String tradeId)
 		{
 		HttpHeaders responseHeaders = new HttpHeaders();

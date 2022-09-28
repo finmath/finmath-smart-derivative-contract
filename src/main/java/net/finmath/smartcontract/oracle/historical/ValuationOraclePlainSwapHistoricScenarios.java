@@ -8,7 +8,7 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationContextI
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDataPoints;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;
 import net.finmath.smartcontract.simulation.curvecalibration.Calibrator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataScenario;
+import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracle {
 
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
-	private final List<IRMarketDataScenario> scenarioList;
+	private final List<IRMarketDataSet> scenarioList;
 	private final Swap product;
 	private final LocalDate productStartDate;
 	private final double notionalAmount;
@@ -41,7 +41,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataScenario> scenarioList) {
+	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataSet> scenarioList) {
 		this.notionalAmount = notionalAmount;
 		this.product = product;
 		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
@@ -55,9 +55,9 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 
 	@Override
 	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
-		final Optional<IRMarketDataScenario> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
+		final Optional<IRMarketDataSet> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
-			final IRMarketDataScenario scenario = optionalScenario.get();
+			final IRMarketDataSet scenario = optionalScenario.get();
 			final CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
 			final Calibrator calibrator = new Calibrator();
 			try {

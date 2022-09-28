@@ -33,30 +33,16 @@ public class SDCProperties {
 
 	}
 
-	public static boolean init(String propFile) {
-
-		properties = getProperties(propFile);
-		for (String key : properties.stringPropertyNames()) {
-			String value = properties.getProperty(key);
-			logger.info("Property:   " + key + " => " + value);
-		}
-		return true;
-	}
-
-	private static Properties getProperties(String propFile) {
-
-		Properties prop = new Properties();
-		setDefaults(prop);
+	public static boolean init(String connectionPropertiesFile){
 		try {
-			InputStream input = new FileInputStream(propFile);
-			prop.load(input);
-			input.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
+			properties = new Properties();
+			properties.load(new FileInputStream(connectionPropertiesFile));
 		}
-
-		return prop;
+		catch(Exception e){
+				System.out.println("SDCProperties: Not able to retrieve properties");
+				System.exit(1);
+			}
+		return true;
 	}
 
 	/**

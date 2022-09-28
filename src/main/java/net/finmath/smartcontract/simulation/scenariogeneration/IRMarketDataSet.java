@@ -14,14 +14,14 @@ import java.util.stream.Stream;
  * @author Peter Kohl-Landgraf
  */
 
-public class IRMarketDataScenario {
+public class IRMarketDataSet {
 
 	LocalDateTime scenarioDate;
 	Map<String, IRCurveData> curveDataMap;
 
 	//final String productKey; // = "Swap-Rate";
 
-	public IRMarketDataScenario(final Map<String, IRCurveData> curveDataMap, final LocalDateTime scenarioDate) {
+	public IRMarketDataSet(final Map<String, IRCurveData> curveDataMap, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
 		this.curveDataMap = curveDataMap;
 		//this.productKey = productKey;

@@ -22,8 +22,7 @@ public class HistoricalSimulationTest {
 			final String startDate = "20070101";
 			final String endDate = "20120103";
 			final String fileName = "timeseriesdatamap.json";
-			final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-			final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromJsonFile(fileName, providedDateFormat).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate, providedDateFormat))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate, providedDateFormat))).collect(Collectors.toList());
+			final List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate))).collect(Collectors.toList());
 
 			/*Generate Sample Product */
 			final double notional = 1.0E7;
