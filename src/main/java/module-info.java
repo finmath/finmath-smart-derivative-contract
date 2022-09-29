@@ -43,7 +43,6 @@ module net.finmath.smartderivativecontract {
 	requires org.apache.commons.lang3;
 	requires org.apache.tomcat.embed.core;
 	requires jackson.databind.nullable;
-	requires com.google.gson;
 	requires org.slf4j;
 	requires money.api;
 	requires moneta;
