@@ -12,23 +12,32 @@ servers:
 paths:
   /valuation/value:
     post:
-      summary: Request mapping for the settlementvaluationForProductAsFPML
+      summary: Request mapping for the value
       operationId: value
       requestBody:
         content:
           application/json:
             schema:
               type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
               properties:
-                valuationRequest:
-                  type: object
+                marketData:
+                  type: string
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
       responses:
         '200':
-          description: Margin was calculated
+          description: Value was calculated
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ValuationResult"
         default:
           description: unexpected error
           content:
@@ -38,7 +47,7 @@ paths:
 
   /valuation/margin:
     post:
-      summary: Request mapping for the settlementvaluationForProductAsFPML
+      summary: Request mapping for the margin
       operationId: margin
       requestBody:
         content:
