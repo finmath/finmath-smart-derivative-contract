@@ -29,8 +29,9 @@
         <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
         <kotlin.version>1.7.10</kotlin.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
-        <finmath-lib.version>6.0.2</finmath-lib.version>
+        <finmath-lib.version>6.0.3</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
+        <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
     </properties>
 
@@ -123,7 +124,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>${apache-commons-lang3.version}</version>
         </dependency>
 
         <!--Spring State Machine -->

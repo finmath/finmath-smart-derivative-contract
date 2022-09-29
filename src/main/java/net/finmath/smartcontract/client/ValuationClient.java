@@ -2,7 +2,6 @@ package net.finmath.smartcontract.client;
 
 import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.ValuationResult;
-import net.finmath.smartcontract.model.ValueRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;

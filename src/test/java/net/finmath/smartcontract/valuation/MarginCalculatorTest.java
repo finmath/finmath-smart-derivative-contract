@@ -1,15 +1,11 @@
 package net.finmath.smartcontract.valuation;
 
 import net.finmath.smartcontract.client.ValuationClient;
-import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.ValuationResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 
 public class MarginCalculatorTest {
 
@@ -23,7 +19,7 @@ public class MarginCalculatorTest {
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValuationResult valuationResult = marginCalculator.getValue(marketDataStart, marketDataEnd, product);
 
-		Double value = valuationResult.getValue().doubleValue();
+		double value = valuationResult.getValue().doubleValue();
 
 		Assertions.assertEquals(952409.716, value, 0.005, "Valuation");
 		System.out.println(valuationResult);

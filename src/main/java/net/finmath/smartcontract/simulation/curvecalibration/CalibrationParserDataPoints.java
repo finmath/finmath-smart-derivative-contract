@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
 public class CalibrationParserDataPoints implements CalibrationParser {
 
 	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CalibrationParserDataPoints.class);
-	private final Set<String> maturityGrid = new HashSet<String>(Arrays.asList("1W", "2W", "3W", "1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "12M", "15M", "18M", "2Y", "3Y", "4Y", "5Y", "6Y", "7Y", "8Y", "9Y", "10Y", "15Y", "20Y", "25Y", "30Y", "40Y", "50Y"));
+	private final Set<String> maturityGrid = new HashSet<>(Arrays.asList("1W", "2W", "3W", "1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "12M", "15M", "18M", "2Y", "3Y", "4Y", "5Y", "6Y", "7Y", "8Y", "9Y", "10Y", "15Y", "20Y", "25Y", "30Y", "40Y", "50Y"));
 
 	@Override
 	public Stream<CalibrationSpecProvider> parse(final Stream<CalibrationDatapoint> datapoints) {
@@ -46,7 +45,6 @@ public class CalibrationParserDataPoints implements CalibrationParser {
 				return Optional.of(new CalibrationSpecProviderSwap("1M", "monthly", datapoint.getMaturity(), datapoint.getQuote() ));
 			case "Euribor3M":
 				return Optional.of(new CalibrationSpecProviderSwap("3M", "quarterly", datapoint.getMaturity(), datapoint.getQuote() ));
-
 			default:
 				logger.warn("Ignored data point.");
 				return Optional.empty();

@@ -1,15 +1,11 @@
 package net.finmath.smartcontract.marketdata;
 
-import net.finmath.smartcontract.service.Application;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 

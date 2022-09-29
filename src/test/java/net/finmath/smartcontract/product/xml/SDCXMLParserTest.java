@@ -2,7 +2,7 @@ package net.finmath.smartcontract.product.xml;
 
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
-import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
+import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
 class SDCXMLParserTest {
 
 	@Test
-	void testParser() throws IOException, SAXException, ParserConfigurationException, URISyntaxException {
+	void testParser() throws IOException, SAXException, ParserConfigurationException {
 
 		String sdcXML = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 
@@ -41,7 +40,7 @@ class SDCXMLParserTest {
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();
 		// This needs cleaning
-		ProductDescriptor productDescriptor = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-3M").getProductDescriptor(underlying);
+		ProductDescriptor productDescriptor = new FPMLParser("party1", "forward-EUR-3M", "discount-EUR-OIS").getProductDescriptor(underlying);
 		System.out.println(productDescriptor.name());
 
 		InterestRateSwapProductDescriptor irs = (InterestRateSwapProductDescriptor) productDescriptor;

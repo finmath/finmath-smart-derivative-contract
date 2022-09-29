@@ -7,8 +7,8 @@ import net.finmath.modelling.DescribedProduct;
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
+import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
-import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.model.ValuationResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
@@ -81,7 +81,7 @@ public class MarginCalculator {
 		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "discount-EUR-OIS", "forward-EUR-6M").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 
 		return calculateMargin(List.of(marketDataSetsStart.get(0), marketDataSetsEnd.get(0)), productDescriptor, underlying);
 

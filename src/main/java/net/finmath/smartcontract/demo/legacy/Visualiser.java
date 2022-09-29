@@ -4,7 +4,6 @@ import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.chart.ui.ApplicationFrame;
 

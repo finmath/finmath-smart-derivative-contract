@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,9 +33,8 @@ public class IRMarketDataParser {
 	 * @param fileName Name of the input file.
 	 * @return List of <code>IRMarketDataScenario</code>
 	 * @throws IOException                  Thrown if market data file is not found.
-	 * @throws UnsupportedEncodingException Thrown if market data file has wrong encoding.
 	 */
-	public static final List<IRMarketDataSet> getScenariosFromCSVFile(final String fileName) throws UnsupportedEncodingException, IOException {
+	public static List<IRMarketDataSet> getScenariosFromCSVFile(final String fileName) throws IOException {
 		CsvMapper mapper = new CsvMapper();
 		CsvSchema csvSchema = mapper.typedSchemaFor(MarketDataItem.class).withHeader();
 		MappingIterator<MarketDataItem> iterator = mapper.readerFor(MarketDataItem.class).with(csvSchema).readValues(new FileReader(fileName));
