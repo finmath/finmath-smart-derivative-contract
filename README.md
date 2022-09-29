@@ -14,20 +14,38 @@ See https://ssrn.com/abstract=3163074
 
 ## Contents
 
-### State Machine Model for a Smart Derivative Contract
+### Visualization and Demonstration
 
-The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
-contract.
+The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
+This is a Java FX application. Run `VisualiserSDC`.
+
+### Valuation Service (ReST service)
+
+Running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle.
+
+The enpoint https://localhost:8080/valuation/value allows the valuation of a financial product under given market data.
+
+The enpoint https://localhost:8080/valuation/margin allows the calculation of the settlement amount between two market data sets.
+
+The market data has to be provided as a JSON.
+The product data as to be provided as an XML (containing a part being an FPML of the underlying product).
+
+See also `api.yml`.
 
 ### Settlement Amount Oracle and Valuation Oracle
 
 The package `net.finmath.smartcontract.oracle` contains the interface describing a so called oracle providing the
 settlement amount for a smart derivative contract. The package contains also an implementation for interest rate swaps.
 
-### Visualization and Demonstration
+### State Machine Model for a Smart Derivative Contract
 
-The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract. This is a Java FX
-application.
+The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
+contract.
+
+## Product
+
+The smart derivative contract is described in terms of the sdc.xml.
 
 ## Docker
 
