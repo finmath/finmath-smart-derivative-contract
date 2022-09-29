@@ -61,7 +61,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 			final CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
 			final Calibrator calibrator = new Calibrator();
 			try {
-				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataProintStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
+				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataPointStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
 				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
 				final double evaluationTime = 0.0;    // Time relative to models reference date (which agrees with evaluationDate).

@@ -19,8 +19,6 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
 
-	requires io.swagger.v3.oas.annotations;
-
 	requires java.datatransfer;
 	requires java.logging;
 	requires java.validation;
@@ -40,21 +38,22 @@ module net.finmath.smartderivativecontract {
 	requires spring.statemachine.core;
 	requires spring.beans;
 
-	requires org.apache.commons.lang3;
-	requires org.apache.tomcat.embed.core;
-	requires jackson.databind.nullable;
-	requires org.slf4j;
-	requires money.api;
-	requires moneta;
+	requires io.swagger.v3.oas.annotations;
+
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.dataformat.csv;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
-	requires com.google.common;
+	requires jackson.databind.nullable;
+
+	requires org.apache.commons.lang3;
+	requires org.apache.tomcat.embed.core;
+	requires org.slf4j;
+	requires money.api;
+	requires moneta;
 
 	requires net.finmath.lib;
 	requires net.finmath.plots;
-
 	requires org.jfree.jfreechart;
 }

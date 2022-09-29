@@ -5,7 +5,6 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParser;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationSpecProvider;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,12 +14,10 @@ import java.util.stream.Stream;
  *
  * @author Peter Kohl-Landgraf
  */
-
 public class IRMarketDataSet {
 
 	LocalDateTime scenarioDate;
 	Set<CalibrationDatapoint> curveDataPointSet;
-
 
 	public IRMarketDataSet(final Set<CalibrationDatapoint> curveDataPointSet, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
@@ -30,7 +27,7 @@ public class IRMarketDataSet {
 
 	public 	IRMarketDataSet getScaled(double scaleFactor){
 		Set<CalibrationDatapoint> scaledSet = curveDataPointSet.stream().map(point->point.getClonedScaled(scaleFactor)).collect(Collectors.toSet());
-		return new IRMarketDataSet(scaledSet,scenarioDate);
+		return new IRMarketDataSet(scaledSet, scenarioDate);
 	}
 
 
@@ -42,7 +39,7 @@ public class IRMarketDataSet {
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.
 	 */
-	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(final CalibrationParser parser) {
+	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataPointStream(final CalibrationParser parser) {
 
 		return parser.parse(curveDataPointSet.stream());
 
