@@ -51,8 +51,20 @@ The smart derivative contract is described in terms of the sdc.xml.
 
 To run Docker Container execute following commands
 
+Clone this repository, if not done yet:
+```
+git clone https://github.com/finmath/finmath-smart-derivative-contract.git
+cd finmath-smart-derivative-contract
+```
+
+Build a *fat jar* containing all dependencies.
 ```
 mvn clean package spring-boot:repackage
+```
+
+Build and run the Docker Container
+
+```
 docker build -t valuation_service .
 docker run -p 8080:8080 valuation_service
 ```
