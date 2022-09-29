@@ -29,10 +29,14 @@
         <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
         <kotlin.version>1.7.10</kotlin.version>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
-        <finmath-lib.version>6.0.3</finmath-lib.version>
+        <finmath-lib.version>6.0.4</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
         <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
+        <jackson-core.version>2.13.4</jackson-core.version>
+        <jackson-databind.version>2.13.4</jackson-databind.version>
+        <jackson-annotations.version>2.13.4</jackson-annotations.version>
+        <jackson-dataformat-csv.version>2.13.4</jackson-dataformat-csv.version>
     </properties>
 
     <developers>
@@ -62,32 +66,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <repositories>
-        <repository>
-            <id>jzy3d-releases</id>
-            <name>Jzy3d Releases</name>
-            <url>https://maven.jzy3d.org/releases</url>
-        </repository>
-        <repository>
-            <id>maven-central</id>
-            <name>Maven Central</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <repository>
-            <id>spring-plugins</id>
-            <name>Spring Plugins Repository</name>
-            <url>http://repo.spring.io/plugins-release/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>corda</id>
-            <url>https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- Java FX -->
@@ -172,22 +150,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.4</version>
+            <version>${jackson-core.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.4</version>
+            <version>${jackson-annotations.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.13.4</version>
+            <version>${jackson-dataformat-csv.version}</version>
         </dependency>
 
         <!-- Spring boot -->
@@ -424,8 +402,8 @@
                                 <apiPackage>net.finmath.smartcontract.api</apiPackage>
                                 <configPackage>net.finmath.smartcontract.config</configPackage>
                             </configOptions>
-                            <generateApiTests>false</generateApiTests>
-                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>true</generateApiTests>
+                            <generateModelTests>true</generateModelTests>
                             <supportingFilesToGenerate>
                                 ApiUtil.java
                             </supportingFilesToGenerate>
