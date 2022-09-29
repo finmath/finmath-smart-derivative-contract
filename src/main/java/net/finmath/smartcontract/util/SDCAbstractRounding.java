@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 /**
  * The Class  SDCAbstractRounding
  * <p>
- * Contains general rounding methods, as well as converting to strings. 
+ * Contains general rounding methods, as well as converting to strings.
  */
 public abstract class SDCAbstractRounding {
 
@@ -59,7 +59,7 @@ public abstract class SDCAbstractRounding {
 	 * Gets the double from the left shifted integer String
 	 *
 	 * @param s the integer string
-	 * @return the double 
+	 * @return the double
 	 */
 	public double getDoubleFromIntegerString(String s) {
 		String sf = null;

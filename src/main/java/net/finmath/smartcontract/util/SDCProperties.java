@@ -31,15 +31,14 @@ public class SDCProperties {
 
 	}
 
-	public static boolean init(String connectionPropertiesFile){
+	public static boolean init(String connectionPropertiesFile) {
 		try {
 			properties = new Properties();
 			properties.load(new FileInputStream(connectionPropertiesFile));
+		} catch (Exception e) {
+			System.out.println("SDCProperties: Not able to retrieve properties");
+			System.exit(1);
 		}
-		catch(Exception e){
-				System.out.println("SDCProperties: Not able to retrieve properties");
-				System.exit(1);
-			}
 		return true;
 	}
 

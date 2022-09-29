@@ -34,7 +34,7 @@ public class IRMarketDataParser {
 	/**
 	 * Static method which parses a csv file - using jackson csv mapper - and converts it to a list of market data scenarios
 	 *
-	 * @param fileName      Name of the input file.
+	 * @param fileName Name of the input file.
 	 * @return List of <code>IRMarketDataScenario</code>
 	 * @throws IOException                  Thrown if market data file is not found.
 	 * @throws UnsupportedEncodingException Thrown if market data file has wrong encoding.
@@ -73,7 +73,7 @@ public class IRMarketDataParser {
 	 *
 	 * @param fileName Name of the input file.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException File not found
+	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
 	public static final List<IRMarketDataSet> getScenariosFromJsonFile(final String fileName) throws UnsupportedEncodingException, IOException {
@@ -81,8 +81,7 @@ public class IRMarketDataParser {
 
 		try {
 			content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
 		}
@@ -96,7 +95,7 @@ public class IRMarketDataParser {
 	 *
 	 * @param jsonString Content of the json.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException  File not found
+	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
 	public static final List<IRMarketDataSet> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
@@ -111,36 +110,35 @@ public class IRMarketDataParser {
 	 * Static method which parses a json file from its string content and converts it to a list of market data scenarios
 	 *
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException  File not found
+	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
 	private static final List<IRMarketDataSet> getScenariosFromJsonContent(final String content) throws IOException {
-			final ObjectMapper mapper = new ObjectMapper();
-			final Map<String, Map<String, Map<String, Map<String, Double>>>> timeSeriesDatamap = mapper.readValue(content, new HashMap<String, Map<String, Map<String, Map<String, Double>>>>().getClass());
+		final ObjectMapper mapper = new ObjectMapper();
+		final Map<String, Map<String, Map<String, Map<String, Double>>>> timeSeriesDatamap = mapper.readValue(content, new HashMap<String, Map<String, Map<String, Map<String, Double>>>>().getClass());
 
-			final List<IRMarketDataSet> scenarioList = timeSeriesDatamap.entrySet().stream()
-					.map(
-							scenarioData -> {
-								final Map<String, IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> new IRCurveData(entry.getKey(), entry.getValue())));
-								final String timeStampStr = scenarioData.getKey();
-								final LocalDateTime dateTime = parseTimestampString(timeStampStr);
-								final IRMarketDataSet scenario = new IRMarketDataSet(map, dateTime);
+		final List<IRMarketDataSet> scenarioList = timeSeriesDatamap.entrySet().stream()
+				.map(
+						scenarioData -> {
+							final Map<String, IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> new IRCurveData(entry.getKey(), entry.getValue())));
+							final String timeStampStr = scenarioData.getKey();
+							final LocalDateTime dateTime = parseTimestampString(timeStampStr);
+							final IRMarketDataSet scenario = new IRMarketDataSet(map, dateTime);
 
-								return scenario;
-							})
-					.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
-					.collect(Collectors.toList());
+							return scenario;
+						})
+				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
+				.collect(Collectors.toList());
 
-			return scenarioList;
+		return scenarioList;
 	}
 
-	private static LocalDateTime parseTimestampString(String timeStampString){
+	private static LocalDateTime parseTimestampString(String timeStampString) {
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
 		LocalDateTime localDateTime = LocalDateTime.parse(timeStampString, dateTimeFormatter);
-		if (localDateTime == null)
-		{
+		if (localDateTime == null) {
 			final LocalDate date = LocalDate.parse(timeStampString, dateFormatter);
 			localDateTime = date.atTime(17, 0);
 		}

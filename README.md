@@ -30,7 +30,9 @@ The package `net.finmath.smartcontract.demo`contains a visualization of a smart 
 application.
 
 ## Docker
+
 To run Docker Container execute following commands
+
 ```
 mvn clean package spring-boot:repackage
 docker build -t valuation_service .

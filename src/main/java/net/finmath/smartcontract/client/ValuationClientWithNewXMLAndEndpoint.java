@@ -47,7 +47,6 @@ public class ValuationClientWithNewXMLAndEndpoint {
 		String product = Files.readString(Path.of(Application.class.getClassLoader().getResource("vanilla-swap.xml").getPath()), StandardCharsets.UTF_8);
 
 
-
 		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
 		MarginRequest marginRequest = new MarginRequest();
 		marginRequest.setMarketDataStart(marketDataStart);

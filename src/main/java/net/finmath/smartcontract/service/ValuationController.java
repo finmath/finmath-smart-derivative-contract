@@ -7,7 +7,6 @@
 
 package net.finmath.smartcontract.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.ValuationResult;
@@ -33,6 +32,7 @@ import java.time.LocalDate;
 /**
  * Controller for the settlement valuation REST service.
  * TODO Refactor try/catch once openapi can generate exception handling
+ *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
  * @author Dietmar Schnabel
@@ -48,8 +48,7 @@ public class ValuationController implements ValuationApi {
 	 * @param marginRequest The request
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<ValuationResult> margin(MarginRequest marginRequest)
-	{
+	public ResponseEntity<ValuationResult> margin(MarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
@@ -67,53 +66,52 @@ public class ValuationController implements ValuationApi {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPMLOneCurve
-	 * 
-	 * @param marketData Market data Json file1
-	 * @param tradeData Trade FPML file
+	 *
+	 * @param marketData    Market data Json file1
+	 * @param tradeData     Trade FPML file
 	 * @param valuationDate The date to be used in valuation.
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<String> value(String marketData, String tradeData, String valuationDate)
-		{
-		
+	public ResponseEntity<String> value(String marketData, String tradeData, String valuationDate) {
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "SettlementValuationControllerOneCurve");
 
 		LocalDate marketDataDate = SDCDateUtil.getDateFromJSON(marketData, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		String currentDateString = SDCDateUtil.getStringFromDate(marketDataDate, SDCConstants.DATE_FORMAT_yyyyMMdd);
-		
+
 		LocalDate previousDate = SDCDateUtil.getPreviousBusinessDay(marketDataDate, new BusinessdayCalendarExcludingTARGETHolidays());
 		logger.info("T-1 = " + previousDate);
-		
+
 		String previousDateString = SDCDateUtil.getStringFromDate(previousDate, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		String FileHeader = SDCProperties.getProperty(SDCConstants.DATA_PATH) + File.separator + SDCProperties.getProperty(SDCConstants.MARKET_DATA_FILE_HEADER);
 		String previousJson = FileHeader + previousDateString + ".json";
 		String currentJson = FileHeader + currentDateString + ".json";
-		
+
 		File previousFile = new File(previousJson);
 		File currentFile = new File(currentJson);
-		
-		if(!Files.exists(previousFile.toPath())) {
+
+		if (!Files.exists(previousFile.toPath())) {
 			String message = "The file " + previousJson + " does not exist!";
 			logger.error(message);
 			return new ResponseEntity<String>(message, responseHeaders, HttpStatus.BAD_REQUEST);
 		}
 		logger.info("Previous File = " + previousFile);
-			String json2String = null;
-			try {
-				json2String = new String(Files.readAllBytes(previousFile.toPath()));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			LocalDate ld2 = SDCDateUtil.getDateFromJSON(json2String, SDCConstants.DATE_FORMAT_yyyyMMdd);
+		String json2String = null;
+		try {
+			json2String = new String(Files.readAllBytes(previousFile.toPath()));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		LocalDate ld2 = SDCDateUtil.getDateFromJSON(json2String, SDCConstants.DATE_FORMAT_yyyyMMdd);
 
 
-			logger.info("Starting Margin Calculation with dates " + marketDataDate + " and  " + ld2);
+		logger.info("Starting Margin Calculation with dates " + marketDataDate + " and  " + ld2);
 		MarginCalculator marginCalculator = new MarginCalculator();
-		
+
 		if (logger.isDebugEnabled()) {
 			logger.debug("json1bytes: " + marketData);
 			logger.debug("json2bytes: " + json2String);
@@ -125,27 +123,26 @@ public class ValuationController implements ValuationApi {
 			logger.error("Failed to calculate margin.");
 			e.printStackTrace();
 		}
-		
+
 		String resultJSON = marginCalculator.getContractValuationAsJSON();
 		logger.info(resultJSON);
-			try {
-				Files.write( currentFile.toPath(), marketData.getBytes());
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
+		try {
+			Files.write(currentFile.toPath(), marketData.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
-	 * 
-	 * @param tradeAsFPML Trade FPML file
+	 *
+	 * @param tradeAsFPML       Trade FPML file
 	 * @param marketDataAsJson1 Market data Json file1
 	 * @param marketDataAsJson2 Market data Json file2
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<String> settlementvaluationForProductAsFPML(MultipartFile marketDataAsJson1, MultipartFile marketDataAsJson2, MultipartFile tradeAsFPML)
-		{
+	public ResponseEntity<String> settlementvaluationForProductAsFPML(MultipartFile marketDataAsJson1, MultipartFile marketDataAsJson2, MultipartFile tradeAsFPML) {
 		String json1String = null;
 		try {
 			json1String = new String(marketDataAsJson1.getBytes());
@@ -174,8 +171,8 @@ public class ValuationController implements ValuationApi {
 		if (SDCProperties.getProperty(SDCConstants.MARKET_DATA_FILE_HEADER).equals("TRUE")) {
 			b = SDCDateUtil.isFollowingBusinessDays(ld1, ld2, new BusinessdayCalendarExcludingTARGETHolidays());
 		}
-		
-		if(!b) {
+
+		if (!b) {
 			String message = "The dates " + ld1 + " and  " + ld2 + " are not T, T-1 following business dates!";
 			logger.error(message);
 			return new ResponseEntity<String>(message, responseHeaders, HttpStatus.BAD_REQUEST);
@@ -202,17 +199,16 @@ public class ValuationController implements ValuationApi {
 
 	/**
 	 * Request mapping for test
-	 * 
+	 *
 	 * @return String "Connect successful".
 	 */
-	public ResponseEntity<String> test()
-		{
-				
+	public ResponseEntity<String> test() {
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		responseHeaders.add("Responded", "test");
-		String totalResult =  "Connect successful";
-				
+		String totalResult = "Connect successful";
+
 		return new ResponseEntity<String>(totalResult, responseHeaders, HttpStatus.OK);
 	}
 }

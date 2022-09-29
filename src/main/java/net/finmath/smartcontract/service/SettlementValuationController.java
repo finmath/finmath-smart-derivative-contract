@@ -24,31 +24,31 @@ import java.util.HashMap;
 /**
  * Controller for the settlement valuation REST service.
  * TODO Refactor try/catch once openapi can generate exception handling
+ *
  * @author Christian Fries
  * @author Peter Kohl-Landgraf
  * @author Dietmar Schnabel
  */
 @RestController
 public class SettlementValuationController implements SettlementValuationApi {
-	
-	private  static String curve1 = "NONE";
-	private  static String curve2 = "NONE";
-	private  static final HashMap<String, String> fpml = new HashMap<String, String>();
-	private  static final HashMap<String, String> result = new HashMap<String, String>();
-	
+
+	private static String curve1 = "NONE";
+	private static String curve2 = "NONE";
+	private static final HashMap<String, String> fpml = new HashMap<String, String>();
+	private static final HashMap<String, String> result = new HashMap<String, String>();
+
 	private final Logger logger = LoggerFactory.getLogger(SettlementValuationController.class);
-	
+
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
-	 * 
-	 * @param tradeAsFPML Trade FPML string
-	 * @param tradeId Trade ID
+	 *
+	 * @param tradeAsFPML       Trade FPML string
+	 * @param tradeId           Trade ID
 	 * @param marketDataAsJson1 Market data Json string
 	 * @param marketDataAsJson2 Market data Json string
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<String> settlementvaluationForProductAsFPMLOnChain(String marketDataAsJson1, String marketDataAsJson2, String tradeAsFPML, String tradeId)
-		{
+	public ResponseEntity<String> settlementvaluationForProductAsFPMLOnChain(String marketDataAsJson1, String marketDataAsJson2, String tradeAsFPML, String tradeId) {
 		/*LocalDate ld1 = SDCDateUtil.getDateFromJSON(marketDataAsJson1, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		LocalDate ld2 = SDCDateUtil.getDateFromJSON(marketDataAsJson2, SDCConstants.DATE_FORMAT_yyyyMMdd);
 		
@@ -71,11 +71,11 @@ public class SettlementValuationController implements SettlementValuationApi {
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ValuationResult valuationResult;
-			try {
-				valuationResult = marginCalculator.getValue(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+		try {
+			valuationResult = marginCalculator.getValue(marketDataAsJson1, marketDataAsJson2, tradeAsFPML);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "MarginResult");
@@ -84,17 +84,16 @@ public class SettlementValuationController implements SettlementValuationApi {
 
 	/**
 	 * Request mapping for test
-	 * 
+	 *
 	 * @return String "Connect successful".
 	 */
-	public ResponseEntity<String> test()
-		{
-				
+	public ResponseEntity<String> test() {
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		responseHeaders.add("Responded", "test");
-		String totalResult =  "Connect successful";
-				
+		String totalResult = "Connect successful";
+
 		return new ResponseEntity<String>(totalResult, responseHeaders, HttpStatus.OK);
 	}
 }

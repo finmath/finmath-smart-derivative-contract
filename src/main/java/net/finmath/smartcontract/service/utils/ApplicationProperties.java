@@ -9,7 +9,7 @@ import java.util.List;
  * Implements list of sdcUsers from application.yml
  */
 @Component
-@ConfigurationProperties(prefix="data.sdc")
+@ConfigurationProperties(prefix = "data.sdc")
 public class ApplicationProperties {
 	private List<SDCUser> users;
 

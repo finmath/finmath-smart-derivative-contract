@@ -17,35 +17,35 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(value = ApplicationProperties.class)
-public class BasicAuthWebSecurityConfiguration
-{
+public class BasicAuthWebSecurityConfiguration {
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf().disable()
-        .authorizeRequests()
-        .anyRequest().authenticated().and().httpBasic();
-    return http.build();
-  }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+				.csrf().disable()
+				.authorizeRequests()
+				.anyRequest().authenticated().and().httpBasic();
+		return http.build();
+	}
 
-  @Bean
-  public InMemoryUserDetailsManager userDetailsService(ApplicationProperties applicationProperties) {
-    return new InMemoryUserDetailsManager(buildUserDetailsList(applicationProperties));
-  }
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService(ApplicationProperties applicationProperties) {
+		return new InMemoryUserDetailsManager(buildUserDetailsList(applicationProperties));
+	}
 
-  /**
-   * Helper class to generate List of UserDetails from application properties.
-   * @param applicationProperties injected properties
-   * @return List of UserDetails
-   */
-  private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
-    List<UserDetails> userDetailsList = new ArrayList<>();
-    applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
-            .withUsername(sdcUser.getUsername())
-            .password("{noop}"+sdcUser.getPassword())
-            .roles(sdcUser.getRole())
-            .build()));
-    return userDetailsList;
-  }
+	/**
+	 * Helper class to generate List of UserDetails from application properties.
+	 *
+	 * @param applicationProperties injected properties
+	 * @return List of UserDetails
+	 */
+	private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
+		List<UserDetails> userDetailsList = new ArrayList<>();
+		applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
+				.withUsername(sdcUser.getUsername())
+				.password("{noop}" + sdcUser.getPassword())
+				.roles(sdcUser.getRole())
+				.build()));
+		return userDetailsList;
+	}
 }
