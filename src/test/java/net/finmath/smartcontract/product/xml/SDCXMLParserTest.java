@@ -13,8 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +21,7 @@ class SDCXMLParserTest {
 	@Test
 	void testParser() throws IOException, SAXException, ParserConfigurationException, URISyntaxException {
 
-		String sdcXML = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String sdcXML = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 
