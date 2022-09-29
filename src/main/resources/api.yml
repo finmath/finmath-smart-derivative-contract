@@ -16,16 +16,12 @@ paths:
       operationId: value
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
-                marketData:
-                  type: string
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
+                valuationRequest:
+                  type: object
       responses:
         '200':
           description: Margin was calculated
@@ -46,7 +42,7 @@ paths:
       operationId: margin
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:

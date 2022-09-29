@@ -1,5 +1,6 @@
 module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.api;
+	exports net.finmath.smartcontract.model;
 	exports net.finmath.smartcontract.valuation;
 	exports net.finmath.smartcontract.client;
 	exports net.finmath.smartcontract.util;

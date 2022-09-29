@@ -7,7 +7,9 @@
 
 package net.finmath.smartcontract.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.api.ValuationApi;
+import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCDateUtil;
 import net.finmath.smartcontract.util.SDCProperties;
@@ -41,47 +43,27 @@ public class ValuationController implements ValuationApi {
 
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
-	 * 
-	 * @param tradeData Trade XML string
-	 * @param marketDataStart Market data JSON string
-	 * @param marketDataEnd Market data JSON string
-	 * @param valuationDate The valuation date
+	 *
+	 * @param marginRequest The request
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<String> margin(String marketDataStart, String marketDataEnd, String tradeData, String valuationDate)
+	public ResponseEntity<String> margin(MarginRequest marginRequest)
 	{
-		LocalDate marketDataStartDate = SDCDateUtil.getDateFromJSON(marketDataStart, SDCConstants.DATE_FORMAT_yyyyMMdd);
-		LocalDate marketDataEndDate = SDCDateUtil.getDateFromJSON(marketDataEnd, SDCConstants.DATE_FORMAT_yyyyMMdd);
-		
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Responded", "SettlementValuationControllerTwoCurves");
-		
-		boolean b = true;
-		if (SDCProperties.getProperty(SDCConstants.USE_CURVES_STRICT_BUS_DAYS).equals("TRUE")) {
-			b = SDCDateUtil.isFollowingBusinessDays(marketDataStartDate, marketDataEndDate, new BusinessdayCalendarExcludingTARGETHolidays());
-		}
-		
-		if(!b) {
-			String message = "The dates " + marketDataStartDate + " and  " + marketDataEndDate + " are not T, T-1 following business dates!";
-			logger.error(message);
-			return new ResponseEntity<String>(message, responseHeaders, HttpStatus.BAD_REQUEST);
-		}
-		logger.info("Starting Margin Calculation with dates " + marketDataStartDate + " and  " + marketDataEndDate);
-		MarginCalculator marginCalculator = new MarginCalculator();
-				
-		double margin;
+		responseHeaders.add("Responded", "margin");
+
+
+		String resultJSON = null;
 		try {
-			marginCalculator.getValue(marketDataStart, marketDataEnd, tradeData);
+			MarginCalculator marginCalculator = new MarginCalculator();
+			ValuationResult margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
+			resultJSON = (new ObjectMapper()).writeValueAsString(margin);
 		} catch (Exception e) {
 			logger.error("Failed to calculate margin.");
+			logger.info(marginRequest.toString());
 			e.printStackTrace();
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("json1bytes: " + marketDataStart);
-			logger.debug("json2bytes: " + marketDataEnd);
-			logger.debug("fpmlbytes: " + tradeData);
-		}
-		String resultJSON = marginCalculator.getContractValuationAsJSON();
+
 		logger.info(resultJSON);
 
 		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
