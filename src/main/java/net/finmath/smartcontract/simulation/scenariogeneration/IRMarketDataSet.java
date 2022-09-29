@@ -7,6 +7,7 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationSpecProv
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -25,6 +26,11 @@ public class IRMarketDataSet {
 		this.scenarioDate = scenarioDate;
 		this.curveDataPointSet = curveDataPointSet;
 
+	}
+
+	public 	IRMarketDataSet getScaled(double scaleFactor){
+		Set<CalibrationDatapoint> scaledSet = curveDataPointSet.stream().map(point->point.getClonedScaled(scaleFactor)).collect(Collectors.toSet());
+		return new IRMarketDataSet(scaledSet,scenarioDate);
 	}
 
 

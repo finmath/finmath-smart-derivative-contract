@@ -144,7 +144,7 @@ public class IRMarketDataParser {
 		try{
 			localDateTime = LocalDateTime.parse(timeStampString, dateTimeFormatter);
 		}
-		catch (DateTimeParseException e) {
+		catch (Exception e) {
 			// Fall back to 17:00
 			final LocalDate date = LocalDate.parse(timeStampString, dateFormatter);
 			localDateTime = date.atTime(17, 0);

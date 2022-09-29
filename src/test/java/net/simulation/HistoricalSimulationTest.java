@@ -18,10 +18,13 @@ public class HistoricalSimulationTest {
 	public void testHistoricalSimulation() {
 
 		try {
-			final String startDate = "20070101";
-			final String endDate = "20120103";
-			final String fileName = "net/finmath/smartcontract/demo/timeseriesdatamap.json";
-			final List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate))).collect(Collectors.toList());
+
+			final LocalDate startDate = LocalDate.of(2007, 1, 1);
+			final LocalDate maturity = LocalDate.of(2012, 1, 3);
+			final String fileName = "timeseriesdatamap.json";
+			final List<IRMarketDataSet> scenarioListRaw = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+			final List<IRMarketDataSet> scenarioList = scenarioListRaw.stream().map(scenario->scenario.getScaled(100)).collect(Collectors.toList());
+
 
 			/*Generate Sample Product */
 			final double notional = 1.0E7;
