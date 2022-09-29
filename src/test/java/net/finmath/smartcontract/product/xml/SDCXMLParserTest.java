@@ -36,7 +36,7 @@ class SDCXMLParserTest {
 		// Get receiver party
 		String receiverParty = sdc.getUnderlyingReceiverPartyID();
 		System.out.println(receiverParty);
-		Assertions.assertEquals("party2", receiverParty, "Reciever party ID.");
+		Assertions.assertEquals("party1", receiverParty, "Reciever party ID.");
 
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();
