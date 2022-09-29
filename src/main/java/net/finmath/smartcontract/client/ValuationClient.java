@@ -17,8 +17,8 @@ import java.util.Base64;
  * Spring-boot application to demonstrate the ReST service for the valuation oracle,
  * the market data and trade files are taken from the resource folder.
  *
- * @author: Christian Fries
- * @author: Peter Kohl-Landgraf
+ * @author Christian Fries
+ * @author Peter Kohl-Landgraf
  * @author Dietmar Schnabel
  */
 public class ValuationClient {
