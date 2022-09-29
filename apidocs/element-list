@@ -1,0 +1,15 @@
+module:net.finmath.smartderivativecontract
+net.finmath.smartcontract.api
+net.finmath.smartcontract.client
+net.finmath.smartcontract.demo
+net.finmath.smartcontract.model
+net.finmath.smartcontract.oracle
+net.finmath.smartcontract.oracle.historical
+net.finmath.smartcontract.product
+net.finmath.smartcontract.product.xml
+net.finmath.smartcontract.service
+net.finmath.smartcontract.service.config
+net.finmath.smartcontract.service.utils
+net.finmath.smartcontract.simulation.curvecalibration
+net.finmath.smartcontract.simulation.scenariogeneration
+net.finmath.smartcontract.valuation
