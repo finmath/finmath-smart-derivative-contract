@@ -4,8 +4,6 @@
 **Tools and analytics for smart derivative contracts.**
 - - - -
 
-The project is work in progress.
-
 The project provides tools and analytics related to smart derivative contracts.
 
 ## Literature
@@ -43,7 +41,7 @@ settlement amount for a smart derivative contract. The package contains also an 
 The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
 contract.
 
-## Product
+## Financial Product Description
 
 The smart derivative contract is described in terms of the sdc.xml.
 
