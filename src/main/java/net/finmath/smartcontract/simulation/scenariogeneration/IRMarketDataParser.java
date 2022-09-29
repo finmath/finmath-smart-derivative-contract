@@ -85,12 +85,10 @@ public class IRMarketDataParser {
 
 		final String content;
 		try {
-			content = Files.readString(Path.of((IRMarketDataParser.class.getClassLoader().getResource(fileName).toURI()).getPath()), StandardCharsets.UTF_8);
+			content = new String(IRMarketDataParser.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
 		}
 
 		return getScenariosFromJsonContent(content);
