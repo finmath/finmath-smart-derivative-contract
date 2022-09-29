@@ -17,7 +17,7 @@ public class MarketDataImportTest {
 
 	@Test
 	void testImport() throws Exception {
-		final String jsonStr = Files.readString(Path.of(new File(Application.class.getClassLoader().getResource("net.finmath.smartcontract.client/md_testset1.json").getPath()).toURI()), StandardCharsets.UTF_8);
+		final String jsonStr = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
 		List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonString(jsonStr);
 		Assertions.assertEquals(1, scenarioList.size());
 	}
