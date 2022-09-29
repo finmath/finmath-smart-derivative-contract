@@ -116,7 +116,7 @@ public class VisualiserSDC {
 			@Override
 			public void run() {
 				// This method is invoked on Swing thread
-				final JFrame frame = new JFrame("FX");
+				final JFrame frame = new JFrame("Smart Derivative Contract: Settlement Visualization");
 				final JFXPanel fxPanel = new JFXPanel();
 				frame.add(fxPanel);
 				frame.setVisible(true);
@@ -137,7 +137,6 @@ public class VisualiserSDC {
 				});
 			}
 		});
-
 	}
 
 	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment) throws InterruptedException {
