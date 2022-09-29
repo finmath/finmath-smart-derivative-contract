@@ -4,16 +4,21 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import net.finmath.smartcontract.service.Application;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,13 +82,15 @@ public class IRMarketDataParser {
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
 	public static final List<IRMarketDataSet> getScenariosFromJsonFile(final String fileName) throws UnsupportedEncodingException, IOException {
-		final String content;
 
+		final String content;
 		try {
-			content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+			content = Files.readString(Path.of((Application.class.getClassLoader().getResource(fileName).toURI()).getPath()), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
 
 		return getScenariosFromJsonContent(content);
@@ -137,8 +144,12 @@ public class IRMarketDataParser {
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
-		LocalDateTime localDateTime = LocalDateTime.parse(timeStampString, dateTimeFormatter);
-		if (localDateTime == null) {
+		LocalDateTime localDateTime;
+		try{
+			localDateTime = LocalDateTime.parse(timeStampString, dateTimeFormatter);
+		}
+		catch (DateTimeParseException e) {
+			// Fall back to 17:00
 			final LocalDate date = LocalDate.parse(timeStampString, dateFormatter);
 			localDateTime = date.atTime(17, 0);
 		}

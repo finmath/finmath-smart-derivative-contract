@@ -20,7 +20,7 @@ public class HistoricalSimulationTest {
 		try {
 			final String startDate = "20070101";
 			final String endDate = "20120103";
-			final String fileName = "timeseriesdatamap.json";
+			final String fileName = "net/finmath/smartcontract/demo/timeseriesdatamap.json";
 			final List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(LocalDate.parse(startDate))).filter(S -> S.getDate().toLocalDate().isBefore(LocalDate.parse(endDate))).collect(Collectors.toList());
 
 			/*Generate Sample Product */
