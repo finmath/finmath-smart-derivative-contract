@@ -3,6 +3,8 @@ package net.finmath.smartcontract.demo.legacy;
 import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.chart.ui.ApplicationFrame;
 
@@ -48,8 +50,9 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 
 		//		final JFreeChart chart = chartGenerator.createPlot(chartData);
 
-		//final CategoryAxis domainAxis = new CategoryAxis("Category");
+		final CategoryAxis domainAxis = new CategoryAxis("Category");
 		final CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
+		plot.setDomainAxis(domainAxis);
 		//plot.setOrientation(PlotOrientation.VERTICAL);
 
 
@@ -71,6 +74,7 @@ public class Visualiser extends ApplicationFrame implements ActionListener {
 
 		chartGeneratorList.stream().map(generator -> generator.createPlot(event)).forEach(subplot ->
 				{
+					subplot.setDomainAxis(domainAxis);
 					final ChartPanel chartPanel2 = new ChartPanel(new JFreeChart(
 							this.getTitle(),
 							new Font("Arial", Font.BOLD, 12),
