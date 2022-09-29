@@ -1,7 +1,6 @@
 About finmath smart-derivative-contract
 ==========
 
-
 ****************************************
 
 **Algorithms and methodologies related to smart derivative contracts.**
@@ -15,7 +14,7 @@ see https://ssrn.com/abstract=3163074
 Languages and Build
 --------------------------------------
 
-The library requires Java 8 or better.
+The project requires Java 17 or better.
 
 The Maven build file is provide. Import the project as Maven project.
 
@@ -27,27 +26,6 @@ finmath smart-derivative-contract is distributed through the central maven repos
 	<groupId>net.finmath</groupId>
 	<artifactId>finmath-smart-derivative-contract</artifactId>
 	<version>${project.version}</version>
-
-Repositories
--------------------------------------
-
-Source code and demos are provided via Github repository.
-<ul>
-<li>
-<i>Git</i> repositories with Java code:
-<ul>
-<li>
-finmath lib: [https://github.com/finmath/finmath-lib](https://github.com/finmath/finmath-lib)
-</li>
-<li>
-finmath experiments: [https://github.com/finmath/finmath-experiments](https://github.com/finmath/finmath-experiments)
-</li>
-<li>
-finmath spreadsheets: [https://github.com/finmath/finmath-spreadsheets](https://github.com/finmath/finmath-spreadsheets)
-</li>
-</ul>
-</li>
-</ul>
 
 Documentation
 -------

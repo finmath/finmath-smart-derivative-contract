@@ -27,7 +27,7 @@
             <item name="finmath.net" href="http://www.finmath.net/"/>
         </links>
 
-        <menu name="finmath lib">
+        <menu name="finmath smart derivative contract">
             <item name="Introduction" href="index.html"/>
             <item name="API Documentation" href="apidocs"/>
         </menu>

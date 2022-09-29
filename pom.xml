@@ -528,7 +528,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!-- <report>index</report> -->
+                            <report>index</report>
                             <report>summary</report>
                             <report>scm</report>
                             <report>distribution-management</report>
