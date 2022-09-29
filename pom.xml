@@ -32,6 +32,8 @@
         <finmath-lib.version>6.0.4</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
         <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
+        <spring-boot-starter-web.version>2.7.3</spring-boot-starter-web.version>
+        <spring-boot-starter-security.version>2.7.3</spring-boot-starter-security.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
         <jackson-core.version>2.13.4</jackson-core.version>
         <jackson-databind.version>2.13.4</jackson-databind.version>
@@ -172,6 +174,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot-starter-web.version}</version>
+        </dependency>
+
+        <!-- Basic Auth -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot-starter-security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
             <version>2.7.3</version>
         </dependency>
 
@@ -192,18 +207,6 @@
             <version>2.0.1.Final</version>
         </dependency>
 
-        <!-- Basic Auth -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.7.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>2.7.3</version>
-        </dependency>
 
     </dependencies>
 
