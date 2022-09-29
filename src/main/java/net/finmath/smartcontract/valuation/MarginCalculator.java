@@ -10,15 +10,16 @@ import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
 import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.descriptor.xmlparser.FPMLParser;
+import net.finmath.smartcontract.model.ValuationResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
-import net.finmath.smartcontract.service.ValuationResult;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,11 +77,11 @@ public class MarginCalculator {
 		parser = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-6M", fpmlString);
 //    	isTradeStartToday = validateStartDate(fpmlString);
 
-		Double value = calculateMarginFromString(jsonString1, jsonString2);
+		double value = calculateMarginFromString(jsonString1, jsonString2);
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new ValuationResult(value, currency, valuationDate.toString());
+		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
 
 	/**

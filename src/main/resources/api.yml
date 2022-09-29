@@ -45,6 +45,11 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
               properties:
                 marketDataStart:
                   type: string
@@ -58,9 +63,9 @@ paths:
         '200':
           description: Margin was calculated
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: "#/components/schemas/ValuationResult"
         default:
           description: unexpected error
           content:
@@ -211,6 +216,19 @@ paths:
 
 components:
   schemas:
+    ValuationResult:
+      type: object
+      required:
+        - value
+        - currency
+        - valuationDate
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+        valuationDate:
+          type: string
     Error:
       type: object
       required:

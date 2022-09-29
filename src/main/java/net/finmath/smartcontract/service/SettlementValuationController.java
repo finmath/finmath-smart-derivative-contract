@@ -9,6 +9,7 @@ package net.finmath.smartcontract.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.api.SettlementValuationApi;
+import net.finmath.smartcontract.model.ValuationResult;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

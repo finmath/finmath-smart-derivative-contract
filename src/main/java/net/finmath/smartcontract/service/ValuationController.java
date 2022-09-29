@@ -10,6 +10,7 @@ package net.finmath.smartcontract.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.ValuationResult;
 import net.finmath.smartcontract.util.SDCConstants;
 import net.finmath.smartcontract.util.SDCDateUtil;
 import net.finmath.smartcontract.util.SDCProperties;
@@ -47,26 +48,24 @@ public class ValuationController implements ValuationApi {
 	 * @param marginRequest The request
 	 * @return String Json representing the valuation.
 	 */
-	public ResponseEntity<String> margin(MarginRequest marginRequest)
+	public ResponseEntity<ValuationResult> margin(MarginRequest marginRequest)
 	{
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
 
-		String resultJSON = null;
+		ValuationResult margin = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
-			ValuationResult margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
-			resultJSON = (new ObjectMapper()).writeValueAsString(margin);
+			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
+			logger.info(margin.toString());
+			return ResponseEntity.ok(margin);
 		} catch (Exception e) {
 			logger.error("Failed to calculate margin.");
 			logger.info(marginRequest.toString());
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-
-		logger.info(resultJSON);
-
-		return new ResponseEntity<String>(resultJSON, responseHeaders, HttpStatus.OK);
 	}
 	
 	/**
