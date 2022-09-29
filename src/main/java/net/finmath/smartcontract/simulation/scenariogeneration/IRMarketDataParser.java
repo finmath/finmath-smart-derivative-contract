@@ -81,11 +81,11 @@ public class IRMarketDataParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<IRMarketDataSet> getScenariosFromJsonFile(final String fileName) throws UnsupportedEncodingException, IOException {
+	public static final List<IRMarketDataSet> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
 		try {
-			content = Files.readString(Path.of((Application.class.getClassLoader().getResource(fileName).toURI()).getPath()), StandardCharsets.UTF_8);
+			content = Files.readString(Path.of((IRMarketDataParser.class.getClassLoader().getResource(fileName).toURI()).getPath()), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
