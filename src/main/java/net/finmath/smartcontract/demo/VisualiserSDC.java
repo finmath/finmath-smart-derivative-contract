@@ -65,7 +65,11 @@ public class VisualiserSDC {
 		final String discountCurveKey = "discount-EUR-OIS";
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate().minusDays(170);
 
-		final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e -> e.getMaturity().equals(maturityKey)).mapToDouble(e -> e.getQuote()).findAny().getAsDouble() / 100.;
+		final double fixRate = scenarioList.get(0).getDataPoints().stream()
+				.filter(datapoint->datapoint.getCurveName().equals("Euribor6M") &&
+						datapoint.getProductName().equals("Swap-Rate") &&
+						datapoint.getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
+
 		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
 
 		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);

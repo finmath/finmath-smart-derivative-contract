@@ -27,22 +27,22 @@ public class CalibrationParserDataPoints implements CalibrationParser {
 			case "ESTR":
 			case "EONIA":
 				if (datapoint.getProductName().equals("Swap-Rate"))
-					return Optional.of(new CalibrationSpecProviderOis(datapoint.getMaturity(), "annual", datapoint.getQuote() / 100.0));
+					return Optional.of(new CalibrationSpecProviderOis(datapoint.getMaturity(), "annual", datapoint.getQuote() ));
 				else
 					return Optional.empty();
 			case "Euribor6M":
 				if (datapoint.getProductName().equalsIgnoreCase("Swap-Rate"))
-					return Optional.of(new CalibrationSpecProviderSwap("6M", "semiannual", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+					return Optional.of(new CalibrationSpecProviderSwap("6M", "semiannual", datapoint.getMaturity(), datapoint.getQuote() ));
 				if (datapoint.getProductName().equalsIgnoreCase("Forward-Rate-Agreement"))
-					return Optional.of(new CalibrationSpecProviderFRA("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+					return Optional.of(new CalibrationSpecProviderFRA("6M", datapoint.getMaturity(), datapoint.getQuote() ));
 				if (datapoint.getProductName().equalsIgnoreCase("Cash"))
-					return Optional.of(new CalibrationSpecProviderDeposit("6M", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+					return Optional.of(new CalibrationSpecProviderDeposit("6M", datapoint.getMaturity(), datapoint.getQuote() ));
 				else
 					return Optional.empty();
 			case "Euribor1M":
-				return Optional.of(new CalibrationSpecProviderSwap("1M", "monthly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+				return Optional.of(new CalibrationSpecProviderSwap("1M", "monthly", datapoint.getMaturity(), datapoint.getQuote() ));
 			case "Euribor3M":
-				return Optional.of(new CalibrationSpecProviderSwap("3M", "quarterly", datapoint.getMaturity(), datapoint.getQuote() / 100.0));
+				return Optional.of(new CalibrationSpecProviderSwap("3M", "quarterly", datapoint.getMaturity(), datapoint.getQuote() ));
 
 			default:
 				//TODO: Log that we ignore something

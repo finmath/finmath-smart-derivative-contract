@@ -6,6 +6,7 @@ import net.finmath.smartcontract.simulation.curvecalibration.CalibrationSpecProv
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -17,19 +18,15 @@ import java.util.stream.Stream;
 public class IRMarketDataSet {
 
 	LocalDateTime scenarioDate;
-	Map<String, IRCurveData> curveDataMap;
+	Set<CalibrationDatapoint> curveDataPointSet;
 
-	//final String productKey; // = "Swap-Rate";
 
-	public IRMarketDataSet(final Map<String, IRCurveData> curveDataMap, final LocalDateTime scenarioDate) {
+	public IRMarketDataSet(final Set<CalibrationDatapoint> curveDataPointSet, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
-		this.curveDataMap = curveDataMap;
-		//this.productKey = productKey;
+		this.curveDataPointSet = curveDataPointSet;
+
 	}
 
-	public IRCurveData getCurveData(final String curveKey) {
-		return curveDataMap.get(curveKey);
-	}
 
 
 	/**
@@ -41,12 +38,12 @@ public class IRMarketDataSet {
 	 */
 	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataProintStream(final CalibrationParser parser) {
 
-		final Stream<CalibrationDatapoint> calibrationDatapointStream = this.curveDataMap.entrySet().stream().flatMap(curveDataEntry -> {
-			final Stream<CalibrationDatapoint> calibrationDatapointSet = curveDataEntry.getValue().getDataPointStream();//.stream();//.entrySet().stream().map(entry->new CalibrationDatapoint(curveKey,entry.getKey(),entry.getValue()));//.collect(Collectors.toSet());
-			return calibrationDatapointSet;
-		});
-		return parser.parse(calibrationDatapointStream);
+		return parser.parse(curveDataPointSet.stream());
 
+	}
+
+	public Set<CalibrationDatapoint> getDataPoints(){
+		return this.curveDataPointSet;
 	}
 
 	public LocalDateTime getDate() {

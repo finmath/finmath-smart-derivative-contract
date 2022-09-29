@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
 
 @JsonPropertyOrder({"scenarioDate", "curveKey", "productKey", "maturityKey", "value"})
-public class MarketDataObservationPojo {
+public class MarketDataItem {
 
 	String scenarioDate;
 	String curveKey;
@@ -12,7 +12,7 @@ public class MarketDataObservationPojo {
 	String maturityKey;
 	Double value;
 
-	public MarketDataObservationPojo(String scenarioDate, String curveKey, String productKey, String maturityKey, Double value) {
+	public MarketDataItem(String scenarioDate, String curveKey, String productKey, String maturityKey, Double value) {
 		this.scenarioDate = scenarioDate;
 		this.curveKey = curveKey;
 		this.productKey = productKey;
@@ -24,7 +24,7 @@ public class MarketDataObservationPojo {
 		return new CalibrationDatapoint(curveKey, productKey, maturityKey, value);
 	}
 
-	public MarketDataObservationPojo() {
+	public MarketDataItem() {
 	}
 
 	public String getScenarioDate() {

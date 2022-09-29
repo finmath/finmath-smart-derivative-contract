@@ -30,7 +30,11 @@ public class HistoricalSimulationTest {
 			final String discountCurveKey = "discount-EUR-OIS";
 			final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 			/* Product starts at Par */
-			final double fixRate = scenarioList.get(0).getCurveData("Euribor6M").getDataPointStreamForProductType("Swap-Rate").filter(e -> e.getMaturity().equals(MaturityKey)).mapToDouble(e -> e.getQuote()).findAny().getAsDouble() / 100.;
+			final double fixRate = scenarioList.get(0).getDataPoints().stream()
+					.filter(datapoint->datapoint.getCurveName().equals("Euribor6M") &&
+							datapoint.getProductName().equals("Swap-Rate") &&
+							datapoint.getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
+
 			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
 
 			/* Start Valuation for filter historical scenarios */
@@ -42,6 +46,7 @@ public class HistoricalSimulationTest {
 				System.out.println("ScenarioDate: " + scenario + " Value of Swap : " + oracle.getValue(scenario, scenario));
 			});
 		} catch (final Exception e) {
+			System.out.println(e);
 
 		}
 

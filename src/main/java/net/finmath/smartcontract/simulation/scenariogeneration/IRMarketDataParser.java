@@ -4,25 +4,17 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import net.finmath.smartcontract.service.Application;
+import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -46,16 +38,17 @@ public class IRMarketDataParser {
 	 */
 	public static final List<IRMarketDataSet> getScenariosFromCSVFile(final String fileName) throws UnsupportedEncodingException, IOException {
 		CsvMapper mapper = new CsvMapper();
-		CsvSchema csvSchema = mapper.typedSchemaFor(MarketDataObservationPojo.class).withHeader();
-		MappingIterator<MarketDataObservationPojo> iterator = mapper.readerFor(MarketDataObservationPojo.class).with(csvSchema).readValues(new FileReader(fileName));
-		List<MarketDataObservationPojo> asPojoList = iterator.readAll();
+		CsvSchema csvSchema = mapper.typedSchemaFor(MarketDataItem.class).withHeader();
+		MappingIterator<MarketDataItem> iterator = mapper.readerFor(MarketDataItem.class).with(csvSchema).readValues(new FileReader(fileName));
+		List<MarketDataItem> asPojoList = iterator.readAll();
 
-		Map<String, Map<String, Set<MarketDataObservationPojo>>> mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataObservationPojo::getScenarioDate, groupingBy(MarketDataObservationPojo::getCurveKey, toSet())));
+		Map<String, Map<String, Set<MarketDataItem>>> mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataItem::getScenarioDate, groupingBy(MarketDataItem::getCurveKey, toSet())));
 
-		final List<IRMarketDataSet> scenarioList = mapCalibDatapointsPerDate.entrySet().stream()
+		final List<IRMarketDataSet> scenarioList = null;
+		/*final List<IRMarketDataSet> scenarioList = mapCalibDatapointsPerDate.entrySet().stream()
 				.map(
 						scenarioData -> {
-							final Map<String, Set<MarketDataObservationPojo>> rawMap = scenarioData.getValue();
+							final Map<String, Set<MarketDataItem>> rawMap = scenarioData.getValue();
 							final Map<String, IRCurveData> map = rawMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
 								return new IRCurveData(e.getKey(), e.getValue().stream().map(x -> x.toCalibrationDataPoint()).collect(Collectors.toSet()));
 							}));
@@ -67,7 +60,7 @@ public class IRMarketDataParser {
 							return scenario;
 						})
 				//.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
-				.collect(Collectors.toList());
+				.collect(Collectors.toList());*/
 
 
 		return scenarioList;
@@ -125,17 +118,22 @@ public class IRMarketDataParser {
 		final List<IRMarketDataSet> scenarioList = timeSeriesDatamap.entrySet().stream()
 				.map(
 						scenarioData -> {
-							final Map<String, IRCurveData> map = scenarioData.getValue().entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> new IRCurveData(entry.getKey(), entry.getValue())));
+							Set<CalibrationDatapoint> set = scenarioData.getValue().entrySet().stream().map(entry->getCalibrationDataPointSet(entry.getKey(),entry.getValue())).flatMap(Collection::stream).collect(Collectors.toSet());
 							final String timeStampStr = scenarioData.getKey();
 							final LocalDateTime dateTime = parseTimestampString(timeStampStr);
-							final IRMarketDataSet scenario = new IRMarketDataSet(map, dateTime);
-
+							final IRMarketDataSet scenario = new IRMarketDataSet(set, dateTime);
 							return scenario;
 						})
 				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
 				.collect(Collectors.toList());
 
 		return scenarioList;
+	}
+
+	private static Set<CalibrationDatapoint> getCalibrationDataPointSet(final String curveKey, final Map<String, Map<String, Double>> typeCurveMap) {
+		Set<CalibrationDatapoint> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
+				curvePointEntry -> new CalibrationDatapoint(curveKey, entry.getKey(), curvePointEntry.getKey(), curvePointEntry.getValue()))).collect(Collectors.toSet());
+		return datapoints;
 	}
 
 	private static LocalDateTime parseTimestampString(String timeStampString) {
