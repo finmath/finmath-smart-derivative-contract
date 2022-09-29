@@ -43,7 +43,7 @@ class SDCXMLParserTest {
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();
 		// This needs cleaning
-		ProductDescriptor productDescriptor = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-3M").getProductDescriptor(underlying.getFirstChild().getNextSibling());
+		ProductDescriptor productDescriptor = new FPMLParser("party1", "discount-EUR-OIS", "forward-EUR-3M").getProductDescriptor(underlying);
 		System.out.println(productDescriptor.name());
 
 		InterestRateSwapProductDescriptor irs = (InterestRateSwapProductDescriptor) productDescriptor;

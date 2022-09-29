@@ -465,7 +465,7 @@ public class FPMLParser implements XMLParser {
 		}
 
 		// return new InterestRateSwapLegProductDescriptor(forwardCurveName, discountCurveName, schedule, notional, spread, false);
-		return new InterestRateSwapLegProductDescriptor(forwardCurve, discountCurveName, schedule, 1.0, spread, false);
+		return new InterestRateSwapLegProductDescriptor(forwardCurve, discountCurveName, schedule, notional, spread, false);
 
 
 	}
