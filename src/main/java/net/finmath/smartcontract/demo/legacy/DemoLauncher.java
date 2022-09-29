@@ -27,9 +27,6 @@ public class DemoLauncher {
 
 	public static void main(final String[] args) throws Exception {
 
-
-		//
-
 		final LocalDate startDate = LocalDate.of(2007, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
