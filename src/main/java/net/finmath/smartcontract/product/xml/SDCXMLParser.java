@@ -54,6 +54,16 @@ public class SDCXMLParser {
 		public String getAddress() {
 			return address;
 		}
+
+		@Override
+		public String toString() {
+			return "Party {" +
+					"id='" + id + '\'' +
+					", name='" + name + '\'' +
+					", href='" + href + '\'' +
+					", address='" + address + '\'' +
+					'}';
+		}
 	}
 
 	private SDCXMLParser() {

@@ -30,7 +30,7 @@ class SDCXMLParserTest {
 
 		// Get parties
 		List<SDCXMLParser.Party> parties = sdc.getCounterparties();
-		parties.stream().map(SDCXMLParser.Party::getName).forEach(System.out::println);
+		parties.stream().forEach(System.out::println);
 
 		// Get receiver party
 		String receiverParty = sdc.getUnderlyingReceiverPartyID();
