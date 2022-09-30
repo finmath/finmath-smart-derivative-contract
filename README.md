@@ -31,6 +31,30 @@ The product data as to be provided as an XML (containing a part being an FPML of
 
 See also `api.yml`.
 
+#### Value
+
+The endpoint value calculates the value of a financial product
+with given market data.
+
+The enpoint parameters are
+- product P
+- market data M
+- valuation time t
+
+The result is the value
+- V(P,M,t)
+
+#### Margin
+
+The enpoint parameters are
+- product P
+- market data M0 (market data at previous margin call or initial valuation)
+- market data M1 (market data for margin call)
+- valuation time t
+
+The result is the value
+- M(P,M0,M1,t) = V(P,M1,t) - V(P,M0,t)
+
 ### Settlement Amount Oracle and Valuation Oracle
 
 The package `net.finmath.smartcontract.oracle` contains the interface describing a so called oracle providing the
