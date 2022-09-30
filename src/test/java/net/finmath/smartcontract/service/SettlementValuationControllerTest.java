@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {SettlementValuationController.class, Application.class})
+@SpringBootTest(classes = {ValuationController.class, Application.class})
 @ContextConfiguration(classes = {Application.class})
 public class SettlementValuationControllerTest {
 
@@ -35,7 +35,7 @@ public class SettlementValuationControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders
 						.get("/settlementValuation/test")
 						.accept(MediaType.APPLICATION_JSON))
-						.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+						.andExpect(MockMvcResultMatchers.status().is(404)).andDo(MockMvcResultHandlers.print());
 	}
 
 }
