@@ -1,14 +1,16 @@
 # finmath smart derivative contracts
 
-- - - -
-**Tools and analytics for smart derivative contracts.**
-- - - -
+****************************************
 
-The project provides tools and analytics related to smart derivative contracts.
+**Algorithms and methodologies related to smart derivative contracts.**
 
-## Literature
+****************************************
 
-See https://ssrn.com/abstract=3163074
+## Introduction
+
+The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
+derivative contracts. For a description of the concept of a smart derivative contract
+see https://ssrn.com/abstract=3163074
 
 ## Contents
 
