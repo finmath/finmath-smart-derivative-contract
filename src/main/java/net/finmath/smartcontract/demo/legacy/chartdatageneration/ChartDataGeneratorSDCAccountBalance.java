@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 
 import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtils;
 
@@ -26,7 +26,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 	private final Color colorXSettlement = new Color(65, 127, 255);
 	private final Color colorXPrecheck = new Color(255, 93, 86);
 
-	private final ValuationOraclePlainSwapHistoricScenarios oracle;
+	private final ValuationOraclePlainSwap oracle;
 	private final List<LocalDateTime> scenarioDates;
 	private SmartDerivativeContractSchedule schedule;
 	private final double initialBalance;
@@ -40,7 +40,7 @@ public class ChartDataGeneratorSDCAccountBalance implements ChartDataGenerator {
 		refill
 	}
 
-	public ChartDataGeneratorSDCAccountBalance(final double initialBalance, final ValuationOraclePlainSwapHistoricScenarios oracle, final List<LocalDateTime> scenarioDates) {
+	public ChartDataGeneratorSDCAccountBalance(final double initialBalance, final ValuationOraclePlainSwap oracle, final List<LocalDateTime> scenarioDates) {
 		this.initialBalance = initialBalance;
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;

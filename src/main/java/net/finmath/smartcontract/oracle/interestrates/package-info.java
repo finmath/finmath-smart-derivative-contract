@@ -7,4 +7,4 @@
 /**
  * @author Christian Fries
  */
-package net.finmath.smartcontract.oracle.historical;
+package net.finmath.smartcontract.oracle.interestrates;

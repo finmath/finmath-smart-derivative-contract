@@ -11,7 +11,7 @@ import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
 import net.finmath.smartcontract.model.ValuationResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Calculation of the settlement using Smart Derivative Contract with an Swap contained in a FPML,
@@ -55,24 +56,6 @@ public class MarginCalculator {
 	public ValuationResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		double value = calculateMarginFromString(marketDataStart, marketDataEnd, productDescriptor);
-		String currency = "EUR";
-		LocalDateTime valuationDate = LocalDateTime.now();
-
-		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
-	}
-
-	/**
-	 * Calculates the margin between t_2 and t_1.
-	 *
-	 * @param marketDataStart       Curve string at time t_1.
-	 * @param marketDataEnd       Curve string at time t_2.
-	 * @param productDescriptor	The product descriptor (wrapper to the product XML)
-	 * @return A String containing t_2 (Date) and the margin (Float).
-	 * @throws Exception Exception
-	 */
-	private double calculateMarginFromString(String marketDataStart, String marketDataEnd, SmartDerivativeContractDescriptor productDescriptor) throws Exception {
-
 		List<IRMarketDataSet> marketDataSetsStart = IRMarketDataParser.getScenariosFromJsonString(marketDataStart);
 		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
@@ -82,50 +65,66 @@ public class MarginCalculator {
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 
-		return calculateMargin(List.of(marketDataSetsStart.get(0), marketDataSetsEnd.get(0)), productDescriptor, underlying);
+		LocalDateTime startDate = marketDataSetsStart.get(0).getDate();
+		LocalDateTime endDate = marketDataSetsEnd.get(0).getDate();
+		double value = calculateMargin(List.of(marketDataSetsStart.get(0), marketDataSetsEnd.get(0)), startDate, endDate, productDescriptor, underlying);
 
+		String currency = "EUR";
+		LocalDateTime valuationDate = LocalDateTime.now();
+
+		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+	}
+	public ValuationResult getValue(String marketData, String productData) throws Exception {
+		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+
+		List<IRMarketDataSet> marketDataSets = IRMarketDataParser.getScenariosFromJsonString(marketData);
+		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
+
+		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+
+		LocalDateTime endDate = marketDataSets.get(0).getDate();
+		double value = calculateMargin(marketDataSets, null, endDate, productDescriptor, underlying);
+
+		String currency = "EUR";
+		LocalDateTime valuationDate = LocalDateTime.now();
+
+		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
 
 	/**
 	 * Calculates the margin for a list of market data scenarios.
 	 *
-	 * @param scenarioList list of market data scenarios.
+	 * @param marketDataSets list of market data scenarios.
 	 * @param productDescriptor	The product descriptor (wrapper to the product XML)
 	 * @param underlying The underlying descriptor (wrapper to the underlying XML)
 	 * @return The margin
 	 * @throws Exception Exception
 	 */
-	private double calculateMargin(List<IRMarketDataSet> scenarioList, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
+	private double calculateMargin(List<IRMarketDataSet> marketDataSets, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
 
+		// Build product
 		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
 		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
 		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
-		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().toList();
 
 		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
 
-		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, 1.0, scenarioList);
+		// Build valuation oracle with given market data.
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, 1.0, marketDataSets);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
-		double valueWithCurves1 = 0.0;
-		double valueWithCurves2 = 0.0;
 		double marginCall = 0.0;
 
-		if (scenarioDates.size() == 1) {
-			valueWithCurves1 = oracle.getValue(scenarioDates.get(0), scenarioDates.get(0));
-			marginCall = valueWithCurves1;
-		}
-		else if(scenarioDates.size() == 2) {
-			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
-			valueWithCurves2 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(0));
-			marginCall = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); // to remove
+		if (Objects.isNull(startDate)) {
+			marginCall = oracle.getValue(endState, endState);
 		}
 		else {
-			throw new IllegalArgumentException("Margin with three market data sets in ambiguous.")
-;		}
+			marginCall = margin.getMargin(startDate, endState);
+		}
 
 		return marginCall;
 	}

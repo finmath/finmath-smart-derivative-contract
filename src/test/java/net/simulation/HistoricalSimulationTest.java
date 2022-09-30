@@ -1,7 +1,7 @@
 package net.simulation;
 
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
@@ -41,7 +41,7 @@ public class HistoricalSimulationTest {
 			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
 
 			/* Start Valuation for filter historical scenarios */
-			final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);
+			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, notional, scenarioList);
 
 			final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).collect(Collectors.toList());
 

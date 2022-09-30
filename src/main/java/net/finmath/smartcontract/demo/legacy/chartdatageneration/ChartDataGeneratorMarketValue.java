@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.demo.legacy.chartdatageneration;
 
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.event.ActionEvent;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 public class ChartDataGeneratorMarketValue implements ChartDataGenerator {
 
-	private final ValuationOraclePlainSwapHistoricScenarios oracle;
+	private final ValuationOraclePlainSwap oracle;
 	private final List<LocalDateTime> scenarioDates;
 	private final LinkedHashMap<String, Double> dataMap;
 
-	public ChartDataGeneratorMarketValue(final ValuationOraclePlainSwapHistoricScenarios oracle, final List<LocalDateTime> scenarioDates) {
+	public ChartDataGeneratorMarketValue(final ValuationOraclePlainSwap oracle, final List<LocalDateTime> scenarioDates) {
 		this.oracle = oracle;
 		this.scenarioDates = scenarioDates;
 		dataMap = new LinkedHashMap<>();

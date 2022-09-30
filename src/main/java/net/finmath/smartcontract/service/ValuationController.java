@@ -72,7 +72,7 @@ public class ValuationController implements ValuationApi {
 		ValuationResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
-			value = marginCalculator.getValue(valueRequest.getMarketData(), null, valueRequest.getTradeData());
+			value = marginCalculator.getValue(valueRequest.getMarketData(), valueRequest.getTradeData());
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {

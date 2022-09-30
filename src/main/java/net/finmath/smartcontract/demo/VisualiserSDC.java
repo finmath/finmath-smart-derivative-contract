@@ -9,7 +9,7 @@ import javafx.scene.layout.FlowPane;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
-import net.finmath.smartcontract.oracle.historical.ValuationOraclePlainSwapHistoricScenarios;
+import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
@@ -72,7 +72,7 @@ public class VisualiserSDC {
 
 		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
 
-		final ValuationOraclePlainSwapHistoricScenarios oracle = new ValuationOraclePlainSwapHistoricScenarios(swap, notional, scenarioList);
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, notional, scenarioList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
 		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());

@@ -9,7 +9,7 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.service;
 	exports net.finmath.smartcontract.service.config;
 	exports net.finmath.smartcontract.oracle;
-	exports net.finmath.smartcontract.oracle.historical;
+	exports net.finmath.smartcontract.oracle.interestrates;
 	exports net.finmath.smartcontract.simulation.scenariogeneration;
 	exports net.finmath.smartcontract.simulation.curvecalibration;
 	exports net.finmath.smartcontract.service.utils;

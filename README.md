@@ -22,9 +22,9 @@ This is a Java FX application. Run `VisualiserSDC`.
 Running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
 ReST service providing a valuation oracle.
 
-The enpoint https://localhost:8080/valuation/value allows the valuation of a financial product under given market data.
+The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
 
-The enpoint https://localhost:8080/valuation/margin allows the calculation of the settlement amount between two market data sets.
+The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market data sets.
 
 The market data has to be provided as a JSON.
 The product data as to be provided as an XML (containing a part being an FPML of the underlying product).

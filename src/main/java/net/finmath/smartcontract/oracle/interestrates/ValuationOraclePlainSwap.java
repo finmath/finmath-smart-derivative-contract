@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.oracle.historical;
+package net.finmath.smartcontract.oracle.interestrates;
 
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
@@ -26,7 +26,7 @@ import java.util.Optional;
  * @author Christian Fries
  */
 
-public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracle {
+public class ValuationOraclePlainSwap implements ValuationOracle {
 
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
 	private final List<IRMarketDataSet> scenarioList;
@@ -41,7 +41,7 @@ public class ValuationOraclePlainSwapHistoricScenarios implements ValuationOracl
 	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwapHistoricScenarios(final Swap product, final double notionalAmount, final List<IRMarketDataSet> scenarioList) {
+	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<IRMarketDataSet> scenarioList) {
 		this.notionalAmount = notionalAmount;
 		this.product = product;
 		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();

@@ -7,19 +7,78 @@ About finmath smart-derivative-contract
 
 ****************************************
 
+## Introduction
+
 The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
 derivative contracts. For a description of the concept of a smart derivative contract
 see https://ssrn.com/abstract=3163074
 
-Languages and Build
---------------------------------------
+## Contents
+
+### Visualization and Demonstration
+
+The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
+This is a Java FX application. Run `VisualiserSDC`.
+
+### Valuation Service (ReST service)
+
+Running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle.
+
+The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
+
+The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market data sets.
+
+The market data has to be provided as a JSON.
+The product data as to be provided as an XML (containing a part being an FPML of the underlying product).
+
+See also `api.yml`.
+
+### Settlement Amount Oracle and Valuation Oracle
+
+The package `net.finmath.smartcontract.oracle` contains the interface describing a so called oracle providing the
+settlement amount for a smart derivative contract. The package contains also an implementation for interest rate swaps.
+
+### State Machine Model for a Smart Derivative Contract
+
+The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
+contract.
+
+## Financial Product Description
+
+The smart derivative contract is described in terms of the sdc.xml.
+
+## Docker
+
+To run Docker Container execute following commands.
+
+*Note*: It is important that you run the correct version. The repository comes with release tags.
+
+Clone this repository, if not done yet:
+```
+git clone https://github.com/finmath/finmath-smart-derivative-contract.git
+cd finmath-smart-derivative-contract
+```
+
+Build a *fat jar* containing all dependencies.
+```
+mvn clean package spring-boot:repackage
+```
+
+Build and run the Docker Container
+
+```
+docker build -t valuation_service .
+docker run -p 8080:8080 valuation_service
+```
+
+## Languages and Build
 
 The project requires Java 17 or better.
 
 The Maven build file is provide. Import the project as Maven project.
 
-Distribution
---------------------------------------
+## Distribution
 
 finmath smart-derivative-contract is distributed through the central maven repository. It's coordinates are:
 
@@ -27,8 +86,7 @@ finmath smart-derivative-contract is distributed through the central maven repos
 	<artifactId>finmath-smart-derivative-contract</artifactId>
 	<version>${project.version}</version>
 
-Documentation
--------
+## Documentation
 
 For documentation please check out
 
@@ -43,15 +101,7 @@ For documentation please check out
 License
 -------
 
-The code of "finmath lib" and "finmath experiments" (packages
-`net.finmath.*`) are distributed under the [Apache License version 2.0][], unless otherwise explicitly stated.
-
-
-[finmath lib Project documentation]: http://finmath.net/finmath-lib/
-
-[finmath lib API documentation]: http://finmath.net/finmath-lib/apidocs/
-
-[finmath.net special topics]: http://www.finmath.net/topics
+The code is distributed under the [Apache License version 2.0][], unless otherwise explicitly stated.
 
 [Apache License version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
 
