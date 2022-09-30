@@ -29,7 +29,7 @@ class SDCXMLParserTest {
 		System.out.println(date);
 
 		// Get parties
-		List<SDCXMLParser.Party> parties = sdc.getCounterparties();
+		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
 		parties.stream().forEach(System.out::println);
 
 		// Get receiver party
