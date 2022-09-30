@@ -9,6 +9,8 @@ public class DemoTest {
 	public void test() {
 
 		// Try fail here to test the build in the integration server.
-		Assertions.fail();
+		boolean isShouldFail = false;
+
+		if(isShouldFail) Assertions.fail();
 	}
 }
