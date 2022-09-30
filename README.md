@@ -83,15 +83,15 @@ git clone https://github.com/finmath/finmath-smart-derivative-contract.git
 cd finmath-smart-derivative-contract
 ```
 
-Build a *fat jar* containing all dependencies.
-```
-mvn clean package spring-boot:repackage
-```
-
-Build and run the Docker Container
+Build and run the Docker Container (by building fat-jar via Dockerfile)
 
 ```
 docker build -t valuation_service .
 docker run -p 8080:8080 valuation_service
 ```
 
+Alternative: Use Maven to build Docker image (without Dockerfile)
+```
+mvn spring-boot:build-image
+docker run -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+```
