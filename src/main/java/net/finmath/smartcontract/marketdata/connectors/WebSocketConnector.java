@@ -7,12 +7,29 @@ package net.finmath.smartcontract.marketdata.connectors;//|---------------------
 
 
 import com.neovisionaries.ws.client.*;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /*

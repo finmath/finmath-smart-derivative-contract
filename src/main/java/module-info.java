@@ -58,4 +58,7 @@ module net.finmath.smartderivativecontract {
 	requires org.jfree.jfreechart;
 
 	requires nv.websocket.client;
+	requires org.apache.httpcomponents.httpclient;
+	requires org.apache.httpcomponents.httpcore;
+	requires org.json;
 }

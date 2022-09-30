@@ -1,12 +1,12 @@
 package net.finmath.smartcontract.marketdata;
 
 
-import net.finmath.marketdata.util.RunnableJobTimeEvent;
+import net.finmath.smartcontract.marketdata.util.RunnableJobTimeEvent;
 
 import java.time.LocalTime;
 
 
-public class DemoLauncher2 {
+public class DemoLauncherScheduled {
 
 
 	public static void main(String[] args) throws Exception {
