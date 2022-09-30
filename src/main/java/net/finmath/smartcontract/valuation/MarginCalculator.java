@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Calculation of the settlement using Smart Derivative Contract with an Swap contained in a FPML,
@@ -68,7 +67,7 @@ public class MarginCalculator {
 	 *
 	 * @param marketDataStart       Curve string at time t_1.
 	 * @param marketDataEnd       Curve string at time t_2.
-	 * @param productDescriptor
+	 * @param productDescriptor	The product descriptor (wrapper to the product XML)
 	 * @return A String containing t_2 (Date) and the margin (Float).
 	 * @throws Exception Exception
 	 */
@@ -91,19 +90,20 @@ public class MarginCalculator {
 	 * Calculates the margin for a list of market data scenarios.
 	 *
 	 * @param scenarioList list of market data scenarios.
-	 * @param underlying
-	 * @return A String containing the last date and the margin (Float).
+	 * @param productDescriptor	The product descriptor (wrapper to the product XML)
+	 * @param underlying The underlying descriptor (wrapper to the underlying XML)
+	 * @return The margin
 	 * @throws Exception Exception
 	 */
 	private double calculateMargin(List<IRMarketDataSet> scenarioList, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
 
-		LocalDate referenceDate = LocalDate.of(2022, 9, 5);
+		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
 		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
 		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
-		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());
+		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().toList();
 
 		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
 
