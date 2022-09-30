@@ -69,6 +69,8 @@ contract.
 
 The smart derivative contract is described in terms of the sdc.xml.
 
+For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
+
 ## Docker
 
 To run Docker Container execute following commands.

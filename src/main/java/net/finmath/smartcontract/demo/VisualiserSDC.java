@@ -85,17 +85,27 @@ public class VisualiserSDC {
 
 		Double marketValue = 0.0;
 		final double marginBuffer = 120000;
-		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
+		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0, 0);
 		System.out.println("Simulation will start in 5 seconds.");
 		Thread.sleep(5000);
 		for (int i = 0; i < scenarioDates.size(); i++) {
+			long sleepMillis1;
+			long sleepMillis2;
+			if(i < 20)	{
+				sleepMillis1 = 1000;
+				sleepMillis2 = 1000;
+			}
+			else {
+				sleepMillis1 = 500;
+				sleepMillis2 = 50;
+			}
+
 			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;  // Alternative: use some random values, e.g. 90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;
-			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall);
+			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall, sleepMillis1);
 			// The null will result in no update for the market value plot
-			Thread.sleep(500);
-			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i, null, 0);
+			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i, null, 0, sleepMillis2);
 		}
 	}
 
@@ -162,7 +172,7 @@ public class VisualiserSDC {
 		});
 	}
 
-	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment) throws InterruptedException {
+	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment, long sleepMillis) throws InterruptedException {
 		final List<Category2D> marginBase = new ArrayList<>();
 		marginBase.add(new Category2D("We", base + Math.min(0, +increment)));
 		marginBase.add(new Category2D("Counterpart", base + Math.min(0, -increment)));
@@ -258,6 +268,6 @@ public class VisualiserSDC {
 			plotMarketValue.setTitle("Market Value (01.05.2008-" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ")");
 		}
 
-		Thread.sleep(500);
+		Thread.sleep(sleepMillis);
 	}
 }

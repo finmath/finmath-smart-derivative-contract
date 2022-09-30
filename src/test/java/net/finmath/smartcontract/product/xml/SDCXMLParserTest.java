@@ -29,13 +29,16 @@ class SDCXMLParserTest {
 		System.out.println(date);
 
 		// Get parties
-		List<SDCXMLParser.Party> parties = sdc.getCounterparties();
-		parties.stream().map(SDCXMLParser.Party::getName).forEach(System.out::println);
+		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
+		parties.stream().forEach(System.out::println);
 
 		// Get receiver party
 		String receiverParty = sdc.getUnderlyingReceiverPartyID();
 		System.out.println(receiverParty);
 		Assertions.assertEquals("party1", receiverParty, "Reciever party ID.");
+
+		System.out.println("Adress party 1: " + sdc.getCounterparties().get(0).getAddress());
+		System.out.println("Adress party 2: " + sdc.getCounterparties().get(1).getAddress());
 
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();
