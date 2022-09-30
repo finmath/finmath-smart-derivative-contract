@@ -114,18 +114,19 @@ public class MarginCalculator {
 		double valueWithCurves2 = 0.0;
 		double marginCall = 0.0;
 
-		//@Todo: Fix for intraday
-		boolean isTradeStartToday = true;
-		if (!isTradeStartToday) {
-			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
-			valueWithCurves2 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(0));
-			marginCall = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); // to remove
-		} else {
+		if (scenarioDates.size() == 1) {
 			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
 			marginCall = valueWithCurves1;
 		}
+		else if(scenarioDates.size() == 2) {
+			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
+			valueWithCurves2 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(0));
+			marginCall = margin.getMargin(scenarioDates.get(0), scenarioDates.get(1)); // to remove
+		}
+		else {
+			throw new IllegalArgumentException("Margin with three market data sets in ambiguous.")
+;		}
 
 		return marginCall;
-
 	}
 }

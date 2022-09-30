@@ -47,7 +47,9 @@ The smart derivative contract is described in terms of the sdc.xml.
 
 ## Docker
 
-To run Docker Container execute following commands
+To run Docker Container execute following commands.
+
+*Note*: It is important that you run the correct version. The repository comes with release tags.
 
 Clone this repository, if not done yet:
 ```
