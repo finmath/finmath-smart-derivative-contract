@@ -30,11 +30,13 @@ public class SDCXMLParser {
 		private final String id;
 		private final String name;
 		private final String href;
+		private final String address;
 
-		public Party(String id, String name, String href) {
+		public Party(String id, String name, String href, String address) {
 			this.id = id;
 			this.name = name;
 			this.href = href;
+			this.address = address;
 		}
 
 		public String getId() {
@@ -47,6 +49,10 @@ public class SDCXMLParser {
 
 		public String getHref() {
 			return href;
+		}
+
+		public String getAddress() {
+			return address;
 		}
 	}
 
@@ -78,7 +84,8 @@ public class SDCXMLParser {
 			Party party = new Party(
 					nodeValueByName(partyNode, "id", String.class),
 					nodeValueByName(partyNode, "name", String.class),
-					null
+					null,
+					nodeValueByName(partyNode, "address", String.class)
 			);
 
 			Double marginAccountInitial = nodeValueByName(nodeChildByName(partyNode, "marginAccount"), "value", Double.class);
