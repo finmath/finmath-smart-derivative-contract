@@ -37,6 +37,9 @@ class SDCXMLParserTest {
 		System.out.println(receiverParty);
 		Assertions.assertEquals("party1", receiverParty, "Reciever party ID.");
 
+		System.out.println("Adress party 1: " + sdc.getCounterparties().get(0).getAddress());
+		System.out.println("Adress party 2: " + sdc.getCounterparties().get(1).getAddress());
+
 		// Get the underlying
 		Node underlying = sdc.getUnderlying();
 		// This needs cleaning
