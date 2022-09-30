@@ -4,7 +4,7 @@
 
     jobs:
       build:
-        name: Autograding
+        name: Java 17 build and unit testing
         runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v2
