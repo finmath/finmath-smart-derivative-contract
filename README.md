@@ -71,7 +71,7 @@ The smart derivative contract is described in terms of the sdc.xml.
 
 For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
 
-## Docker
+## Docker (for Valuation Service)
 
 To run Docker Container execute following commands.
 
@@ -88,10 +88,41 @@ Build a *fat jar* containing all dependencies.
 mvn clean package spring-boot:repackage
 ```
 
-Build and run the Docker Container
+Build the Docker Container
 
 ```
 docker build -t valuation_service .
-docker run -p 8080:8080 valuation_service
 ```
 
+Run the Docker Container
+
+**Important:** provide users and passwords via an application.yml file that resides
+in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker).
+
+```
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 valuation_service
+```
+
+### Config
+
+A sample `application.yml` is
+```
+data:
+  sdc:
+    users:
+      - username: user1
+        password: password1
+        role: USER_ONE
+      - username: user2
+        password: password2
+        role: USER_TWO
+```
+
+### Testing the Valuation Service
+
+Run
+```
+./scripts/test-margin-valuation-oracle.sh user:password
+```
+where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
+and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .

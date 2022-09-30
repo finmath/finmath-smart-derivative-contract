@@ -1,9 +1,9 @@
 data:
   sdc:
     users:
-      - username: user_union
-        password: password_union
-        role: USER_UNION
-      - username: user_dz
-        password: password_dz
-        role: USER_DZ
+      - username: user1
+        password: password1
+        role: USER_ONE
+      - username: user2
+        password: password2
+        role: USER_TWO

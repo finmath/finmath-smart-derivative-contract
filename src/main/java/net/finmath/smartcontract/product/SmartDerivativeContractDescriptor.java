@@ -7,6 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Descriptor for a smart derivative contract. Unified access to the SDC definition in an XML.
+ *
+ * @author Christian Fries
+ * @see net.finmath.smartcontract.product.xml.SDCXMLParser
+ */
 public class SmartDerivativeContractDescriptor {
 
 	private final LocalDateTime tradeDate;
@@ -16,6 +22,9 @@ public class SmartDerivativeContractDescriptor {
 	private final String recervicePartyID;
 	private final Node underlying;
 
+	/**
+	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
+	 */
 	public static class Party {
 
 		private final String id;

@@ -27,6 +27,13 @@ public class ValuationClient {
 	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 
 	public static void main(String[] args) throws Exception {
+		if(args.length != 1) {
+			System.out.println("Please provide username and password via user:password as argument.");
+			System.exit(1);
+		}
+
+		String authString = args[0]; //"user1:password1";
+
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
@@ -37,7 +44,6 @@ public class ValuationClient {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		// create auth credentials
-		String authString = "user_dz:password_dz";
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
