@@ -3,9 +3,12 @@ package net.finmath.smartcontract.demo;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.Group;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
@@ -83,10 +86,10 @@ public class VisualiserSDC {
 		Double marketValue = 0.0;
 		final double marginBuffer = 120000;
 		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
-		Thread.sleep(1000);
+		System.out.println("Simulation will start in 5 seconds.");
+		Thread.sleep(5000);
 		for (int i = 0; i < scenarioDates.size(); i++) {
-			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;
-			//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
+			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;  // Alternative: use some random values, e.g. 90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;
 			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall);
@@ -119,22 +122,38 @@ public class VisualiserSDC {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+
 				// This method is invoked on Swing thread
 				final JFrame frame = new JFrame("Smart Derivative Contract: Settlement Visualization");
 				final JFXPanel fxPanel = new JFXPanel();
 				frame.add(fxPanel);
 				frame.setVisible(true);
-				frame.setSize(1600, 600);
-				//				frame.setSize(960, 540+22);
+				frame.setSize(1920, 1080);
+				frame.setResizable(true);
 
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 
-						final FlowPane root = new FlowPane();
-						root.getChildren().addAll(new Group(plotMarginAccounts.get()), plotMarketValue.get());
+						final FlowPane pane = new FlowPane();
+						pane.getChildren().addAll(plotMarginAccounts.get(), plotMarketValue.get());
+						pane.setPrefSize(1600, 600);
 
-						final Scene scene = new Scene(root, 1600, 600);
+						final Scale scale = new Scale();
+						scale.setX(1.8);
+						scale.setY(1.8);
+						scale.setPivotX(0);
+						scale.setPivotY(0);
+						pane.getTransforms().add(scale);
+
+						// Centering
+						final HBox hBox = new HBox(pane);
+						hBox.setAlignment(Pos.CENTER);
+
+						final VBox root = new VBox(pane);
+						root.setAlignment(Pos.CENTER);
+
+						final Scene scene = new Scene(root, 1920, 1080);
 						scene.getStylesheets().add("barchart.css");
 						fxPanel.setScene(scene);
 					}

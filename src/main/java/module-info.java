@@ -26,6 +26,7 @@ module net.finmath.smartderivativecontract {
 	requires java.desktop;
 
 	requires javafx.swing;
+	requires javafx.graphics;
 
 	requires spring.core;
 	requires spring.web;
