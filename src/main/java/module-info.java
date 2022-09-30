@@ -57,5 +57,5 @@ module net.finmath.smartderivativecontract {
 	requires net.finmath.plots;
 	requires org.jfree.jfreechart;
 
-	requires nv-websocket-client;
+	requires nv.websocket.client;
 }

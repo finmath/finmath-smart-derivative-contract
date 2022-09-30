@@ -1,14 +1,15 @@
 package net.finmath.smartcontract.marketdata;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
-import net.finmath.marketdata.adapters.AdapterMarketdataRetriever;
-import net.finmath.marketdata.adapters.MarketdataItem;
-import net.finmath.marketdata.connectors.WebSocketConnector;
+import net.finmath.smartcontract.marketdata.adapters.AdapterMarketdataRetriever;
+import net.finmath.smartcontract.marketdata.adapters.MarketdataItem;
+import net.finmath.smartcontract.marketdata.connectors.WebSocketConnector;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,10 +89,8 @@ public class DemoLauncher {
            //     nestedMap.get(item.getCurve()).get(item.getType()).put(item.getTenor(),new HashMap<String,Double>());
             nestedMap.get(date).get(item.getCurve()).get(item.getType()).put(item.getTenor(),item.getValue());
         }
-        Gson gson = new Gson();
-        String json = gson.toJson(nestedMap);
         try {
-            Files.write(Paths.get(fileName), json.getBytes(StandardCharsets.UTF_8));
+          //  Files.write(Paths.get(fileName), json.getBytes(StandardCharsets.UTF_8));
         }
         catch (Exception e){
 

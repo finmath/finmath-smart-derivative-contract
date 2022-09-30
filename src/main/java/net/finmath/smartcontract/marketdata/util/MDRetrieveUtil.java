@@ -1,15 +1,17 @@
 package net.finmath.smartcontract.marketdata.util;
 
+
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.google.gson.Gson;
+
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
-import net.finmath.marketdata.adapters.AdapterMarketdataRetriever;
-import net.finmath.marketdata.adapters.MarketdataItem;
-import net.finmath.marketdata.connectors.WebSocketConnector;
-import org.jfree.util.Log;
+import net.finmath.smartcontract.marketdata.adapters.AdapterMarketdataRetriever;
+import net.finmath.smartcontract.marketdata.adapters.MarketdataItem;
+import net.finmath.smartcontract.marketdata.connectors.WebSocketConnector;
+import org.apache.juli.logging.Log;
+
 
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -35,7 +37,7 @@ public class MDRetrieveUtil {
 			final MappingIterator<MarketdataItem> iterator = mapper.readerFor(MarketdataItem.class).with(csvSchema).readValues(new FileReader(path));
 			mdItemList = iterator.readAll();
 		} catch (IOException e3) {
-			Log.error("Could not read file: " + rics);
+//			Log.error("Could not read file: " + rics);
 			e3.printStackTrace();
 		}
 
@@ -45,7 +47,7 @@ public class MDRetrieveUtil {
         try {
 			properties.load(new FileInputStream(connectionPropertiesFile));
 		} catch (IOException e2) {
-			Log.error("Could not load connectionPropertiesFile");
+//			Log.error("Could not load connectionPropertiesFile");
 			e2.printStackTrace();
 		}
 
@@ -56,7 +58,7 @@ public class MDRetrieveUtil {
 			connector = new WebSocketConnector(properties);
 			socket = connector.getWebSocket();
 		} catch (Exception e1) {
-			Log.error("Web Socket Error");
+			//Log.error("Web Socket Error");
 			e1.printStackTrace();
 		}
 
@@ -67,7 +69,7 @@ public class MDRetrieveUtil {
         try {
 			socket.connect();
 		} catch (WebSocketException e) {
-			Log.error("Could not connect to Market Data Source");
+//			Log.error("Could not connect to Market Data Source");
 			e.printStackTrace();
 		}
 
@@ -99,8 +101,8 @@ public class MDRetrieveUtil {
                 nestedMap.get(date).get(item.getCurve()).put(item.getType(),new HashMap<>());
                 nestedMap.get(date).get(item.getCurve()).get(item.getType()).put(item.getTenor(),item.getValue());
         }
-        Gson gson = new Gson();
-        String json = gson.toJson(nestedMap);
+//        Gson gson = new Gson();
+        String json = null; //gson.toJson(nestedMap);
         return json;
 	}
 
