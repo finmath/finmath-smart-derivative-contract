@@ -484,6 +484,15 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>no-tests</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/finmath/finmath-lib/issues</url>
