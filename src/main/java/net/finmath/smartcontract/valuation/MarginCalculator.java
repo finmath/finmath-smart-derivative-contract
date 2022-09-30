@@ -115,7 +115,7 @@ public class MarginCalculator {
 		double marginCall = 0.0;
 
 		if (scenarioDates.size() == 1) {
-			valueWithCurves1 = oracle.getValue(scenarioDates.get(1), scenarioDates.get(1));
+			valueWithCurves1 = oracle.getValue(scenarioDates.get(0), scenarioDates.get(0));
 			marginCall = valueWithCurves1;
 		}
 		else if(scenarioDates.size() == 2) {
