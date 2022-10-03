@@ -57,4 +57,5 @@ module net.finmath.smartderivativecontract {
 	requires net.finmath.lib;
 	requires net.finmath.plots;
 	requires org.jfree.jfreechart;
+	requires javafx.controls;
 }

@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.product.xml;
 
-import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -34,8 +33,6 @@ public class SDCXMLParser {
 
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
 		document.getDocumentElement().normalize();
-
-		TradeDescriptor tradeDescriptor = new TradeDescriptor();
 
 		String tradeDateString = document.getElementsByTagName("settlementDateInitial").item(0).getTextContent();
 		settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());

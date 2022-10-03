@@ -101,131 +101,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /settlementValuation/margincalulationForProductOnChain:
-    post:
-      summary: Request mapping for the settlementvaluationForProductAsFPML
-      operationId: settlementvaluationForProductAsFPMLOnChain
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                marketDataAsJson1:
-                  type: string
-                marketDataAsJson2:
-                  type: string
-                tradeAsFPML:
-                  type: string
-                tradeId:
-                  type: string
-      responses:
-        '200':
-          description: Margin was calculated
-          content:
-            text/plain:
-              schema:
-                type: string
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /settlementValuation/margincalulationForProductAsFPMLOneCurve:
-    post:
-      summary: Request mapping for the settlementvaluationForProductAsFPMLOneCurve
-      operationId: settlementvaluationForProductAsFPMLOneCurve
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                marketDataAsJson1:
-                  type: string
-                  format: binary
-                tradeAsFPML:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: Margin was calculated
-          content:
-            text/plain:
-              schema:
-                type: string
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /settlementValuation/margincalulationForProductAsFPML:
-    post:
-      summary: Request mapping for the settlementvaluationForProductAsFPML
-      operationId: settlementvaluationForProductAsFPML
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                marketDataAsJson1:
-                  type: string
-                  format: binary
-                marketDataAsJson2:
-                  type: string
-                  format: binary
-                tradeAsFPML:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: Margin was calculated
-          content:
-            text/plain:
-              schema:
-                type: string
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /settlementValuation/lastmargincalculationfpml:
-    get:
-      summary: Request mapping for the lastmargincalculationfpml
-      operationId: settlementvaluationProductAsFPML
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                tradeId:
-                  type: string
-
-      responses:
-        '200':
-          description: Margin retrieved
-          content:
-            text/plain:
-              schema:
-                type: string
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
 components:
   schemas:
-    ValuationResult:
+    ValueResult:
+      type: object
+      required:
+        - value
+        - currency
+        - valuationDate
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+        valuationDate:
+          type: string
+    MarginResult:
       type: object
       required:
         - value

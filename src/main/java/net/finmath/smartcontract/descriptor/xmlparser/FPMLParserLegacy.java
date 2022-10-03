@@ -49,7 +49,7 @@ public class FPMLParserLegacy implements XMLParser {
 	private LocalDate maturityDate;
 	private final HashMap productFields = new HashMap();
 	private TradeDescriptor tradeDescriptor = null;
-	private ProductDescriptor productDescriptor = null;
+	private final ProductDescriptor productDescriptor = null;
 
 	private final AbstractBusinessdayCalendar abstractBusinessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 	private final ShortPeriodConvention shortPeriodConvention = ScheduleGenerator.ShortPeriodConvention.LAST;
