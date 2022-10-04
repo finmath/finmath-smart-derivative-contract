@@ -1,8 +1,25 @@
 a {
-    color: #900;
+    color: #922;
 }
 
 .nav-list > .active > a, .nav-list > .active > a:hover {
     color: #fff;
-    background-color: #900;
+    background-color: #922;
+}
+
+body {
+    font-size: 14pt;
+    line-height: 18pt;
+}
+
+h1,h2 {
+    margin-top: 20pt;
+}
+
+h3,h4 {
+    margin-top: 18pt;
+}
+
+h5,h6 {
+    margin-top: 16pt;
 }

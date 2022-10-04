@@ -47,7 +47,7 @@
         <maven.javadoc-plugin.version>3.3.2</maven.javadoc-plugin.version>
         <maven.jar-plugin.version>3.2.0</maven.jar-plugin.version>
         <maven.source-plugin.version>3.2.1</maven.source-plugin.version>
-        <maven.site-plugin.version>3.9.1</maven.site-plugin.version>
+        <maven.site-plugin.version>3.12.1</maven.site-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
@@ -472,8 +472,19 @@
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-sitetools</artifactId>
+                        <version>1.11.1</version>
+                        <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-skin-model</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.9</version>
+                        <version>1.11.1</version>
                     </dependency>
                 </dependencies>
             </plugin>

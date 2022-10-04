@@ -143,9 +143,11 @@ The Maven build file is provide. Import the project as Maven project.
 
 finmath smart-derivative-contract is distributed through the central maven repository. It's coordinates are:
 
+```
 	<groupId>net.finmath</groupId>
 	<artifactId>finmath-smart-derivative-contract</artifactId>
 	<version>${project.version}</version>
+```
 
 ### Documentation
 
