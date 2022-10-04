@@ -4,7 +4,7 @@ net.finmath.smartcontract.client
 net.finmath.smartcontract.demo
 net.finmath.smartcontract.model
 net.finmath.smartcontract.oracle
-net.finmath.smartcontract.oracle.historical
+net.finmath.smartcontract.oracle.interestrates
 net.finmath.smartcontract.product
 net.finmath.smartcontract.product.xml
 net.finmath.smartcontract.service
