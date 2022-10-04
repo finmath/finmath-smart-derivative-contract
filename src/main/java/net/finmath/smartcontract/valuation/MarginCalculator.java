@@ -9,7 +9,8 @@ import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
-import net.finmath.smartcontract.model.ValuationResult;
+import net.finmath.smartcontract.model.MarginResult;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -53,7 +54,7 @@ public class MarginCalculator {
 	 * @return the margin (Float).
 	 * @throws Exception Exception
 	 */
-	public ValuationResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
+	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		List<IRMarketDataSet> marketDataSetsStart = IRMarketDataParser.getScenariosFromJsonString(marketDataStart);
@@ -72,9 +73,9 @@ public class MarginCalculator {
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+		return new MarginResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
-	public ValuationResult getValue(String marketData, String productData) throws Exception {
+	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		List<IRMarketDataSet> marketDataSets = IRMarketDataParser.getScenariosFromJsonString(marketData);
@@ -89,7 +90,7 @@ public class MarginCalculator {
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new ValuationResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
 
 	/**

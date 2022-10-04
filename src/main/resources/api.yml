@@ -37,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ValuationResult"
+                $ref: "#/components/schemas/ValueResult"
         default:
           description: unexpected error
           content:
@@ -74,7 +74,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ValuationResult"
+                $ref: "#/components/schemas/MarginResult"
         default:
           description: unexpected error
           content:

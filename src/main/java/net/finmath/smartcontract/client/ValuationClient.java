@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.client;
 
 import net.finmath.smartcontract.model.MarginRequest;
-import net.finmath.smartcontract.model.ValuationResult;
+import net.finmath.smartcontract.model.MarginResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -49,8 +49,8 @@ public class ValuationClient {
 
 		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(ENDPOINT_URL), MarginRequest.class);
 
-		ResponseEntity<ValuationResult> response = new RestTemplate().exchange(requestEntity, ValuationResult.class);
-		ValuationResult result = response.getBody();
+		ResponseEntity<MarginResult> response = new RestTemplate().exchange(requestEntity, MarginResult.class);
+		MarginResult result = response.getBody();
 
 		System.out.println("Received the valuation result:\n" + result);
 	}
