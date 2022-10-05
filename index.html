@@ -93,7 +93,7 @@
           <ul class="breadcrumb">
         <li id="publishDate">Last Published: 2022-10-05<span class="divider">|</span>
 </li>
-          <li id="projectVersion">Version: 0.1.8</li>
+          <li id="projectVersion">Version: 0.1.9-SNAPSHOT</li>
           </ul>
         </div>
       </header>
@@ -202,65 +202,10 @@ contract.</p></section></section><section>
 <h2><a name="Financial_Product_Description"></a>Financial Product Description</h2>
 <p>The smart derivative contract is described in terms of the sdc.xml.</p>
 <p>For a sample XML and the XSD see <code>resources/net/finmath/smartcontract/product/xml</code>.</p></section><section>
-<h2><a name="Docker:_Running_Valuation_Service"></a>Docker: Running Valuation Service</h2><section>
-<h3><a name="Run_the_Docker_Container_.28starts_Valuation_Service.29"></a>Run the Docker Container (starts Valuation Service)</h3>
-<p><b>Important:</b> provide users and passwords via an <code>application.yml</code> file that resides
-in <code>/PATH/TO/YOUR/CONFIG</code> (on the machine running Docker) (see Section &#x201c;Config&#x201d; below for the format of that file).</p>
-<p>To run Docker Container with the image from Docker Hub execute following commands.</p>
-
-<div class="source"><pre class="prettyprint"><code>docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
-</code></pre></div></section><section>
-<h3><a name="Config"></a>Config</h3>
-<p>A sample <code>application.yml</code> is</p>
-
-<div class="source"><pre class="prettyprint"><code>data:
-  sdc:
-    users:
-      - username: user1
-        password: password1
-        role: USER_ONE
-      - username: user2
-        password: password2
-        role: USER_TWO
-</code></pre></div></section><section>
-<h3><a name="Testing_the_Valuation_Service"></a>Testing the Valuation Service</h3>
-<p>Run</p>
-
-<div class="source"><pre class="prettyprint"><code>./scripts/test-margin-valuation-oracle.sh user:password
-</code></pre></div>
-<p>where <code>user</code> is a username configured in the <code>application.yml</code> (in <code>/PATH/TO/YOUR/CONFIG</code>)
-and  <code>password</code> is the corresponding password configured in the <code>application.yml</code> (in <code>/PATH/TO/YOUR/CONFIG</code>) .</p></section></section><section>
-<h2><a name="Docker:_Building_the_Docker_Container"></a>Docker: Building the Docker Container</h2><section>
-<h3><a name="Build_the_Docker_Container"></a>Build the Docker Container</h3>
-<p>To build a local version of the container (for testing), execute following commands.</p><section>
-<h4><a name="Clone_the_Repository"></a>Clone the Repository</h4>
-<p>Clone this repository, if not done yet:</p>
-
-<div class="source"><pre class="prettyprint"><code>git clone https://github.com/finmath/finmath-smart-derivative-contract.git
-cd finmath-smart-derivative-contract
-</code></pre></div></section><section>
-<h4><a name="Run_the_Docker_Container_.28creating_a_new_image.29"></a>Run the Docker Container (creating a new image)</h4>
-<p><b>Important:</b> provide users and passwords via an application.yml file that resides
-in <code>/PATH/TO/YOUR/CONFIG</code> (on the machine running Docker).</p>
-
-<div class="source"><pre class="prettyprint"><code>docker build -t valuation_service .
-</code></pre></div>
-
-<div class="source"><pre class="prettyprint"><code>docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 valuation_service
-</code></pre></div>
-<p>Alternative: Use Maven to build the Docker image (without Dockerfile)</p>
-
-<div class="source"><pre class="prettyprint"><code>mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
-</code></pre></div></section><section>
-<h4><a name="Build_the_Docker_Container_.28creating_an_image_and_pushing_it_under_the_finmath_user.29"></a>Build the Docker Container (creating an image and pushing it under the finmath user)</h4>
-
-<div class="source"><pre class="prettyprint"><code>docker build -t finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT .
-</code></pre></div>
-
-<div class="source"><pre class="prettyprint"><code>docker login
-docker push finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
-</code></pre></div></section></section></section><section>
+<h2><a name="Docker:_Running_Valuation_Service"></a>Docker: Running Valuation Service</h2>
+<p>See <a href="valuationservice.html">Valuation Service</a>.</p></section><section>
+<h2><a name="Docker:_Building_the_Docker_Container"></a>Docker: Building the Docker Container</h2>
+<p>See <a href="dockerbuild.html">Docker Build</a>.</p></section><section>
 <h2><a name="Developer_Resources"></a>Developer Resources</h2><section>
 <h3><a name="Languages_and_Build"></a>Languages and Build</h3>
 <p>The project requires Java 17 or better.</p>
@@ -272,7 +217,7 @@ docker push finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 	&lt;artifactId&gt;finmath-smart-derivative-contract&lt;/artifactId&gt;
 	&lt;version&gt;${project.version}&lt;/version&gt;
 </code></pre></div></section><section>
-<h3><a name="Coding_Conventions"></a>Coding Conventions</h3><hr />
+<h3><a name="Coding_Conventions"></a>Coding Conventions</h3>
 <p>We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
 conventions. See <a class="externalLink" href="https://wiki.eclipse.org/Coding_Conventions">https://wiki.eclipse.org/Coding_Conventions</a></p>
 <p>We deviate in some places. See <a href="coding/codingconventions.html">coding conventions</a> for details.</p></section></section><section>
