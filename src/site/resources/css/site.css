@@ -13,7 +13,8 @@ a {
 }
 
 #bodyColumn li {
-    padding-top: 4pt;
+    padding-bottom: 6pt;
+    line-height: 20pt;
 }
 
 h1,h2 {
