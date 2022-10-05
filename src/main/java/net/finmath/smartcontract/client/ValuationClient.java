@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -27,12 +28,15 @@ public class ValuationClient {
 	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 
 	public static void main(String[] args) throws Exception {
+		String authString = null; //"user1:password1";
 		if(args.length != 1) {
 			System.out.println("Please provide username and password via user:password as argument.");
+//			authString = "user1:password1";
 			System.exit(1);
 		}
-
-		String authString = args[0]; //"user1:password1";
+		else {
+			authString = args[0];
+		}
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -53,5 +57,42 @@ public class ValuationClient {
 		MarginResult result = response.getBody();
 
 		System.out.println("Received the valuation result:\n" + result);
+
+		printInfoGit(authString);
+		printInfoFinmath(authString);
+	}
+
+	private static void printInfoGit(String authString) throws URISyntaxException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		// create auth credentials
+		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
+		headers.add("Authorization", "Basic " + base64Creds);
+
+		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI("http://localhost:8080/info/git"), String.class);
+
+		ResponseEntity<String> response = new RestTemplate().exchange(requestEntity, String.class);
+
+		System.out.println();
+		System.out.println("git status");
+		System.out.println(response.getBody());
+	}
+
+	private static void printInfoFinmath(String authString) throws URISyntaxException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		// create auth credentials
+		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
+		headers.add("Authorization", "Basic " + base64Creds);
+
+		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI("http://localhost:8080/info/finmath"), String.class);
+
+		ResponseEntity<String> response = new RestTemplate().exchange(requestEntity, String.class);
+
+		System.out.println();
+		System.out.println("finmath-lib version");
+		System.out.println(response.getBody());
 	}
 }

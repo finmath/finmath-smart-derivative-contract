@@ -82,16 +82,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /settlementValuation/test:
+  /info/git:
     get:
-      summary: Test Endpoint
-      operationId: test
-
+      summary: Request info on Git version and tags
+      operationId: info-git
       responses:
         '200':
-          description: Connection successful
+          description: Info returned
           content:
-            text/plain:
+            application/json:
               schema:
                 type: string
         default:
@@ -100,6 +99,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /info/finmath:
+    get:
+      summary: Request info on finmath-lib version and tags
+      operationId: info-finmath
+      responses:
+        '200':
+          description: Info returned
+          content:
+            application/json:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
 components:
   schemas:
