@@ -21,8 +21,12 @@ This is a Java FX application. Run `VisualiserSDC`.
 
 ### Valuation Service (ReST service)
 
-Running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
-ReST service providing a valuation oracle.
+**You may run the valuation service through our Docker image (see below).**
+
+If you like to run the the valuation service locally from this repository, running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle. 
+
+#### Enpoints
 
 The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
 
@@ -74,6 +78,8 @@ The smart derivative contract is described in terms of the sdc.xml.
 For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
 
 ## Docker (for Valuation Service)
+
+## Run the Docker Container (starts Valuation Service)
 
 To run Docker Container execute following commands.
 
