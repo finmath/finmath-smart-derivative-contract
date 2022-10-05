@@ -28,6 +28,8 @@
 
         <menu name="finmath smart derivative contract">
             <item name="Introduction" href="index.html"/>
+            <item name="Valuation Service" href="valuationservice.html"/>
+            <item name="Docker Build" href="dockerbuild.html"/>
             <item name="Articles" href="articles/index.html" collapse="true">
                 <item name="Rethinking Finacial Derivatives (1)" href="articles/rethinking_part_1.html"/>
                 <item name="Rethinking Finacial Derivatives (2)" href="articles/rethinking_part_2.html"/>
