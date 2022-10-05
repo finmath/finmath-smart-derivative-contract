@@ -33,6 +33,12 @@ data:
 
 ### Testing the Valuation Service
 
+Clone this repository, if not done yet:
+```
+git clone https://github.com/finmath/finmath-smart-derivative-contract.git
+cd finmath-smart-derivative-contract
+```
+
 Run
 ```
 ./scripts/test-margin-valuation-oracle.sh user:password
