@@ -27,8 +27,12 @@ This is a Java FX application. Run `VisualiserSDC`.
 
 ### Valuation Service (ReST service)
 
-Running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
-ReST service providing a valuation oracle.
+**You may run the valuation service through our Docker image (see below).**
+
+If you like to run the the valuation service locally from this repository, running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle. 
+
+#### Enpoints
 
 The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
 
@@ -89,38 +93,17 @@ The smart derivative contract is described in terms of the sdc.xml.
 
 For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
 
-## Docker (for Valuation Service)
+## Docker: Running Valuation Service
 
-To run Docker Container execute following commands.
+### Run the Docker Container (starts Valuation Service)
 
-*Note*: It is important that you run the correct version. The repository comes with release tags.
+**Important:** provide users and passwords via an `application.yml` file that resides
+in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" below for the format of that file).
 
-Clone this repository, if not done yet:
-```
-git clone https://github.com/finmath/finmath-smart-derivative-contract.git
-cd finmath-smart-derivative-contract
-```
-
-### Build the Docker Container
+To run Docker Container with the image from Docker Hub execute following commands.
 
 ```
-docker build -t valuation_service .
-```
-
-### Run the Docker Container
-
-**Important:** provide users and passwords via an application.yml file that resides
-in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker).
-
-```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 valuation_service
-```
-
-Alternative: Use Maven to build the Docker image (without Dockerfile)
-
-```
-mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
 ```
 
 ### Config
@@ -146,6 +129,51 @@ Run
 ```
 where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
 and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
+
+## Docker: Building the Docker Container
+
+### Build the Docker Container
+
+To build a local version of the container (for testing), execute following commands.
+
+#### Clone the Repository
+
+Clone this repository, if not done yet:
+```
+git clone https://github.com/finmath/finmath-smart-derivative-contract.git
+cd finmath-smart-derivative-contract
+```
+
+#### Run the Docker Container (creating a new image)
+
+**Important:** provide users and passwords via an application.yml file that resides
+in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker).
+
+```
+docker build -t valuation_service .
+```
+
+```
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 valuation_service
+```
+
+Alternative: Use Maven to build the Docker image (without Dockerfile)
+
+```
+mvn spring-boot:build-image
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+```
+
+#### Build the Docker Container (creating an image and pushing it under the finmath user)
+
+```
+docker build -t finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT .
+```
+
+```
+docker login
+docker push finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+```
 
 ## Developer Resources
 

@@ -9,8 +9,14 @@
 ## Introduction
 
 The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
-derivative contracts. For a description of the concept of a smart derivative contract
+derivative contracts.
+
+### Literature
+
+For a technical/mathematical description of the concept of a smart derivative contract
 see https://ssrn.com/abstract=3163074
+
+For non-technical description see the [articles](articles) section.
 
 ## Contents
 
@@ -42,13 +48,17 @@ See also `api.yml`.
 The endpoint value calculates the value of a financial product
 with given market data.
 
-The enpoint parameters are
+The endpoint parameters are
 - product P
 - market data M
-- valuation time t
+- valuation time t (see note below)
+
+**Note**: The valuation time t is currently taken from the market data set M
 
 The result is the value
 - V(P,M,t)
+
+**Note**: The valuation time t is currently taken from the market data set M1
 
 #### Margin
 
@@ -56,10 +66,16 @@ The enpoint parameters are
 - product P
 - market data M0 (market data at previous margin call or initial valuation)
 - market data M1 (market data for margin call)
-- valuation time t
+- valuation time t (see note below)
 
 The result is the value
 - M(P,M0,M1,t) = V(P,M1,t) - V(P,M0,t)
+
+**Note**: The valuation time t is currently taken from the market data set M1
+
+#### Valuation Library
+
+The underlying valuation library is [finmath lib](https://finmath.net/finmath-lib).
 
 ### Settlement Amount Oracle and Valuation Oracle
 
@@ -158,5 +174,37 @@ docker build -t finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT .
 docker login
 docker push finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
 ```
+
+## Developer Resources
+
+### Languages and Build
+
+The project requires Java 17 or better.
+
+The Maven build file is provide. Import the project as Maven project.
+
+### Distribution
+
+finmath smart-derivative-contract is distributed through the central maven repository. It's coordinates are:
+
+```
+	<groupId>net.finmath</groupId>
+	<artifactId>finmath-smart-derivative-contract</artifactId>
+	<version>${project.version}</version>
+```
+
+### Coding Conventions
+-------------------------------------
+
+We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
+conventions. See https://wiki.eclipse.org/Coding_Conventions
+
+We deviate in some places. See [coding conventions](coding/codingconventions.md) for details.
+
+## License
+
+The code is distributed under the [Apache License version 2.0][], unless otherwise explicitly stated.
+
+[Apache License version 2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
 
 
