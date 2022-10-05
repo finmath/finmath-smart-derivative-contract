@@ -84,7 +84,7 @@
         <div id="banner">
           <div class="pull-left"><a href="../finmath-smart-derivative-contract" id="bannerLeft"><h1>smart derivative contract</h1>
 </a></div>
-          <div class="pull-right"><a href=".." id="bannerRight"><img src="../artwork/logo.png"  alt="finmath.net" style="height: 64;" /></a></div>
+          <div class="pull-right"><a href=".." id="bannerRight"><img src="../artwork/logo.png"  alt="finmath.net" style="height: 48;" /></a></div>
           <div class="clear"><hr/></div>
         </div>
 
@@ -139,8 +139,11 @@
 <p><b>Algorithms and methodologies related to smart derivative contracts.</b></p><hr /><section>
 <h2><a name="Introduction"></a>Introduction</h2>
 <p>The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
-derivative contracts. For a description of the concept of a smart derivative contract
-see <a class="externalLink" href="https://ssrn.com/abstract=3163074">https://ssrn.com/abstract=3163074</a></p></section><section>
+derivative contracts.</p><section>
+<h3><a name="Literature"></a>Literature</h3>
+<p>For a technical/mathematical description of the concept of a smart derivative contract
+see <a class="externalLink" href="https://ssrn.com/abstract=3163074">https://ssrn.com/abstract=3163074</a></p>
+<p>For non-technical description see the <a href="articles">articles</a> section.</p></section></section><section>
 <h2><a name="Contents"></a>Contents</h2><section>
 <h3><a name="Visualization_and_Demonstration"></a>Visualization and Demonstration</h3>
 <p>The package <code>net.finmath.smartcontract.demo</code>contains a visualization of a smart derivative contract.
@@ -156,18 +159,20 @@ The product data as to be provided as an XML (containing a part being an FPML of
 <h4><a name="Value"></a>Value</h4>
 <p>The endpoint value calculates the value of a financial product
 with given market data.</p>
-<p>The enpoint parameters are</p>
+<p>The endpoint parameters are</p>
 <ul>
 
 <li>product P</li>
 <li>market data M</li>
-<li>valuation time t</li>
+<li>valuation time t (see note below)</li>
 </ul>
+<p><b>Note</b>: The valuation time t is currently taken from the market data set M</p>
 <p>The result is the value</p>
 <ul>
 
 <li>V(P,M,t)</li>
-</ul></section><section>
+</ul>
+<p><b>Note</b>: The valuation time t is currently taken from the market data set M1</p></section><section>
 <h4><a name="Margin"></a>Margin</h4>
 <p>The enpoint parameters are</p>
 <ul>
@@ -175,13 +180,16 @@ with given market data.</p>
 <li>product P</li>
 <li>market data M0 (market data at previous margin call or initial valuation)</li>
 <li>market data M1 (market data for margin call)</li>
-<li>valuation time t</li>
+<li>valuation time t (see note below)</li>
 </ul>
 <p>The result is the value</p>
 <ul>
 
 <li>M(P,M0,M1,t) = V(P,M1,t) - V(P,M0,t)</li>
-</ul></section></section><section>
+</ul>
+<p><b>Note</b>: The valuation time t is currently taken from the market data set M1</p></section><section>
+<h4><a name="Valuation_Library"></a>Valuation Library</h4>
+<p>The underlying valuation library is <a class="externalLink" href="https://finmath.net/finmath-lib">finmath lib</a>.</p></section></section><section>
 <h3><a name="Settlement_Amount_Oracle_and_Valuation_Oracle"></a>Settlement Amount Oracle and Valuation Oracle</h3>
 <p>The package <code>net.finmath.smartcontract.oracle</code> contains the interface describing a so called oracle providing the
 settlement amount for a smart derivative contract. The package contains also an implementation for interest rate swaps.</p></section><section>
@@ -245,22 +253,10 @@ and  <code>password</code> is the corresponding password configured in the <code
 	&lt;artifactId&gt;finmath-smart-derivative-contract&lt;/artifactId&gt;
 	&lt;version&gt;${project.version}&lt;/version&gt;
 </code></pre></div></section><section>
-<h3><a name="Documentation"></a>Documentation</h3>
-<p>For documentation please check out</p>
-<ul>
-
-<li>[finmath lib Project documentation][]
-provides the documentation of the library api.</li>
-<li>[finmath lib API documentation][]
-provides the documentation of the library api.</li>
-<li>[finmath.net special topics][]
-cover some selected topics with demo spreadsheets and uml diagrams. Some topics come with additional documentations (
-technical papers).</li>
-</ul></section><section>
 <h3><a name="Coding_Conventions"></a>Coding Conventions</h3><hr />
 <p>We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
 conventions. See <a class="externalLink" href="https://wiki.eclipse.org/Coding_Conventions">https://wiki.eclipse.org/Coding_Conventions</a></p>
-<p>We deviate in some places. See <a href="coding-codingconventions">coding/codingconventions</a> for details.</p></section></section><section>
+<p>We deviate in some places. See <a href="coding/codingconventions.html">coding conventions</a> for details.</p></section></section><section>
 <h2><a name="License"></a>License</h2>
 <p>The code is distributed under the <a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License version 2.0</a>, unless otherwise explicitly stated.</p></section>
         </main>
