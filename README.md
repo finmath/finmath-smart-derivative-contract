@@ -103,7 +103,7 @@ in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" 
 To run Docker Container with the image from Docker Hub execute following commands.
 
 ```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
 ```
 
 ### Config
@@ -161,18 +161,18 @@ Alternative: Use Maven to build the Docker image (without Dockerfile)
 
 ```
 mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 ```
 
 #### Build the Docker Container (creating an image and pushing it under the finmath user)
 
 ```
-docker build -t finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT .
+docker build -t finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT .
 ```
 
 ```
 docker login
-docker push finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker push finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 ```
 
 ## Developer Resources
