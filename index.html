@@ -93,7 +93,7 @@
           <ul class="breadcrumb">
         <li id="publishDate">Last Published: 2022-10-05<span class="divider">|</span>
 </li>
-          <li id="projectVersion">Version: 0.1.8-SNAPSHOT</li>
+          <li id="projectVersion">Version: 0.1.8</li>
           </ul>
         </div>
       </header>
@@ -208,7 +208,7 @@ contract.</p></section></section><section>
 in <code>/PATH/TO/YOUR/CONFIG</code> (on the machine running Docker) (see Section &#x201c;Config&#x201d; below for the format of that file).</p>
 <p>To run Docker Container with the image from Docker Hub execute following commands.</p>
 
-<div class="source"><pre class="prettyprint"><code>docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+<div class="source"><pre class="prettyprint"><code>docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
 </code></pre></div></section><section>
 <h3><a name="Config"></a>Config</h3>
 <p>A sample <code>application.yml</code> is</p>
@@ -251,15 +251,15 @@ in <code>/PATH/TO/YOUR/CONFIG</code> (on the machine running Docker).</p>
 <p>Alternative: Use Maven to build the Docker image (without Dockerfile)</p>
 
 <div class="source"><pre class="prettyprint"><code>mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 </code></pre></div></section><section>
 <h4><a name="Build_the_Docker_Container_.28creating_an_image_and_pushing_it_under_the_finmath_user.29"></a>Build the Docker Container (creating an image and pushing it under the finmath user)</h4>
 
-<div class="source"><pre class="prettyprint"><code>docker build -t finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT .
+<div class="source"><pre class="prettyprint"><code>docker build -t finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT .
 </code></pre></div>
 
 <div class="source"><pre class="prettyprint"><code>docker login
-docker push finmath/finmath-smart-derivative-contract:0.1.8-SNAPSHOT
+docker push finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 </code></pre></div></section></section></section><section>
 <h2><a name="Developer_Resources"></a>Developer Resources</h2><section>
 <h3><a name="Languages_and_Build"></a>Languages and Build</h3>
