@@ -3,6 +3,43 @@
 If you like to run the valuation service locally from this repository, running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
 ReST service providing a valuation oracle. 
 
+## Docker: Running Valuation Service
+
+### Run the Docker Container (starts Valuation Service)
+
+**Important:** provide users and passwords via an `application.yml` file that resides
+in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" below for the format of that file).
+
+To run Docker Container with the image from Docker Hub execute following commands.
+
+```
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
+```
+
+### Config
+
+A sample `application.yml` is
+```
+data:
+  sdc:
+    users:
+      - username: user1
+        password: password1
+        role: USER_ONE
+      - username: user2
+        password: password2
+        role: USER_TWO
+```
+
+### Testing the Valuation Service
+
+Run
+```
+./scripts/test-margin-valuation-oracle.sh user:password
+```
+where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
+and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
+
 ## Enpoints
 
 The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
@@ -48,40 +85,3 @@ The result is the value
 
 The underlying valuation library is [finmath lib](https://finmath.net/finmath-lib).
 
-
-## Docker: Running Valuation Service
-
-### Run the Docker Container (starts Valuation Service)
-
-**Important:** provide users and passwords via an `application.yml` file that resides
-in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" below for the format of that file).
-
-To run Docker Container with the image from Docker Hub execute following commands.
-
-```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
-```
-
-### Config
-
-A sample `application.yml` is
-```
-data:
-  sdc:
-    users:
-      - username: user1
-        password: password1
-        role: USER_ONE
-      - username: user2
-        password: password2
-        role: USER_TWO
-```
-
-### Testing the Valuation Service
-
-Run
-```
-./scripts/test-margin-valuation-oracle.sh user:password
-```
-where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
-and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
