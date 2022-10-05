@@ -17,7 +17,7 @@
     <description>
         Project to support the implementation a of smart derivative contract.
     </description>
-    <url>http://www.finmath.net/finmath-lib</url>
+    <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
