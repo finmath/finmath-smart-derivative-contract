@@ -95,85 +95,11 @@ For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xm
 
 ## Docker: Running Valuation Service
 
-### Run the Docker Container (starts Valuation Service)
-
-**Important:** provide users and passwords via an `application.yml` file that resides
-in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" below for the format of that file).
-
-To run Docker Container with the image from Docker Hub execute following commands.
-
-```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.8
-```
-
-### Config
-
-A sample `application.yml` is
-```
-data:
-  sdc:
-    users:
-      - username: user1
-        password: password1
-        role: USER_ONE
-      - username: user2
-        password: password2
-        role: USER_TWO
-```
-
-### Testing the Valuation Service
-
-Run
-```
-./scripts/test-margin-valuation-oracle.sh user:password
-```
-where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
-and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
+See [Valuation Service](valuationservice.md).
 
 ## Docker: Building the Docker Container
 
-### Build the Docker Container
-
-To build a local version of the container (for testing), execute following commands.
-
-#### Clone the Repository
-
-Clone this repository, if not done yet:
-```
-git clone https://github.com/finmath/finmath-smart-derivative-contract.git
-cd finmath-smart-derivative-contract
-```
-
-#### Run the Docker Container (creating a new image)
-
-**Important:** provide users and passwords via an application.yml file that resides
-in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker).
-
-```
-docker build -t valuation_service .
-```
-
-```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 valuation_service
-```
-
-Alternative: Use Maven to build the Docker image (without Dockerfile)
-
-```
-mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/library/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
-```
-
-#### Build the Docker Container (creating an image and pushing it under the finmath user)
-
-```
-docker build -t finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT .
-```
-
-```
-docker login
-docker push finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
-```
+See [Docker Build](dockerbuild.md).
 
 ## Developer Resources
 
@@ -194,7 +120,6 @@ finmath smart-derivative-contract is distributed through the central maven repos
 ```
 
 ### Coding Conventions
--------------------------------------
 
 We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
 conventions. See https://wiki.eclipse.org/Coding_Conventions
