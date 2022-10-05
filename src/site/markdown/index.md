@@ -167,7 +167,7 @@ For documentation please check out
 We follow losely the Eclipse coding conventions, which are a minimal modification of the original Java coding
 conventions. See https://wiki.eclipse.org/Coding_Conventions
 
-We deviate in some places. See [[codingconventions]] for details.
+We deviate in some places. See [[coding/codingconventions]] for details.
 
 ## License
 

@@ -9,7 +9,11 @@ a {
 
 #bodyColumn {
     font-size: 16pt;
-    line-height: 20pt;
+    line-height: 24pt;
+}
+
+#bodyColumn li {
+    padding-top: 4pt;
 }
 
 h1,h2 {
