@@ -36,10 +36,10 @@
         <spring-boot-starter-security.version>2.7.3</spring-boot-starter-security.version>
         <spring-boot-starter-test.version>2.7.3</spring-boot-starter-test.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
-        <jackson-core.version>2.13.4</jackson-core.version>
-        <jackson-databind.version>2.13.4</jackson-databind.version>
-        <jackson-annotations.version>2.13.4</jackson-annotations.version>
-        <jackson-dataformat-csv.version>2.13.4</jackson-dataformat-csv.version>
+        <jackson-core.version>2.13.3</jackson-core.version>
+        <jackson-databind.version>2.13.3</jackson-databind.version>
+        <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <jackson-dataformat-csv.version>2.13.3</jackson-dataformat-csv.version>
         <!-- maven plugins -->
         <maven.compiler-plugin.version>3.8.1</maven.compiler-plugin.version>
         <maven.surefire-plugin.version>3.0.0-M5</maven.surefire-plugin.version>
@@ -83,17 +83,6 @@
     </licenses>
 
     <dependencies>
-        <!-- Java FX -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>19</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>19</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -111,6 +100,12 @@
             <groupId>net.finmath</groupId>
             <artifactId>finmath-lib-plot-extensions</artifactId>
             <version>${finmath-lib-plot-extensions.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.finmath</groupId>
+                    <artifactId>finmath-lib</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- apache commons -->
@@ -355,16 +350,15 @@
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
             </plugin>
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
                     <rules><dependencyConvergence /></rules>
+                    <fail>false</fail>
                 </configuration>
             </plugin>
-            -->
 
             <!-- Open API -->
             <!-- Maven Dependency Plugin -->
@@ -523,6 +517,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--git-commit-id-maven-plugin - Generates a git.properties file with Git info -->
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
@@ -605,6 +601,7 @@
     </reporting>
 
     <distributionManagement>
+        <!--site for mvn site -->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
