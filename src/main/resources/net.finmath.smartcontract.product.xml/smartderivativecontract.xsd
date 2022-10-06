@@ -1,310 +1,73 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.fpml.org/FpML-5/confirmation" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="dataDocument">
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name = "smartderivativecontract">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="trade">
+                <xs:element name = "valuation">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="tradeHeader">
+                            <xs:element name = "artefact">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="partyTradeIdentifier" maxOccurs="unbounded" minOccurs="0">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name="partyReference">
-                                                        <xs:complexType>
-                                                            <xs:simpleContent>
-                                                                <xs:extension base="xs:string">
-                                                                    <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                </xs:extension>
-                                                            </xs:simpleContent>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="tradeId">
-                                                        <xs:complexType>
-                                                            <xs:simpleContent>
-                                                                <xs:extension base="xs:string">
-                                                                    <xs:attribute type="xs:anyURI" name="tradeIdScheme" use="optional"/>
-                                                                </xs:extension>
-                                                            </xs:simpleContent>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                        <xs:element type="xs:date" name="tradeDate"/>
+                                        <xs:element type = " xs: string" name = "groupId"/>
+                                        <xs:element type = " xs: string" name = "artifactId"/>
+                                        <xs:element type = " xs: string" name = "version"/>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="swap">
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name = "parties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name = "party"  maxOccurs="unbounded" minOccurs="0" >
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="swapStream" maxOccurs="unbounded" minOccurs="0">
-                                            <xs:annotation>
-                                                <xs:documentation> party1 pays the floating rate every 6 months, based on 6M EUR-LIBOR-BBA,
-                                                    on an ACT/360 basis  party2 pays the 6% fixed rate every year on a 30E/360 basis </xs:documentation>
-                                            </xs:annotation>
+                                        <xs:element type = " xs: string" name = "name"/>
+                                        <xs:element type = " xs: string" name = "id"/>
+                                        <xs:element name = "marginAccount">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="payerPartyReference">
-                                                        <xs:complexType>
-                                                            <xs:simpleContent>
-                                                                <xs:extension base="xs:string">
-                                                                    <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                </xs:extension>
-                                                            </xs:simpleContent>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="receiverPartyReference">
-                                                        <xs:complexType>
-                                                            <xs:simpleContent>
-                                                                <xs:extension base="xs:string">
-                                                                    <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                </xs:extension>
-                                                            </xs:simpleContent>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="calculationPeriodDates">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name="effectiveDate">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:date" name="unadjustedDate"/>
-                                                                            <xs:element name="dateAdjustments">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="terminationDate">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:date" name="unadjustedDate"/>
-                                                                            <xs:element name="dateAdjustments">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                                        <xs:element name="businessCenters" minOccurs="0">
-                                                                                            <xs:complexType>
-                                                                                                <xs:sequence>
-                                                                                                    <xs:element type="xs:string" name="businessCenter"/>
-                                                                                                </xs:sequence>
-                                                                                                <xs:attribute type="xs:string" name="id"/>
-                                                                                            </xs:complexType>
-                                                                                        </xs:element>
-                                                                                        <xs:element name="businessCentersReference" minOccurs="0">
-                                                                                            <xs:complexType>
-                                                                                                <xs:simpleContent>
-                                                                                                    <xs:extension base="xs:string">
-                                                                                                        <xs:attribute type="xs:string" name="href"/>
-                                                                                                    </xs:extension>
-                                                                                                </xs:simpleContent>
-                                                                                            </xs:complexType>
-                                                                                        </xs:element>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="calculationPeriodDatesAdjustments">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                            <xs:element name="businessCentersReference">
-                                                                                <xs:complexType>
-                                                                                    <xs:simpleContent>
-                                                                                        <xs:extension base="xs:string">
-                                                                                            <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                                        </xs:extension>
-                                                                                    </xs:simpleContent>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="calculationPeriodFrequency">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:byte" name="periodMultiplier"/>
-                                                                            <xs:element type="xs:string" name="period"/>
-                                                                            <xs:element type="xs:byte" name="rollConvention"/>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                            <xs:attribute type="xs:string" name="id" use="optional"/>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="paymentDates">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name="calculationPeriodDatesReference">
-                                                                    <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                            <xs:extension base="xs:string">
-                                                                                <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                            </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="paymentFrequency">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:byte" name="periodMultiplier"/>
-                                                                            <xs:element type="xs:string" name="period"/>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element type="xs:string" name="payRelativeTo"/>
-                                                                <xs:element name="paymentDatesAdjustments">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                            <xs:element name="businessCentersReference">
-                                                                                <xs:complexType>
-                                                                                    <xs:simpleContent>
-                                                                                        <xs:extension base="xs:string">
-                                                                                            <xs:attribute type="xs:string" name="href" use="optional"/>
-                                                                                        </xs:extension>
-                                                                                    </xs:simpleContent>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="resetDates" minOccurs="0">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name="calculationPeriodDatesReference">
-                                                                    <xs:complexType>
-                                                                        <xs:simpleContent>
-                                                                            <xs:extension base="xs:string">
-                                                                                <xs:attribute type="xs:string" name="href"/>
-                                                                            </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element type="xs:string" name="resetRelativeTo"/>
-                                                                <xs:element name="fixingDates">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:byte" name="periodMultiplier"/>
-                                                                            <xs:element type="xs:string" name="period"/>
-                                                                            <xs:element type="xs:string" name="dayType"/>
-                                                                            <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                            <xs:element name="businessCenters">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element type="xs:string" name="businessCenter"/>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                            <xs:element name="dateRelativeTo">
-                                                                                <xs:complexType>
-                                                                                    <xs:simpleContent>
-                                                                                        <xs:extension base="xs:string">
-                                                                                            <xs:attribute type="xs:string" name="href"/>
-                                                                                        </xs:extension>
-                                                                                    </xs:simpleContent>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="resetFrequency">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:byte" name="periodMultiplier"/>
-                                                                            <xs:element type="xs:string" name="period"/>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                                <xs:element name="resetDatesAdjustments">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element type="xs:string" name="businessDayConvention"/>
-                                                                            <xs:element name="businessCentersReference">
-                                                                                <xs:complexType>
-                                                                                    <xs:simpleContent>
-                                                                                        <xs:extension base="xs:string">
-                                                                                            <xs:attribute type="xs:string" name="href"/>
-                                                                                        </xs:extension>
-                                                                                    </xs:simpleContent>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                            <xs:attribute type="xs:string" name="id"/>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                    <xs:element name="calculationPeriodAmount">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name="calculation">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element name="notionalSchedule">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element name="notionalStepSchedule">
-                                                                                            <xs:complexType>
-                                                                                                <xs:sequence>
-                                                                                                    <xs:element type="xs:float" name="initialValue"/>
-                                                                                                    <xs:element name="currency">
-                                                                                                        <xs:complexType>
-                                                                                                            <xs:simpleContent>
-                                                                                                                <xs:extension base="xs:string">
-                                                                                                                    <xs:attribute type="xs:anyURI" name="currencyScheme" use="optional"/>
-                                                                                                                </xs:extension>
-                                                                                                            </xs:simpleContent>
-                                                                                                        </xs:complexType>
-                                                                                                    </xs:element>
-                                                                                                </xs:sequence>
-                                                                                            </xs:complexType>
-                                                                                        </xs:element>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                            <xs:element name="floatingRateCalculation" minOccurs="0">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element type="xs:string" name="floatingRateIndex"/>
-                                                                                        <xs:element name="indexTenor">
-                                                                                            <xs:complexType>
-                                                                                                <xs:sequence>
-                                                                                                    <xs:element type="xs:byte" name="periodMultiplier"/>
-                                                                                                    <xs:element type="xs:string" name="period"/>
-                                                                                                </xs:sequence>
-                                                                                            </xs:complexType>
-                                                                                        </xs:element>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                            <xs:element name="fixedRateSchedule" minOccurs="0">
-                                                                                <xs:complexType>
-                                                                                    <xs:sequence>
-                                                                                        <xs:element type="xs:float" name="initialValue"/>
-                                                                                    </xs:sequence>
-                                                                                </xs:complexType>
-                                                                            </xs:element>
-                                                                            <xs:element type="xs:string" name="dayCountFraction"/>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
+                                                    <xs:element type = " xs: string" name = "type"/>
+                                                    <xs:element type = " xs: float" name = "value"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name = "penaltyFee">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type = " xs: string" name = "type"/>
+                                                    <xs:element type = " xs: float" name = "value"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type = " xs: undefined" name = "address"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name = "settlement">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type = " xs: string" name = "settlementDateInitial"/>
+                            <xs:element name = "settlementTime">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type = " xs: string" name = "type"/>
+                                        <xs:element type = " xs: string" name = "value"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name = "marketdata">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type = " xs: string" name = "provider"/>
+                                        <xs:element name = "symbols">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type = " xs: string" name = "symbol"  maxOccurs="unbounded" minOccurs="0" />
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -314,8 +77,245 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element type = " xs: string" name = "receiverPartyID"/>
+                <xs:element name = "underlyings">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name = "underlying">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name = "dataDocument">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name = "trade">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name = "tradeHeader">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name = "partyTradeIdentifier"  maxOccurs="unbounded" minOccurs="0" >
+                                                                                <xs:complexType>
+                                                                                    <xs:sequence>
+                                                                                        <xs:element  name = "tradeId">
+                                                                                            <xs:complexType >
+                                                                                                <xs:simpleContent>
+                                                                                                    <xs:extension base = "xs:string">
+                                                                                                        <xs:attribute type="xs:string" name="tradeIdScheme" use="optional"/>
+                                                                                                    </xs:extension>
+                                                                                                </xs:simpleContent>
+                                                                                            </xs:complexType>
+                                                                                        </xs:element>
+                                                                                    </xs:sequence>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                            <xs:element type = " xs: Date" name = "tradeDate"/>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                                <xs:element name = "swap">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name = "swapStream">
+                                                                                <xs:complexType>
+                                                                                    <xs:sequence>
+                                                                                        <xs:element name = "calculationPeriodDates">
+                                                                                            <xs:complexType>
+                                                                                                <xs:sequence>
+                                                                                                    <xs:element name = "effectiveDate">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: Date" name = "unadjustedDate"/>
+                                                                                                                <xs:element name = "dateAdjustments">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element name = "terminationDate">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: Date" name = "unadjustedDate"/>
+                                                                                                                <xs:element name = "dateAdjustments">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                                            <xs:element name = "businessCenters">
+                                                                                                                                <xs:complexType>
+                                                                                                                                    <xs:sequence>
+                                                                                                                                        <xs:element type = " xs: string" name = "businessCenter"/>
+                                                                                                                                    </xs:sequence>
+                                                                                                                                    <xs:attribute type="xs:string" name="id"/>
+                                                                                                                                </xs:complexType>
+                                                                                                                            </xs:element>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element name = "calculationPeriodDatesAdjustments">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element name = "calculationPeriodFrequency">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: byte" name = "periodMultiplier"/>
+                                                                                                                <xs:element type = " xs: string" name = "period"/>
+                                                                                                                <xs:element type = " xs: byte" name = "rollConvention"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                </xs:sequence>
+                                                                                                <xs:attribute type="xs:string" name="id" use="optional"/>
+                                                                                            </xs:complexType>
+                                                                                        </xs:element>
+                                                                                        <xs:element name = "paymentDates">
+                                                                                            <xs:complexType>
+                                                                                                <xs:sequence>
+                                                                                                    <xs:element name = "paymentFrequency">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: byte" name = "periodMultiplier"/>
+                                                                                                                <xs:element type = " xs: string" name = "period"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element type = " xs: string" name = "payRelativeTo"/>
+                                                                                                    <xs:element name = "paymentDatesAdjustments">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                </xs:sequence>
+                                                                                            </xs:complexType>
+                                                                                        </xs:element>
+                                                                                        <xs:element name = "resetDates">
+                                                                                            <xs:complexType>
+                                                                                                <xs:sequence>
+                                                                                                    <xs:element type = " xs: string" name = "resetRelativeTo"/>
+                                                                                                    <xs:element name = "fixingDates">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: byte" name = "periodMultiplier"/>
+                                                                                                                <xs:element type = " xs: string" name = "period"/>
+                                                                                                                <xs:element type = " xs: string" name = "dayType"/>
+                                                                                                                <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                                <xs:element name = "businessCenters">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element type = " xs: string" name = "businessCenter"/>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element name = "resetFrequency">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: byte" name = "periodMultiplier"/>
+                                                                                                                <xs:element type = " xs: string" name = "period"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                    <xs:element name = "resetDatesAdjustments">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element type = " xs: string" name = "businessDayConvention"/>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                </xs:sequence>
+                                                                                                <xs:attribute type="xs:string" name="id"/>
+                                                                                            </xs:complexType>
+                                                                                        </xs:element>
+                                                                                        <xs:element name = "calculationPeriodAmount">
+                                                                                            <xs:complexType>
+                                                                                                <xs:sequence>
+                                                                                                    <xs:element name = "calculation">
+                                                                                                        <xs:complexType>
+                                                                                                            <xs:sequence>
+                                                                                                                <xs:element name = "notionalSchedule">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element name = "notionalStepSchedule">
+                                                                                                                                <xs:complexType>
+                                                                                                                                    <xs:sequence>
+                                                                                                                                        <xs:element type = " xs: float" name = "initialValue"/>
+                                                                                                                                        <xs:element  name = "currency">
+                                                                                                                                            <xs:complexType >
+                                                                                                                                                <xs:simpleContent>
+                                                                                                                                                    <xs:extension base = "xs:string">
+                                                                                                                                                        <xs:attribute type="xs:string" name="currencyScheme" use="optional"/>
+                                                                                                                                                    </xs:extension>
+                                                                                                                                                </xs:simpleContent>
+                                                                                                                                            </xs:complexType>
+                                                                                                                                        </xs:element>
+                                                                                                                                    </xs:sequence>
+                                                                                                                                </xs:complexType>
+                                                                                                                            </xs:element>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                                <xs:element name = "floatingRateCalculation">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element type = " xs: string" name = "floatingRateIndex"/>
+                                                                                                                            <xs:element name = "indexTenor">
+                                                                                                                                <xs:complexType>
+                                                                                                                                    <xs:sequence>
+                                                                                                                                        <xs:element type = " xs: byte" name = "periodMultiplier"/>
+                                                                                                                                        <xs:element type = " xs: string" name = "period"/>
+                                                                                                                                    </xs:sequence>
+                                                                                                                                </xs:complexType>
+                                                                                                                            </xs:element>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                                <xs:element type = " xs: string" name = "dayCountFraction"/>
+                                                                                                                <xs:element name = "fixedRateSchedule">
+                                                                                                                    <xs:complexType>
+                                                                                                                        <xs:sequence>
+                                                                                                                            <xs:element type = " xs: float" name = "initialValue"/>
+                                                                                                                        </xs:sequence>
+                                                                                                                    </xs:complexType>
+                                                                                                                </xs:element>
+                                                                                                            </xs:sequence>
+                                                                                                        </xs:complexType>
+                                                                                                    </xs:element>
+                                                                                                </xs:sequence>
+                                                                                            </xs:complexType>
+                                                                                        </xs:element>
+                                                                                    </xs:sequence>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="xmlns:xsi"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
-            <xs:attribute type="xs:string" name="fpmlVersion"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>
