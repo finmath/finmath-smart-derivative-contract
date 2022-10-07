@@ -438,14 +438,14 @@
                 </executions>
             </plugin>
 
-            <!-- JIB / Docker -->
+            <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
                     <to>
-                        <image>docker.io/finmath/finmath-smart-derivative-contract</image>
+                        <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
                     </to>
                     <container>
                         <mainClass>
