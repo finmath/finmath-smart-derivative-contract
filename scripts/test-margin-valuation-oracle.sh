@@ -5,4 +5,4 @@ SCRIPT_PATH="$(dirname "$0")"
 cd $SCRIPT_PATH/../
 echo $PWD
 
-mvn clean install exec:java -Dexec.mainClass=net.finmath.smartcontract.client.ValuationClient -Dexec.args=$1
+mvn compile exec:java -Dexec.mainClass=net.finmath.smartcontract.client.ValuationClient -Dexec.args="$1 $2"

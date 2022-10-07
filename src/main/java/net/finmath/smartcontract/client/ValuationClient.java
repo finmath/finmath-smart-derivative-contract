@@ -23,19 +23,28 @@ import java.util.Base64;
  */
 public class ValuationClient {
 
-	private static final String ENDPOINT_URL = "http://localhost:8080/valuation/margin";
-
 	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 
 	public static void main(String[] args) throws Exception {
-		String authString = null; //"user1:password1";
-		if(args.length != 1) {
-			System.out.println("Please provide username and password via user:password as argument.");
-//			authString = "user1:password1";
-			System.exit(1);
+		String url = "http://localhost:8080";
+		String authString = "user1:password1";
+
+		if(args.length != 2) {
+			System.out.println("Usage: ValuationClient <url> <user>:<password>");
+		}
+
+		if(args.length == 2) {
+			authString = args[1];
 		}
 		else {
-			authString = args[0];
+			System.out.println("Using default credentials " + authString);
+		}
+
+		if(args.length >= 1) {
+			url = args[0];
+		}
+		else {
+			System.out.println("Using default endpoint " + url);
 		}
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -51,18 +60,18 @@ public class ValuationClient {
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
-		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(ENDPOINT_URL), MarginRequest.class);
+		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(url + "/valuation/margin"), MarginRequest.class);
 
 		ResponseEntity<MarginResult> response = new RestTemplate().exchange(requestEntity, MarginResult.class);
 		MarginResult result = response.getBody();
 
 		System.out.println("Received the valuation result:\n" + result);
 
-		printInfoGit(authString);
-		printInfoFinmath(authString);
+		printInfoGit(url, authString);
+		printInfoFinmath(url, authString);
 	}
 
-	private static void printInfoGit(String authString) throws URISyntaxException {
+	private static void printInfoGit(String url, String authString) throws URISyntaxException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -70,7 +79,7 @@ public class ValuationClient {
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
-		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI("http://localhost:8080/info/git"), String.class);
+		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI(url + "/info/git"), String.class);
 
 		ResponseEntity<String> response = new RestTemplate().exchange(requestEntity, String.class);
 
@@ -79,7 +88,7 @@ public class ValuationClient {
 		System.out.println(response.getBody());
 	}
 
-	private static void printInfoFinmath(String authString) throws URISyntaxException {
+	private static void printInfoFinmath(String url, String authString) throws URISyntaxException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -87,7 +96,7 @@ public class ValuationClient {
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
-		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI("http://localhost:8080/info/finmath"), String.class);
+		RequestEntity<String> requestEntity = new RequestEntity<>(null, headers, HttpMethod.GET, new URI(url + "/info/finmath"), String.class);
 
 		ResponseEntity<String> response = new RestTemplate().exchange(requestEntity, String.class);
 
