@@ -7,6 +7,7 @@ import java.util.HashMap;
  * Result of a valuation, margin and transaction details.
  *
  * @author Dietmar Schnabel
+ * @deprecated
  **/
 public class ContractValuation {
 
