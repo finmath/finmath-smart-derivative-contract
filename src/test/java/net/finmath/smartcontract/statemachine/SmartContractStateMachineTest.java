@@ -6,17 +6,15 @@
 
 package net.finmath.smartcontract.statemachine;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import net.finmath.smartcontract.statemachine.SmartContractStateMachine.Events;
+import net.finmath.smartcontract.statemachine.SmartContractStateMachine.States;
 import org.junit.jupiter.api.Test;
 import org.springframework.statemachine.StateMachine;
 
-import net.finmath.smartcontract.statemachine.SmartContractStateMachine.Events;
-import net.finmath.smartcontract.statemachine.SmartContractStateMachine.States;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Christian Fries
- *
  */
 class SmartContractStateMachineTest {
 

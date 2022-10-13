@@ -19,10 +19,10 @@ public class CalibrationSpecProviderSwap implements CalibrationSpecProvider {
 	private final double swapRate;
 
 	/**
-	 * @param tenorLabel The tenor label of the IBOR.
+	 * @param tenorLabel     The tenor label of the IBOR.
 	 * @param frequencyLabel The frequency label for the floating leg (fixed leg is assumed to be annual).
-	 * @param maturityLabel The maturity label (like 1Y, 2Y).
-	 * @param swapRate The par swap rate (use 0.05 for 5%).
+	 * @param maturityLabel  The maturity label (like 1Y, 2Y).
+	 * @param swapRate       The par swap rate (use 0.05 for 5%).
 	 */
 	public CalibrationSpecProviderSwap(final String tenorLabel, final String frequencyLabel, final String maturityLabel, final double swapRate) {
 		this.tenorLabel = tenorLabel;

@@ -1,10 +1,10 @@
 package net.finmath.smartcontract.simulation.curvecalibration;
 
-import java.time.LocalTime;
-import java.util.Arrays;
-
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
+
+import java.time.LocalTime;
+import java.util.Arrays;
 
 /**
  * Contains the result of a calibration adding additional statistics to the calibrated model.

@@ -6,9 +6,9 @@
 
 package net.finmath.smartcontract.oracle;
 
-import java.time.LocalDateTime;
-
 import net.finmath.stochastic.RandomVariable;
+
+import java.time.LocalDateTime;
 
 /**
  * Interface for Oracles providing a valuation random variables at a given time.

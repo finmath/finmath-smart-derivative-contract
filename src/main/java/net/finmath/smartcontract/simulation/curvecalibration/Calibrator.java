@@ -1,19 +1,14 @@
 package net.finmath.smartcontract.simulation.curvecalibration;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
-import net.finmath.marketdata.model.curves.Curve;
-import net.finmath.marketdata.model.curves.CurveInterpolation;
-import net.finmath.marketdata.model.curves.DiscountCurveInterpolation;
-import net.finmath.marketdata.model.curves.ForwardCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
+import net.finmath.marketdata.model.curves.*;
 import net.finmath.optimizer.SolverException;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * An object calibrating models from a stream of calibration spec providers
@@ -28,7 +23,7 @@ public class Calibrator {
 
 	/**
 	 * @param providers Stream providing calibration specs (calibration instruments)
-	 * @param ctx The context providing reference date and accuracy.
+	 * @param ctx       The context providing reference date and accuracy.
 	 * @return If the calibration problem can be solved the optional wraps a AnalyticModel implementation with the calibrated model; if the problem is not solvable with respect to the given accuracy, the optional will be empty.
 	 * @throws CloneNotSupportedException Thrown if model calibration fails.
 	 * @see net.finmath.marketdata.model.AnalyticModel
@@ -44,9 +39,8 @@ public class Calibrator {
 		}
 	}
 
-	private Curve[] getCalibrationCurves(final CalibrationContext ctx)
-	{
-		return new Curve[] { getOisDiscountCurve(ctx), getOisForwardCurve(ctx), get1MForwardCurve(ctx), get3MForwardCurve(ctx), get6MForwardCurve(ctx) };
+	private Curve[] getCalibrationCurves(final CalibrationContext ctx) {
+		return new Curve[]{getOisDiscountCurve(ctx), getOisForwardCurve(ctx), get1MForwardCurve(ctx), get3MForwardCurve(ctx), get6MForwardCurve(ctx)};
 	}
 
 	private DiscountCurveInterpolation getOisDiscountCurve(final CalibrationContext ctx) {

@@ -14,28 +14,28 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
  * @author Christian Fries
  */
 public class CalibrationSpecProviderDeposit implements CalibrationSpecProvider {
-    private final String tenorLabel;
-    private final String maturityLabel;
-    private final double depositRate;
+	private final String tenorLabel;
+	private final String maturityLabel;
+	private final double depositRate;
 
-    /**
-     * @param tenorLabel The tenor label of the IBOR.
-     * @param maturityLabel The maturity label (like 1Y, 2Y).
-     * @param depositRate The fra rate (use 0.05 for 5%).
-     */
-    public CalibrationSpecProviderDeposit(final String tenorLabel, final String maturityLabel, final double depositRate) {
-        this.tenorLabel = tenorLabel;
-        this.maturityLabel = maturityLabel;
-        this.depositRate = depositRate;
-    }
+	/**
+	 * @param tenorLabel    The tenor label of the IBOR.
+	 * @param maturityLabel The maturity label (like 1Y, 2Y).
+	 * @param depositRate   The fra rate (use 0.05 for 5%).
+	 */
+	public CalibrationSpecProviderDeposit(final String tenorLabel, final String maturityLabel, final double depositRate) {
+		this.tenorLabel = tenorLabel;
+		this.maturityLabel = maturityLabel;
+		this.depositRate = depositRate;
+	}
 
-    @Override
-    public CalibratedCurves.CalibrationSpec getCalibrationSpec(final CalibrationContext ctx) {
-        final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "tenor", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
-        final double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
+	@Override
+	public CalibratedCurves.CalibrationSpec getCalibrationSpec(final CalibrationContext ctx) {
+		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "tenor", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		final double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
 
-        final String curveName = String.format("forward-EUR-%1$s", tenorLabel);
+		final String curveName = String.format("forward-EUR-%1$s", tenorLabel);
 
-        return new CalibratedCurves.CalibrationSpec("EUR-" + tenorLabel + maturityLabel, "Deposit", scheduleInterfaceRec, curveName, depositRate, "discount-EUR-OIS", null, "", 0.0, "discount-EUR-OIS", curveName, calibrationTime);
-    }
+		return new CalibratedCurves.CalibrationSpec("EUR-" + tenorLabel + maturityLabel, "Deposit", scheduleInterfaceRec, curveName, depositRate, "discount-EUR-OIS", null, "", 0.0, "discount-EUR-OIS", curveName, calibrationTime);
+	}
 }

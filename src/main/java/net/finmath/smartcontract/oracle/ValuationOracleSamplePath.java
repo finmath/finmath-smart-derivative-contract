@@ -6,13 +6,12 @@
 
 package net.finmath.smartcontract.oracle;
 
-import java.time.LocalDateTime;
+import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
-
-import org.javamoney.moneta.Money;
+import java.time.LocalDateTime;
 
 /**
  * A valuation oracle constructed from a simulation providing a stochastic valuation oracle
@@ -31,7 +30,7 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	 * by extracting a given sample path.
 	 *
 	 * @param stochasticValuationOracle A given stochastic oracle.
-	 * @param path The sample path to extract from the stochastic oracle.
+	 * @param path                      The sample path to extract from the stochastic oracle.
 	 */
 	public ValuationOracleSamplePath(final StochasticValuationOracle stochasticValuationOracle, final int path) {
 		this.stochasticValuationOracle = stochasticValuationOracle;

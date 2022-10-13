@@ -6,16 +6,16 @@
 
 package net.finmath.smartcontract.contract;
 
+import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
+import net.finmath.time.businessdaycalendar.AbstractBusinessdayCalendar;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.finmath.smartcontract.contract.SmartDerivativeContractSchedule.EventTimes;
-import net.finmath.time.businessdaycalendar.AbstractBusinessdayCalendar;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 /**
  * Generates schedules for smart derivative contracts.
@@ -37,7 +37,7 @@ public class SmartDerivativeContractScheduleGenerator {
 		private final LocalDateTime marginCheckTime;
 
 		public EventTimesImpl(final LocalDateTime settementTime, final LocalDateTime accountAccessAllowedStart,
-				final Duration accountAccessAllowedPeriod, final LocalDateTime marginCheckTime) {
+							  final Duration accountAccessAllowedPeriod, final LocalDateTime marginCheckTime) {
 			super();
 			this.settementTime = settementTime;
 			this.accountAccessAllowedStart = accountAccessAllowedStart;
@@ -99,31 +99,31 @@ public class SmartDerivativeContractScheduleGenerator {
 	 * accountAccessEnd is accountAccessAllowedDuration after accountAccessStart,
 	 * marginCheckTime is one minute after accountAccessEnd.
 	 *
-	 * @param calendar A businessday calendar (e.g.: TARGET2)
-	 * @param startDate The start date.
-	 * @param maturity The maturity date.
-	 * @param settlementTime The settlement time.
+	 * @param calendar                     A businessday calendar (e.g.: TARGET2)
+	 * @param startDate                    The start date.
+	 * @param maturity                     The maturity date.
+	 * @param settlementTime               The settlement time.
 	 * @param accountAccessAllowedDuration The duration for account adjustment after settlement.
 	 * @return A new schedule corresponding to the given meta data.
 	 */
 	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(final String calendar, final LocalDate startDate, final LocalDate maturity,
-			final LocalTime settlementTime,
-			final Duration accountAccessAllowedDuration) {
+																			 final LocalTime settlementTime,
+																			 final Duration accountAccessAllowedDuration) {
 
 		return getScheduleForBusinessDays(calendar, startDate, maturity, settlementTime, settlementTime.plusMinutes(1), accountAccessAllowedDuration, settlementTime.plusMinutes(1).plusSeconds(accountAccessAllowedDuration.getSeconds()).plusMinutes(1));
 	}
 
 	public static SmartDerivativeContractSchedule getScheduleForBusinessDays(final String calendar, final LocalDate startDate, final LocalDate maturity,
-			final LocalTime settlementTime,
-			final LocalTime accountAccessAllowedStartTime,
-			final Duration accountAccessAllowedDuration,
-			final LocalTime marginCheckTime) {
+																			 final LocalTime settlementTime,
+																			 final LocalTime accountAccessAllowedStartTime,
+																			 final Duration accountAccessAllowedDuration,
+																			 final LocalTime marginCheckTime) {
 
 		final AbstractBusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 
 		final List<EventTimes> eventTimesList = new ArrayList<EventTimes>();
 		LocalDate settlementDate = startDate;
-		while(!settlementDate.isAfter(maturity)) {
+		while (!settlementDate.isAfter(maturity)) {
 			final SmartDerivativeContractSchedule.EventTimes event = new EventTimesImpl(
 					settlementDate.atTime(settlementTime),
 					settlementDate.atTime(accountAccessAllowedStartTime),

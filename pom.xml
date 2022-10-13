@@ -1,445 +1,622 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<!-- For publishing to sonatype / central maven repo -->
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
+    <!-- For publishing to sonatype / central maven repo -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-	<groupId>net.finmath</groupId>
-	<artifactId>finmath-smart-derivative-contract</artifactId>
-	<version>0.1.7-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <groupId>net.finmath</groupId>
+    <artifactId>finmath-smart-derivative-contract</artifactId>
+    <version>0.1.9-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<name>finmath-smart-derivative-contract</name>
-	<description>
-		Project to support the implementation a of smart derivative contract.
-	</description>
-	<url>http://www.finmath.net/finmath-lib</url>
+    <name>finmath-smart-derivative-contract</name>
+    <description>
+        Project to support the implementation a of smart derivative contract.
+    </description>
+    <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<src.main.java.dir>src/main/java</src.main.java.dir>
-		<src.test.java.dir>src/test/java</src.test.java.dir>
-		<src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
-		<src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
-		<kotlin.version>1.2.0</kotlin.version>
-		<junit.jupiter.version>5.5.2</junit.jupiter.version>
-		<finmath-lib.version>5.0.6</finmath-lib.version>
-		<finmath-lib-plot-extensions.version>0.0.6</finmath-lib-plot-extensions.version>
-		<spring-statemachine.version>2.0.2.RELEASE</spring-statemachine.version>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <src.main.java.dir>src/main/java</src.main.java.dir>
+        <src.test.java.dir>src/test/java</src.test.java.dir>
+        <java.version>17</java.version>
+        <src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
+        <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
+        <kotlin.version>1.7.10</kotlin.version>
+        <!-- dependencies -->
+        <junit.jupiter.version>5.9.0</junit.jupiter.version>
+        <finmath-lib.version>6.0.4</finmath-lib.version>
+        <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
+        <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
+        <spring-boot-starter-web.version>2.7.3</spring-boot-starter-web.version>
+        <spring-boot-starter-security.version>2.7.3</spring-boot-starter-security.version>
+        <spring-boot-starter-test.version>2.7.3</spring-boot-starter-test.version>
+        <spring-statemachine.version>3.2.0</spring-statemachine.version>
+        <jackson-core.version>2.13.3</jackson-core.version>
+        <jackson-databind.version>2.13.3</jackson-databind.version>
+        <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <jackson-dataformat-csv.version>2.13.3</jackson-dataformat-csv.version>
+        <!-- maven plugins -->
+        <maven.compiler-plugin.version>3.8.1</maven.compiler-plugin.version>
+        <maven.surefire-plugin.version>3.0.0-M5</maven.surefire-plugin.version>
+        <maven.surefire-report-plugin.version>3.0.0-M5</maven.surefire-report-plugin.version>
+        <maven.javadoc-plugin.version>3.3.2</maven.javadoc-plugin.version>
+        <maven.jar-plugin.version>3.2.0</maven.jar-plugin.version>
+        <maven.source-plugin.version>3.2.1</maven.source-plugin.version>
+        <maven.site-plugin.version>3.12.1</maven.site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
+        <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+        <maven-bnd-plugin.version>5.3.0</maven-bnd-plugin.version>
+    </properties>
 
-	<developers>
-		<developer>
-			<id>fries</id>
-			<name>Christian Fries</name>
-			<email>email@christian-fries.de</email>
-			<url>http://www.christian-fries.de</url>
-			<timezone>1</timezone>
-		</developer>
-		<developer>
-			<id>pekola</id>
-			<name>Peter Kohl-Landgraf</name>
-			<timezone>1</timezone>
-		</developer>
-		<developer>
-			<id>delre</id>
-			<name>Luca Del Re</name>
-			<timezone>1</timezone>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>fries</id>
+            <name>Christian Fries</name>
+            <email>email@christian-fries.de</email>
+            <url>http://www.christian-fries.de</url>
+            <timezone>1</timezone>
+        </developer>
+        <developer>
+            <id>pekola</id>
+            <name>Peter Kohl-Landgraf</name>
+            <timezone>1</timezone>
+        </developer>
+        <developer>
+            <id>delre</id>
+            <name>Luca Del Re</name>
+            <timezone>1</timezone>
+        </developer>
+    </developers>
 
-	<licenses>
-		<license>
-			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<repositories>
-		<repository>
-	     <id>jzy3d-releases</id>
-	     <name>Jzy3d Releases</name>
-	     <url>http://maven.jzy3d.org/releases</url>
-	  </repository>
-		<repository>
-			<id>maven-central</id>
-			<name>Maven Central</name>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</repository>
-		<repository>
-			<id>spring-plugins</id>
-			<name>Spring Plugins Repository</name>
-			<url>http://repo.spring.io/plugins-release/</url>
-		</repository>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>corda</id>
-			<url>https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases</url>
-		</repository>
-	</repositories>
+    <dependencies>
 
-	<dependencies>
-		<!-- Java FX -->
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-controls</artifactId>
-			<version>11.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-swing</artifactId>
-			<version>11.0.2</version>
-		</dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib</artifactId>
-			<version>${kotlin.version}</version>
-		</dependency>
+        <!-- finnmath lib -->
+        <dependency>
+            <groupId>net.finmath</groupId>
+            <artifactId>finmath-lib</artifactId>
+            <version>${finmath-lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.finmath</groupId>
+            <artifactId>finmath-lib-plot-extensions</artifactId>
+            <version>${finmath-lib-plot-extensions.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.finmath</groupId>
+                    <artifactId>finmath-lib</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<!-- finnmath lib -->
-		<dependency>
-			<groupId>net.finmath</groupId>
-			<artifactId>finmath-lib</artifactId>
-			<version>${finmath-lib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.finmath</groupId>
-			<artifactId>finmath-lib-plot-extensions</artifactId>
-			<version>${finmath-lib-plot-extensions.version}</version>
-		</dependency>
+        <!-- apache commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-commons-lang3.version}</version>
+        </dependency>
 
-		<!--Spring State Machine -->
-		<dependency>
-			<groupId>org.springframework.statemachine</groupId>
-			<artifactId>spring-statemachine-autoconfigure</artifactId>
-			<version>${spring-statemachine.version}</version>
-		</dependency>
+        <!--Spring State Machine -->
+        <dependency>
+            <groupId>org.springframework.statemachine</groupId>
+            <artifactId>spring-statemachine-autoconfigure</artifactId>
+            <version>${spring-statemachine.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.statemachine</groupId>
-			<artifactId>spring-statemachine-test</artifactId>
-			<version>${spring-statemachine.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.statemachine</groupId>
+            <artifactId>spring-statemachine-test</artifactId>
+            <version>${spring-statemachine.version}</version>
+        </dependency>
 
-		<!-- Java money -->
-		<dependency>
-			<groupId>org.javamoney</groupId>
-			<artifactId>moneta</artifactId>
-			<version>1.1</version>
-		</dependency>
+        <!-- Java money -->
+        <dependency>
+            <groupId>org.javamoney</groupId>
+            <artifactId>moneta</artifactId>
+            <version>1.1</version>
+        </dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>${junit.jupiter.version}</version>
-			<scope>test</scope>
-		</dependency>
+        <!-- JFree -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.19</version>
-		</dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.24</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.8.6</version>
-		</dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>26.0-jre</version>
-		</dependency>
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+            <version>${jackson-dataformat-csv.version}</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-csv</artifactId>
-			<version>2.11.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.11.1</version>
-		</dependency>
-		
-		<!-- Spring boot -->
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>2.0.9.RELEASE</version>
-		</dependency>
+        <!-- Spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot-starter-web.version}</version>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot-starter-test.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-	<build>
-		<defaultGoal>clean install javadoc:javadoc</defaultGoal>
-		<finalName>${project.artifactId}-${project.version}</finalName>
-		<sourceDirectory>${src.main.java.dir}</sourceDirectory>
-		<testSourceDirectory>${src.test.java.dir}</testSourceDirectory>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-					<compilerVersion>11</compilerVersion>
-				</configuration>
-			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <!-- Basic Auth -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot-starter-security.version}</version>
+        </dependency>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-					<doctitle>${project.name} (${project.version}) documentation</doctitle>
-					<stylesheetfile>stylesheet.css</stylesheetfile>
-					<docfilessubdirs>true</docfilessubdirs>
-					<header>
-			   			<![CDATA[
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+
+        <!-- Open API -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <defaultGoal>clean install javadoc:javadoc</defaultGoal>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <sourceDirectory>${src.main.java.dir}</sourceDirectory>
+        <testSourceDirectory>${src.test.java.dir}</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerVersion>${java.version}</compilerVersion>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                            <version>2.7.2</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <doctitle>${project.name} (${project.version}) documentation</doctitle>
+                    <stylesheetfile>stylesheet.css</stylesheetfile>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <header>
+                        <![CDATA[
 						<span class="logo-white">finMath</span><span class="logo-red"> lib</span> documentation
 						<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 			   			]]>
-					</header>
-					<footer>
-			   			<![CDATA[
-						<i>Copyright &copy; 2018 finmath.net.</i>
+                    </header>
+                    <footer>
+                        <![CDATA[
+						<i>Copyright &copy; 2018-2022 finmath.net.</i>
 			   			]]>
-					</footer>
-					<tags>
-						<tag>
-							<name>TODO</name>
-							<placement>a</placement>
-							<head>To dos:</head>
-						</tag>
-						<tag>
-							<name>date</name>
-							<placement>a</placement>
-							<head>Date:</head>
-						</tag>
-					</tags>
-					<links>
-						<link>http://commons.apache.org/proper/commons-lang/javadocs/api-release</link>
-						<link>http://commons.apache.org/proper/commons-math/javadocs/api-3.3</link>
-					</links>
-					<detectLinks>false</detectLinks>
-					<additionalOptions>
-						<additionalOption>--allow-script-in-comments</additionalOption>
-					</additionalOptions>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.1</version>
-				<configuration>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-					<argLine>-mx6G</argLine>
-				</configuration>
-			</plugin>
+                    </footer>
+                    <tags>
+                        <tag>
+                            <name>TODO</name>
+                            <placement>a</placement>
+                            <head>To dos:</head>
+                        </tag>
+                        <tag>
+                            <name>date</name>
+                            <placement>a</placement>
+                            <head>Date:</head>
+                        </tag>
+                    </tags>
+                    <links>
+                    </links>
+                    <detectLinks>false</detectLinks>
+                    <additionalOptions>
+                        <additionalOption>--allow-script-in-comments</additionalOption>
+                    </additionalOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED</argLine>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<configLocation>finmath-checkstyle.xml</configLocation>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <configLocation>finmath-checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.3</version>
-				<configuration>
-					<releaseProfiles>java-8</releaseProfiles>
-				</configuration>
-				<executions>
-					<execution>
-						<id>java-6</id>
-						<configuration>
-							<releaseProfiles>java-6</releaseProfiles>
-						</configuration>
-					</execution>
-					<execution>
-						<id>java-8</id>
-						<configuration>
-							<releaseProfiles>java-8</releaseProfiles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.7.1</version>
-				<dependencies>
-					<dependency>
-						<!-- add support for ssh/scp -->
-						<groupId>org.apache.maven.wagon</groupId>
-						<artifactId>wagon-ssh</artifactId>
-						<version>1.0</version>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.maven.doxia</groupId>
-						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.7</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-		</plugins>
-	</build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
 
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/finmath/finmath-lib/issues</url>
-	</issueManagement>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.3</version>
+                <configuration>
+                    <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
+                    <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <rules><dependencyConvergence /></rules>
+                    <fail>false</fail>
+                </configuration>
+            </plugin>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-					<doctitle>${project.name} (${project.version}) documentation</doctitle>
-					<stylesheetfile>stylesheet.css</stylesheetfile>
-					<docfilessubdirs>true</docfilessubdirs>
-					<excludePackageNames>net.finmath.montecarlo.automaticdifferentiation.backward.alternative:net.finmath.rootfinder</excludePackageNames>
-					<header>
-			   			<![CDATA[
-						<span class="logo-white">finMath</span><span class="logo-red"> lib</span> documentation
-						<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
-			   			]]>
-					</header>
-					<footer>
-			   			<![CDATA[
-						<i>Copyright &copy; 2018 finmath.net.</i>
-			   			]]>
-					</footer>
-					<tags>
-						<tag>
-							<name>TODO</name>
-							<placement>a</placement>
-							<head>To dos:</head>
-						</tag>
-						<tag>
-							<name>date</name>
-							<placement>a</placement>
-							<head>Date:</head>
-						</tag>
-					</tags>
-					<links>
-						<link>http://commons.apache.org/proper/commons-math/javadocs/api-3.2/</link>
-					</links>
-					<detectLinks>false</detectLinks>
-					<additionalOptions>
-						<additionalOption>--allow-script-in-comments</additionalOption>
-					</additionalOptions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<!-- <report>index</report> -->
-							<report>summary</report>
-							<report>scm</report>
-							<!-- <report>distribution-management</report> -->
-							<report>dependency-info</report>
-							<report>dependencies</report>
-							<report>issue-tracking</report>
-							<report>cim</report>
-							<report>license</report>
-							<report>project-team</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.20.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.openclover</groupId>
-				<artifactId>clover-maven-plugin</artifactId>
-				<version>4.2.0</version>
-				<configuration>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<configLocation>finmath-checkstyle.xml</configLocation>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>checkstyle</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
+            <!-- Open API -->
+            <!-- Maven Dependency Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includes>**/*.yml</includes>
+                            <outputDirectory>${project.build.directory}/openapi</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- OpenApi Generator Plugin -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>6.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/api.yml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <configOptions>
+                                <sourceFolder>src/generated/java/main</sourceFolder>
+                                <sourceFolder>src/main/gen</sourceFolder>
+                                <dateLibrary>java8</dateLibrary>
+                                <delegatePattern>true</delegatePattern>
+                                <interfaceOnly>true</interfaceOnly>
+                                <basePackage>net.finmath.smartcontract</basePackage>
+                                <modelPackage>net.finmath.smartcontract.model</modelPackage>
+                                <apiPackage>net.finmath.smartcontract.api</apiPackage>
+                                <configPackage>net.finmath.smartcontract.config</configPackage>
+                            </configOptions>
+                            <generateApiTests>true</generateApiTests>
+                            <generateModelTests>true</generateModelTests>
+                            <supportingFilesToGenerate>
+                                ApiUtil.java
+                            </supportingFilesToGenerate>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/main/java</source>
+                                <source>target/generated-sources/annotations</source>
+                                <source>target/generated-sources/openapi/src/main/gen</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-	<distributionManagement>
+            <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
+                    </to>
+                    <container>
+                        <mainClass>
+                            net.finmath.smartcontract.service.Application
+                        </mainClass>
+                    </container>
+                </configuration>
+            </plugin>
 
-		<!-- maven repositories inherited from parent pom -->
+            <!-- Publish the site to GitHub gh-pages: use mvn site site:deploy site-deploy -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven.site-plugin.version}</version>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>stage-for-scm-publish</id>
+                        <phase>post-site</phase>
+                        <goals>
+                            <goal>stage</goal>
+                        </goals>
+                        <configuration>
+                            <skipDeploy>false</skipDeploy><!-- MSITE-652: configuration won't be necessary with m-site-p 3.2 -->
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <!-- add support for ssh/scp -->
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>3.3.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-sitetools</artifactId>
+                        <version>1.11.1</version>
+                        <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-skin-model</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <version>${maven-scm-publish-plugin.version}</version>
+                <configuration>
+                    <scmBranch>gh-pages</scmBranch>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>scm-publish</id>
+                        <phase>site-deploy</phase>
+                        <goals>
+                            <goal>publish-scm</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-		<site>
-			<id>finmath-site</id>
-			<url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>
-		</site>
-	</distributionManagement>
+            <!--git-commit-id-maven-plugin - Generates a git.properties file with Git info -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>5.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <prefix>git</prefix>
+                    <verbose>false</verbose>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <format>java</format>
+                    <gitDescribe>
+                        <skip>false</skip>
+                        <always>false</always>
+                        <dirty>-dirty</dirty>
+                    </gitDescribe>
+                </configuration>
+                </plugin>
+        </plugins>
+    </build>
 
-	<scm>
-		<url>https://github.com/finmath/finmath-smart-derivative-contract</url>
-		<connection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</connection>
-		<developerConnection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
+    <profiles>
+        <profile>
+            <id>no-tests</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/finmath/finmath-lib/issues</url>
+    </issueManagement>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc-plugin.version}</version>
+                <reportSets>
+                    <reportSet><!-- by default, id = "default" -->
+                        <reports><!-- select non-aggregate reports -->
+                            <report>javadoc</report>
+                            <!-- <report>test-javadoc</report> -->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <report>summary</report>
+                            <report>scm</report>
+                            <report>distribution-management</report>
+                            <report>dependency-info</report>
+                            <report>dependencies</report>
+                            <report>issue-management</report>
+                            <report>ci-management</report>
+                            <report>licenses</report>
+                            <report>team</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <!--site for mvn site -->
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
+        </site>
+<!--        <site>-->
+<!--            <id>finmath-site</id>-->
+<!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
+<!--        </site>-->
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/finmath/finmath-smart-derivative-contract</url>
+        <connection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</connection>
+        <developerConnection>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 </project>

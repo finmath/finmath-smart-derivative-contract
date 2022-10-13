@@ -6,9 +6,6 @@
 
 package net.finmath.smartcontract.oracle.simulated;
 
-import java.time.LocalDateTime;
-import java.util.logging.Logger;
-
 import net.finmath.exception.CalculationException;
 import net.finmath.montecarlo.BrownianMotionFromMersenneRandomNumbers;
 import net.finmath.montecarlo.assetderivativevaluation.MonteCarloAssetModel;
@@ -19,6 +16,9 @@ import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
+
+import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 /**
  * A dummy oracle which generates values using a geometric Brownian motion.
@@ -40,9 +40,9 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 
 	/**
 	 * A dummy oracle which generates values using a geometric Brownian motion.
-	 *
+	 * <p>
 	 * Using default parameters.
-	 *
+	 * <p>
 	 * Caution: The object is initialized with LocalDateTime.now(). This will result in different
 	 * Oracles each time the object is instantiated.
 	 */
@@ -52,7 +52,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 
 	/**
 	 * A dummy oracle which generates values using a geometric Brownian motion.
-	 *
+	 * <p>
 	 * Using a given initial time and default parameters.
 	 *
 	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
@@ -68,18 +68,18 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 
 	/**
 	 * A dummy oracle which generates values using a geometric Brownian motion.
-	 *
+	 * <p>
 	 * Using a given initial time and default parameters.
 	 *
-	 * @param initialTime The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
-	 * @param initialValue The initial value.
-	 * @param timeHorizon The time horizon in ACT/365 from initialTime.
-	 * @param riskFreeRate The drift.
-	 * @param volatility The volatility.
+	 * @param initialTime   The date corresponding to the initial time of the oracle. Valuation prior this time is not provided.
+	 * @param initialValue  The initial value.
+	 * @param timeHorizon   The time horizon in ACT/365 from initialTime.
+	 * @param riskFreeRate  The drift.
+	 * @param volatility    The volatility.
 	 * @param numberOfPaths The number of simulation path to generate.
 	 */
 	public GeometricBrownianMotionOracle(final LocalDateTime initialTime, final double initialValue, final double timeHorizon, final double riskFreeRate, final double volatility, final int numberOfPaths) {
-		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0/365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
+		this(new TimeDiscretizationFromArray(0.0, timeHorizon, 1.0 / 365.0, TimeDiscretizationFromArray.ShortPeriodLocation.SHORT_PERIOD_AT_END),
 				initialTime,
 				initialValue,
 				riskFreeRate,
@@ -88,7 +88,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	}
 
 	public GeometricBrownianMotionOracle(final TimeDiscretization timeDiscretization, final LocalDateTime initialTime,
-			final double initialValue, final double riskFreeRate, final double volatility, final int numberOfPaths) {
+										 final double initialValue, final double riskFreeRate, final double volatility, final int numberOfPaths) {
 		super();
 		this.timeDiscretization = timeDiscretization;
 		this.initialTime = initialTime;
@@ -109,7 +109,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 	@Override
 	public RandomVariable getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
 		synchronized (simulationLazyInitLock) {
-			if(simulation == null) {
+			if (simulation == null) {
 				init();
 			}
 		}
@@ -122,8 +122,7 @@ public class GeometricBrownianMotionOracle implements StochasticValuationOracle 
 		RandomVariable value = null;
 		try {
 			value = simulation.getAssetValue(timeOfLastFixing, 0);
-		}
-		catch(final CalculationException e) {
+		} catch (final CalculationException e) {
 			Logger.getLogger("net.finmath.smartcontract").warning("Oracle valuation failed with " + e.getCause());
 		}
 

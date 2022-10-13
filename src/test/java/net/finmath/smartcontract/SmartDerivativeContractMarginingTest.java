@@ -6,19 +6,17 @@
 
 package net.finmath.smartcontract;
 
-import java.time.LocalDateTime;
-
-import org.junit.Test;
-
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.StochasticValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracle;
 import net.finmath.smartcontract.oracle.ValuationOracleSamplePath;
 import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 /**
  * @author Christian Fries
- *
  */
 public class SmartDerivativeContractMarginingTest {
 
@@ -35,7 +33,7 @@ public class SmartDerivativeContractMarginingTest {
 		final SmartDerivativeContractSettlementOracle smartDerivativeContractMargening = new SmartDerivativeContractSettlementOracle(valuationOracle);
 
 		LocalDateTime previousTime = initialTime;
-		for(LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
+		for (LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
 			final double value = smartDerivativeContractMargening.getMargin(previousTime, time);
 			System.out.println(time.toLocalDate() + "\t" + value);

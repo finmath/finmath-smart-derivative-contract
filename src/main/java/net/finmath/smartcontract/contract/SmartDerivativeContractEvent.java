@@ -34,18 +34,21 @@ public class SmartDerivativeContractEvent {
 		this.eventTime = eventTime;
 		this.eventData = eventData;
 	}
+
 	/**
 	 * @return the eventType
 	 */
 	public EventsTypes getEventType() {
 		return eventType;
 	}
+
 	/**
 	 * @return the eventTime
 	 */
 	public LocalDateTime getEventTime() {
 		return eventTime;
 	}
+
 	/**
 	 * @return the eventData
 	 */

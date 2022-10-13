@@ -1,0 +1,9 @@
+data:
+  sdc:
+    users:
+      - username: user1
+        password: password1
+        role: USER_ONE
+      - username: user2
+        password: password2
+        role: USER_TWO
