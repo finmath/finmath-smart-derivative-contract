@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 /*------------------------------------------- DESCRIPTION ---------------------------------------------------------------------------------------*/
 
@@ -22,7 +22,6 @@ pragma solidity >=0.7.0 <0.9.0;
 
  */
 interface ISDC {
-
     /*------------------------------------------- EVENTS ---------------------------------------------------------------------------------------*/
 
     /**
@@ -35,7 +34,11 @@ interface ISDC {
      * TradeDaten sollten vielleicht eher im Event mitgeliefert werden, damit Counterparty B sich sicher sein kann. Aber: privacy?
      *
      */
-    event TradeInceptedEvent(address initiator, uint256 tradeId, string tradeData);
+    event TradeInceptedEvent(
+        address initiator,
+        string tradeId,
+        string tradeData
+    );
 
     /**
      * @dev Emitted when a new trade is confirmed by the opposite Counterparty B
@@ -45,32 +48,38 @@ interface ISDC {
      * Wer lauscht auf diesen event und was passiert dann? (siehe unten bei initiateSettlement...)
      *
      */
-    event TradeConfirmedEvent(address confirmer, uint256 tradeId);
+    event TradeConfirmedEvent(address confirmer, string tradeId);
 
     /**
      * @dev Emitted when a new trade is set to active i.e. balance check is succesfull
      */
-    event TradeActivatedEvent(uint256 tradeId);
+    event TradeActivatedEvent(string tradeId);
 
     /**
      * @dev global flag
      */
-    event TradeTerminatedEvent(uint256 tradeId);
+    event TradeTerminatedEvent(string tradeId);
 
     /**
      * @dev
      */
-    event TerminateByMaturityEvent(uint256 tradeId);
+    event TerminateByMaturityEvent(string tradeId);
 
     /**
      * @dev Termination due to unsufficient margin balance
      */
-    event TerminationDueToMarginInsufficientEvent(uint256 tradeId, address causingParty);
+    event TerminationDueToMarginInsufficientEvent(
+        address causingParty,
+        uint256 balance
+    );
 
     /*
      * dev Termination due to exceeded margin amount
      */
-    event TerminationDueToMarginExceedanceEvent(uint256 tradeId, address causingParty);
+    event TerminationDueToMarginExceedanceEvent(
+        address causingParty,
+        uint256 balance
+    );
 
     /**
      * @dev Emitted when a valuation is requested
@@ -80,78 +89,85 @@ interface ISDC {
     /**
      * @dev Emitted when a settlent is processed
      */
-    event SettlementCompletedEvent(uint256 tradeId);
-
-    /**
-     * @dev Emitted when a payment request is triggered, after settlement is processed
-     */
-    event PaymentRequest(address debitorAddress, address creditorAddress, uint256 amount);
+    event SettlementCompletedEvent();
 
     /**
      * @dev Emitted to unlock a margin account
      */
-    event MarginAccountUnlockRequestEvent(address cpAddress);
+    event MarginAccountUnlockRequestEvent(address _address);
 
     /**
      * @dev Emitted to lock a margin account
      */
-    event MarginAccountLockRequestEvent(address cpAddress);
+    event MarginAccountLockRequestEvent(address _address);
 
     /**
      * @dev Emitted when margin balance was updated
      * TODO: Define parameters per counterparty?
      */
-    event MarginAccountLockedEvent(bool success);
+    event MarginAccountLockedEvent();
 
     /**
      * @dev Emitted when update margin requirements was requested
      */
-    event MarginRequirementUpdateRequestEvent(address forAddress, uint256 newMarginBuffer, uint256 newTerminationFee);
-
+    event MarginRequirementUpdateRequestEvent();
 
     /**
      * @dev Emitted when margin requirement was updated
      */
-    event MarginRequirementUpdatedEvent(address forAddress, uint256 newMarginBuffer, uint256 newTerminationFee);
+    event MarginRequirementUpdatedEvent();
 
     /**
      * @dev Emitted when a counterparty request an early termination
      */
-    event TerminationRequestEvent(address cpAddress, uint256 tradeId);
+    event TerminationRequestEvent(address cpAddress, string tradeId);
 
     /**
      * @dev Emitted when early termination request is confirmet
      */
-    event TerminationConfirmedEvent(address cpAddress, uint256 tradeId);
-
+    event TerminationConfirmedEvent(address cpAddress, string tradeId);
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 
     /**
      * @dev Handles trade inception, stores trade data and terminationFee and marginBuffer amounts
      * emits a {TradeInceptionEvent}
-     *
-     * TODO DZ/UI:
-     * Kommt trade_data aus einem Oracle oder ist Counterparty A selbst dafür verantwortlich, bei der Trade-Initialisierung trade_data mitzugeben?
-     * Erfolgt der Aufruf z. B. über web3.js?
-     *
-     * Bestätigung des Trades erfolgt über die Counterparty B durch Aufruf von confirmTrade (siehe unten...). Dabei muss der Trade identifiziert werden...
-     * Wie kann der richtige trade identifiziert werden, woher kommt die trade_id? Lässt sich der Transaction Hash aus inceptTrade als id verwenden? Müsste über event emitted werden und dann global im Contract verfügbar sein.
-     * Zähler keine gute Idee?
-
-
-     * Alternative: incept von oracle durch unabhängigen service und beide cps confirmen. wo werden die trade-Daten gespeichert?
      */
-    function requestTradeInitiation(string memory tradeData, address addressValuationView, uint256 marginBuffer, uint256 terminationFee) external;
+    function inceptTrade(string memory _tradeData) external;
 
     /**
      * @dev Puts the state to trade confirmed which triggers balance check
      * confirmed by other counterparty
      * emits a {TradeConfirmEvent}
      */
-    function confirmTradeInitiation(string memory _tradeData, address addressValuationView, uint256 marginBuffer, uint256 terminationFee) external;
+    function confirmTrade(string memory _tradeData) external;
 
-    function marginAccountUnlockRequest(uint256 tradeId) external;
+    function marginAccountUnlockRequest() external;
+
+    /**
+     * @dev Called from outside to trigger a margin lock
+     * emits a {MarginAccountLockRequestEvent}
+     * Aufgerufen, wenn adjustment-Zeitraum vorbei
+     */
+    function initiateMarginAccountCheck() external;
+
+    /**
+     * @dev Called from outside to update on-chain balances
+     * callback for initiateMarginLock() event handler
+     * emits a {MarginAccountLockedEvent}
+     * emits a {TerminationDueToMarginInsufficientEvent}
+     *
+     */
+
+    /**
+     *
+     *
+     */
+
+    function performMarginAccountCheck(
+        uint256 balanceParty1,
+        uint256 balanceParty2
+    ) external;
 
     /**
      * @dev Called from outside to trigger an external valuation and according settlement process
@@ -184,50 +200,27 @@ interface ISDC {
      */
     function performSettlement(int256 settlementAmount) external;
 
-    /**
-     * @dev Called from outside to trigger a margin lock
-     * emits a {MarginAccountLockRequestEvent}
-     * Aufgerufen, wenn adjustment-Zeitraum vorbei
-     */
-    function initiateMarginLock() external;
-
-    /**
-     * @dev Called from outside to update on-chain balances
-     * callback for initiateMarginLock() event handler
-     * emits a {MarginAccountLockedEvent}
-     * emits a {TerminationDueToMarginInsufficientEvent}
-     *
-     */
-    function performMarginLockAt(address _party1, uint256 _balanceParty1, address _party2, uint256 balanceParty2) external;
-
     /*
      * emits {MarginAmountUpdateRequestEvent}
      */
-    function requestMarginRequirementUpdate(address contractAddress, uint256 newMarginBuffer, uint256 newTerminationFee) external;
-
+    function initiateMarginReqirementUpdate() external;
 
     /*
      * emits {MarginUpdatedEvent(bool)} fail if locked
      */
-    function confirmMarginRequirementUpdate (address contractAddress, uint256 newMarginBuffer, uint256 newTerminationFee) external;
-
+    function performMarginRequirementUpdate(address _address, uint256 amount)
+        external;
 
     /**
      * @dev Called from a counterparty to request a mutual termination
      * Called by both counterparties, if both agree to terminate the trade prematurely with termination fees will be transferred back to each counterparty (emergency exit)
      * TODO: What process will it trigger internally
      */
-    function requestTradeTermination(uint256 tradeId) external;
+    function requestTradeTermination(string memory tradeId) external;
 
     /**
      * @dev Called from a counterparty to confirm a mutual termination, which will be triggered after next settlement
      *
      */
-    function confirmTradeTermination(uint256 tradeId) external;
-
-    /**
-     * @dev Called when payment was completed
-     */
-    function setTransferCompleted() external;
-
+    function confirmTradeTermination(string memory tradeId) external;
 }
