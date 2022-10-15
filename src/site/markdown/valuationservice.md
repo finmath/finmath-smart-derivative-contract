@@ -46,6 +46,55 @@ Run
 where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
 and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
 
+### Running the service on https 8443
+
+In the above application.yml add
+
+```
+server:
+  ssl:
+    key-store: /config/keyfile.p12
+    key-store-password: password
+    key-store-type: pkcs12
+  port: 8443
+```
+
+The place the keyfile (here `keyfile.p12` at the stated location (here `/config` (the folder mounted by our Docker commands).
+
+#### Generating a certificate
+
+```
+keytool -genkeypair -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore config/finmath.p12 -validity 365 -alias finmath -ext "SAN=IP:127.0.0.1" -dname "CN=127.0.0.1"
+```
+*Note:* change the file (keystore), the validity, the alias, and the IP/domain name as required
+
+For choosing CN an SAN see https://stackoverflow.com/questions/5935369/how-do-common-names-cn-and-subject-alternative-names-san-work-together
+
+#### Get the corresponding .cer file
+
+```
+openssl pkcs12 -in config/finmath.p12 -clcerts -nokeys -out config/finmath.cer
+keytool -printcert -file config/finmath.cer
+```
+*Note:* change the files as required
+
+#### Import the .cer file into the truststore (cacert)
+
+```
+keytool -import -file config/finmath.cer -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias finmath
+```
+*Note:* change the files and the alias as required
+
+#### Delete an alias from the truststrore
+
+```
+keytool -delete -alias mykey -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit
+```
+
+#### Test the service with https
+
+
+
 ## Enpoints
 
 The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
