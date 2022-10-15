@@ -1,4 +1,11 @@
 <smartderivativecontract>
+    <valuation>
+        <artefact>
+            <groupId>net.finmath</groupId>
+            <artifactId>finmath-smart-derivative-contract</artifactId>
+            <version>0.1.8</version>
+        </artefact>
+    </valuation>
     <parties>
         <party>
             <name>Counterparty 1</name>

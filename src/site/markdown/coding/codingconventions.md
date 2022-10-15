@@ -111,7 +111,7 @@ The code is written in Java. That is, it avoids language extensions like *Lombok
 
 ### Java Modules
 
-Starting with version 5.x the library will export Java 9 modules.
+The library will export Java 9 modules.
 
 
 ## Language

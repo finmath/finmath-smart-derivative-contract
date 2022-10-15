@@ -5,14 +5,16 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
+import net.finmath.smartcontract.plots.Plot2DFX;
 import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
 import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
@@ -83,15 +85,15 @@ public class VisualiserSDC {
 		final VisualiserSDC sdcVisual = new VisualiserSDC();
 		sdcVisual.start();
 
+		System.out.println("Simulation will start in 5 seconds.");
+
 		Double marketValue = 0.0;
 		final double marginBuffer = 120000;
-		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0, 0);
-		System.out.println("Simulation will start in 5 seconds.");
-		Thread.sleep(5000);
+		sdcVisual.updateWithValue(scenarioDates.get(0), 0.0, 0, 0.0, 0, 5000);
 		for (int i = 0; i < scenarioDates.size(); i++) {
 			long sleepMillis1;
 			long sleepMillis2;
-			if(i < 20)	{
+			if(i < 11)	{
 				sleepMillis1 = 1000;
 				sleepMillis2 = 1000;
 			}
@@ -103,7 +105,7 @@ public class VisualiserSDC {
 			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;  // Alternative: use some random values, e.g. 90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;
-			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, marketValue, marginCall, sleepMillis1);
+			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i /* Date index */, i > 0 ? marketValue : null, marginCall, sleepMillis1);
 			// The null will result in no update for the market value plot
 			sdcVisual.updateWithValue(scenarioDates.get(i), marginBuffer, i, null, 0, sleepMillis2);
 		}
@@ -114,9 +116,9 @@ public class VisualiserSDC {
 		seriesMarketValues = new ArrayList<>();
 
 		plotMarginAccounts = new Plot2DBarFX(null,
-				"Smart Contract Accounts (settlement)",
-				"Account",
-				"Value",
+				"Smart Contract Balances",
+				"Counterparty",
+				"Balance",
 				new DecimalFormat("####.00"),
 				0.0,
 				3.0E5,
@@ -147,24 +149,25 @@ public class VisualiserSDC {
 
 						final FlowPane pane = new FlowPane();
 						pane.getChildren().addAll(plotMarginAccounts.get(), plotMarketValue.get());
-						pane.setPrefSize(1600, 600);
+//						pane.setPrefSize(1000, 400);
+						pane.setAlignment(Pos.TOP_LEFT);
+
+						final Label title = new Label("Smart Derivative Contract Mechanics");
+						title.setFont(new Font("Helvetica", 48));
+						title.setPadding(new javafx.geometry.Insets(0, 0, 32, 0));
+						final VBox root = new VBox();
+						root.setAlignment(Pos.TOP_CENTER);
+						root.getChildren().addAll(title, pane);
 
 						final Scale scale = new Scale();
-						scale.setX(1.8);
-						scale.setY(1.8);
+						scale.setX(1.92);
+						scale.setY(1.92);
 						scale.setPivotX(0);
 						scale.setPivotY(0);
 						pane.getTransforms().add(scale);
 
-						// Centering
-						final HBox hBox = new HBox(pane);
-						hBox.setAlignment(Pos.CENTER);
-
-						final VBox root = new VBox(pane);
-						root.setAlignment(Pos.CENTER);
-
 						final Scene scene = new Scene(root, 1920, 1080);
-						scene.getStylesheets().add("barchart.css");
+						scene.getStylesheets().add(VisualiserSDC.class.getResource("barchart.css").toExternalForm());
 						fxPanel.setScene(scene);
 					}
 				});
@@ -174,16 +177,16 @@ public class VisualiserSDC {
 
 	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment, long sleepMillis) throws InterruptedException {
 		final List<Category2D> marginBase = new ArrayList<>();
-		marginBase.add(new Category2D("We", base + Math.min(0, +increment)));
-		marginBase.add(new Category2D("Counterpart", base + Math.min(0, -increment)));
+		marginBase.add(new Category2D("Counterparty 1", base + Math.min(0, +increment)));
+		marginBase.add(new Category2D("Counterparty 2", base + Math.min(0, -increment)));
 
 		final List<Category2D> marginRemoved = new ArrayList<>();
-		marginRemoved.add(new Category2D("We", -Math.min(0, +increment)));
-		marginRemoved.add(new Category2D("Counterpart", -Math.min(0, -increment)));
+		marginRemoved.add(new Category2D("Counterparty 1", -Math.min(0, +increment)));
+		marginRemoved.add(new Category2D("Counterparty 2", -Math.min(0, -increment)));
 
 		final List<Category2D> marginExcessed = new ArrayList<>();
-		marginExcessed.add(new Category2D("We", Math.max(0, +increment)));
-		marginExcessed.add(new Category2D("Counterpart", Math.max(0, -increment)));
+		marginExcessed.add(new Category2D("Counterparty 1", Math.max(0, +increment)));
+		marginExcessed.add(new Category2D("Counterparty 2", Math.max(0, -increment)));
 
 		final List<PlotableCategories> plotables = new ArrayList<>();
 		plotables.add(new PlotableCategories() {
@@ -195,7 +198,7 @@ public class VisualiserSDC {
 
 			@Override
 			public GraphStyle getStyle() {
-				return new GraphStyle(new Ellipse2D.Float(-1.0f, -1.0f, 2.0f, 2.0f), new BasicStroke(1.0f), new Color(0.0f, 0.0f, 1.0f));
+				return new GraphStyle(new Ellipse2D.Float(-1.0f, -1.0f, 2.0f, 2.0f), new BasicStroke(1.0f), new Color(0.1f, 0.1f, 0.1f));
 			}
 
 			@Override
@@ -229,10 +232,7 @@ public class VisualiserSDC {
 			}
 
 			@Override
-			public GraphStyle getStyle() {
-				return null;
-				//		return new GraphStyle(new Ellipse2D.Float(-1.0f,-1.0f,2.0f,2.0f), new BasicStroke(1.0f), new Color(0.0f, 0.0f, 1.0f));
-			}
+			public GraphStyle getStyle() { return null; }
 
 			@Override
 			public List<Category2D> getSeries() {
@@ -253,7 +253,7 @@ public class VisualiserSDC {
 
 				@Override
 				public GraphStyle getStyle() {
-					return new GraphStyle(new Ellipse2D.Float(-3.0f, -3.0f, 6.0f, 6.0f), new BasicStroke(1.0f), new Color(1.0f, 0.0f, 0.0f));
+					return new GraphStyle(new Ellipse2D.Float(-3.0f, -3.0f, 6.0f, 6.0f), new BasicStroke(1.0f), new Color(0.0f, 0.0f, 1.0f));
 				}
 
 				@Override
@@ -265,7 +265,7 @@ public class VisualiserSDC {
 			seriesMarketValues.add(new Point2D(x, value));
 
 			plotMarketValue.update(plotables2);
-			plotMarketValue.setTitle("Market Value (01.05.2008-" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ")");
+			plotMarketValue.setTitle("Market Value (02.05.2008-" + date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + ")");
 		}
 
 		Thread.sleep(sleepMillis);

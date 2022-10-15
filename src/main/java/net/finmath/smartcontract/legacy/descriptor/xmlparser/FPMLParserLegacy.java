@@ -1,11 +1,11 @@
-package net.finmath.smartcontract.descriptor.xmlparser;
+package net.finmath.smartcontract.legacy.descriptor.xmlparser;
 
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.ScheduleDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.XMLParser;
-import net.finmath.smartcontract.descriptor.TradeDescriptor;
+import net.finmath.smartcontract.legacy.descriptor.TradeDescriptor;
 import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.ScheduleGenerator.DaycountConvention;
 import net.finmath.time.ScheduleGenerator.Frequency;
@@ -49,7 +49,7 @@ public class FPMLParserLegacy implements XMLParser {
 	private LocalDate maturityDate;
 	private final HashMap productFields = new HashMap();
 	private TradeDescriptor tradeDescriptor = null;
-	private ProductDescriptor productDescriptor = null;
+	private final ProductDescriptor productDescriptor = null;
 
 	private final AbstractBusinessdayCalendar abstractBusinessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 	private final ShortPeriodConvention shortPeriodConvention = ScheduleGenerator.ShortPeriodConvention.LAST;

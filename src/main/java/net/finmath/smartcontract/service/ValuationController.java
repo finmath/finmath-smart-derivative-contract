@@ -9,8 +9,9 @@ package net.finmath.smartcontract.service;
 
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.model.MarginRequest;
-import net.finmath.smartcontract.model.ValuationResult;
+import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,11 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<ValuationResult> margin(MarginRequest marginRequest) {
+	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
-		ValuationResult margin = null;
+		MarginResult margin = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
 			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
@@ -64,12 +65,12 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<ValuationResult> value(ValueRequest valueRequest) {
+	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "value");
 
-		ValuationResult value = null;
+		ValueResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
 			value = marginCalculator.getValue(valueRequest.getMarketData(), valueRequest.getTradeData());

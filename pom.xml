@@ -10,14 +10,14 @@
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>0.1.8-SNAPSHOT</version>
+    <version>0.1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
     <description>
         Project to support the implementation a of smart derivative contract.
     </description>
-    <url>http://www.finmath.net/finmath-lib</url>
+    <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,10 +36,10 @@
         <spring-boot-starter-security.version>2.7.3</spring-boot-starter-security.version>
         <spring-boot-starter-test.version>2.7.3</spring-boot-starter-test.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
-        <jackson-core.version>2.13.4</jackson-core.version>
-        <jackson-databind.version>2.13.4</jackson-databind.version>
-        <jackson-annotations.version>2.13.4</jackson-annotations.version>
-        <jackson-dataformat-csv.version>2.13.4</jackson-dataformat-csv.version>
+        <jackson-core.version>2.13.3</jackson-core.version>
+        <jackson-databind.version>2.13.3</jackson-databind.version>
+        <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <jackson-dataformat-csv.version>2.13.3</jackson-dataformat-csv.version>
         <!-- maven plugins -->
         <maven.compiler-plugin.version>3.8.1</maven.compiler-plugin.version>
         <maven.surefire-plugin.version>3.0.0-M5</maven.surefire-plugin.version>
@@ -47,7 +47,7 @@
         <maven.javadoc-plugin.version>3.3.2</maven.javadoc-plugin.version>
         <maven.jar-plugin.version>3.2.0</maven.jar-plugin.version>
         <maven.source-plugin.version>3.2.1</maven.source-plugin.version>
-        <maven.site-plugin.version>3.9.1</maven.site-plugin.version>
+        <maven.site-plugin.version>3.12.1</maven.site-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
@@ -83,17 +83,6 @@
     </licenses>
 
     <dependencies>
-        <!-- Java FX -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>19</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>19</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -111,6 +100,12 @@
             <groupId>net.finmath</groupId>
             <artifactId>finmath-lib-plot-extensions</artifactId>
             <version>${finmath-lib-plot-extensions.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.finmath</groupId>
+                    <artifactId>finmath-lib</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- apache commons -->
@@ -246,9 +241,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <compilerVersion>17</compilerVersion>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerVersion>${java.version}</compilerVersion>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.springframework.boot</groupId>
@@ -351,19 +346,19 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.3</version>
                 <configuration>
+                    <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
             </plugin>
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
                     <rules><dependencyConvergence /></rules>
+                    <fail>false</fail>
                 </configuration>
             </plugin>
-            -->
 
             <!-- Open API -->
             <!-- Maven Dependency Plugin -->
@@ -443,6 +438,23 @@
                 </executions>
             </plugin>
 
+            <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
+                    </to>
+                    <container>
+                        <mainClass>
+                            net.finmath.smartcontract.service.Application
+                        </mainClass>
+                    </container>
+                </configuration>
+            </plugin>
+
             <!-- Publish the site to GitHub gh-pages: use mvn site site:deploy site-deploy -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -472,8 +484,19 @@
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-sitetools</artifactId>
+                        <version>1.11.1</version>
+                        <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-skin-model</artifactId>
+                        <version>1.11.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.9</version>
+                        <version>1.11.1</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -494,6 +517,34 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--git-commit-id-maven-plugin - Generates a git.properties file with Git info -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>5.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <prefix>git</prefix>
+                    <verbose>false</verbose>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <format>java</format>
+                    <gitDescribe>
+                        <skip>false</skip>
+                        <always>false</always>
+                        <dirty>-dirty</dirty>
+                    </gitDescribe>
+                </configuration>
+                </plugin>
         </plugins>
     </build>
 
@@ -550,6 +601,7 @@
     </reporting>
 
     <distributionManagement>
+        <!--site for mvn site -->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
