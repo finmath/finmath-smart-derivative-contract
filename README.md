@@ -33,7 +33,7 @@ The smart derivative contract is described in terms of the sdc.xml.
 
 For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
 
-For details see the [project site](https://finmath.net/finmath-smartderivaticecontract).
+For details see the [project site](https://finmath.net/finmath-smart-derivative-contract).
 
 ## Developer Resources
 
