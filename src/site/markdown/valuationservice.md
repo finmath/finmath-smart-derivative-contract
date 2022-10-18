@@ -41,10 +41,12 @@ cd finmath-smart-derivative-contract
 
 Run
 ```
-./scripts/test-margin-valuation-oracle.sh user:password
+./scripts/test-margin-valuation-oracle.sh https://localhost:8080 user:password
 ```
 where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
 and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
+
+Change the hostname as required.
 
 ### Running the service on https 8443
 
@@ -99,7 +101,9 @@ keytool -delete -alias mykey -keystore $JAVA_HOME/lib/security/cacerts -storepas
 
 #### Test the service with https
 
-
+```
+./scripts/test-margin-valuation-oracle.sh https://localhost:8443 user1:password1
+```
 
 ## Enpoints
 
