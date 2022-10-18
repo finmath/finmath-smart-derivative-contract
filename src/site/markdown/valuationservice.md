@@ -78,12 +78,18 @@ keytool -printcert -file config/finmath.cer
 ```
 *Note:* change the files as required
 
-#### Import the .cer file into the truststore (cacert)
+#### Import a .cer file into the truststore (cacert)
 
 ```
 keytool -import -file config/finmath.cer -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias finmath
 ```
 *Note:* change the files and the alias as required
+
+#### Import a .pem file into the truststore (cacert)
+
+```
+keytool -import -v -trustcacerts -file config/finmath.pem -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias finmath
+```
 
 #### Delete an alias from the truststrore
 
