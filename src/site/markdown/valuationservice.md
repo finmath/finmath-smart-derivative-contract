@@ -61,7 +61,7 @@ server:
   port: 8443
 ```
 
-The place the keyfile (here `keyfile.p12` at the stated location (here `/config` (the folder mounted by our Docker commands).
+Then place the keyfile (here `keyfile.p12` at the stated location (here `/config` (the folder mounted by our Docker commands).
 
 #### Generating a certificate
 
