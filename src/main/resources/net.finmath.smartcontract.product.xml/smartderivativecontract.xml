@@ -18,7 +18,7 @@
                 <type>constant</type>
                 <value>50000.0</value>
             </penaltyFee>
-            <address>0x938ACd0AD9f423E5cDd97c7c880d59799Dc4fDA0</address>
+            <address>0x627306090abab3a6e1400e9345bc60c78a8bef57</address>
         </party>
         <party>
             <name>Counterparty 2</name>
@@ -31,7 +31,7 @@
                 <type>constant</type>
                 <value>50000.0</value>
             </penaltyFee>
-            <address>0xCE7E5Abf9A42730345716e16c145592e679Ef15a</address>
+            <address>0xf17f52151ebef6c7334fad080c5704d77216b732</address>
         </party>
     </parties>
     <settlement>
