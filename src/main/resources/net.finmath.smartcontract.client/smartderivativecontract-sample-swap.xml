@@ -5,28 +5,28 @@
             <id>party1</id>
             <marginAccount>
                 <type>constant</type>
-                <value>10000.0</value>
+                <value>30000.0</value>
             </marginAccount>
             <penaltyFee>
                 <type>constant</type>
-                <value>50000.0</value>
+                <value>10000.0</value>
             </penaltyFee>
-            <address>0x938ACd0AD9f423E5cDd97c7c880d59799Dc4fDA0</address>
-            <privateKey>b23a98e4b1bbd15dd65a2e1534096ca83280281f7a19c70eebfdd4d3119d05a7</privateKey>
+            <address>0x627306090abab3a6e1400e9345bc60c78a8bef57</address>
+            <privateKey></privateKey>
         </party>
         <party>
             <name>Counterparty 2</name>
             <id>party2</id>
             <marginAccount>
                 <type>constant</type>
-                <value>10000.0</value>
+                <value>30000.0</value>
             </marginAccount>
             <penaltyFee>
                 <type>constant</type>
-                <value>50000.0</value>
+                <value>10000.0</value>
             </penaltyFee>
-            <address>0xCE7E5Abf9A42730345716e16c145592e679Ef15a</address>
-            <privateKey>8c3695bd04dd1a6a7d322a0e4897d75c206bd93043a0c7099bcde49b7001dc22</privateKey>
+            <address>0xf17f52151ebef6c7334fad080c5704d77216b732</address>
+            <privateKey></privateKey>
         </party>
     </parties>
     <settlement>
@@ -136,7 +136,7 @@
                             <calculation>
                                 <notionalSchedule>
                                     <notionalStepSchedule>
-                                        <initialValue>10000000.00</initialValue>
+                                        <initialValue>1000000.00</initialValue>
                                         <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
                                         </currency>
                                     </notionalStepSchedule>
@@ -196,7 +196,7 @@
                             <calculation>
                                 <notionalSchedule>
                                     <notionalStepSchedule>
-                                        <initialValue>10000000.00</initialValue>
+                                        <initialValue>1000000.00</initialValue>
                                         <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
                                         </currency>
                                     </notionalStepSchedule>
