@@ -29,7 +29,7 @@
         <kotlin.version>1.7.10</kotlin.version>
         <!-- dependencies -->
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
-        <finmath-lib.version>6.0.4</finmath-lib.version>
+        <finmath-lib.version>6.0.8</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
         <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
         <spring-boot-starter-web.version>2.7.3</spring-boot-starter-web.version>
@@ -197,6 +197,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
+        </dependency>
 
         <!-- Basic Auth -->
         <dependency>

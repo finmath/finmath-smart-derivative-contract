@@ -82,6 +82,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /valuation/test/product:
+    post:
+      summary: Request mapping for the value of a product (using fixed market data)
+      operationId: testProductValue
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - tradeData
+              properties:
+                tradeData:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /info/git:
     get:
       summary: Request info on Git version and tags

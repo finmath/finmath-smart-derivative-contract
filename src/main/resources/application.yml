@@ -10,9 +10,9 @@ data:
 
 # example to setup SSL
 
-server:
-  ssl:
-    key-store: config/finmath.p12
-    key-store-password: password
-    key-store-type: pkcs12
-  port: 8443
+#server:
+#  ssl:
+#    key-store: config/finmath.p12
+#    key-store-password: password
+#    key-store-type: pkcs12
+#  port: 8443

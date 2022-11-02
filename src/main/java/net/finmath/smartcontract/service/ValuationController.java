@@ -8,6 +8,7 @@
 package net.finmath.smartcontract.service;
 
 import net.finmath.smartcontract.api.ValuationApi;
+import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueRequest;
@@ -20,6 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Controller for the settlement valuation REST service.
@@ -77,7 +81,26 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error("Failed to calculate margin.");
+			logger.error("Failed to calculate value.");
+			logger.info(value.toString());
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "value");
+
+		ValueResult value = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+			value = marginCalculator.getValue(marketData, new String(tradeData.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+			logger.info(value.toString());
+			return ResponseEntity.ok(value);
+		} catch (Exception e) {
+			logger.error("Failed to calculate value.");
 			logger.info(value.toString());
 			e.printStackTrace();
 			throw new RuntimeException(e);
