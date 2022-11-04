@@ -19,6 +19,7 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
 
+
 	requires java.datatransfer;
 	requires java.logging;
 	requires java.validation;
@@ -46,6 +47,7 @@ module net.finmath.smartderivativecontract {
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
+	requires com.fasterxml.jackson.dataformat.javaprop;
 	requires jackson.databind.nullable;
 
 	requires org.apache.commons.lang3;

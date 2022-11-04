@@ -9,10 +9,22 @@ data:
         role: USER_TWO
 
 # example to setup SSL
+server:
+  ssl:
+    key-store: config/finmath.p12
+    key-store-password: password
+    key-store-type: pkcs12
+  port: 8443
+  forward-headers-strategy: framework
 
-#server:
-#  ssl:
-#    key-store: config/finmath.p12
-#    key-store-password: password
-#    key-store-type: pkcs12
-#  port: 8443
+springdoc:
+  swagger-ui:
+    path: '/swagger-ui.html'
+    tryItOutEnabled: true
+
+#springdoc:
+#  api-docs:
+#    enabled: true
+#    path: '/v3/api-docs'
+#  swagger-ui:
+#    server: 'https://valuation-xva-blockchain.com'

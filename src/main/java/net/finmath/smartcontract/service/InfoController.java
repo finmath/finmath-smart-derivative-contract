@@ -7,6 +7,10 @@
 
 package net.finmath.smartcontract.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import net.finmath.information.Library;
 import net.finmath.smartcontract.api.InfoApi;
 import org.slf4j.Logger;
@@ -31,7 +35,7 @@ public class InfoController implements InfoApi {
 
 	/**
 	 *
-	 * @return String Json representing the info.
+	 * @return String Json representing the info on Git
 	 */
 	@Override
 	public ResponseEntity<String> infoGit() {
@@ -39,7 +43,11 @@ public class InfoController implements InfoApi {
 		responseHeaders.add("Responded", "info git");
 
 		try(InputStream propertiesInputStream = InfoController.class.getResourceAsStream("/git.properties")) {
-			String info = new String(propertiesInputStream.readAllBytes());
+			JavaPropsMapper mapper = new JavaPropsMapper();
+			ObjectNode node = mapper.readValue(propertiesInputStream, ObjectNode.class);
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+
+			String info = ow.writeValueAsString(node);
 			return ResponseEntity.ok(info);
 		} catch (final Exception e) {
 			logger.error("Failed to get git info.");
@@ -50,13 +58,25 @@ public class InfoController implements InfoApi {
 
 	/**
 	 *
-	 * @return String Json representing the info.
+	 * @return String Json representing the info on the Library
 	 */
 	@Override
 	public ResponseEntity<String> infoFinmath() {
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "info finmath");
 
-		return ResponseEntity.ok(Library.getVersionString());
+		try(InputStream propertiesInputStream = Library.class.getResourceAsStream("/finmath-lib.properties")) {
+			JavaPropsMapper mapper = new JavaPropsMapper();
+			ObjectNode node = mapper.readValue(propertiesInputStream, ObjectNode.class);
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+
+			String info = ow.writeValueAsString(node);
+			return ResponseEntity.ok(info);
+		} catch (final Exception e) {
+			logger.error("Failed to get git info.");
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 }
