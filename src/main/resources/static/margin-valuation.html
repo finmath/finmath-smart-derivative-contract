@@ -19,14 +19,19 @@
     <p class="lead">
         Perform a valuation of the settlement (margin) based on product data and two market data sets.
     </p>
-</div>
 
-<div id="content">
+    <div id="content">
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="http://finmath.net">finmath.net</a>
+        </div>
+    </footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
-
 <script type="text/javascript">
     function readFileAsText(file) {
         return new Promise(function(resolve,reject){
@@ -43,7 +48,8 @@
             fr.readAsText(file);
         });
     }
- </script>
+
+</script>
 </body>
 <script type="text/javascript">
 const app = new Vue({
@@ -137,5 +143,6 @@ const app = new Vue({
     }
   });
   app.$mount("#content");
+
 </script>
 </html>
