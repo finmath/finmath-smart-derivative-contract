@@ -13,7 +13,7 @@
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 <body>
-<div class="container-fluid">
+<div class="container">
     <h1 class="display-1">Product XML Test</h1>
 
     <p class="lead">
@@ -35,8 +35,8 @@ const app = new Vue({
     }),
     template: `
       <div>
-        <div class="pull-left" style="margin-right:5px">
-            <button class="btn btn-primary btn-lg" @click="submitFile">value</button>
+        <div class="float-left" style="margin-right:5px">
+            <button class="btn btn-primary btn-lg" @click="submitFile">check</button>
         </div>
         <div class="input-group input-group-lg">
             <input class="form-control" type="file" @change="uploadFile" ref="file"/>

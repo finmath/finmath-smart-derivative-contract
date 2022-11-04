@@ -13,15 +13,15 @@
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 <body>
-<div class="container-fluid">
+<div class="container">
     <h1 class="display-1">finmath Valuation Oracle: Margin Calculator</h1>
 
     <p class="lead">
         Perform a valuation of the settlement (margin) based on product data and two market data sets.
     </p>
+</div>
 
-    <div id="content">
-    </div>
+<div id="content">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
@@ -57,15 +57,32 @@ const app = new Vue({
         valuationResult: 'N/A'
     }),
     template: `
-      <div>
-        <div class="input-group input-group-lg">
-            <input class="form-control" type="file" aria-label="Product Data File" @change="uploadProductFile" ref="tradeDataFile"/>
+        <div class="container">
+            <h2 class="display-5">Input Data</h2>
+      <div class="form-group">
+        <label class="">Product:</lable>
+        <div class="input-group input-group-md">
+          <input class="form-control" type="file" aria-describedby="basic-addon3" aria-label="Product Data File" @change="uploadProductFile" ref="tradeDataFile"/>
+        </div>
+
+        <br/>
+        <label class="">Market Data at Start of Period:</lable>
+        <div class="input-group input-group-md">
             <input class="form-control" type="file" aria-label="Market Data Start File" @change="uploadMarketDataStartFile" ref="marketDataStartFile"/>
+        </div>
+
+        <br/>
+        <label class="">Market Data at End of Period:</lable>
+        <div class="input-group input-group-md">
             <input class="form-control" type="file" aria-label="Market Data Ebd File" @change="uploadMarketDataEndFile" ref="marketDataEndFile"/>
         </div>
-        <div class="pull-left" style="margin-right:5px">
-            <button class="btn btn-primary btn-lg" @click="calculate">calculate</button>
-        </div>
+
+        <br/>
+
+        <button class="btn btn-primary btn-lg" @click="calculate">calculate</button>
+
+        <br/>
+        <h2 style="margin-top: 24pt;" class="display-5">Result</h2>
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
                 <p class="lead">
@@ -73,6 +90,7 @@ const app = new Vue({
                 </p>
             </div>
         </div>
+      </div>
       </div>
     `,
     methods: {
