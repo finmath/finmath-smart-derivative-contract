@@ -28,3 +28,6 @@ springdoc:
 #    path: '/v3/api-docs'
 #  swagger-ui:
 #    server: 'https://valuation-xva-blockchain.com'
+spring:
+  thymeleaf:
+    prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.

@@ -203,6 +203,14 @@
             </exclusions>
         </dependency>
 
+        <!--Template engine (XML/HTML) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
+        <!-- Spring Doc -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
