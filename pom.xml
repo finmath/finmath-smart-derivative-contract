@@ -40,6 +40,7 @@
         <jackson-databind.version>2.13.3</jackson-databind.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
         <jackson-dataformat-csv.version>2.13.3</jackson-dataformat-csv.version>
+        <jackson-dataformat-properties.version>2.13.3</jackson-dataformat-properties.version>
         <!-- maven plugins -->
         <maven.compiler-plugin.version>3.8.1</maven.compiler-plugin.version>
         <maven.surefire-plugin.version>3.0.0-M5</maven.surefire-plugin.version>
@@ -176,6 +177,11 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
             <version>${jackson-dataformat-csv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-properties</artifactId>
+            <version>${jackson-dataformat-properties.version}</version>
         </dependency>
 
         <!-- Spring boot -->
