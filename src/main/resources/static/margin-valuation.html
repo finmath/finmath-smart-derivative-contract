@@ -142,8 +142,7 @@ const app = new Vue({
             })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
-                this.valuationResult = result['value'];
+                this.valuationResult = result['value'] + " " + result['currency'];
             });
         });
       }

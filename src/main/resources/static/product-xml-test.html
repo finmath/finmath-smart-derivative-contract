@@ -68,7 +68,7 @@ const app = new Vue({
         fetch('/valuation/test/product', { method: 'POST', body: formData })
         .then(response => response.json())
         .then(result => {
-            this.valuationResult = result['value'];
+            this.valuationResult = result['value'] + " " + result['currency'];
         });
       }
     }
