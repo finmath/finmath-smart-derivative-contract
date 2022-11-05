@@ -68,28 +68,27 @@ const app = new Vue({
             <div class="bg-light border rounded-3 py-4 px-4 my-4">
                 <h2 class="display-5">Input Data</h2>
                 <div class="form-group">
-                    <label class="">Product:</lable>
-                        <div class="input-group input-group-md">
-                            <input class="form-control" type="file" aria-describedby="basic-addon3"
-                                   aria-label="Product Data File" @change="uploadProductFile" ref="tradeDataFile"/>
-                        </div>
+                    <label class="">Product:</label>
+                    <div class="input-group input-group-md">
+                        <input class="form-control" type="file" aria-describedby="basic-addon3"
+                               aria-label="Product Data File" @change="uploadProductFile" ref="tradeDataFile"/>
+                    </div>
 
-                        <br/>
-                        <label class="">Market Data:</lable>
-                            <div class="input-group input-group-md">
-                                <input class="form-control" type="file" aria-label="Market Data Start File"
-                                       @change="uploadMarketDataFile" ref="marketDataFile"/>
-                            </div>
+                    <br/>
+                    <label class="">Market Data:</label>
+                    <div class="input-group input-group-md">
+                        <input class="form-control" type="file" aria-label="Market Data Start File"
+                               @change="uploadMarketDataFile" ref="marketDataFile"/>
+                    </div>
 
-                            <br/>
+                    <br/>
 
-                            <button class="btn btn-primary btn-lg" @click="calculate">calculate</button>
+                    <button class="btn btn-primary btn-lg" @click="calculate">calculate</button>
 
                 </div>
             </div>
             <div class="bg-light border rounded-3 py-4 px-4 my-4">
-                <br/>
-                <h2 style="margin-top: 24pt;" class="display-5">Result</h2>
+                <h2 class="display-5">Result</h2>
                 <div class="jumbotron jumbotron-fluid">
                     <div class="container">
                         <p class="lead">
