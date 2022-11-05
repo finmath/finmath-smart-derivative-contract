@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Include Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1 class="display-1">finmath Valuation Oracle: Product Valuation</h1>
+
+    <p class="lead">
+        Perform a valuation of the settlement (margin) based on product data and two market data sets.
+    </p>
+
+    <div id="content">
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="http://finmath.net">finmath.net</a>
+        </div>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+<script type="text/javascript">
+    function readFileAsText(file) {
+        return new Promise(function(resolve,reject){
+            let fr = new FileReader();
+
+            fr.onloadend = function(){
+                resolve(fr.result);
+            };
+
+            fr.onerror = function(){
+                reject(fr);
+            };
+
+            fr.readAsText(file);
+        });
+    }
+
+</script>
+</body>
+<script type="text/javascript">
+const app = new Vue({
+    data: () => ({
+        tradeDataFile: null,
+        marketDataFile: null,
+        tradeData: null,
+        marketData: null,
+        valuationResult: 'N/A'
+    }),
+    template: `
+        <div class="container">
+            <h2 class="display-5">Input Data</h2>
+      <div class="form-group">
+        <label class="">Product:</lable>
+        <div class="input-group input-group-md">
+          <input class="form-control" type="file" aria-describedby="basic-addon3" aria-label="Product Data File" @change="uploadProductFile" ref="tradeDataFile"/>
+        </div>
+
+        <br/>
+        <label class="">Market Data:</lable>
+        <div class="input-group input-group-md">
+            <input class="form-control" type="file" aria-label="Market Data Start File" @change="uploadMarketDataFile" ref="marketDataFile"/>
+        </div>
+
+        <br/>
+
+        <button class="btn btn-primary btn-lg" @click="calculate">calculate</button>
+
+        <br/>
+        <h2 style="margin-top: 24pt;" class="display-5">Result</h2>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <p class="lead">
+                  Valuation Result: {{ valuationResult }}
+                </p>
+            </div>
+        </div>
+      </div>
+      </div>
+    `,
+    methods: {
+      uploadProductFile() {
+        this.tradeDataFile = this.$refs.tradeDataFile.files[0];
+      },
+      uploadMarketDataFile() {
+        this.marketDataFile = this.$refs.marketDataFile.files[0];
+      },
+      calculate() {
+        let files = [ this.tradeDataFile, this.marketDataFile ];
+        let readers = [];
+
+        // Store promises in array
+        for(let i = 0;i < files.length;i++){
+            readers.push(readFileAsText(files[i]));
+        }
+
+        // Trigger Promises
+        Promise.all(readers).then((values) => {
+            fetch('/valuation/value', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  tradeData: values[0],
+                  marketData: values[1],
+                  valuationDate: ""
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                this.valuationResult = result['value'];
+            });
+        });
+      }
+    }
+  });
+  app.$mount("#content");
+
+</script>
+</html>
