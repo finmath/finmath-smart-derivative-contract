@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.valuation;
 
-
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.modelling.DescribedProduct;
@@ -26,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Calculation of the settlement using Smart Derivative Contract with an Swap contained in a FPML,
@@ -42,8 +42,13 @@ public class MarginCalculator {
 
 	private static final Logger logger = LoggerFactory.getLogger(MarginCalculator.class);
 
+	private final DoubleUnaryOperator rounding;
 
-	public MarginCalculator() { }
+	public MarginCalculator(DoubleUnaryOperator rounding) { this.rounding = rounding; }
+
+	public MarginCalculator() {
+		this(x -> Math.round(x*1000)/1000.0);
+	}
 
 	/**
 	 * Calculates the margin between t_2 and t_1.
@@ -51,7 +56,7 @@ public class MarginCalculator {
 	 * @param marketDataStart Curve name at time t_1.
 	 * @param marketDataEnd Curve name at time t_2.
 	 * @param productData  Trade.
-	 * @return the margin (Float).
+	 * @return the margin (MarginResult).
 	 * @throws Exception Exception
 	 */
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
@@ -73,7 +78,7 @@ public class MarginCalculator {
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new MarginResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+		return new MarginResult().value(BigDecimal.valueOf(rounding.applyAsDouble(value))).currency(currency).valuationDate(valuationDate.toString());
 	}
 	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
