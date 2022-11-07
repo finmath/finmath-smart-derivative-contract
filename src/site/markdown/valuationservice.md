@@ -13,7 +13,7 @@ in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" 
 To run Docker Container with the image from Docker Hub execute following commands.
 
 ```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:0.1.9
+docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:1.0.1
 ```
 
 You can then try the service out on its OpenAPI page:
