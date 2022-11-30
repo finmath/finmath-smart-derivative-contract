@@ -13,10 +13,11 @@ in `/PATH/TO/YOUR/CONFIG` (on the machine running Docker) (see Section "Config" 
 To run Docker Container with the image from Docker Hub execute following commands.
 
 ```
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 finmath/finmath-smart-derivative-contract:1.0.1
+docker run -v /PATH/TO/YOUR/CONFIG:/workspace/config -p 8080:8080 finmath/finmath-smart-derivative-contract:1.0.1
 ```
+The service will be available at http://localhost:8080/index.html
 
-You can then try the service out on its OpenAPI page:
+You can also then try the service out on its OpenAPI page:
 http://localhost:8080/swagger-ui/index.html
 or
 https://localhost:8443/swagger-ui/index.html

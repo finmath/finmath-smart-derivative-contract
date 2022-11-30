@@ -17,8 +17,9 @@ cd finmath-smart-derivative-contract
 
 ```
 mvn spring-boot:build-image
-docker run -v /PATH/TO/YOUR/CONFIG:/config -p 8080:8080 docker.io/finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
+docker run -v /PATH/TO/YOUR/CONFIG:/workspace/config -p 8080:8080 docker.io/finmath/finmath-smart-derivative-contract:0.1.9-SNAPSHOT
 ```
+Remark: The app will run under `workspace`, hence we mount `/workspace/config`. If the working directory changed, this has to be adapted.
 
 ### Building a Docker Container using the Docker File
 
