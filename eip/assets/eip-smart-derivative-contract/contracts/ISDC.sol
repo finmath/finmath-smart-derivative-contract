@@ -44,7 +44,7 @@ interface ISDC {
     /**
      * @dev Emitted when a valuation is requested
      */
-    event ValuationRequestEvent(string tradeData, address valuationViewParty);
+    event ValuationRequestEvent(string tradeData);
 
     /**
      * @dev Emitted when a settlent was processed succesfully
@@ -134,7 +134,7 @@ interface ISDC {
      * callback for initiateSettlement() event handler
      * emits a {MarginAccountUnlockRequestEvent} and ({SettlementCompletedEvent} or {TerminationDueToMarginExceedanceEvent} was im mgn buffer ist wird verwendet zur abwicklung)
      */
-    function performSettlement(int256 settlementAmount, string marketData) external;
+    function performSettlement(int256 settlementAmount, string memory marketData) external;
 
     /*
      * emits {MarginAmountUpdateRequestEvent}
