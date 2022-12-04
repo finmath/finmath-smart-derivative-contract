@@ -115,24 +115,22 @@ interface ISDC {
 
     /**
      * @dev Called from outside to update on-chain balances
-     * callback for initiateMarginLock() event handler
-     * emits a {MarginAccountLockedEvent}
+     * may serve as callback for initiateMarginAccountCheck()
+     * emits a {MarginAccountLockedEvent} or
      * emits a {TerminationEvent}
      */
     function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external;
 
     /**
      * @dev Called from outside to trigger an external valuation and according settlement process
-     * TODO: delegate to contract?
      * emits a {ValuationRequestEvent}
-     * check msg.sender via modifier
      */
     function initiateSettlement() external;
 
     /**
      * @dev Called from outside to trigger according settlement on chain-balances
      * callback for initiateSettlement() event handler
-     * emits a {MarginAccountUnlockRequestEvent} and ({SettlementCompletedEvent} or {TerminationDueToMarginExceedanceEvent} was im mgn buffer ist wird verwendet zur abwicklung)
+     * emits a {MarginAccountUnlockRequestEvent} and ({SettlementCompletedEvent} or {Termination Event}
      */
     function performSettlement(int256 settlementAmount, string memory marketData) external;
 
