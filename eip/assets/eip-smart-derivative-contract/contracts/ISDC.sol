@@ -4,11 +4,11 @@ pragma solidity >=0.7.0 <0.9.0;
 /*------------------------------------------- DESCRIPTION ---------------------------------------------------------------------------------------*/
 
 /**
- * @dev Interface specification for a Smart Derivative Contract which  specifies post-trade live cycle of an OTC derivative in a complete deterministic way.
+ * @dev Interface specification for a Smart Derivative Contract, which specifies the post-trade live cycle of an OTC derivative in a completely deterministic way.
  * Counterparty Risk is removed by construction.
  *
  * A Smart Derivative Contract is a deterministic settlement protocol which has economically the same behaviour as a collateralized OTC
- * Derivative. Its aim is to remove many of the inefficiencies in collateralized OTC transactions and removes counterparty credit risk by construction.
+ * Derivative. It aims is to remove many inefficiencies in collateralized OTC transactions and remove counterparty credit risk by construction.
 
  * In contrast to a collateralized derivative contract based and collateral flows are netted such that the smart derivative
  * introduces a high frequent - e.g. daily - settlement flow schedule. With each settlement flow the net present value of the underlying contract is
@@ -21,7 +21,6 @@ pragma solidity >=0.7.0 <0.9.0;
  *
  * Events and Functionality specify the entire live cycle: TradeInception, TradeConfirmation, TradeTermination, Margin-Account-Mechanics, Valuation and Settlement.
  */
-
 
 interface ISDC {
     /*------------------------------------------- EVENTS ---------------------------------------------------------------------------------------*/
