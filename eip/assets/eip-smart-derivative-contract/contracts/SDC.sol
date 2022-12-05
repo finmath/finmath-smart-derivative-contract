@@ -154,15 +154,6 @@ contract SDC is ISDC {
         _processMarginLock(balance1, balance2);
     }
 
-    /*
-     * Only when State = MarginAccountCheck
-     * Checks balances for each party and sends PaymentRequest on Termination
-     * If successfull checked TradeState is put to Active, ProcessState is put to MarginAccountLocked
-     */
-    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external override  {
-        _processMarginLock(balanceParty1, balanceParty2);
-    }
-
     function _lockTerminationFees() internal{
         if (tradeState == TradeState.Confirmed){    // In case of confirmation state - transfer termination Fees in case contract is in confirmTrade-State
             try liquidityToken.transferFrom(party1,address(this),uint(marginRequirements[party1].terminationFee)) {
@@ -184,6 +175,15 @@ contract SDC is ISDC {
             //balanceParty1 = balanceParty1 - uint(marginRequirements[party1].terminationFee);
             //balanceParty2 = balanceParty2 - uint(marginRequirements[party2].terminationFee);
         }
+    }
+
+    /*
+     * Only when State = MarginAccountCheck
+     * Checks balances for each party and sends PaymentRequest on Termination
+     * If successfull checked TradeState is put to Active, ProcessState is put to MarginAccountLocked
+     */
+    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external override  {
+        _processMarginLock(balanceParty1, balanceParty2);
     }
 
     function _processMarginLock(uint balanceParty1, uint balanceParty2) internal {
