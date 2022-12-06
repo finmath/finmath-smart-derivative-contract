@@ -101,12 +101,6 @@ interface ISDC {
     function confirmTrade(string memory _tradeData) external;
 
     /**
-     * @dev Prefunding Period is initialised, parties will be able to increase approvals on liquidity token
-     * emits a {MarginAccountUnlockedEvent}
-     */
-    function initiateMarginAccountUnlock() external;
-
-    /**
      * @dev Called from outside to trigger a margin lock
      * emits a {MarginAccountLockRequestEvent}
      */

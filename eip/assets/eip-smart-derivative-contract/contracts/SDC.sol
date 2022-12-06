@@ -3,6 +3,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "./ISDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SDC is ISDC {
     /*
@@ -10,8 +11,17 @@ contract SDC is ISDC {
      */
     enum TradeState {
         Inactive,
+
+        /*
+         * Incepted: Trade data submitted by one party. Market data for initial valuation is set.
+         */
         Incepted,
+
+        /*
+         * Confirmed: Trade data accepted by other party.
+         */
         Confirmed,
+
         Active,
         Terminated
     }
@@ -26,7 +36,8 @@ contract SDC is ISDC {
         MarginAccountCheck,
         MarginAccountLocked,
         ValuationAndSettlement,
-        Settled
+        Settled,
+        InTermination
     }
 
     struct MarginRequirement {
@@ -96,11 +107,13 @@ contract SDC is ISDC {
     function inceptTrade(string memory _tradeData) external override onlyCounterparty
     {
         processState = ProcessState.Initiation;
-        uint256 hash = uint256(keccak256(abi.encode(_tradeData)));
         tradeState = TradeState.Incepted; // Set TradeState to Incepted
+
+        uint256 hash = uint256(keccak256(abi.encode(_tradeData)));
         pendingRequests[hash] = msg.sender;
-        tradeID = "hash";
+        tradeID = Strings.toString(hash);
         tradeData = _tradeData; // Set Trade Data to enable querying already in inception state
+
         emit TradeInceptedEvent(msg.sender, tradeID, _tradeData);
     }
 
@@ -115,32 +128,55 @@ contract SDC is ISDC {
         uint256 tradeIDConf = uint256(keccak256(abi.encode(_tradeData)));
         require(pendingRequests[tradeIDConf] == pendingRequestParty, "Confirmation fails due to inconsistent trade data or wrong party address");
         delete pendingRequests[tradeIDConf]; // Delete Pending Request
+
         tradeState = TradeState.Confirmed;
         emit TradeConfirmedEvent(msg.sender, tradeID); // subscribe event und handler, h löst tx aus gegen token
-    }
 
-    /*
-     * Unlocks a Margin Amount only when Trade is Initiated or if Trade is Active and Process State is Settled
-     * Puts Process State to Funding
-     * TODO Find alternative name for Account
-     */
-    function initiateMarginAccountUnlock() external override
-    {
-        _processMarginUnlock();
+        // Pre-Conditions
+        _lockTerminationFees();
+
+        processState = ProcessState.Funding;
         emit MarginAccountUnlockedEvent();
     }
 
-    function _processMarginUnlock() internal {
-        if (tradeState == TradeState.Confirmed) {
-            processState = ProcessState.Funding;
-        }
-        else if (tradeState == TradeState.Terminated) { // Process Termination - Release all sdcBalances
-            liquidityToken.approve(party1, uint256(sdcBalances[party1]));
-            liquidityToken.approve(party2, uint256(sdcBalances[party2]));
-            processState = ProcessState.Idle;
+    /**
+     * TODO Possible improvement: first check approvals for both parties, then transfer.
+     */
+    function _lockTerminationFees() internal {
+        try liquidityToken.transferFrom(party1, address(this), uint(marginRequirements[party1].terminationFee)) {
+        } catch Error(string memory reason) {
             tradeState = TradeState.Inactive;
+            processState = ProcessState.Idle;
+            emit TerminationEvent("Termination Fee could not be locked from party 1.");
+            return;
         }
+        try liquidityToken.transferFrom(party2, address(this),uint(marginRequirements[party2].terminationFee)) {
+        }  catch Error(string memory reason) {
+            // Revert Party 1 Termination Free
+            liquidityToken.transferFrom(address(this), party1, uint(marginRequirements[party1].terminationFee));
+
+            tradeState == TradeState.Inactive;
+            processState = ProcessState.Idle;
+            emit TerminationEvent("Termination Fee could not be locked from party 2.");
+            return;
+        }
+        adjustSDCBalances(marginRequirements[party1].terminationFee, marginRequirements[party2].terminationFee); // Update internal balances
     }
+
+    /*
+     * Failsafe: Free up accounts upon termination
+     */
+    function _processTermination() internal {
+        liquidityToken.transferFrom(address(this), party1, uint256(sdcBalances[party1]));
+        liquidityToken.transferFrom(address(this), party2, uint256(sdcBalances[party1]));
+
+        processState = ProcessState.Idle;
+        tradeState = TradeState.Inactive;
+    }
+
+    /*
+     * Settlement Cycle
+     */
 
     /*
      * Send an Lock Request Event only when Process State = Funding
@@ -148,35 +184,12 @@ contract SDC is ISDC {
      */
     function initiateMarginAccountCheck() external override {
         processState = ProcessState.MarginAccountCheck;
-        if (tradeState == TradeState.Confirmed)
-            _lockTerminationFees();
+
         uint256 balance1 = liquidityToken.balanceOf(party1);
         uint256 balance2 = liquidityToken.balanceOf(party2);
         _processMarginLock(balance1, balance2);
     }
 
-    function _lockTerminationFees() internal {
-        if (tradeState == TradeState.Confirmed){    // In case of confirmation state - transfer termination Fees in case contract is in confirmTrade-State
-            try liquidityToken.transferFrom(party1,address(this),uint(marginRequirements[party1].terminationFee)) {
-            } catch Error(string memory reason){
-                tradeState = TradeState.Inactive;
-                processState = ProcessState.Idle;
-                emit TerminationEvent("Termination Fee could not be locked");
-                return;
-            }
-            try liquidityToken.transferFrom(party2,address(this),uint(marginRequirements[party2].terminationFee)) {
-            }  catch Error(string memory reason){
-                tradeState == TradeState.Inactive;
-                processState = ProcessState.Idle;
-                emit TerminationEvent("Termination Fee could not be locked");
-                return;
-            }
-            adjustSDCBalances(marginRequirements[party1].terminationFee, marginRequirements[party2].terminationFee); // Update internal balances
-            // adjust balances: substract difference from balanceParty1 and balanceParty2 after transfer of termination fee since balanceParty1 and balanceParty2 *keep mirroring the external amounts* off which the contract gets funded
-            //balanceParty1 = balanceParty1 - uint(marginRequirements[party1].terminationFee);
-            //balanceParty2 = balanceParty2 - uint(marginRequirements[party2].terminationFee);
-        }
-    }
 
     /*
      * Only when State = MarginAccountCheck
@@ -189,7 +202,7 @@ contract SDC is ISDC {
 //    }
 
     function _processMarginLock(uint balanceParty1, uint balanceParty2) internal {
-        /* Calculate gap amount for each party, i.e. residual between buffer and termination fee and actual balance*/
+        /* Calculate gap amount for each party, i.e. residual between buffer and termination fee and actual balance */
         // max(M+P - sdcBalance,0)
         uint gapAmountParty1 = marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1] > 0 ? uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1]) : 0;
         uint gapAmountParty2 = marginRequirements[party2].buffer + marginRequirements[party2].terminationFee - sdcBalances[party2] > 0 ? uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee - sdcBalances[party2]) : 0;
@@ -197,40 +210,44 @@ contract SDC is ISDC {
         /* Good case: Balances are sufficient and token has enough approval */
         if ( (balanceParty1 >= gapAmountParty1 && liquidityToken.allowance(party1,address(this)) >= gapAmountParty1) &&
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
-            liquidityToken.approve(party1,0);    // Remove Approvals
-            liquidityToken.approve(party2,0);
-            liquidityToken.transferFrom(party1,address(this),gapAmountParty1);  // Transfer of GapAmount to sdc contract
-            liquidityToken.transferFrom(party2,address(this),gapAmountParty2);  // Transfer of GapAmount to sdc contract
-            adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
+            liquidityToken.transferFrom(party1, address(this), gapAmountParty1);  // Transfer of GapAmount to sdc contract
+            liquidityToken.transferFrom(party2, address(this), gapAmountParty2);  // Transfer of GapAmount to sdc contract
             tradeState = TradeState.Active;
             processState = ProcessState.MarginAccountLocked;
+            adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
             emit MarginAccountLockedEvent();
             emit TradeActivatedEvent(tradeID);
         }
-
         /* Party 1 - Bad case: Balances are insufficient or token has not enough approval */
         else if ( (balanceParty1 < gapAmountParty1 || liquidityToken.allowance(party1,address(this)) < gapAmountParty1) &&
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
             tradeState = TradeState.Terminated;
-            liquidityToken.transfer(party2,uint(marginRequirements[party1].terminationFee));   // Transfer termination fee to party2
+            processState = ProcessState.InTermination;
+
             adjustSDCBalances(-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee); // Update internal balances
-            _processMarginUnlock(); // Release all buffers
+
+            _processTermination(); // Release all buffers
             emit TerminationEvent("Termination caused by party1 due to insufficient prefunding");
         }
         /* Party 2 - Bad case: Balances are insufficient or token has not enough approval */
         else if ( (balanceParty1 >= gapAmountParty1 && liquidityToken.allowance(party1,address(this)) >= gapAmountParty1) &&
             (balanceParty2 < gapAmountParty2 || liquidityToken.allowance(party2,address(this)) < gapAmountParty2) ) {
             tradeState = TradeState.Terminated;
-            liquidityToken.transfer(party1,uint(marginRequirements[party2].terminationFee));      // Transfer termination fee to party1
+            processState = ProcessState.InTermination;
+
             adjustSDCBalances(marginRequirements[party2].terminationFee,-marginRequirements[party2].terminationFee); // Update internal balances
-            _processMarginUnlock(); // Release all buffers
+
+            _processTermination(); // Release all buffers
             emit TerminationEvent("Termination caused by party2 due to insufficient prefunding");
         }
         /* Both parties fail: Cross Transfer of Termination Fee */
         else {
+            tradeState = TradeState.Terminated;
+            processState = ProcessState.InTermination;
             // if ( (balanceParty1 < gapAmountParty1 || liquidityToken.allowance(party1,address(this)) < gapAmountParty1) &&  (balanceParty2 < gapAmountParty2 || liquidityToken.allowance(party2,address(this)) < gapAmountParty2) ) { tradeState = TradeState.Terminated;
             adjustSDCBalances(marginRequirements[party2].terminationFee-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee-marginRequirements[party2].terminationFee); // Update internal balances: Cross Booking of termination fee
-            _processMarginUnlock(); // Release all buffers
+
+            _processTermination(); // Release all buffers
             emit TerminationEvent("Termination caused by both parties due to insufficient prefunding");
         }
     }
@@ -252,26 +269,46 @@ contract SDC is ISDC {
      */
     function performSettlement(int256 settlementAmount, string memory marketData) external override
     {
-        int256 transferAmount = settlementAmount < 0 ? -settlementAmount : settlementAmount; // abs transfer value
-        address payingParty = settlementAmount < 0 ? receivingPartyAddress : (receivingPartyAddress == party1 ? party2 : party1);
-        address receivingParty = payingParty == party1 ? party2 : party1;
+        int256 transferAmount = abs(settlementAmount);
+
+        address receivingParty  = settlementAmount > 0 ? receivingPartyAddress : other(receivingPartyAddress);
+        address payingParty     = other(receivingParty);
 
         if (transferAmount > marginRequirements[payingParty].buffer) {   // Termination Event, buffer not sufficient
             tradeState = TradeState.Terminated;
             transferAmount = marginRequirements[payingParty].buffer + marginRequirements[payingParty].terminationFee; // Override with Buffer and Termination Fee: Max Transfer
-            liquidityToken.transfer(receivingParty, uint256(transferAmount)); // SDC performs transfer to receiving party
+
+            if(receivingParty == party1) {
+                adjustSDCBalances(transferAmount, -transferAmount);
+            }
+            else {
+                adjustSDCBalances(-transferAmount, transferAmount);
+            }
+
+            _processTermination(); // Transfer
             emit TerminationEvent("Termination due to margin buffer exceedance");
         } else {   // Regular Settlement
+            if(payingParty == party1) {
+                adjustSDCBalances(-transferAmount,0);
+            }
+            else {
+                adjustSDCBalances(0,-transferAmount);
+            }
             liquidityToken.transfer(receivingParty, uint256(transferAmount)); // SDC Contract performs transfer to receiving party
+            processState = ProcessState.Settled;  // Set Process State to Settled
+
             emit SettlementCompletedEvent();
         }
-        payingParty == party1 ? adjustSDCBalances(-transferAmount,0) : adjustSDCBalances(0,-transferAmount); // Update Internal Balances
-        processState = ProcessState.Settled;  // Set Process State to Settled
 
         if (mutuallyTerminated) {
             tradeState = TradeState.Terminated;
         }
     }
+
+    /*
+     * End of Cycle
+     *
+     /
 
     /*
      * Can be called by a party for mutual termination
@@ -318,6 +355,24 @@ contract SDC is ISDC {
             require(sdcBalances[party2] >= adjustmentAmountParty2, "SDC Balance Adjustment fails for Party2");
         sdcBalances[party1] = sdcBalances[party1] + adjustmentAmountParty1;
         sdcBalances[party2] = sdcBalances[party2] + adjustmentAmountParty2;
+    }
+
+    /*
+     * Utilities
+     */
+
+    /**
+     * Absolute value of an integer
+     */
+    function abs(int x) private pure returns (int) {
+        return x >= 0 ? x : -x;
+    }
+
+    /**
+     * Other party
+     */
+    function other(address party) private pure returns (address) {
+        return (party == party1 ? party2 : party1);
     }
 
     function getTokenAddress() public view returns(address) {
