@@ -9,7 +9,11 @@ contract SDC is ISDC {
     /*
      * Trade States
      */
-    enum TradeState {
+        enum TradeState {
+
+        /*
+         * State before the trade is incepted.
+         */
         Inactive,
 
         /*
@@ -22,7 +26,14 @@ contract SDC is ISDC {
          */
         Confirmed,
 
+        /*
+         * Active (Confirmend + Prefunded Termination Fees). Will cycle through process states.
+         */
         Active,
+
+        /*
+         * Terminated.
+         */
         Terminated
     }
 
@@ -182,12 +193,12 @@ contract SDC is ISDC {
      * Send an Lock Request Event only when Process State = Funding
      * Puts Process state to Margin Account Check
      */
-    function initiateMarginAccountCheck() external override {
+    function ensurePrefunding() external override {
         processState = ProcessState.MarginAccountCheck;
 
         uint256 balance1 = liquidityToken.balanceOf(party1);
         uint256 balance2 = liquidityToken.balanceOf(party2);
-        _processMarginLock(balance1, balance2);
+        _ensurePrefunding(balance1, balance2);
     }
 
 
@@ -201,7 +212,7 @@ contract SDC is ISDC {
 //        _processMarginLock(balanceParty1, balanceParty2);
 //    }
 
-    function _processMarginLock(uint balanceParty1, uint balanceParty2) internal {
+    function _ensurePrefunding(uint balanceParty1, uint balanceParty2) internal {
         /* Calculate gap amount for each party, i.e. residual between buffer and termination fee and actual balance */
         // max(M+P - sdcBalance,0)
         uint gapAmountParty1 = marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1] > 0 ? uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1]) : 0;

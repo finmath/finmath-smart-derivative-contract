@@ -90,27 +90,24 @@ interface ISDC {
 
     /**
      * @dev Handles trade inception, stores trade data
-     * emits a {TradeInceptionEvent}
+     * @notice emits a {TradeInceptionEvent}
+     * @param _tradeData a description of the trade in sdc.xml
      */
     function inceptTrade(string memory _tradeData) external;
 
     /**
      * @dev Performes a matching of provided trade data, puts the state to trade confirmed if trade data match
-     * emits a {TradeConfirmEvent}
+     * @notice emits a {TradeConfirmEvent}
+     * @param _tradeData a description of the trade in sdc.xml
      */
     function confirmTrade(string memory _tradeData) external;
 
     /**
-     * @dev Called from outside to trigger a margin lock
-     * emits a {MarginAccountLockRequestEvent}
-     */
-    /**
-     * @dev Called from outside to update on-chain balances
-     * may serve as callback for initiateMarginAccountCheck()
-     * emits a {MarginAccountLockedEvent} or
+     * @dev Called from outside to secure pre-funding. Terminate the trade if prefunding fails.
+     * emits a {MarginAccountLockedEvent} followed by a {TradeActivatedEvent} or
      * emits a {TerminationEvent}
      */
-    function initiateMarginAccountCheck() external;
+    function ensurePrefunding() external;
 
 //    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external;
 
