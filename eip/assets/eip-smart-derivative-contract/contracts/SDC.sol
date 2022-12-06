@@ -48,8 +48,14 @@ contract SDC is ISDC {
 
     address public party1;
     address public party2;
-    address private immutable receivingPartyAddress; // immutable variable how settlement amount is transfered: if positive receivingParty receives settlement amount from party2
+    address private immutable receivingPartyAddress; // Determine the receiver: Positive values are consider to be received by receivingPartyAddress. Negative values are received by the other counterparty.
 
+    /*
+     * liquidityToken holds:
+     * - funding account of party1
+     * - funding account of party2
+     * - account for SDC (sum - this is split among parties by sdcBalances)
+     */
     IERC20 private liquidityToken;
 
     string private tradeID;
@@ -116,8 +122,9 @@ contract SDC is ISDC {
     /*
      * Unlocks a Margin Amount only when Trade is Initiated or if Trade is Active and Process State is Settled
      * Puts Process State to Funding
+     * TODO Find alternative name for Account
      */
-    function marginAccountUnlockRequest() external override
+    function initiateMarginAccountUnlock() external override
     {
         _processMarginUnlock();
         emit MarginAccountUnlockedEvent();
@@ -126,12 +133,6 @@ contract SDC is ISDC {
     function _processMarginUnlock() internal {
         if (tradeState == TradeState.Confirmed) {
             processState = ProcessState.Funding;
-        }
-        else if (tradeState == TradeState.Active && processState == ProcessState.Settled) {
-            // If we have a preceeding settlement then release margin buffer amounts (termination fees remain locked)
-            liquidityToken.approve(party1, uint256(sdcBalances[party1] - marginRequirements[party1].terminationFee)); // unlock all except termination fee
-            liquidityToken.approve(party2, uint256(sdcBalances[party2] - marginRequirements[party2].terminationFee)); // unlock all except termination fee
-            processState = ProcessState.Funding; // Funding Period is started
         }
         else if (tradeState == TradeState.Terminated) { // Process Termination - Release all sdcBalances
             liquidityToken.approve(party1, uint256(sdcBalances[party1]));
@@ -154,7 +155,7 @@ contract SDC is ISDC {
         _processMarginLock(balance1, balance2);
     }
 
-    function _lockTerminationFees() internal{
+    function _lockTerminationFees() internal {
         if (tradeState == TradeState.Confirmed){    // In case of confirmation state - transfer termination Fees in case contract is in confirmTrade-State
             try liquidityToken.transferFrom(party1,address(this),uint(marginRequirements[party1].terminationFee)) {
             } catch Error(string memory reason){
@@ -181,13 +182,15 @@ contract SDC is ISDC {
      * Only when State = MarginAccountCheck
      * Checks balances for each party and sends PaymentRequest on Termination
      * If successfull checked TradeState is put to Active, ProcessState is put to MarginAccountLocked
+     * TODO REMOVE - call back can be realized in liquidityToken
      */
-    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external override  {
-        _processMarginLock(balanceParty1, balanceParty2);
-    }
+//    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external override  {
+//        _processMarginLock(balanceParty1, balanceParty2);
+//    }
 
     function _processMarginLock(uint balanceParty1, uint balanceParty2) internal {
         /* Calculate gap amount for each party, i.e. residual between buffer and termination fee and actual balance*/
+        // max(M+P - sdcBalance,0)
         uint gapAmountParty1 = marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1] > 0 ? uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1]) : 0;
         uint gapAmountParty2 = marginRequirements[party2].buffer + marginRequirements[party2].terminationFee - sdcBalances[party2] > 0 ? uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee - sdcBalances[party2]) : 0;
 

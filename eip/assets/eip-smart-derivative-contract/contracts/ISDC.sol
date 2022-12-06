@@ -104,21 +104,21 @@ interface ISDC {
      * @dev Prefunding Period is initialised, parties will be able to increase approvals on liquidity token
      * emits a {MarginAccountUnlockedEvent}
      */
-    function marginAccountUnlockRequest() external;
+    function initiateMarginAccountUnlock() external;
 
     /**
      * @dev Called from outside to trigger a margin lock
      * emits a {MarginAccountLockRequestEvent}
      */
-    function initiateMarginAccountCheck() external;
-
     /**
      * @dev Called from outside to update on-chain balances
      * may serve as callback for initiateMarginAccountCheck()
      * emits a {MarginAccountLockedEvent} or
      * emits a {TerminationEvent}
      */
-    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external;
+    function initiateMarginAccountCheck() external;
+
+//    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external;
 
     /**
      * @dev Called from outside to trigger an external valuation and according settlement process
