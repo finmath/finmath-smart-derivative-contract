@@ -4,22 +4,61 @@ pragma solidity >=0.7.0 <0.9.0;
 /*------------------------------------------- DESCRIPTION ---------------------------------------------------------------------------------------*/
 
 /**
- * @dev Interface specification for a Smart Derivative Contract, which specifies the post-trade live cycle of an OTC derivative in a completely deterministic way.
+ * @dev Interface specification for a Smart Derivative Contract, which specifies the post-trade live cycle of an OTC financial derivative in a completely deterministic way.
  * Counterparty Risk is removed by construction.
  *
- * A Smart Derivative Contract is a deterministic settlement protocol which has economically the same behaviour as a collateralized OTC
- * Derivative. It aims is to remove many inefficiencies in collateralized OTC transactions and remove counterparty credit risk by construction.
-
- * In contrast to a collateralized derivative contract based and collateral flows are netted such that the smart derivative
- * introduces a high frequent - e.g. daily - settlement flow schedule. With each settlement flow the net present value of the underlying contract is
- * exchanged and the value of the contract is reset to zero.
+ * A Smart Derivative Contract is a deterministic settlement protocol which has economically the same behaviour as a collateralized OTC financial derivative.
+ * It aims is to remove many inefficiencies in collateralized OTC transactions and remove counterparty credit risk by construction.
  *
- * To automatically process settlement counterparties need to provide sufficient prefunded margin amounts and termination fees at the
- * beginning of each settlement cycle. Through a settlement cycle the margin amounts are locked.
- * A SDC contract automatically terminates the derivatives contract if there is insufficient prefunding or if the settlement amount exceeds a
+ * In contrast to a collateralized derivative contract based and collateral flows are netted. As result, the smart derivative contract generates a stream of
+ * reflecting the settlement of a referenced underlying. The settlement cash flows may be daily (which is the standard frequency in traditional markets)
+ * or at higher frequencies.
+ * With each settlement flow the change is the (discounting adjusted) net present value of the underlying contract is exchanged and the value of the contract is reset to zero.
+ *
+ * To automatically process settlement, counterparties need to provide sufficient prefunded margin amounts and termination fees at the
+ * beginning of each settlement cycle. Through a settlement cycle the margin amounts are locked. Simplified, the contract reverts the classical scheme of
+ * 1) underlying valuation, then 2) funding of a margin call to
+ * 1) pre-funding of a margin buffer (a token), then 2) settlement.
+ *
+ * A SDC automatically terminates the derivatives contract if there is insufficient pre-funding or if the settlement amount exceeds a
  * prefunded margin balance. Beyond mutual termination is also intended by the function specification.
  *
  * Events and Functionality specify the entire live cycle: TradeInception, TradeConfirmation, TradeTermination, Margin-Account-Mechanics, Valuation and Settlement.
+ *
+ * The process can be described by time points and time-intervalls which are associated with well definied states:
+ * <ol>
+ *  <li>t < T* (befrore incept).
+ *  </li>
+ *  <li>
+ *      The process runs in cycles. Let i = 0,1,2,... denote the index of the cycle. Within each cycle there are times
+ *      T_{i,0}, T_{i,1}, T_{i,2}, T_{i,3} with T_{i,1} = pre-funding of the Smart Contract, T_{i,2} = request valuation from oracle, T_{i,3} = perform settlement on given valuation, T_{i+1,0} = T_{i,3}.
+ *  </li>
+ *  <li>
+ *      Given this time discretization the states are assigned to time points and time intervalls:
+ *      <dl>
+ *          <dt>Idle</dt>
+ *          <dd>Before incept or after terminate</dd>
+ *
+ *          <dt>Initiation</dt>
+ *          <dd>T* < t < T_{0}, where T* is time of incept and T_{0} = T_{0,0}</dd>
+ *
+ *          <dt>AwaitingFunding</dt>
+ *          <dd>T_{i,0} < t < T_{i,1}</dd>
+ *
+ *          <dt>Funding</dt>
+ *          <dd>t = T_{i,1}</dd>
+ *
+ *          <dt>AwaitingSettlement</dt>
+ *          <dd>T_{i,1} < t < T_{i,2}</dd>
+ *
+ *          <dt>ValuationAndSettlement</dt>
+ *          <dd>T_{i,2} < t < T_{i,3}</dd>
+ *
+ *          <dt>Settled</dt>
+ *          <dd>t = T_{i,3}</dd>
+ *      </dl>
+ *  </li>
+ * </ol>
  */
 
 interface ISDC {
