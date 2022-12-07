@@ -50,17 +50,17 @@ contract SDC is ISDC {
          */
         Initiation,
         /*
-         * @dev Initiating prefunding the smart contract. Next: MarginAccountCheck
+         * @dev Awaiiting preparation for funding the smart contract. Next: Funding
+         */
+        AwaitingFunding,
+        /*
+         * @dev Prefunding the smart contract. Next: AwaitingSettlement
          */
         Funding,
         /*
-         * @dev Prefunding the smart contract. Next: MarginAccountLocked TODO Could be deleted, part of "Funding"
-         */
-        MarginAccountCheck,
-        /*
          * @dev The smart contract is completely funded and awaits settlement. Next: ValuationAndSettlement
          */
-        MarginAccountLocked,
+        AwaitingSettlement,
         /*
          * @dev The settlement process is initiated. Next: Settled or InTermination
          */
@@ -170,7 +170,7 @@ contract SDC is ISDC {
         // Pre-Conditions
         _lockTerminationFees();
 
-        processState = ProcessState.Funding;
+        processState = ProcessState.AwaitingFunding;
         emit MarginAccountUnlockedEvent();
     }
 
@@ -218,7 +218,7 @@ contract SDC is ISDC {
      * Puts Process state to Margin Account Check
      */
     function ensurePrefunding() external override {
-        processState = ProcessState.MarginAccountCheck;
+        processState = ProcessState.Funding;
 
         uint256 balance1 = liquidityToken.balanceOf(party1);
         uint256 balance2 = liquidityToken.balanceOf(party2);
@@ -248,7 +248,7 @@ contract SDC is ISDC {
             liquidityToken.transferFrom(party1, address(this), gapAmountParty1);  // Transfer of GapAmount to sdc contract
             liquidityToken.transferFrom(party2, address(this), gapAmountParty2);  // Transfer of GapAmount to sdc contract
             tradeState = TradeState.Active;
-            processState = ProcessState.MarginAccountLocked;
+            processState = ProcessState.AwaitingSettlement;
             adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
             emit MarginAccountLockedEvent();
             emit TradeActivatedEvent(tradeID);
