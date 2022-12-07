@@ -9,7 +9,7 @@ contract SDC is ISDC {
     /*
      * Trade States
      */
-        enum TradeState {
+    enum TradeState {
 
         /*
          * State before the trade is incepted.
@@ -38,7 +38,16 @@ contract SDC is ISDC {
     }
 
     /*
-     * Process States
+     * Process States. t < T* (vor incept). The process runs in cycles. Let i = 0,1,2,... denote the index of the cycle. Within each cycle there are times
+     * T_{i,0}, T_{i,1}, T_{i,2}, T_{i,3} with T_{i,1} = pre-funding of the Smart Contract, T_{i,2} = request valuation from oracle, T_{i,3} = perform settlement on given valuation, T_{i+1,0} = T_{i,3}.
+     * Given this time discretization the states are assigned to time points and time intervalls:
+     * Idle: Before incept or after terminate
+     * Initiation: T* < t < T_{0}, where T* is time of incept and T_{0} = T_{0,0}
+     * AwaitingFunding: T_{i,0} < t < T_{i,1}
+     * Funding: t = T_{i,1}
+     * AwaitingSettlement: T_{i,1} < t < T_{i,2}
+     * ValuationAndSettlement: T_{i,2} < t < T_{i,3}
+     * Settled: t = T_{i,3}
      */
     enum ProcessState {
         /**
