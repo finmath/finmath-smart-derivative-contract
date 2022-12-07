@@ -115,6 +115,7 @@ contract SDC is ISDC {
 
     string private tradeID;
     string private tradeData;
+    string private lastSettlementData;
 
     mapping(address => MarginRequirement) private marginRequirements; // Storage of M and P per counterparty address
     mapping(uint256 => address) private pendingRequests; // Stores open request hashes for several requests: initiation, update and termination
@@ -146,53 +147,56 @@ contract SDC is ISDC {
 
     /*
      * generates a hash from tradeData and generates a map entry in openRequests
-     * emits a TradeInceptedEvent
+     * emits a TradeIncepted
      */
-    function inceptTrade(string memory _tradeData) external override onlyCounterparty
+    function inceptTrade(string memory _tradeData, string memory _initialSettlementData) external override onlyCounterparty
     {
         processState = ProcessState.Initiation;
         tradeState = TradeState.Incepted; // Set TradeState to Incepted
 
-        uint256 hash = uint256(keccak256(abi.encode(_tradeData)));
+        uint256 hash = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData)));
         pendingRequests[hash] = msg.sender;
         tradeID = Strings.toString(hash);
         tradeData = _tradeData; // Set Trade Data to enable querying already in inception state
 
-        emit TradeInceptedEvent(msg.sender, tradeID, _tradeData);
+        emit TradeIncepted(msg.sender, tradeID, _tradeData);
     }
 
     /*
      * generates a hash from tradeData and checks whether an open request can be found by the opposite party
      * if so, data are stored and open request is deleted
-     * emits a TradeConfirmedEvent
+     * emits a TradeConfirmed
      */
-    function confirmTrade(string memory _tradeData) external override onlyCounterparty
+    function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external override onlyCounterparty
     {
         address pendingRequestParty = msg.sender == party1 ? party2 : party1;
-        uint256 tradeIDConf = uint256(keccak256(abi.encode(_tradeData)));
+        uint256 tradeIDConf = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData)));
         require(pendingRequests[tradeIDConf] == pendingRequestParty, "Confirmation fails due to inconsistent trade data or wrong party address");
         delete pendingRequests[tradeIDConf]; // Delete Pending Request
 
         tradeState = TradeState.Confirmed;
-        emit TradeConfirmedEvent(msg.sender, tradeID); // subscribe event und handler, h löst tx aus gegen token
+        emit TradeConfirmed(msg.sender, tradeID);
 
         // Pre-Conditions
-        _lockTerminationFees();
+        if(_lockTerminationFees()) {
+            tradeState = TradeState.Active;
+            emit TradeActivated(tradeID);
 
-        processState = ProcessState.AwaitingFunding;
-        emit MarginAccountUnlockedEvent();
+            processState = ProcessState.AwaitingFunding;
+            emit ProcessAwaitingFunding();
+        }
     }
 
     /**
      * TODO Possible improvement: first check approvals for both parties, then transfer.
      */
-    function _lockTerminationFees() internal {
+    function _lockTerminationFees() internal returns(bool) {
         try liquidityToken.transferFrom(party1, address(this), uint(marginRequirements[party1].terminationFee)) {
         } catch Error(string memory reason) {
             tradeState = TradeState.Inactive;
             processState = ProcessState.Idle;
-            emit TerminationEvent("Termination Fee could not be locked from party 1.");
-            return;
+            emit TradeTerminated("Termination Fee could not be locked from party 1.");
+            return false;
         }
         try liquidityToken.transferFrom(party2, address(this),uint(marginRequirements[party2].terminationFee)) {
         }  catch Error(string memory reason) {
@@ -201,10 +205,11 @@ contract SDC is ISDC {
 
             tradeState == TradeState.Inactive;
             processState = ProcessState.Idle;
-            emit TerminationEvent("Termination Fee could not be locked from party 2.");
-            return;
+            emit TradeTerminated("Termination Fee could not be locked from party 2.");
+            return false;
         }
         adjustSDCBalances(marginRequirements[party1].terminationFee, marginRequirements[party2].terminationFee); // Update internal balances
+        return true;
     }
 
     /*
@@ -226,7 +231,7 @@ contract SDC is ISDC {
      * Send an Lock Request Event only when Process State = Funding
      * Puts Process state to Margin Account Check
      */
-    function ensurePrefunding() external override {
+    function initiatePrefunding() external override {
         processState = ProcessState.Funding;
 
         uint256 balance1 = liquidityToken.balanceOf(party1);
@@ -256,11 +261,9 @@ contract SDC is ISDC {
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
             liquidityToken.transferFrom(party1, address(this), gapAmountParty1);  // Transfer of GapAmount to sdc contract
             liquidityToken.transferFrom(party2, address(this), gapAmountParty2);  // Transfer of GapAmount to sdc contract
-            tradeState = TradeState.Active;
             processState = ProcessState.AwaitingSettlement;
             adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
-            emit MarginAccountLockedEvent();
-            emit TradeActivatedEvent(tradeID);
+            emit ProcessFunded();
         }
         /* Party 1 - Bad case: Balances are insufficient or token has not enough approval */
         else if ( (balanceParty1 < gapAmountParty1 || liquidityToken.allowance(party1,address(this)) < gapAmountParty1) &&
@@ -271,7 +274,7 @@ contract SDC is ISDC {
             adjustSDCBalances(-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee); // Update internal balances
 
             _processTermination(); // Release all buffers
-            emit TerminationEvent("Termination caused by party1 due to insufficient prefunding");
+            emit TradeTerminated("Termination caused by party1 due to insufficient prefunding");
         }
         /* Party 2 - Bad case: Balances are insufficient or token has not enough approval */
         else if ( (balanceParty1 >= gapAmountParty1 && liquidityToken.allowance(party1,address(this)) >= gapAmountParty1) &&
@@ -282,7 +285,7 @@ contract SDC is ISDC {
             adjustSDCBalances(marginRequirements[party2].terminationFee,-marginRequirements[party2].terminationFee); // Update internal balances
 
             _processTermination(); // Release all buffers
-            emit TerminationEvent("Termination caused by party2 due to insufficient prefunding");
+            emit TradeTerminated("Termination caused by party2 due to insufficient prefunding");
         }
         /* Both parties fail: Cross Transfer of Termination Fee */
         else {
@@ -292,7 +295,7 @@ contract SDC is ISDC {
             adjustSDCBalances(marginRequirements[party2].terminationFee-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee-marginRequirements[party2].terminationFee); // Update internal balances: Cross Booking of termination fee
 
             _processTermination(); // Release all buffers
-            emit TerminationEvent("Termination caused by both parties due to insufficient prefunding");
+            emit TradeTerminated("Termination caused by both parties due to insufficient prefunding");
         }
     }
 
@@ -303,7 +306,7 @@ contract SDC is ISDC {
     function initiateSettlement() external override onlyCounterparty
     {
         processState = ProcessState.ValuationAndSettlement;
-        emit ValuationRequestEvent(tradeData);
+        emit ProcessSettlementRequest(tradeData, lastSettlementData);
     }
 
     /*
@@ -311,8 +314,10 @@ contract SDC is ISDC {
      * Puts process state to "inTransfer"
      * Checks Settlement amount according to valuationViewParty: If SettlementAmount is > 0, valuationViewParty receives
      */
-    function performSettlement(int256 settlementAmount, string memory marketData) external override
+    function performSettlement(int256 settlementAmount, string memory settlementData) external override
     {
+        lastSettlementData = settlementData;
+
         int256 transferAmount = abs(settlementAmount);
 
         address receivingParty  = settlementAmount > 0 ? receivingPartyAddress : other(receivingPartyAddress);
@@ -330,7 +335,7 @@ contract SDC is ISDC {
             }
 
             _processTermination(); // Transfer
-            emit TerminationEvent("Termination due to margin buffer exceedance");
+            emit TradeTerminated("Termination due to margin buffer exceedance");
         } else {   // Regular Settlement
             if(payingParty == party1) {
                 adjustSDCBalances(-transferAmount,0);
@@ -341,7 +346,7 @@ contract SDC is ISDC {
             liquidityToken.transfer(receivingParty, uint256(transferAmount)); // SDC Contract performs transfer to receiving party
             processState = ProcessState.Settled;  // Set Process State to Settled
 
-            emit SettlementCompletedEvent();
+            emit ProcessSettled();
         }
 
         if (mutuallyTerminated) {
@@ -364,7 +369,7 @@ contract SDC is ISDC {
         require(keccak256(abi.encodePacked(tradeID)) == keccak256(abi.encodePacked(_tradeID)), "Trade ID mismatch");
         uint256 hash = uint256(keccak256(abi.encode(_tradeID, "terminate")));
         pendingRequests[hash] = msg.sender;
-        emit TerminationRequestEvent(msg.sender, _tradeID);
+        emit TradeTerminationRequest(msg.sender, _tradeID);
     }
 
     /*
@@ -379,17 +384,7 @@ contract SDC is ISDC {
         require(pendingRequests[hashConfirm] == pendingRequestParty, "Confirmation of termination failed due to wrong party or missing request");
         delete pendingRequests[hashConfirm];
         mutuallyTerminated = true;
-        emit TerminationConfirmedEvent(msg.sender, tradeID);
-    }
-
-    function initiateMarginReqirementUpdate() external override {
-        emit MarginRequirementUpdateRequestEvent();
-    }
-
-    function performMarginRequirementUpdate(address _address, uint256 amount) external override
-    {
-        marginRequirements[_address].buffer = int256(amount);
-        emit MarginRequirementUpdatedEvent();
+        emit TradeTerminationConfirmed(msg.sender, tradeID);
     }
 
     function adjustSDCBalances(int256 adjustmentAmountParty1, int256 adjustmentAmountParty2) internal {

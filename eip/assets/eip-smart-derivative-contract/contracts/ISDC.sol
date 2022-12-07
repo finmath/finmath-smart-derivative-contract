@@ -25,7 +25,7 @@ pragma solidity >=0.7.0 <0.9.0;
  *
  * Events and Functionality specify the entire live cycle: TradeInception, TradeConfirmation, TradeTermination, Margin-Account-Mechanics, Valuation and Settlement.
  *
- * The process can be described by time points and time-intervalls which are associated with well definied states:
+ * The process can be described by time points and time-intervals which are associated with well defined states:
  * <ol>
  *  <li>t < T* (befrore incept).
  *  </li>
@@ -67,63 +67,52 @@ interface ISDC {
      * @dev Event Emitted when a new trade is incepted from a counterparty
      * If initiating counterparty has checked tradeId from TradeInceptionEvent succesfully, it is other counterparty who needs to call confirmTrade
      */
-    event TradeInceptedEvent(address initiator, string tradeId, string tradeData);
+    event TradeIncepted(address initiator, string tradeId, string tradeData);
 
     /**
      * @dev Emitted when an incepted trade is confirmed by the opposite counterparty
      */
-    event TradeConfirmedEvent(address confirmer, string tradeId);
+    event TradeConfirmed(address confirmer, string tradeId);
 
     /**
      * @dev Emitted when a confirmed trade is set to active - e.g. when sufficient prefunding is provided by both counterparties
      */
-    event TradeActivatedEvent(string tradeId);
-
-    /**
-     * @dev Emitted when a valuation is requested
-     */
-    event ValuationRequestEvent(string tradeData);
-
-    /**
-     * @dev Emitted when a settlent was processed succesfully
-     */
-    event SettlementCompletedEvent();
-
-    /**
-     * @dev Emitted to unlock a margin account
-     */
-    event MarginAccountUnlockedEvent();
-
-    /**
-     * @dev Emitted when margin balance was updated
-     */
-    event MarginAccountLockedEvent();
-
-    /**
-     * @dev Emitted when update margin requirements was requested
-     */
-    event MarginRequirementUpdateRequestEvent();
-
-    /**
-     * @dev Emitted when margin requirement was updated
-     */
-    event MarginRequirementUpdatedEvent();
-
-    /**
-     * @dev Emitted when a counterparty proactively requests an early termination
-     */
-    event TerminationRequestEvent(address cpAddress, string tradeId);
-
-    /**
-     * @dev Emitted when early termination request is confirmet
-     */
-    event TerminationConfirmedEvent(address cpAddress, string tradeId);
-
+    event TradeActivated(string tradeId);
 
     /**
      * @dev Emitted when an active trade is terminated
      */
-    event TerminationEvent(string cause);
+    event TradeTerminated(string cause);
+
+    /**
+     * @dev Emitted awaiting funding
+     */
+    event ProcessAwaitingFunding();
+
+    /**
+     * @dev Emitted when margin balance was updated
+     */
+    event ProcessFunded();
+
+    /**
+     * @dev Emitted when a valuation is requested
+     */
+    event ProcessSettlementRequest(string tradeData, string lastSettlementData);
+
+    /**
+     * @dev Emitted when a settlent was processed succesfully
+     */
+    event ProcessSettled();
+
+    /**
+     * @dev Emitted when a counterparty proactively requests an early termination
+     */
+    event TradeTerminationRequest(address cpAddress, string tradeId);
+
+    /**
+     * @dev Emitted when early termination request is confirmet
+     */
+    event TradeTerminationConfirmed(address cpAddress, string tradeId);
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 
@@ -134,23 +123,23 @@ interface ISDC {
      * @notice emits a {TradeInceptionEvent}
      * @param _tradeData a description of the trade in sdc.xml, see https://github.com/finmath/finmath-smart-derivative-contract/tree/main/src/main/resources/net.finmath.smartcontract.product.xml
      */
-    function inceptTrade(string memory _tradeData) external;
+    function inceptTrade(string memory _tradeData, string memory _initialSettlementData) external;
 
     /**
      * @dev Performs a matching of provided trade data, puts the state to trade confirmed if trade data match
      * @notice emits a {TradeConfirmEvent}
      * @param _tradeData a description of the trade in sdc.xml, see https://github.com/finmath/finmath-smart-derivative-contract/tree/main/src/main/resources/net.finmath.smartcontract.product.xml
      */
-    function confirmTrade(string memory _tradeData) external;
+    function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external;
 
     /// Settlement Cycle: Prefunding
 
     /**
      * @dev Called from outside to secure pre-funding. Terminate the trade if prefunding fails.
      * emits a {MarginAccountLockedEvent} followed by a {TradeActivatedEvent} or
-     * emits a {TerminationEvent}
+     * emits a {TradeTerminated}
      */
-    function ensurePrefunding() external;
+    function initiatePrefunding() external;
 
     /// Settlement Cycle: Settlement
 
@@ -167,7 +156,7 @@ interface ISDC {
      * @param settlementAmount The settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
      * @param marketData. The tripple (product, previousMarketData, marketData) determines the settlementAmount.
      */
-    function performSettlement(int256 settlementAmount, string memory marketData) external;
+    function performSettlement(int256 settlementAmount, string memory settlementData) external;
 
     /// Trade termination
 
@@ -181,17 +170,5 @@ interface ISDC {
      *
      */
     function confirmTradeTermination(string memory tradeId) external;
-
-    /// Other
-
-    /*
-     * emits {MarginAmountUpdateRequestEvent}
-     */
-    function initiateMarginReqirementUpdate() external;
-
-    /*
-     * emits {MarginUpdatedEvent(bool)} fail if locked
-     */
-    function performMarginRequirementUpdate(address _address, uint256 amount) external;
 }
 
