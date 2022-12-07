@@ -55,7 +55,7 @@ contract SDC is ISDC {
          */
         Idle,
         /*
-         * @dev The process is initiated (incepted, but not yet completed confimation). Next: Funding
+         * @dev The process is initiated (incepted, but not yet completed confimation). Next: AwaitingFunding
          */
         Initiation,
         /*
@@ -75,7 +75,7 @@ contract SDC is ISDC {
          */
         ValuationAndSettlement,
         /*
-         * @dev Settlement completed. Next is Funding
+         * @dev Settlement completed. Next is AwaitingFunding
          */
         Settled,
         /*
@@ -234,23 +234,9 @@ contract SDC is ISDC {
     function initiatePrefunding() external override {
         processState = ProcessState.Funding;
 
-        uint256 balance1 = liquidityToken.balanceOf(party1);
-        uint256 balance2 = liquidityToken.balanceOf(party2);
-        _ensurePrefunding(balance1, balance2);
-    }
+        uint256 balanceParty1 = liquidityToken.balanceOf(party1);
+        uint256 balanceParty2 = liquidityToken.balanceOf(party2);
 
-
-    /*
-     * Only when State = MarginAccountCheck
-     * Checks balances for each party and sends PaymentRequest on Termination
-     * If successfull checked TradeState is put to Active, ProcessState is put to MarginAccountLocked
-     * TODO REMOVE - call back can be realized in liquidityToken
-     */
-//    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external override  {
-//        _processMarginLock(balanceParty1, balanceParty2);
-//    }
-
-    function _ensurePrefunding(uint balanceParty1, uint balanceParty2) internal {
         /* Calculate gap amount for each party, i.e. residual between buffer and termination fee and actual balance */
         // max(M+P - sdcBalance,0)
         uint gapAmountParty1 = marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1] > 0 ? uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee - sdcBalances[party1]) : 0;
