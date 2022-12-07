@@ -415,7 +415,7 @@ contract SDC is ISDC {
     /**
      * Other party
      */
-    function other(address party) private pure returns (address) {
+    function other(address party) private view returns (address) {
         return (party == party1 ? party2 : party1);
     }
 
