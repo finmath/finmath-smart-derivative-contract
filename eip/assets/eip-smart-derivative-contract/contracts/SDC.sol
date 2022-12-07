@@ -41,13 +41,37 @@ contract SDC is ISDC {
      * Process States
      */
     enum ProcessState {
+        /**
+         * @dev The process has not yet started or is terminated
+         */
         Idle,
+        /*
+         * @dev The process is initiated (incepted, but not yet completed confimation). Next: Funding
+         */
         Initiation,
+        /*
+         * @dev Initiating prefunding the smart contract. Next: MarginAccountCheck
+         */
         Funding,
+        /*
+         * @dev Prefunding the smart contract. Next: MarginAccountLocked TODO Could be deleted, part of "Funding"
+         */
         MarginAccountCheck,
+        /*
+         * @dev The smart contract is completely funded and awaits settlement. Next: ValuationAndSettlement
+         */
         MarginAccountLocked,
+        /*
+         * @dev The settlement process is initiated. Next: Settled or InTermination
+         */
         ValuationAndSettlement,
+        /*
+         * @dev Settlement completed. Next is Funding
+         */
         Settled,
+        /*
+         * @dev Termination started.
+         */
         InTermination
     }
 
