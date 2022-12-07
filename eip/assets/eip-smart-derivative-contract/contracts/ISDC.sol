@@ -154,7 +154,7 @@ interface ISDC {
      * @dev Called from outside to trigger according settlement on chain-balances callback for initiateSettlement() event handler
      * emits a {MarginAccountUnlockRequestEvent} and ({SettlementCompletedEvent} or {Termination Event}
      * @param settlementAmount The settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
-     * @param marketData. The tripple (product, previousMarketData, marketData) determines the settlementAmount.
+     * @param settlementData. The tripple (product, previousSettlementData, settlementData) determines the settlementAmount.
      */
     function performSettlement(int256 settlementAmount, string memory settlementData) external;
 

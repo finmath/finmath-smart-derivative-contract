@@ -188,28 +188,23 @@ contract SDC is ISDC {
     }
 
     /**
-     * TODO Possible improvement: first check approvals for both parties, then transfer.
+     * Check sufficient balances and lock Termination Fees otherwise trade does not get activated
      */
     function _lockTerminationFees() internal returns(bool) {
-        try liquidityToken.transferFrom(party1, address(this), uint(marginRequirements[party1].terminationFee)) {
-        } catch Error(string memory reason) {
-            tradeState = TradeState.Inactive;
-            processState = ProcessState.Idle;
-            emit TradeTerminated("Termination Fee could not be locked from party 1.");
-            return false;
+        bool isAvailableParty1 = (liquidityToken.balanceOf(party1) >= uint(marginRequirements[party1].terminationFee)) && (liquidityToken.allowance(party1,address(this)) >= uint(marginRequirements[party1].terminationFee));
+        bool isAvailableParty2 = (liquidityToken.balanceOf(party2) >= uint(marginRequirements[party2].terminationFee)) && (liquidityToken.allowance(party2,address(this)) >= uint(marginRequirements[party2].terminationFee));
+        if (isAvailableParty1 && isAvailableParty2){
+            liquidityToken.transferFrom(party1, address(this), uint(marginRequirements[party1].terminationFee)); // transfer termination fee party1 to sdc
+            liquidityToken.transferFrom(party2, address(this), uint(marginRequirements[party2].terminationFee)); // transfer termination fee party2 to sdc
+            adjustSDCBalances(marginRequirements[party1].terminationFee, marginRequirements[party2].terminationFee); // Update internal balances
+            return true;
         }
-        try liquidityToken.transferFrom(party2, address(this),uint(marginRequirements[party2].terminationFee)) {
-        }  catch Error(string memory reason) {
-            // Revert Party 1 Termination Free
-            liquidityToken.transferFrom(address(this), party1, uint(marginRequirements[party1].terminationFee));
-
+        else{
             tradeState == TradeState.Inactive;
             processState = ProcessState.Idle;
-            emit TradeTerminated("Termination Fee could not be locked from party 2.");
+            emit TradeTerminated("Termination Fee could not be locked.");
             return false;
         }
-        adjustSDCBalances(marginRequirements[party1].terminationFee, marginRequirements[party2].terminationFee); // Update internal balances
-        return true;
     }
 
     /*
