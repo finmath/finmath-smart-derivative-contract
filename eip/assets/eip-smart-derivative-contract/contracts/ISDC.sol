@@ -127,19 +127,23 @@ interface ISDC {
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 
+    /// Trade Inception
+
     /**
      * @dev Handles trade inception, stores trade data
      * @notice emits a {TradeInceptionEvent}
-     * @param _tradeData a description of the trade in sdc.xml
+     * @param _tradeData a description of the trade in sdc.xml, see https://github.com/finmath/finmath-smart-derivative-contract/tree/main/src/main/resources/net.finmath.smartcontract.product.xml
      */
     function inceptTrade(string memory _tradeData) external;
 
     /**
-     * @dev Performes a matching of provided trade data, puts the state to trade confirmed if trade data match
+     * @dev Performs a matching of provided trade data, puts the state to trade confirmed if trade data match
      * @notice emits a {TradeConfirmEvent}
-     * @param _tradeData a description of the trade in sdc.xml
+     * @param _tradeData a description of the trade in sdc.xml, see https://github.com/finmath/finmath-smart-derivative-contract/tree/main/src/main/resources/net.finmath.smartcontract.product.xml
      */
     function confirmTrade(string memory _tradeData) external;
+
+    /// Settlement Cycle: Prefunding
 
     /**
      * @dev Called from outside to secure pre-funding. Terminate the trade if prefunding fails.
@@ -148,7 +152,7 @@ interface ISDC {
      */
     function ensurePrefunding() external;
 
-//    function performMarginAccountCheck(uint256 balanceParty1, uint256 balanceParty2) external;
+    /// Settlement Cycle: Settlement
 
     /**
      * @dev Called from outside to trigger an external valuation and according settlement process
@@ -157,11 +161,27 @@ interface ISDC {
     function initiateSettlement() external;
 
     /**
-     * @dev Called from outside to trigger according settlement on chain-balances
-     * callback for initiateSettlement() event handler
+     * @dev Called from outside to trigger according settlement on chain-balances callback for initiateSettlement() event handler
      * emits a {MarginAccountUnlockRequestEvent} and ({SettlementCompletedEvent} or {Termination Event}
+     * @param settlementAmount The settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
+     * @param The marketData. The tripple (product, previousMarketData, marketData) determines the settlementAmount.
      */
     function performSettlement(int256 settlementAmount, string memory marketData) external;
+
+    /// Trade termination
+
+    /**
+     * @dev Called from a counterparty to request a mutual termination
+     */
+    function requestTradeTermination(string memory tradeId) external;
+
+    /**
+     * @dev Called from a counterparty to confirm a mutual termination, which will triggers a final settlement before trade gets inactive
+     *
+     */
+    function confirmTradeTermination(string memory tradeId) external;
+
+    /// Other
 
     /*
      * emits {MarginAmountUpdateRequestEvent}
@@ -172,16 +192,5 @@ interface ISDC {
      * emits {MarginUpdatedEvent(bool)} fail if locked
      */
     function performMarginRequirementUpdate(address _address, uint256 amount) external;
-
-    /**
-     * @dev Called from a counterparty to request a mutual termination
-    */
-    function requestTradeTermination(string memory tradeId) external;
-
-    /**
-     * @dev Called from a counterparty to confirm a mutual termination, which will triggers a final settlement before trade gets inactive
-     *
-     */
-    function confirmTradeTermination(string memory tradeId) external;
 }
 
