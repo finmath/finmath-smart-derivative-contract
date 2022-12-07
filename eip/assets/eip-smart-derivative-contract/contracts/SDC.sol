@@ -69,7 +69,7 @@ contract SDC is ISDC {
         /*
          * @dev The smart contract is completely funded and awaits settlement. Next: ValuationAndSettlement
          */
-        AwaitingSettlement,
+        Funded,
         /*
          * @dev The settlement process is initiated. Next: Settled or InTermination
          */
@@ -242,7 +242,7 @@ contract SDC is ISDC {
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
             liquidityToken.transferFrom(party1, address(this), gapAmountParty1);  // Transfer of GapAmount to sdc contract
             liquidityToken.transferFrom(party2, address(this), gapAmountParty2);  // Transfer of GapAmount to sdc contract
-            processState = ProcessState.AwaitingSettlement;
+            processState = ProcessState.Funded;
             adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
             emit ProcessFunded();
         }
