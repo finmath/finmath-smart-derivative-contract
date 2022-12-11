@@ -65,7 +65,7 @@ EventHandler->ValuationService: request valuation data
 ValuationService-->EventHandler: return valuation data
 EventHandler->SDC: callback: tx 'performSettlement'
 SDC->SDC:checks settlement amount against buffers
-SDC->LiqidityToken: tx 'transferFrom' settlement amount from SDC address to receiving party
+SDC->LiqidityToken: tx 'transfer' settlement amount from SDC address to receiving party
 SDC-->EventHandler: emit Settled
 
 ==Process: Settled==
