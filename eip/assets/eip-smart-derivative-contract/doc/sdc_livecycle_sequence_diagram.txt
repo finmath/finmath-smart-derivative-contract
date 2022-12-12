@@ -32,42 +32,44 @@ CP2 ->LiqidityToken: tx 'allowance' for SDC address
 CP1 ->SDC: tx 'inceptTrade' wit trade data
 
 SDC-->EventHandler: emit TradeIncepted
-== Trade: Incepted ==
+== TradeState 'Incepted' ==
 CP2->SDC: tx 'confirmTrade' with id and tradedata
 SDC->SDC: validate tradedata
 
 SDC-->EventHandler: emit TradeConfirmed
 
-== Trade: Confirmed ==
+== TradeState 'Confirmed' ==
 
 SDC ->LiqidityToken: tx 'transferFrom' termination fees to SDC address for CP1 and CP2
 SDC-->EventHandler: emit TradeActivated
 
-== Trade: Active ==
+==  TradeState 'Active' ==
 end
 
 loop Every Settlement
+
+==ProcessState 'AwaitingFunding' ==
+
 CP2 -> SDC: tx 'initiatePrefunding'
-== Process: Funding ==
+== ProcessState 'Funding' ==
 SDC->SDC: determine gap amounts to refund margin buffer
 SDC ->LiqidityToken: tx 'transferFrom': gap amount to SDC address from CP1 and CP2
-SDC-->EventHandler: ProcessFunded
+SDC-->EventHandler: emit ProcessFunded
 
 
-==Process: Funded ==
+==ProcessState 'Funded' ==
 
 CP1->SDC: tx: 'initiateSettlement'
 
-== Process: ValuationAndSettlement ==
-SDC-->EventHandler:ProcessSettlementRequest
+== ProcessState 'ValuationAndSettlement' ==
+SDC-->EventHandler:emit ProcessSettlementRequest
 
 EventHandler->ValuationService: request valuation data
-ValuationService-->EventHandler: return valuation data
+ValuationService->EventHandler: return valuation data
 EventHandler->SDC: callback: tx 'performSettlement'
 SDC->SDC:checks settlement amount against buffers
 SDC->LiqidityToken: tx 'transfer' settlement amount from SDC address to receiving party
-SDC-->EventHandler: emit Settled
+SDC-->EventHandler: emit ProcessSettled
 
-==Process: Settled==
 
 end
