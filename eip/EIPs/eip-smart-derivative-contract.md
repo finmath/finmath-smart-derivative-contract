@@ -140,7 +140,7 @@ event ProcessFunded();
 #### ProcessSettlementRequest
 Emitted when a settlement is initiated - method `initiateSettlement`
 ``` js
-event ProcessSettled(string tradeData, string lastSettlementData);
+event ProcessSettlementRequest(string tradeData, string lastSettlementData);
 ```
 #### ProcessSettled
 Emitted when settlement was processed successfully - method 'performSettlement'
@@ -159,10 +159,10 @@ The interface design and reference implementation is based on following consider
 - Java based state machine and contract implementations are also available. See github below.
 
 ## Test Cases
-Live-cycle unit tests based on the sample implementation and usage of erc20 token is provided. See folder '/assets/test'.
+Live-cycle unit tests based on the sample implementation and usage of erc20 token is provided. See folder `/assets/test`.
 
 ## Reference Implementations
-A reference implementation `SDC.sol` is provided based on ERC20 token standard. See folder '/assets/contracts'.
+A reference implementation `SDC.sol` is provided based on ERC20 token standard. See folder `/assets/contracts`.
 
 ## Oracle Valuation Service Functionality
 External Valuation Oracle functionality (java) is available on github:
