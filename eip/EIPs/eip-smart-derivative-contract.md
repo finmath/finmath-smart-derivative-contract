@@ -151,12 +151,20 @@ event ProcessSettled();
 ## Rationale
 The interface design and reference implementation is based on following considerations:
 - A SDC protocol is supposed to be used by two counterparties and enables them to initiate and process a derivative transaction in a bilateral and digital manner.
-- Therefore contract interface specification is supposed to completely refelect the trade livecycle.
+- Therefor contract interface specification is supposed to completely refelect the trade livecycle.
 - The interface specification is generic enough to handle the case that two counterparties process one or even multible transactions (on a netted base)
 - Usually the valuation of an OTC trade will require complex valuation methodology. Therefore the concept will in most cases rely on external market data and valuation algorithms
 - A pull-based valuation based oracle pattern is specified by a simple callback pattern (methods: initiateSettlement, performSettlement)
 - The reference implementation `SDC.sol` is based on a state-machine pattern where the states also serve as guards (via modifiers) to check which method is allowed to be called at a particular given process and trade state
 - Java based state machine and contract implementations are also available. See github below.
+
+### State diagram of trade and process states 
+
+![image info](../assets/eip-smart-derivative-contract/doc/sdc_trade_and_process_states.png)
+
+### Sequence diagram of trade initiation and settlement livecycle
+
+![image info](../assets/eip-smart-derivative-contract/doc/sdc_livecycle_sequence_diagram.png)
 
 ## Test Cases
 Live-cycle unit tests based on the sample implementation and usage of erc20 token is provided. See folder `/assets/test`.
