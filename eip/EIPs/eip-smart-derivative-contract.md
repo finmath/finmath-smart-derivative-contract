@@ -7,30 +7,28 @@ discussions-to: https://ethereum-magicians.org/
 status: Draft
 type: Standard Track
 category (*only required for Standards Track): ERC
-created: 2022-11-21
-requires (*optional): <EIP number(s)>
+created: 2022-12-13
 ---
 
 ## Abstract
-The Smart Derivative Contract is a deterministic protocol to trade and process 
-financial derivative contracts frictionless and scalable in a complete automated way. Counterparty credit risk ís removed. 
-Known operational risks and complexities in post-trade processing are removed by construction as all process states 
+The Smart Derivative Contract is a deterministic protocol to trade and process
+financial derivative contracts frictionless and scalable in a complete automated way. Counterparty credit risk ís removed.
+Known operational risks and complexities in post-trade processing are removed by construction as all process states
 are fully specified and are known to the counterparties.
 
 ## Motivation
 ### Rethinking Financial Derivatives
 By their very nature so-called "over-the-counter (OTC)" financial contracts are bilateral contractual agreements on the exchange of long-dated cash flow schedules.
 Since these contracts change their intrinsic market value due to changing market environments they are subject to counterparty credit risk when one counterparty is subject to default.
-The initial white paper describes the concept of a Smart Derivative Contract with the central aim 
-to detach bilateral financial transactions from counterparty credit risk and to remove complexities 
+The initial white paper describes the concept of a Smart Derivative Contract with the central aim
+to detach bilateral financial transactions from counterparty credit risk and to remove complexities
 in bilateral post-trade processing by a complete redesign.
-https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3249430
 
 ### Concept of a Smart Derivative Contract
 A Smart Derivative Contract is a deterministic settlement protocol which has the same economical behaviour as a collateralized OTC
-Derivative. Every process state is specified and therefore known in advance.
+Derivative. Every process state is specified and therefore the entire post-trade process is known in advance.
 A Smart Derivative Contract (SDC) settles outstanding net present value of the underlying financial contract on a frequent basis. With each settlement cycle net present value of the underlying contract is
-exchanged and the value of the contract is reset to zero. Pre-Agreed margin buffers are locked at the beginning of each settlement cycle such that settlement will be guaranteed up to a certain amount. 
+exchanged and the value of the contract is reset to zero. Pre-Agreed margin buffers are locked at the beginning of each settlement cycle such that settlement will be guaranteed up to a certain amount.
 In case a counterparty fails to obey contract rules, e.g. not provide sufficient prefunding, SDC will terminate automatically with the guaranteed transfer of a termination fee by the causing party.
 These features enable two counterparties to process their financial contract fully decentralized without relying on a third central intermediary agent.
 Process logic of SDC can be implemented as a finite state machine on solidity. ERC20 token standard can be used for frictionless decentralized settlement - see reference implementation.
@@ -54,7 +52,7 @@ function confirmTrade(string memory _tradeData, string memory _initialSettlement
 ```
 
 #### initiatePrefunding
-This method checks whether contractual prefunding is provided by both counterparties as agreed in the contract terms. Triggers a contract termination if not. 
+This method checks whether contractual prefunding is provided by both counterparties as agreed in the contract terms. Triggers a contract termination if not.
 ``` js
 function initiatePrefunding() external;
 ```
@@ -66,7 +64,7 @@ function initiateSettlement() external;
 ```
 
 #### performSettlement
-Valuation may be provided off-chain via an external oracle service with calculates net present value and uses external market data. 
+Valuation may be provided off-chain via an external oracle service with calculates net present value and uses external market data.
 Method serves as callback called from an external oracle providing settlement amount and used settlement data which also get stored.
 Settlement amount will be checked according to contract terms resulting in either a reqular settlement or a termination of the trade.
 ``` js
@@ -125,7 +123,7 @@ event TradeTerminated(string cause);
 ```
 
 ### Process Events
-The following events are emitted during SDC's process live cycle.
+The following events are emitted during SDC's process livecycle.
 
 #### ProcessAwaitingFunding
 Emitted when funding phase is initiated
@@ -156,9 +154,9 @@ The interface design and reference implementation is based on following consider
 - Usually the valuation of an OTC trade will require complex valuation methodology. Therefore the concept will in most cases rely on external market data and valuation algorithms
 - A pull-based valuation based oracle pattern is specified by a simple callback pattern (methods: initiateSettlement, performSettlement)
 - The reference implementation `SDC.sol` is based on a state-machine pattern where the states also serve as guards (via modifiers) to check which method is allowed to be called at a particular given process and trade state
-- Java based state machine and contract implementations are also available. See github below.
+- Java based state machine and contract implementations are also available. See github repo link below.
 
-### State diagram of trade and process states 
+### State diagram of trade and process states
 
 ![image info](../assets/eip-smart-derivative-contract/doc/sdc_trade_and_process_states.png)
 
@@ -170,7 +168,7 @@ The interface design and reference implementation is based on following consider
 Live-cycle unit tests based on the sample implementation and usage of erc20 token is provided. See folder `/assets/test`.
 
 ## Reference Implementations
-A reference implementation `SDC.sol` is provided based on ERC20 token standard. See folder `/assets/contracts`.
+A reference implementation `SDC.sol` is provided and is based on the ERC20 token standard. See folder `/assets/contracts`.
 
 ## Oracle Valuation Service Functionality
 External Valuation Oracle functionality (java) is available on github:
@@ -185,5 +183,5 @@ External Valuation Oracle functionality (java) is available on github:
 - [Outsmarting counterparty credit risk (2020)](https://www.risk.net/cutting-edge/views/7494071/outsmarting-counterparty-risk-with-smart-contracts)
 
 ## Copyright
-Copyright and related rights waived via ...
+Copyright and related rights waived via [CC0](../LICENSE.md).
 
