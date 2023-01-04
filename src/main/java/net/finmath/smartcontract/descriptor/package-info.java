@@ -1,1 +1,0 @@
-package net.finmath.smartcontract.descriptor;

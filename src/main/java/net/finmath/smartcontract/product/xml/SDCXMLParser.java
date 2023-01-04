@@ -26,31 +26,6 @@ import java.util.Map;
  */
 public class SDCXMLParser {
 
-	public static class Party {
-
-		private final String id;
-		private final String name;
-		private final String href;
-
-		public Party(String id, String name, String href) {
-			this.id = id;
-			this.name = name;
-			this.href = href;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getHref() {
-			return href;
-		}
-	}
-
 	private SDCXMLParser() {
 	}
 
@@ -60,8 +35,6 @@ public class SDCXMLParser {
 
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
 		document.getDocumentElement().normalize();
-
-		TradeDescriptor tradeDescriptor = new TradeDescriptor();
 
 		String tradeDateString = document.getElementsByTagName("settlementDateInitial").item(0).getTextContent();
 		settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());
@@ -83,17 +56,18 @@ public class SDCXMLParser {
 		/*
 		 * Counterparties
 		 */
-		List<Party> parties = new ArrayList<>();
+		List<SmartDerivativeContractDescriptor.Party> parties = new ArrayList<>();
 		Map<String, Double> marginAccountInitialByPartyID = new HashMap<>();
 		Map<String, Double> penaltyFeeInitialByPartyID = new HashMap<>();
 
 		List<Node> partyNodes = nodeChildsByName(document.getElementsByTagName("parties").item(0), "party");
 		for (Node partyNode : partyNodes) {
 
-			Party party = new Party(
+			SmartDerivativeContractDescriptor.Party party = new SmartDerivativeContractDescriptor.Party(
 					nodeValueByName(partyNode, "id", String.class),
 					nodeValueByName(partyNode, "name", String.class),
-					null
+					null,
+					nodeValueByName(partyNode, "address", String.class)
 			);
 
 			Double marginAccountInitial = nodeValueByName(nodeChildByName(partyNode, "marginAccount"), "value", Double.class);

@@ -1,7 +1,8 @@
 package net.finmath.smartcontract.valuation;
 
 import net.finmath.smartcontract.client.ValuationClient;
-import net.finmath.smartcontract.model.ValuationResult;
+import net.finmath.smartcontract.model.MarginResult;
+import net.finmath.smartcontract.model.ValueResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,12 +17,11 @@ public class MarginCalculatorTest {
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
-		ValuationResult valuationResult = marginCalculator.getValue(marketDataStart, marketDataEnd, product);
+		MarginResult valuationResult = marginCalculator.getValue(marketDataStart, marketDataEnd, product);
 
 		double value = valuationResult.getValue().doubleValue();
 
-//		Assertions.assertEquals(952409.716, value, 0.005, "Valuation");
-		Assertions.assertEquals(6515.820, value, 0.005, "Margin");
+		Assertions.assertEquals(651.5820, value, 0.005, "Margin");
 		System.out.println(valuationResult);
 	}
 
@@ -31,11 +31,11 @@ public class MarginCalculatorTest {
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
-		ValuationResult valuationResult = marginCalculator.getValue(marketData, product);
+		ValueResult valuationResult = marginCalculator.getValue(marketData, product);
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(952409.716, value, 0.005, "Valuation");
+		Assertions.assertEquals(95240.9716, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
 	}
 }

@@ -8,9 +8,11 @@
 package net.finmath.smartcontract.service;
 
 import net.finmath.smartcontract.api.ValuationApi;
+import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginRequest;
-import net.finmath.smartcontract.model.ValuationResult;
+import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Controller for the settlement valuation REST service.
@@ -39,11 +44,11 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<ValuationResult> margin(MarginRequest marginRequest) {
+	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
-		ValuationResult margin = null;
+		MarginResult margin = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
 			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
@@ -64,19 +69,38 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<ValuationResult> value(ValueRequest valueRequest) {
+	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "value");
 
-		ValuationResult value = null;
+		ValueResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
 			value = marginCalculator.getValue(valueRequest.getMarketData(), valueRequest.getTradeData());
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error("Failed to calculate margin.");
+			logger.error("Failed to calculate value.");
+			logger.info(value.toString());
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "value");
+
+		ValueResult value = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+			value = marginCalculator.getValue(marketData, new String(tradeData.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+			logger.info(value.toString());
+			return ResponseEntity.ok(value);
+		} catch (Exception e) {
+			logger.error("Failed to calculate value.");
 			logger.info(value.toString());
 			e.printStackTrace();
 			throw new RuntimeException(e);

@@ -8,4 +8,4 @@ cd $SCRIPT_PATH/../
 echo $PWD
 
 # Start
-mvn clean spring-boot:run
+mvn exec:java -Dexec.mainClass=net.finmath.smartcontract.demo.VisualiserSDC

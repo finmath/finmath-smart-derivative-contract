@@ -9,10 +9,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Descriptor for a smart derivative contract. Unified access to the SDC definition in an XML.
+ *
+ * @author Christian Fries
+ * @see net.finmath.smartcontract.product.xml.SDCXMLParser
+ */
 public class SmartDerivativeContractDescriptor {
 
 	private final LocalDateTime tradeDate;
-	private final List<SDCXMLParser.Party> counterparties;
+	private final List<Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
 	private final String recervicePartyID;
@@ -20,6 +26,51 @@ public class SmartDerivativeContractDescriptor {
 	private final List<IRMarketDataItem> marketdataItemList;
 
 	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<SDCXMLParser.Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<IRMarketDataItem> marketdataItems) {
+	/**
+	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
+	 */
+	public static class Party {
+
+		private final String id;
+		private final String name;
+		private final String href;
+		private final String address;
+
+		public Party(String id, String name, String href, String address) {
+			this.id = id;
+			this.name = name;
+			this.href = href;
+			this.address = address;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getHref() {
+			return href;
+		}
+
+		public String getAddress() {
+			return address;
+		}
+
+		@Override
+		public String toString() {
+			return "Party {" +
+					"id='" + id + '\'' +
+					", name='" + name + '\'' +
+					", href='" + href + '\'' +
+					", address='" + address + '\'' +
+					'}';
+		}
+	}
+
+	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying) {
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
@@ -38,7 +89,7 @@ public class SmartDerivativeContractDescriptor {
 		return tradeDate;
 	}
 
-	public List<SDCXMLParser.Party> getCounterparties() {
+	public List<Party> getCounterparties() {
 		return counterparties;
 	}
 

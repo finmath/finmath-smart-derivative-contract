@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * An oracle for swap valuation which generates values using externally provided historical market data scenarios.
@@ -33,6 +34,23 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	private final Swap product;
 	private final LocalDate productStartDate;
 	private final double notionalAmount;
+	private final DoubleUnaryOperator rounding;
+
+	/**
+	 * Oracle will be instantiated based on a Swap product an market data scenario list
+	 *
+	 * @param product        The underlying swap product.
+	 * @param notionalAmount The notional of the product.
+	 * @param scenarioList   The list of market data scenarios to be used for valuation.
+	 * @param rounding		An operator implementing the rounding.
+	 */
+	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<IRMarketDataSet> scenarioList, DoubleUnaryOperator rounding) {
+		this.notionalAmount = notionalAmount;
+		this.product = product;
+		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
+		this.scenarioList = scenarioList;
+		this.rounding = rounding;
+	}
 
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
@@ -42,10 +60,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
 	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<IRMarketDataSet> scenarioList) {
-		this.notionalAmount = notionalAmount;
-		this.product = product;
-		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
-		this.scenarioList = scenarioList;
+		this(product, notionalAmount, scenarioList, x -> Math.round(x*100)/100.0);
 	}
 
 	@Override
@@ -67,7 +82,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				final double evaluationTime = 0.0;    // Time relative to models reference date (which agrees with evaluationDate).
 				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
 				calibratedModel = null;
-				return valueWithCurves;
+				return rounding.applyAsDouble(valueWithCurves);
 			} catch (final Exception e) {
 				return null;
 			}
