@@ -10,9 +10,10 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.service.config;
 	exports net.finmath.smartcontract.oracle;
 	exports net.finmath.smartcontract.oracle.interestrates;
-	exports net.finmath.smartcontract.simulation.scenariogeneration;
-	exports net.finmath.smartcontract.simulation.curvecalibration;
+	exports net.finmath.smartcontract.marketdata.util;
+	exports net.finmath.smartcontract.marketdata.curvecalibration;
 	exports net.finmath.smartcontract.service.utils;
+	exports net.finmath.smartcontract.marketdata.adapters;
 
 	opens net.finmath.smartcontract.client;
 	opens net.finmath.smartcontract.product.xml;
@@ -60,5 +61,6 @@ module net.finmath.smartderivativecontract {
 	requires nv.websocket.client;
 	requires org.apache.httpcomponents.httpclient;
 	requires org.apache.httpcomponents.httpcore;
-	requires org.json;
+
+	requires io.reactivex.rxjava3;
 }

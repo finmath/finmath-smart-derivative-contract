@@ -1,8 +1,8 @@
-package net.finmath.smartcontract.simulation.scenariogeneration;
+package net.finmath.smartcontract.marketdata.util;
 
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParser;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationSpecProvider;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDatapoint;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationSpecProvider;
 
 import java.time.LocalDateTime;
 import java.util.Set;

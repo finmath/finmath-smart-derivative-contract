@@ -1,12 +1,12 @@
-package net.finmath.smartcontract.marketdata.adapters;
+package net.finmath.smartcontract.marketdata.util;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDatapoint;
 
 import java.util.Objects;
 
 @JsonPropertyOrder({"ric", "curve", "type", "tenor","value", "date","timestamp"})
-public class MarketdataItem {
+public class IRMarketDataItem {
     private String ric;
     private String curve;
     private String type;
@@ -16,7 +16,7 @@ public class MarketdataItem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MarketdataItem that = (MarketdataItem) o;
+        IRMarketDataItem that = (IRMarketDataItem) o;
         return Objects.equals(ric, that.ric) && Objects.equals(curve, that.curve) && Objects.equals(type, that.type) && Objects.equals(tenor, that.tenor) && Objects.equals(date, that.date) && Objects.equals(timestamp, that.timestamp) && Objects.equals(value, that.value);
     }
 
@@ -29,10 +29,10 @@ public class MarketdataItem {
     private String timestamp;
     private Double value;
 
-    public MarketdataItem() {
+    public IRMarketDataItem() {
     }
 
-    public MarketdataItem(String ric, String curve, String type, String tenor, String date, String timestamp, Double value) {
+    public IRMarketDataItem(String ric, String curve, String type, String tenor, String date, String timestamp, Double value) {
         this.ric = ric;
         this.curve = curve;
         this.type = type;

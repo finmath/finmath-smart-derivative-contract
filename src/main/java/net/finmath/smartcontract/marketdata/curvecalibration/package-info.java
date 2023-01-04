@@ -11,4 +11,4 @@
  * @author Peter Kohl-Landgraf
  * @author Christian Fries
  */
-package net.finmath.smartcontract.simulation.curvecalibration;
+package net.finmath.smartcontract.marketdata.curvecalibration;

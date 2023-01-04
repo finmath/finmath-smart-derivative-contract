@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.simulation.curvecalibration;
+package net.finmath.smartcontract.marketdata.curvecalibration;
 
 /**
  * Contains a single data point used for the calibration of a financial model.

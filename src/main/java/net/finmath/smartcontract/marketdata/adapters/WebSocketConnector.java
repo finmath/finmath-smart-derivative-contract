@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.marketdata.connectors;//|-----------------------------------------------------------------------------
+package net.finmath.smartcontract.marketdata.adapters;//|-----------------------------------------------------------------------------
 //|            This source code is provided under the Apache 2.0 license      --
 //|  and is provided AS IS with no warranty or guarantee of fit for purpose.  --
 //|                See the project's LICENSE.md for details.                  --
@@ -6,6 +6,8 @@ package net.finmath.smartcontract.marketdata.connectors;//|---------------------
 //|-----------------------------------------------------------------------------
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neovisionaries.ws.client.*;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -19,8 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 
 
 import javax.net.ssl.SSLParameters;
@@ -60,7 +61,7 @@ public class WebSocketConnector {
     public final String password;
     public final String clientid; //also known as app_key
     public final String authUrl;*/
-    public JSONObject authJson;
+    public JsonNode authJson;
 
 
     public String position;
@@ -86,7 +87,7 @@ public class WebSocketConnector {
         return ws;
     }
 
-    public JSONObject getAuthJson() {
+    public JsonNode getAuthJson() {
         return authJson;
     }
 
@@ -100,7 +101,7 @@ public class WebSocketConnector {
             // Connect to Refinitiv Data Platform and authenticate (using our username and password)
             this.authJson = getAuthenticationInfo(null, connectionProperties.get("AUTHURL").toString());
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return this;
@@ -142,7 +143,7 @@ public class WebSocketConnector {
      * @param url The HTTP post url
      * @return A JSONObject containing the authentication information from the response.
      */
-    public JSONObject getAuthenticationInfo(JSONObject previousAuthResponseJson, String url) {
+    public JsonNode getAuthenticationInfo(JsonNode previousAuthResponseJson, String url) {
         try
         {
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(new SSLContextBuilder().build());
@@ -173,7 +174,7 @@ public class WebSocketConnector {
             {
                 // Use the refresh token we got from the last authentication response.
                 params.add(new BasicNameValuePair("grant_type", "refresh_token"));
-                params.add(new BasicNameValuePair("refresh_token", previousAuthResponseJson.getString("refresh_token")));
+                params.add(new BasicNameValuePair("refresh_token", previousAuthResponseJson.get("refresh_token").textValue()));
                 System.out.println("Sending authentication request with refresh token to " + url + "...");
             }
 
@@ -188,9 +189,12 @@ public class WebSocketConnector {
             switch ( statusCode ) {
                 case HttpStatus.SC_OK:                  // 200
                     // Authentication was successful. Deserialize the response and return it.
-                    JSONObject responseJson = new JSONObject(EntityUtils.toString(response.getEntity()));
+                    ObjectMapper mapper = new ObjectMapper();
+                    String eUtils = EntityUtils.toString(response.getEntity());
+                    JsonNode responseJson = mapper.readTree(eUtils);
+                    //JSONObject responseJson = new JSONObject(eUtils);
                     System.out.println("Refinitiv Data Platform Authentication succeeded. RECEIVED:");
-                    System.out.println(responseJson.toString(2));
+                    System.out.println(responseJson.toString());
                     return responseJson;
                 case HttpStatus.SC_MOVED_PERMANENTLY:              // 301
                 case HttpStatus.SC_MOVED_TEMPORARILY:              // 302

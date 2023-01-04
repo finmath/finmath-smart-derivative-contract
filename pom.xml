@@ -238,9 +238,9 @@
 
         <!-- Dependencies for market data adapter -->
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20220320</version>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>3.1.5</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>

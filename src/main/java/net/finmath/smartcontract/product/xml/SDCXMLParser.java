@@ -1,6 +1,7 @@
 package net.finmath.smartcontract.product.xml;
 
 import net.finmath.smartcontract.descriptor.TradeDescriptor;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -66,6 +67,20 @@ public class SDCXMLParser {
 		settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());
 
 		/*
+		Market Data
+		 */
+		List<IRMarketDataItem> marketdataItems = new ArrayList<>();
+		List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0),"item");
+		for (Node itemNode : itemNodes) {
+			String symbol = nodeValueByName(itemNode, "symbol", String.class);
+			String curve = nodeValueByName(itemNode, "curve", String.class);
+			String type = nodeValueByName(itemNode, "type", String.class);
+			String tenor = nodeValueByName(itemNode, "tenor", String.class);
+			IRMarketDataItem item = new IRMarketDataItem(symbol,curve,type,tenor,"","",null);
+			marketdataItems.add(item);
+		}
+
+		/*
 		 * Counterparties
 		 */
 		List<Party> parties = new ArrayList<>();
@@ -89,6 +104,9 @@ public class SDCXMLParser {
 			penaltyFeeInitialByPartyID.put(party.getId(), penaltyFeeInitial);
 		}
 
+
+
+
 		// Receiver party ID
 		String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent().trim();
 
@@ -96,7 +114,7 @@ public class SDCXMLParser {
 
 		// TODO Support multiple underlyings
 		Node underlying = document.getElementsByTagName("underlying").item(0).getFirstChild().getNextSibling();
-		return new SmartDerivativeContractDescriptor(settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying);
+		return new SmartDerivativeContractDescriptor(settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying,marketdataItems );
 	}
 
 	/*

@@ -4,11 +4,11 @@ import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.smartcontract.oracle.ValuationOracle;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationContextImpl;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationParserDataPoints;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationResult;
-import net.finmath.smartcontract.simulation.curvecalibration.Calibrator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationContextImpl;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataPoints;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationResult;
+import net.finmath.smartcontract.marketdata.curvecalibration.Calibrator;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;

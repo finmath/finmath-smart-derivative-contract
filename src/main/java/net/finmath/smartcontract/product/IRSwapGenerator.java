@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.simulation.products;
+package net.finmath.smartcontract.product;
 
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;

@@ -11,4 +11,4 @@
  * @author Luca Del Re
  * @author Christian Fries
  */
-package net.finmath.smartcontract.simulation.scenariogeneration;
+package net.finmath.smartcontract.marketdata.util;

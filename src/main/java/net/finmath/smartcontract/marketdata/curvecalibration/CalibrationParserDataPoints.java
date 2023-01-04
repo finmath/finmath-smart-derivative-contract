@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.simulation.curvecalibration;
+package net.finmath.smartcontract.marketdata.curvecalibration;
 
 import org.slf4j.LoggerFactory;
 

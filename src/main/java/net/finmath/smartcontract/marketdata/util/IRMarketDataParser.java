@@ -1,10 +1,10 @@
-package net.finmath.smartcontract.simulation.scenariogeneration;
+package net.finmath.smartcontract.marketdata.util;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import net.finmath.smartcontract.simulation.curvecalibration.CalibrationDatapoint;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDatapoint;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,29 +36,13 @@ public class IRMarketDataParser {
 	 */
 	public static List<IRMarketDataSet> getScenariosFromCSVFile(final String fileName) throws IOException {
 		CsvMapper mapper = new CsvMapper();
-		CsvSchema csvSchema = mapper.typedSchemaFor(MarketDataItem.class).withHeader();
-		MappingIterator<MarketDataItem> iterator = mapper.readerFor(MarketDataItem.class).with(csvSchema).readValues(new FileReader(fileName));
-		List<MarketDataItem> asPojoList = iterator.readAll();
+		CsvSchema csvSchema = mapper.typedSchemaFor(IRMarketDataItem.class).withHeader();
+		MappingIterator<IRMarketDataItem> iterator = mapper.readerFor(IRMarketDataItem.class).with(csvSchema).readValues(new FileReader(fileName));
+		List<IRMarketDataItem> asPojoList = iterator.readAll();
 
-		Map<String, Map<String, Set<MarketDataItem>>> mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(MarketDataItem::getScenarioDate, groupingBy(MarketDataItem::getCurveKey, toSet())));
+		Map<String, Map<String, Set<IRMarketDataItem>>> mapCalibDatapointsPerDate = asPojoList.stream().collect(groupingBy(IRMarketDataItem::getDate, groupingBy(IRMarketDataItem::getCurve, toSet())));
 
 		final List<IRMarketDataSet> scenarioList = null;
-		/*final List<IRMarketDataSet> scenarioList = mapCalibDatapointsPerDate.entrySet().stream()
-				.map(
-						scenarioData -> {
-							final Map<String, Set<MarketDataItem>> rawMap = scenarioData.getValue();
-							final Map<String, IRCurveData> map = rawMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> {
-								return new IRCurveData(e.getKey(), e.getValue().stream().map(x -> x.toCalibrationDataPoint()).collect(Collectors.toSet()));
-							}));
-							//final String productKey = scenarioData
-							final String dateTimeStampStr = scenarioData.getKey();
-							final LocalDateTime dateTime = parseTimestampString(dateTimeStampStr);
-							final IRMarketDataSet scenario = new IRMarketDataSet(map, dateTime);
-
-							return scenario;
-						})
-				//.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
-				.collect(Collectors.toList());*/
 
 
 		return scenarioList;
@@ -150,5 +134,33 @@ public class IRMarketDataParser {
 
 		return localDateTime;
 	}
+
+
+	public static String  serializeToJson(Set<IRMarketDataItem> itemSet) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+
+		Map<String, Map<String,Map<String, Map<String, Double >> > > nestedMap = new HashMap<>();
+		nestedMap.put(date,new HashMap<>());
+		for (IRMarketDataItem item : itemSet){
+			if ( !nestedMap.get(date).containsKey(item.getCurve()) )
+				nestedMap.get(date).put(item.getCurve(),new HashMap<>());
+			if ( !nestedMap.get(date).get(item.getCurve()).containsKey(item.getType()))
+				nestedMap.get(date).get(item.getCurve()).put(item.getType(),new HashMap<>());
+			nestedMap.get(date).get(item.getCurve()).get(item.getType()).put(item.getTenor(),item.getValue());
+		}
+
+
+		try {
+			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nestedMap);
+			return json;
+		}
+		catch (Exception e){
+			return null;
+		}
+
+	}
+
 
 }

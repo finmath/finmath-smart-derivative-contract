@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.simulation.curvecalibration;
+package net.finmath.smartcontract.marketdata.curvecalibration;
 
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
