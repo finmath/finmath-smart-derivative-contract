@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.neovisionaries.ws.client.WebSocket;
-import net.finmath.smartcontract.marketdata.adapters.CallableRetrieveMarketdata;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataRetrievable;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -55,7 +55,7 @@ public class DemoLauncher {
 
         // @Todo:  Check Service Key = "ELEKTRON_DD";
         /* Init Adapter */
-        final CallableRetrieveMarketdata adapter = new CallableRetrieveMarketdata(connector.getAuthJson(),connector.getPosition(), mdItemList );
+        final MarketDataRetrievable adapter = new MarketDataRetrievable(connector.getAuthJson(),connector.getPosition(), mdItemList );
         socket.addListener(adapter);
         socket.connect();
 

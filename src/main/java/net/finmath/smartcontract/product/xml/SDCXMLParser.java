@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.product.xml;
 
-import net.finmath.smartcontract.descriptor.TradeDescriptor;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;

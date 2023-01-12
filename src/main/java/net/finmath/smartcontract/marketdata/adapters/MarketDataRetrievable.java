@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
 
@@ -13,20 +15,24 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-public class CallableRetrieveMarketdata extends WebSocketAdapter implements Callable<String> {
+public class MarketDataRetrievable extends WebSocketAdapter {// implements Callable<String> {
 
     private final JsonNode authJson;
     private final String position;
     private final Map<String, IRMarketDataItem> marketdataItemMap;
 
+    private PublishSubject<String> publishSubject;
+
     boolean requestSent;
 
-    public CallableRetrieveMarketdata(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
+    public MarketDataRetrievable(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
         this.authJson = authJson;
         this.position = position;
         this.marketdataItemMap = itemList.stream().collect(Collectors.toMap(r->r.getRic(),r->r));
         requestSent = false;
+        publishSubject  = PublishSubject.create();
     }
+
 
 
     public Set<IRMarketDataItem>     getMarketDataItems(){
@@ -39,20 +45,26 @@ public class CallableRetrieveMarketdata extends WebSocketAdapter implements Call
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
         System.out.println("WebSocket successfully connected!");
         sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
+    }
 
+    public Observable<String> asObservable(){
+        return this.publishSubject;
     }
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
+        JsonNode responseJson = null;
+        long quotesRetrieved = this.getMarketDataItems().stream().filter(item -> item.getValue() != null).count();
         if (!message.isEmpty()) {
 
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode responseJson = mapper.readTree(message);
+            responseJson = mapper.readTree(message);
 
             if (!requestSent) {
                 sendRICRequest(websocket);
                 requestSent = true;
             }
 
+//            System.out.println(quotesRetrieved + " " + responseJson.get(0).get("Type").textValue() );
             try {
                 for (int i = 0; i < responseJson.size(); i++) {
                     if (responseJson.get(i).has("Fields")) {
@@ -72,6 +84,19 @@ public class CallableRetrieveMarketdata extends WebSocketAdapter implements Call
 //                websocket.disconnect();
             }
         }
+
+
+        if (quotesRetrieved == this.getMarketDataItems().size()) {
+
+            String json = IRMarketDataParser.serializeToJson(this.getMarketDataItems());
+            this.publishSubject.onNext(json);
+            this.getMarketDataItems().forEach(item -> {
+                item.setValue(null);
+            });
+            //Thread.sleep(2000);
+            requestSent = false;
+        }
+
 
     }
 
@@ -122,6 +147,7 @@ public class CallableRetrieveMarketdata extends WebSocketAdapter implements Call
 
     }
 
+    /*
     @Override
     public String call() throws Exception {
         while(true) {
@@ -138,9 +164,7 @@ public class CallableRetrieveMarketdata extends WebSocketAdapter implements Call
                     return "";
                 }
             }
-
-        }
-    }
+    }*/
 
 
 }

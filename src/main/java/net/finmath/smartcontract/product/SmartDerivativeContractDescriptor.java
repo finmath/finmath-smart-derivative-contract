@@ -18,14 +18,13 @@ import java.util.Map;
 public class SmartDerivativeContractDescriptor {
 
 	private final LocalDateTime tradeDate;
-	private final List<SDCXMLParser.Party> counterparties;
+	private final List<Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
 	private final String recervicePartyID;
 	private final Node underlying;
 	private final List<IRMarketDataItem> marketdataItemList;
 
-	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<SDCXMLParser.Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<IRMarketDataItem> marketdataItems) {
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
 	 */
@@ -70,7 +69,7 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying) {
+	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<IRMarketDataItem> marketdataItems) {
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;

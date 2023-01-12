@@ -11,20 +11,6 @@ public class IRMarketDataItem {
     private String curve;
     private String type;
     private String tenor;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        IRMarketDataItem that = (IRMarketDataItem) o;
-        return Objects.equals(ric, that.ric) && Objects.equals(curve, that.curve) && Objects.equals(type, that.type) && Objects.equals(tenor, that.tenor) && Objects.equals(date, that.date) && Objects.equals(timestamp, that.timestamp) && Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(ric, curve, type, tenor, date, timestamp, value);
-    }
-
     private String date;
     private String timestamp;
     private Double value;
@@ -101,4 +87,20 @@ public class IRMarketDataItem {
     public void setValue(Double value) {
         this.value = value;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IRMarketDataItem that = (IRMarketDataItem) o;
+        return Objects.equals(ric, that.ric) && Objects.equals(curve, that.curve) && Objects.equals(type, that.type) && Objects.equals(tenor, that.tenor) && Objects.equals(date, that.date) && Objects.equals(timestamp, that.timestamp) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ric, curve, type, tenor, date, timestamp, value);
+    }
+
+
 }
