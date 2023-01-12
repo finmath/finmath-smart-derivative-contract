@@ -18,7 +18,7 @@ import java.util.Map;
 public class SmartDerivativeContractDescriptor {
 
 	private final LocalDateTime tradeDate;
-	private final List<Party> counterparties;
+	private final List<SDCXMLParser.Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
 	private final String recervicePartyID;

@@ -10,14 +10,14 @@
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
     <description>
         Project to support the implementation a of smart derivative contract.
     </description>
-    <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
+    <url>http://www.finmath.net/finmath-lib</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,7 +48,7 @@
         <maven.javadoc-plugin.version>3.3.2</maven.javadoc-plugin.version>
         <maven.jar-plugin.version>3.2.0</maven.jar-plugin.version>
         <maven.source-plugin.version>3.2.1</maven.source-plugin.version>
-        <maven.site-plugin.version>3.12.1</maven.site-plugin.version>
+        <maven.site-plugin.version>3.9.1</maven.site-plugin.version>
         <maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
@@ -84,6 +84,17 @@
     </licenses>
 
     <dependencies>
+        <!-- Java FX -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>19</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -266,11 +277,6 @@
 
         <!-- Dependencies for market data adapter -->
         <dependency>
-            <groupId>io.reactivex.rxjava3</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>3.1.5</version>
-        </dependency>
-        <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.5.0</version>
@@ -290,6 +296,14 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.15</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.reactivex.rxjava3/rxjava -->
+        <dependency>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>3.1.5</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -403,25 +417,43 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+                <dependencies>
+                    <dependency>
+                        <!-- add support for ssh/scp -->
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.3</version>
                 <configuration>
-                    <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
                     <rules><dependencyConvergence /></rules>
-                    <fail>false</fail>
                 </configuration>
             </plugin>
+            -->
 
             <!-- Open API -->
             <!-- Maven Dependency Plugin -->
@@ -501,23 +533,6 @@
                 </executions>
             </plugin>
 
-            <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <to>
-                        <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
-                    </to>
-                    <container>
-                        <mainClass>
-                            net.finmath.smartcontract.service.Application
-                        </mainClass>
-                    </container>
-                </configuration>
-            </plugin>
-
             <!-- Publish the site to GitHub gh-pages: use mvn site site:deploy site-deploy -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -547,19 +562,8 @@
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-sitetools</artifactId>
-                        <version>1.11.1</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-skin-model</artifactId>
-                        <version>1.11.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.11.1</version>
+                        <version>1.9</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -580,45 +584,8 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--git-commit-id-maven-plugin - Generates a git.properties file with Git info -->
-            <plugin>
-                <groupId>io.github.git-commit-id</groupId>
-                <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>5.0.0</version>
-                <executions>
-                    <execution>
-                        <id>get-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-                    <prefix>git</prefix>
-                    <verbose>false</verbose>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                    <format>java</format>
-                    <gitDescribe>
-                        <skip>false</skip>
-                        <always>false</always>
-                        <dirty>-dirty</dirty>
-                    </gitDescribe>
-                </configuration>
-                </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>no-tests</id>
-            <properties>
-                <maven.test.skip>true</maven.test.skip>
-            </properties>
-        </profile>
-    </profiles>
 
     <issueManagement>
         <system>GitHub</system>
@@ -664,7 +631,6 @@
     </reporting>
 
     <distributionManagement>
-        <!--site for mvn site -->
         <site>
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
