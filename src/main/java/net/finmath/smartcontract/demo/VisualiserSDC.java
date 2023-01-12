@@ -10,9 +10,9 @@ import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
-import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
+import net.finmath.smartcontract.product.IRSwapGenerator;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 
 import javax.swing.*;
 import java.awt.*;

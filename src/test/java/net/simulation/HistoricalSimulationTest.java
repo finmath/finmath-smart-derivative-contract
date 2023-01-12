@@ -2,9 +2,9 @@ package net.simulation;
 
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
-import net.finmath.smartcontract.simulation.products.IRSwapGenerator;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataParser;
-import net.finmath.smartcontract.simulation.scenariogeneration.IRMarketDataSet;
+import net.finmath.smartcontract.product.IRSwapGenerator;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
