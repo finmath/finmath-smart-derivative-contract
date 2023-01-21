@@ -1,6 +1,5 @@
-package net.finmath.smartcontract.flux;
+package net.finmath.smartcontract.webflux;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
@@ -12,6 +11,9 @@ import java.time.Duration;
 public class WebFluxDemo {
 
     public static void main(String[] args) throws Exception {
+
+        //HttpClients.custom().
+
         WebSocketClient client = new ReactorNettyWebSocketClient();
         URI uri = URI.create("ws://localhost:8080/uppercase");
 

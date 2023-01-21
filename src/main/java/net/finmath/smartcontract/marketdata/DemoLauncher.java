@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.neovisionaries.ws.client.WebSocket;
-import net.finmath.smartcontract.marketdata.adapters.MarketDataRetrievable;
+
+import net.finmath.smartcontract.marketdata.adapters.MarketDataSocketAdapter;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -25,13 +26,13 @@ import java.util.stream.Collectors;
 
 public class DemoLauncher {
 
+
+    // https://www.logicbig.com/tutorials/misc/reactive-programming/reactor/programmatically-generate-via-a-consumer-callback.html
     /*
     @TODO: FILL src/main/resources/refinitiv_connect.properties with your credentials
      */
 
     public static void main(String[] args) throws Exception {
-    	
-
         /* Load RICS from FILE */
         /*final String path = Thread.currentThread().getContextClassLoader().getResource("C:\\Temp\\finmath-smart-derivative-contract-eip\\src\\main\\resources\\rics_spec.txt").getPath();
         CsvMapper mapper = new CsvMapper();
@@ -55,7 +56,7 @@ public class DemoLauncher {
 
         // @Todo:  Check Service Key = "ELEKTRON_DD";
         /* Init Adapter */
-        final MarketDataRetrievable adapter = new MarketDataRetrievable(connector.getAuthJson(),connector.getPosition(), mdItemList );
+        final MarketDataSocketAdapter adapter = new MarketDataSocketAdapter(connector.getAuthJson(),connector.getPosition(), mdItemList );
         socket.addListener(adapter);
         socket.connect();
 

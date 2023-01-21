@@ -6,13 +6,12 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
 
 import net.finmath.smartcontract.marketdata.DemoLauncher;
-import net.finmath.smartcontract.marketdata.adapters.MarketDataRetrievable;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataSocketAdapter;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import reactor.core.publisher.Flux;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
@@ -35,7 +34,7 @@ public class LauncherValuationPipeline {
 		List<IRMarketDataItem> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = Thread.currentThread().getContextClassLoader().getResource("refinitiv_connect.properties").getPath();
+		String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -44,9 +43,12 @@ public class LauncherValuationPipeline {
 		final WebSocket socket = connector.getWebSocket();
 
 		/* Init Adapter */
-		final MarketDataRetrievable adapter = new MarketDataRetrievable(connector.getAuthJson(),connector.getPosition(), mdItemList );
-		socket.addListener(adapter);
+		final MarketDataSocketAdapter emitter = new MarketDataSocketAdapter(connector.getAuthJson(),connector.getPosition(), mdItemList );
+		socket.addListener(emitter);
 		socket.connect();
+
+        /* This is how a emitter is used as a Flux*/
+        //emitter.asFlux().subscribe(System.out::println);
 
 
         BigDecimal settlementTriggerValue = BigDecimal.valueOf(2000);
@@ -55,7 +57,7 @@ public class LauncherValuationPipeline {
 		//BigDecimal settlementTriggerValue = BigDecimal.valueOf(1000.);
 		FilterMarginResultOrTime filter = new FilterMarginResultOrTime(null,null,settlementTriggerValue);
 
-		Observable<MarginResult > observable = adapter.asObservable()
+		Observable<MarginResult > observable = emitter.asObservable()
 				.delay(1,TimeUnit.SECONDS) 						// Initial delay
 				.throttleFirst(5,TimeUnit.SECONDS)		    // throttle a bit - backpressure
 				.map(marketdata->marginCalculator.apply(marketdata)) 	// map to margin results

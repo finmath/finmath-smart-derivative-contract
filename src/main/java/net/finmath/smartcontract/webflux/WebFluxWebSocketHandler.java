@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.flux;
+package net.finmath.smartcontract.webflux;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketHandler;

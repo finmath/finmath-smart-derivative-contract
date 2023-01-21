@@ -19,9 +19,11 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.product.xml;
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
-	opens net.finmath.smartcontract.flux to spring.core;
-	exports net.finmath.smartcontract.flux;
+	opens net.finmath.smartcontract.webflux to spring.core;
+	exports net.finmath.smartcontract.webflux;
     exports net.finmath.smartcontract.reactive;
+
+
 
 
     requires java.datatransfer;
@@ -29,6 +31,7 @@ module net.finmath.smartderivativecontract {
 	requires java.validation;
 	requires java.annotation;
 	requires java.desktop;
+
 
 	requires javafx.swing;
 	requires javafx.graphics;

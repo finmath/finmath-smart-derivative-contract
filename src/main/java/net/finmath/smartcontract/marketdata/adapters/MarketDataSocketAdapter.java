@@ -6,16 +6,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import org.reactivestreams.Publisher;
+import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Sinks;
+import reactor.core.publisher.SynchronousSink;
+import reactor.util.context.Context;
+import reactor.util.context.ContextView;
 
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
-public class MarketDataRetrievable extends WebSocketAdapter {// implements Callable<String> {
+public class MarketDataSocketAdapter extends WebSocketAdapter   {// implements Callable<String> {
 
     private final JsonNode authJson;
     private final String position;
@@ -23,14 +33,18 @@ public class MarketDataRetrievable extends WebSocketAdapter {// implements Calla
 
     private PublishSubject<String> publishSubject;
 
+    private Sinks.Many<String> sink;
+
     boolean requestSent;
 
-    public MarketDataRetrievable(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
+    public MarketDataSocketAdapter(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
         this.authJson = authJson;
         this.position = position;
         this.marketdataItemMap = itemList.stream().collect(Collectors.toMap(r->r.getRic(),r->r));
         requestSent = false;
         publishSubject  = PublishSubject.create();
+        sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
+
     }
 
 
@@ -50,6 +64,10 @@ public class MarketDataRetrievable extends WebSocketAdapter {// implements Calla
     public Observable<String> asObservable(){
         return this.publishSubject;
     }
+
+    public Flux<String> asFlux() { return sink.asFlux(); }
+
+
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
         JsonNode responseJson = null;
@@ -90,6 +108,7 @@ public class MarketDataRetrievable extends WebSocketAdapter {// implements Calla
 
             String json = IRMarketDataParser.serializeToJson(this.getMarketDataItems());
             this.publishSubject.onNext(json);
+            this.sink.tryEmitNext(json);
             this.getMarketDataItems().forEach(item -> {
                 item.setValue(null);
             });
