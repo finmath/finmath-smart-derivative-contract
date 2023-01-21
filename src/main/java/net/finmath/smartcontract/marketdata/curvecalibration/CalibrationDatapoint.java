@@ -35,4 +35,8 @@ public class CalibrationDatapoint {
 	public CalibrationDatapoint getClonedScaled(double factor){
 		return new CalibrationDatapoint(curveName,productName,maturity,quote/factor);
 	}
+
+	public CalibrationDatapoint getClonedShifted(double amount){
+		return new CalibrationDatapoint(curveName,productName,maturity,quote+amount);
+	}
 }

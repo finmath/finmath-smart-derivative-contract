@@ -6,38 +6,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
-import org.reactivestreams.Publisher;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Sinks;
-import reactor.core.publisher.SynchronousSink;
-import reactor.util.context.Context;
-import reactor.util.context.ContextView;
 
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.function.LongConsumer;
 import java.util.stream.Collectors;
 
-public class MarketDataSocketAdapter extends WebSocketAdapter   {// implements Callable<String> {
+public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implements Callable<String> {
 
     private final JsonNode authJson;
     private final String position;
     private final Map<String, IRMarketDataItem> marketdataItemMap;
 
-    private PublishSubject<String> publishSubject;
+    final private PublishSubject<String> publishSubject;
 
-    private Sinks.Many<String> sink;
+    final private Sinks.Many<String> sink;
 
     boolean requestSent;
 
-    public MarketDataSocketAdapter(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
+    public MarketDataWebSocketAdapter(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
         this.authJson = authJson;
         this.position = position;
         this.marketdataItemMap = itemList.stream().collect(Collectors.toMap(r->r.getRic(),r->r));
@@ -128,7 +119,7 @@ public class MarketDataSocketAdapter extends WebSocketAdapter   {// implements C
      */
     public void sendRICRequest(WebSocket websocket) throws Exception {
         String requestJsonString;
-        String keyString1 = ricsToString(); //;+ ",\"Service\":\""; // + this.refinitiv_service_key + "\"}}"; //
+        String keyString1 = ricsToString(); //;+ ",\"Service\":\""; //  + "\"}}"; //
         requestJsonString = "{\"ID\":2,"+keyString1+",\"View\":[\"MID\",\"BID\",\"ASK\",\"VALUE_DT1\",\"VALUE_TS1\"]}";
         websocket.sendText(requestJsonString);
     }
@@ -144,7 +135,7 @@ public class MarketDataSocketAdapter extends WebSocketAdapter   {// implements C
         ((ObjectNode) loginJson.get("Key").get("Elements")).put("Position",this.position);
 
         if (!isFirstLogin) { // If this isn't our first login, we don't need another refresh for it.
-            ((ObjectNode) loginJson).put("Refresh", false);//.get("Key").get("Elements")).put("Position",this.position);
+            loginJson.put("Refresh", false);//.get("Key").get("Elements")).put("Position",this.position);
         }
 
         websocket.sendText(loginJson.toString());
@@ -157,7 +148,7 @@ public class MarketDataSocketAdapter extends WebSocketAdapter   {// implements C
         String ricsAsString = "\"Key\":{\"Name\":[";
 
         for (IRMarketDataItem item : this.marketdataItemMap.values())
-            ricsAsString = ricsAsString + "\"" + item.getRic() + "\",";
+            ricsAsString +=  "\"" + item.getRic() + "\",";
         ricsAsString = ricsAsString.substring(0,ricsAsString.length()-1);
         ricsAsString += "]}";
 

@@ -4,11 +4,10 @@ package net.finmath.smartcontract.reactive;
 import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
-
 import net.finmath.smartcontract.marketdata.DemoLauncher;
-import net.finmath.smartcontract.marketdata.adapters.MarketDataSocketAdapter;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
@@ -18,9 +17,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.*;
-
-import static java.lang.Math.min;
+import java.util.concurrent.TimeUnit;
 
 
 public class LauncherValuationPipeline {
@@ -34,7 +31,7 @@ public class LauncherValuationPipeline {
 		List<IRMarketDataItem> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
+		String connectionPropertiesFile = "C:\\connect_.properties";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -43,7 +40,7 @@ public class LauncherValuationPipeline {
 		final WebSocket socket = connector.getWebSocket();
 
 		/* Init Adapter */
-		final MarketDataSocketAdapter emitter = new MarketDataSocketAdapter(connector.getAuthJson(),connector.getPosition(), mdItemList );
+		final MarketDataWebSocketAdapter emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(),connector.getPosition(), mdItemList );
 		socket.addListener(emitter);
 		socket.connect();
 

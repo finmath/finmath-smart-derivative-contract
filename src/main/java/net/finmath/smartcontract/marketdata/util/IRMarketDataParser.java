@@ -162,5 +162,31 @@ public class IRMarketDataParser {
 
 	}
 
+	public static String  serializeToJsonDatPoints(Set<CalibrationDatapoint> datapoints) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+
+		Map<String, Map<String,Map<String, Map<String, Double >> > > nestedMap = new HashMap<>();
+		nestedMap.put(date,new HashMap<>());
+		for (CalibrationDatapoint item : datapoints){
+			if ( !nestedMap.get(date).containsKey(item.getCurveName()) )
+				nestedMap.get(date).put(item.getCurveName(),new HashMap<>());
+			if ( !nestedMap.get(date).get(item.getCurveName()).containsKey(item.getProductName()))
+				nestedMap.get(date).get(item.getCurveName()).put(item.getProductName(),new HashMap<>());
+			nestedMap.get(date).get(item.getCurveName()).get(item.getProductName()).put(item.getMaturity(),item.getQuote());
+		}
+
+
+		try {
+			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nestedMap);
+			return json;
+		}
+		catch (Exception e){
+			return null;
+		}
+
+	}
+
 
 }
