@@ -10,5 +10,5 @@ import java.util.stream.Stream;
  * @author Christian Fries
  */
 public interface CalibrationParser {
-	Stream<CalibrationSpecProvider> parse(Stream<CalibrationDatapoint> datapoints);
+	Stream<CalibrationSpecProvider> parse(Stream<CalibrationDataItem> datapoints);
 }

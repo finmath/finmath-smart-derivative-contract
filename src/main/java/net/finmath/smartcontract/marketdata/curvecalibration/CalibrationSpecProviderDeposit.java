@@ -31,7 +31,7 @@ public class CalibrationSpecProviderDeposit implements CalibrationSpecProvider {
 
 	@Override
 	public CalibratedCurves.CalibrationSpec getCalibrationSpec(final CalibrationContext ctx) {
-		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "tenor", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, "tenor", "ACT/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
 		final double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
 
 		final String curveName = String.format("forward-EUR-%1$s", tenorLabel);

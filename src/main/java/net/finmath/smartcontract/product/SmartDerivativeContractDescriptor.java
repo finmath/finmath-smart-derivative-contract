@@ -1,7 +1,6 @@
 package net.finmath.smartcontract.product;
 
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
-import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Node;
 
@@ -23,7 +22,7 @@ public class SmartDerivativeContractDescriptor {
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
 	private final String recervicePartyID;
 	private final Node underlying;
-	private final List<IRMarketDataItem> marketdataItemList;
+	private final List<CalibrationDataItem.Spec> marketdataItemList;
 
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
@@ -69,7 +68,7 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<IRMarketDataItem> marketdataItems) {
+	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
@@ -124,5 +123,5 @@ public class SmartDerivativeContractDescriptor {
 		return recervicePartyID;
 	}
 
-	public List<IRMarketDataItem>  getMarketdataItemList() { return marketdataItemList; }
+	public List<CalibrationDataItem.Spec>  getMarketdataItemList() { return marketdataItemList; }
 }

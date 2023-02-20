@@ -1,10 +1,10 @@
 package net.simulation;
 
 import net.finmath.marketdata.products.Swap;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.IRSwapGenerator;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -34,9 +34,9 @@ public class HistoricalSimulationTest {
 			final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 			/* Product starts at Par */
 			final double fixRate = scenarioList.get(0).getDataPoints().stream()
-					.filter(datapoint->datapoint.getCurveName().equals("Euribor6M") &&
-							datapoint.getProductName().equals("Swap-Rate") &&
-							datapoint.getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
+					.filter(datapoint->datapoint.getSpec().getCurveName().equals("Euribor6M") &&
+							datapoint.getSpec().getProductName().equals("Swap-Rate") &&
+							datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
 			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
 

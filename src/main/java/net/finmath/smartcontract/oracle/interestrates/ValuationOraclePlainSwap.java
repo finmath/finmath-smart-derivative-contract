@@ -3,12 +3,12 @@ package net.finmath.smartcontract.oracle.interestrates;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import net.finmath.smartcontract.oracle.ValuationOracle;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationContextImpl;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataPoints;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationResult;
 import net.finmath.smartcontract.marketdata.curvecalibration.Calibrator;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -78,6 +78,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 			try {
 				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(scenario.getDataAsCalibrationDataPointStream(parser), new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
 				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
+
 
 				final double evaluationTime = 0.0;    // Time relative to models reference date (which agrees with evaluationDate).
 				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;

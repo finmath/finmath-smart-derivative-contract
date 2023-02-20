@@ -3,11 +3,11 @@ package net.finmath.smartcontract.marketdata;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class MarketDataImportTest {
 		ObjectMapper mapper = new ObjectMapper();
 		String sdcXML = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
-		List<IRMarketDataItem> marketdataItems = sdc.getMarketdataItemList();
+		List<CalibrationDataItem.Spec> marketdataItems = sdc.getMarketdataItemList();
 
 		String json2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(marketdataItems);
 		Files.write(Paths.get("C:\\Temp\\text.json"),json2.getBytes());

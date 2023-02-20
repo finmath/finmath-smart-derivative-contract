@@ -5,9 +5,10 @@ import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
 import net.finmath.smartcontract.marketdata.DemoLauncher;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataRandomFeedAdapter;
 import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
@@ -28,10 +29,10 @@ public class LauncherValuationPipeline {
 
 		String sdcXML = new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
-		List<IRMarketDataItem> mdItemList = sdc.getMarketdataItemList();
+		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = "C:\\connect_.properties";
+		String connectionPropertiesFile = "<Put your path to connection properties here>";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -44,11 +45,12 @@ public class LauncherValuationPipeline {
 		socket.addListener(emitter);
 		socket.connect();
 
+
         /* This is how a emitter is used as a Flux*/
         //emitter.asFlux().subscribe(System.out::println);
 
 
-        BigDecimal settlementTriggerValue = BigDecimal.valueOf(2000);
+        BigDecimal settlementTriggerValue = BigDecimal.valueOf(0);
 		FunctionMarginCalculator marginCalculator = new FunctionMarginCalculator(sdcXML,settlementTriggerValue);
 
 		//BigDecimal settlementTriggerValue = BigDecimal.valueOf(1000.);

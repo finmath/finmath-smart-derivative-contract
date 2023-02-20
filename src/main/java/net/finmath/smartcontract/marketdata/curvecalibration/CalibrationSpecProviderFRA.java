@@ -2,9 +2,12 @@ package net.finmath.smartcontract.marketdata.curvecalibration;
 
 
 import net.finmath.marketdata.calibration.CalibratedCurves;
+import net.finmath.time.Period;
 import net.finmath.time.Schedule;
+import net.finmath.time.ScheduleFromPeriods;
 import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import org.springframework.security.core.parameters.P;
 
 /**
  * A calibration spec provider for fras.
@@ -28,12 +31,15 @@ public class CalibrationSpecProviderFRA implements CalibrationSpecProvider {
 		this.tenorLabel = tenorLabel;
 		this.maturityLabel = maturityLabel;
 		this.fraRate = fraRate;
-		this.startOffsetLabel = maturityLabel.replaceAll("[^0-9]", "") + "m";
+		int nMonthTenor = Integer.parseInt(tenorLabel.replace("M",""));
+		int nMonthMaturity = Integer.parseInt(maturityLabel.replace("M",""));
+		int nMonthOffset = nMonthMaturity - nMonthTenor;
+		this.startOffsetLabel = nMonthOffset + "M";
 	}
 
 	@Override
 	public CalibratedCurves.CalibrationSpec getCalibrationSpec(final CalibrationContext ctx) {
-		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, startOffsetLabel, maturityLabel, "tenor", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, startOffsetLabel, tenorLabel, "tenor", "ACT/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 		final double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);
 
 		final String curveName = String.format("forward-EUR-%1$s", tenorLabel);

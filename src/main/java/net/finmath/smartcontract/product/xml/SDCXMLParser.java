@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.product.xml;
 
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -41,15 +41,15 @@ public class SDCXMLParser {
 		/*
 		Market Data
 		 */
-		List<IRMarketDataItem> marketdataItems = new ArrayList<>();
+		List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
 		List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0),"item");
 		for (Node itemNode : itemNodes) {
 			String symbol = nodeValueByName(itemNode, "symbol", String.class);
 			String curve = nodeValueByName(itemNode, "curve", String.class);
 			String type = nodeValueByName(itemNode, "type", String.class);
 			String tenor = nodeValueByName(itemNode, "tenor", String.class);
-			IRMarketDataItem item = new IRMarketDataItem(symbol,curve,type,tenor,"","",null);
-			marketdataItems.add(item);
+			CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol,curve,type,tenor);
+			marketdataItems.add(spec);
 		}
 
 		/*

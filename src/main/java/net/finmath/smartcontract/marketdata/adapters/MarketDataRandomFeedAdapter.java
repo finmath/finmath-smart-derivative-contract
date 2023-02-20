@@ -2,7 +2,7 @@ package net.finmath.smartcontract.marketdata.adapters;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDatapoint;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 
@@ -56,7 +56,7 @@ public class MarketDataRandomFeedAdapter {
 
     private IRMarketDataSet getShiftedReferenceSet(){
         double randomShiftBp = ThreadLocalRandom.current().nextDouble(-1,1) / 10000;
-        Set< CalibrationDatapoint> shifted = this.referenceSet.getDataPoints().stream().map(datapoint->datapoint.getClonedShifted(1+randomShiftBp)).collect(Collectors.toSet());
+        Set<CalibrationDataItem> shifted = this.referenceSet.getDataPoints().stream().map(datapoint->datapoint.getClonedShifted(1+randomShiftBp)).collect(Collectors.toSet());
         IRMarketDataSet set = new IRMarketDataSet(shifted,this.referenceSet.getDate());
         return set;
     }

@@ -8,11 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
+import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.IRSwapGenerator;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,9 +66,9 @@ public class VisualiserSDC {
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate().minusDays(170);
 
 		final double fixRate = scenarioList.get(0).getDataPoints().stream()
-				.filter(datapoint->datapoint.getCurveName().equals("Euribor6M") &&
-						datapoint.getProductName().equals("Swap-Rate") &&
-						datapoint.getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
+				.filter(datapoint->datapoint.getSpec().getCurveName().equals("Euribor6M") &&
+						datapoint.getSpec().getProductName().equals("Swap-Rate") &&
+						datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
 		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
 

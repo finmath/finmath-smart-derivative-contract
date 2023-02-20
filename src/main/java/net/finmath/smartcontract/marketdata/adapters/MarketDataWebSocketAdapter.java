@@ -7,7 +7,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataItem;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -20,7 +20,8 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
     private final JsonNode authJson;
     private final String position;
-    private final Map<String, IRMarketDataItem> marketdataItemMap;
+    private final Set<CalibrationDataItem.Spec> calibrationSpecs;
+    private Set<CalibrationDataItem> calibrationDataSet;
 
     final private PublishSubject<String> publishSubject;
 
@@ -28,20 +29,32 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
     boolean requestSent;
 
-    public MarketDataWebSocketAdapter(JsonNode authJson, String position, List<IRMarketDataItem> itemList) {
+    public MarketDataWebSocketAdapter(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
         this.authJson = authJson;
         this.position = position;
-        this.marketdataItemMap = itemList.stream().collect(Collectors.toMap(r->r.getRic(),r->r));
+        this.calibrationSpecs = itemList.stream().collect(Collectors.toSet());
+        this.calibrationDataSet = new HashSet<>();
         requestSent = false;
         publishSubject  = PublishSubject.create();
         sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
 
     }
 
+    private CalibrationDataItem.Spec getSpec(String key){
+        return this.calibrationSpecs.stream().filter(spec->spec.getKey().equals(key)).findAny().orElse(null);
+    }
 
 
-    public Set<IRMarketDataItem>     getMarketDataItems(){
-        return marketdataItemMap.values().stream().collect(Collectors.toSet());
+    public boolean    allQuotesRetrieved(){
+        return this.calibrationDataSet.size() >= this.calibrationSpecs.size();
+    }
+
+    public void   reset(){
+        this.calibrationDataSet= new HashSet<>();
+    }
+
+    public Set<CalibrationDataItem>     getMarketDataItems(){
+        return calibrationDataSet.stream().collect(Collectors.toSet());
     }
 
     /**
@@ -62,7 +75,7 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
         JsonNode responseJson = null;
-        long quotesRetrieved = this.getMarketDataItems().stream().filter(item -> item.getValue() != null).count();
+        //long quotesRetrieved = this.getMarketDataItems().stream().filter(item -> item.getQuote() != null).count();
         if (!message.isEmpty()) {
 
             ObjectMapper mapper = new ObjectMapper();
@@ -82,27 +95,26 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
                         Double BID = fields.has("BID") ? fields.get("BID").doubleValue() : null;
                         Double ASK = fields.has("ASK") ? fields.get("ASK").doubleValue() : null;
                         Double quote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0 / 100.;
-                        this.marketdataItemMap.get(ric).setValue(quote);
-                        this.marketdataItemMap.get(ric).setDate(fields.get("VALUE_DT1").textValue()); //fields.getString("VALUE_DT1"), fields.getString("VALUE_TS1")
-                        this.marketdataItemMap.get(ric).setTimestamp(fields.get("VALUE_TS1").textValue());
+                        String date = fields.get("VALUE_DT1").textValue();
+                        String timestamp = fields.get("VALUE_TS1").textValue();
+                        this.calibrationDataSet.add (new CalibrationDataItem(this.getSpec(ric),quote,date,timestamp));
                     }
 
                 }
             } catch (Exception e) {
-                //  System.out.println("FAIL");
-//                websocket.disconnect();
+
             }
         }
 
 
-        if (quotesRetrieved == this.getMarketDataItems().size()) {
-
+        //if (quotesRetrieved == this.getMarketDataItems().size()) {
+        if ( this.allQuotesRetrieved()) {
+            System.out.println("Quotes retrieved");
             String json = IRMarketDataParser.serializeToJson(this.getMarketDataItems());
+            this.calibrationDataSet.clear();
             this.publishSubject.onNext(json);
             this.sink.tryEmitNext(json);
-            this.getMarketDataItems().forEach(item -> {
-                item.setValue(null);
-            });
+
             //Thread.sleep(2000);
             requestSent = false;
         }
@@ -147,8 +159,8 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
         String ricsAsString = "\"Key\":{\"Name\":[";
 
-        for (IRMarketDataItem item : this.marketdataItemMap.values())
-            ricsAsString +=  "\"" + item.getRic() + "\",";
+        for (CalibrationDataItem.Spec item : this.calibrationSpecs)
+            ricsAsString +=  "\"" + item.getKey() + "\",";
         ricsAsString = ricsAsString.substring(0,ricsAsString.length()-1);
         ricsAsString += "]}";
 
@@ -157,24 +169,6 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
     }
 
-    /*
-    @Override
-    public String call() throws Exception {
-        while(true) {
-            long quotesRetrieved = this.getMarketDataItems().stream().filter(item -> item.getValue() != null).count();
-            if (quotesRetrieved == this.getMarketDataItems().size()) {
-                String json = IRMarketDataParser.serializeToJson(this.getMarketDataItems());
-                try {
-                    this.getMarketDataItems().forEach(item -> {
-                        item.setValue(null);
-                    });
-                    requestSent = false;
-                    return json;
-                } catch (Exception e) {
-                    return "";
-                }
-            }
-    }*/
 
 
 }
