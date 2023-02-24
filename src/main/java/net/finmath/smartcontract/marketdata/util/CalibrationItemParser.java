@@ -2,6 +2,7 @@ package net.finmath.smartcontract.marketdata.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -20,7 +21,7 @@ import static java.util.stream.Collectors.groupingBy;
  * @author Peter Kohl-Landgraf
  * @author Christian Fries
  */
-public class IRMarketDataParser {
+public class CalibrationItemParser {
 
 	/**
 	 * Static method which parses a csv file - using jackson csv mapper - and converts it to a list of market data scenarios
@@ -51,11 +52,11 @@ public class IRMarketDataParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<IRMarketDataSet> getScenariosFromJsonFile(final String fileName) throws IOException {
+	public static final List<CalibrationDataSet> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
 		try {
-			content = new String(IRMarketDataParser.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
+			content = new String(CalibrationItemParser.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
@@ -73,7 +74,7 @@ public class IRMarketDataParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<IRMarketDataSet> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
+	public static final List<CalibrationDataSet> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
 		final String content;
 
 		content = jsonString;
@@ -88,17 +89,17 @@ public class IRMarketDataParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	private static final List<IRMarketDataSet> getScenariosFromJsonContent(final String content) throws IOException {
+	private static final List<CalibrationDataSet> getScenariosFromJsonContent(final String content) throws IOException {
 		final ObjectMapper mapper = new ObjectMapper();
 		final Map<String, Map<String, Map<String, Map<String, Double>>>> timeSeriesDatamap = mapper.readValue(content, new HashMap<String, Map<String, Map<String, Map<String, Double>>>>().getClass());
 
-		final List<IRMarketDataSet> scenarioList = timeSeriesDatamap.entrySet().stream()
+		final List<CalibrationDataSet> scenarioList = timeSeriesDatamap.entrySet().stream()
 				.map(
 						scenarioData -> {
 							Set<CalibrationDataItem> set = scenarioData.getValue().entrySet().stream().map(entry->getCalibrationDataPointSet(entry.getKey(),entry.getValue())).flatMap(Collection::stream).collect(Collectors.toSet());
 							final String timeStampStr = scenarioData.getKey();
 							final LocalDateTime dateTime = parseTimestampString(timeStampStr);
-							final IRMarketDataSet scenario = new IRMarketDataSet(set, dateTime);
+							final CalibrationDataSet scenario = new CalibrationDataSet(set, dateTime);
 							return scenario;
 						})
 				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
@@ -107,9 +108,10 @@ public class IRMarketDataParser {
 		return scenarioList;
 	}
 
+	//todo - refactor calibration parser
 	private static Set<CalibrationDataItem> getCalibrationDataPointSet(final String curveKey, final Map<String, Map<String, Double>> typeCurveMap) {
-		Set<CalibrationDataItem> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
-				curvePointEntry -> new CalibrationDataItem(curveKey, entry.getKey(), curvePointEntry.getKey(), curvePointEntry.getValue()))).collect(Collectors.toSet());
+		Set<CalibrationDataItem> datapoints = null;// typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
+				//curvePointEntry -> new CalibrationDataItem(curveKey, entry.getKey(), curvePointEntry.getKey(), curvePointEntry.getValue()))).collect(Collectors.toSet());
 		return datapoints;
 	}
 
@@ -131,7 +133,7 @@ public class IRMarketDataParser {
 	}
 
 
-	public static String  serializeToJson(Set<CalibrationDataItem> itemSet) {
+	/*public static String  serializeToJson(Set<CalibrationDataItem> itemSet) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
@@ -155,9 +157,9 @@ public class IRMarketDataParser {
 			return null;
 		}
 
-	}
+	}*/
 
-	public static String  serializeToJsonDatPoints(Set<CalibrationDataItem> datapoints) {
+	/*public static String  serializeToJsonDatPoints(Set<CalibrationDataItem> datapoints) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
@@ -181,7 +183,7 @@ public class IRMarketDataParser {
 			return null;
 		}
 
-	}
+	}*/
 
 
 }

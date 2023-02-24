@@ -4,10 +4,10 @@ package net.finmath.smartcontract.marketdata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ public class MarketDataImportTest {
 	@Test
 	void testImport() throws Exception {
 		final String jsonStr = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
-		List<IRMarketDataSet> scenarioList = IRMarketDataParser.getScenariosFromJsonString(jsonStr);
+		List<CalibrationDataSet> scenarioList = CalibrationItemParser.getScenariosFromJsonString(jsonStr);
 		Assertions.assertEquals(1, scenarioList.size());
 	}
 }

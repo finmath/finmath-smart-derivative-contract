@@ -1,19 +1,9 @@
 package net.finmath.smartcontract.demo.legacy;
 
-import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorMarketValue;
-import net.finmath.smartcontract.demo.legacy.chartdatageneration.ChartDataGeneratorSDCAccountBalance;
-import net.finmath.smartcontract.demo.legacy.plotgeneration.PlotGenerator;
-import net.finmath.smartcontract.demo.legacy.plotgeneration.StackedBarchartGenerator;
-import net.finmath.smartcontract.demo.legacy.plotgeneration.TimeSeriesChartGenerator;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataSet;
-import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
-import net.finmath.smartcontract.product.IRSwapGenerator;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +20,7 @@ public class DemoLauncher {
 		final LocalDate startDate = LocalDate.of(2007, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
-		final List<IRMarketDataSet> scenarioListRaw = IRMarketDataParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		final List<CalibrationDataSet> scenarioListRaw = CalibrationItemParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 		//final List<IRMarketDataSet> scenarioList = scenarioListRaw.stream().map(scenario->scenario.getScaled(100)).collect(Collectors.toList());
 
 

@@ -1,5 +1,8 @@
 package net.finmath.smartcontract.marketdata.curvecalibration;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class CalibrationDataItem {
@@ -38,36 +41,38 @@ public class CalibrationDataItem {
             return Objects.hash(key, curveName, productName, maturity);
         }
 
-
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Spec spec = (Spec) o;
+            return Objects.equals(key, spec.key) && Objects.equals(curveName, spec.curveName) && Objects.equals(productName, spec.productName) && Objects.equals(maturity, spec.maturity);
+        }
     }
 
     final CalibrationDataItem.Spec spec;
     final Double quote;
-    final String date;
-    final String timestamp;
+    final LocalDateTime dateTime;
 
-    public CalibrationDataItem(String curve, String productName, String maturity, Double quote){
+    /*public CalibrationDataItem(String curve, String productName, String maturity, Double quote){
         spec = new Spec("",curve,productName,maturity);
         this.quote = quote;
-        this.date = "";
-        this.timestamp = "";
+        this.dateTime=null;
+    }*/
 
-    }
-
-    public CalibrationDataItem(final CalibrationDataItem.Spec spec, Double quote, String date, String timestamp){
+    public CalibrationDataItem(final CalibrationDataItem.Spec spec, Double quote, LocalDateTime dateTime){
         this.spec=spec;
         this.quote=quote;
-        this.date = date;
-        this.timestamp = timestamp;
+        this.dateTime=dateTime;
     }
 
 
     public CalibrationDataItem getClonedScaled(double factor){
-        return new CalibrationDataItem(spec,quote/factor, date, timestamp);
+        return new CalibrationDataItem(spec,quote/factor, dateTime);
     }
 
     public CalibrationDataItem getClonedShifted(double amount){
-        return new CalibrationDataItem(spec,quote+amount, date, timestamp);
+        return new CalibrationDataItem(spec,quote+amount, dateTime);
     }
 
     public CalibrationDataItem.Spec getSpec() {
@@ -91,11 +96,24 @@ public class CalibrationDataItem {
         return quote;
     }
 
-    public String getDate() {
-        return date;
+    public String getDateString() {
+        return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    public String getTimestamp() {
-        return timestamp;
+    public LocalDateTime    getDateTime() {return dateTime; }
+
+    public LocalDate    getDate() { return dateTime.toLocalDate(); }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CalibrationDataItem that = (CalibrationDataItem) o;
+        return Objects.equals(spec, that.spec) && Objects.equals(quote, that.quote) && Objects.equals(dateTime, that.dateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(spec, quote, dateTime);
     }
 }

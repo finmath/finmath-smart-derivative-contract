@@ -8,11 +8,17 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.marketdata.util.IRMarketDataParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import org.springframework.cglib.core.Local;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,9 +29,9 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
     private final Set<CalibrationDataItem.Spec> calibrationSpecs;
     private Set<CalibrationDataItem> calibrationDataSet;
 
-    final private PublishSubject<String> publishSubject;
+    final private PublishSubject<CalibrationDataSet > publishSubject;
 
-    final private Sinks.Many<String> sink;
+    final private Sinks.Many<CalibrationDataSet> sink;
 
     boolean requestSent;
 
@@ -65,17 +71,16 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
         sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
     }
 
-    public Observable<String> asObservable(){
+    public Observable<CalibrationDataSet > asObservable(){
         return this.publishSubject;
     }
 
-    public Flux<String> asFlux() { return sink.asFlux(); }
+    public Flux<CalibrationDataSet> asFlux() { return sink.asFlux(); }
 
 
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
         JsonNode responseJson = null;
-        //long quotesRetrieved = this.getMarketDataItems().stream().filter(item -> item.getQuote() != null).count();
         if (!message.isEmpty()) {
 
             ObjectMapper mapper = new ObjectMapper();
@@ -86,7 +91,6 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
                 requestSent = true;
             }
 
-//            System.out.println(quotesRetrieved + " " + responseJson.get(0).get("Type").textValue() );
             try {
                 for (int i = 0; i < responseJson.size(); i++) {
                     if (responseJson.get(i).has("Fields")) {
@@ -96,8 +100,22 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
                         Double ASK = fields.has("ASK") ? fields.get("ASK").doubleValue() : null;
                         Double quote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0 / 100.;
                         String date = fields.get("VALUE_DT1").textValue();
-                        String timestamp = fields.get("VALUE_TS1").textValue();
-                        this.calibrationDataSet.add (new CalibrationDataItem(this.getSpec(ric),quote,date,timestamp));
+                        String time = fields.get("VALUE_TS1").textValue();
+
+                        LocalDateTime localDateTime = LocalDateTime.parse(date + "T" +time, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        ZoneId zoneId = TimeZone.getDefault().toZoneId();
+                        ZoneId gmt = TimeZone.getTimeZone("GMT").toZoneId();
+                        localDateTime = localDateTime.atZone(gmt).withZoneSameInstant(zoneId).toLocalDateTime();
+
+                        if (this.getSpec(ric).getProductName().equals("Fixing")){
+                            if (ric.equals("ESTR")){ // The euro short-term rate (€STR) is published on each TARGET2 business day based on transactions conducted and settled on the previous TARGET2 business day.
+                                localDateTime = localDateTime.plusDays(1);
+                            }
+                            quote = quote / 100.;
+
+                        }
+
+                        this.calibrationDataSet.add (new CalibrationDataItem(this.getSpec(ric),quote,localDateTime));
                     }
 
                 }
@@ -107,15 +125,13 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
         }
 
 
-        //if (quotesRetrieved == this.getMarketDataItems().size()) {
         if ( this.allQuotesRetrieved()) {
-            System.out.println("Quotes retrieved");
-            String json = IRMarketDataParser.serializeToJson(this.getMarketDataItems());
+            Set<CalibrationDataItem> clone = new HashSet<>();
+            clone.addAll(this.calibrationDataSet);
+            CalibrationDataSet set = new CalibrationDataSet(clone,LocalDateTime.now());
             this.calibrationDataSet.clear();
-            this.publishSubject.onNext(json);
-            this.sink.tryEmitNext(json);
-
-            //Thread.sleep(2000);
+            this.publishSubject.onNext(set);
+            this.sink.tryEmitNext(set);
             requestSent = false;
         }
 
