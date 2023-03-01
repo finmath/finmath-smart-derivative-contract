@@ -2,20 +2,15 @@ package net.finmath.smartcontract.reactive;
 
 
 import com.neovisionaries.ws.client.WebSocket;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
 import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
-import net.finmath.smartcontract.model.MarginResult;
-import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import net.finmath.smartcontract.valuation.MarginCalculator;
 
 import java.io.FileInputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,12 +26,6 @@ public class DemoLauncher {
 
 
 	public static void main(String[] args) throws Exception {
-
-
-		String date = "2023-02-23";
-		String time = "10:14:23";
-
-		LocalDateTime localDateTime = LocalDateTime.parse(date + "T" +time, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		String sdcXML = new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/sdc2.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
@@ -57,9 +46,9 @@ public class DemoLauncher {
 		socket.connect();
 
         /* Write Market Data to File */
-        final Consumer<CalibrationDataSet> marketDataWriter = new Consumer<CalibrationDataSet>() {
+        final Consumer<CalibrationDataset> marketDataWriter = new Consumer<CalibrationDataset>() {
             @Override
-            public void accept(CalibrationDataSet s) throws Throwable {
+            public void accept(CalibrationDataset s) throws Throwable {
                 String json = s.serializeToJson();
                 String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
                 System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
@@ -70,22 +59,22 @@ public class DemoLauncher {
         //emitter.asObservable().throttleLast(10,TimeUnit.SECONDS).subscribe(marketDataWriter);
 
 
-		final Consumer<CalibrationDataSet> fixingHistoryCollector = new Consumer<CalibrationDataSet>() {
-			CalibrationDataSet fixingCollectorDataSet;
+		final Consumer<CalibrationDataset> fixingHistoryCollector = new Consumer<CalibrationDataset>() {
+			CalibrationDataset fixingCollectorDataSet;
 			@Override
-			public void accept(CalibrationDataSet calibrationDataSet) throws Throwable {
-				if (fixingCollectorDataSet == null || (fixingCollectorDataSet.getFixingDataItems().size() != calibrationDataSet.getFixingDataItems().size())){
+			public void accept(CalibrationDataset calibrationDataSet) throws Throwable {
+				//if (fixingCollectorDataSet == null || (fixingCollectorDataSet.getFixingDataItems().size() != calibrationDataSet.getFixingDataItems().size())){
 					fixingCollectorDataSet = fixingCollectorDataSet == null ? calibrationDataSet : calibrationDataSet.getClonedFixingsAdded(fixingCollectorDataSet.getFixingDataItems());
 					String json = fixingCollectorDataSet.serializeToJson();
 					String timeStamp = fixingCollectorDataSet.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
 					System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
 					Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
 					Files.write(path,json.getBytes());
-					fixingCollectorDataSet = calibrationDataSet;
-				}
+					//fixingCollectorDataSet = calibrationDataSet;
+				//
 			}
 		};
-		emitter.asObservable().throttleFirst(10,TimeUnit.SECONDS).subscribe(fixingHistoryCollector);
+		emitter.asObservable().throttleFirst(15,TimeUnit.SECONDS).subscribe(fixingHistoryCollector);
 
         /* Print Market Values */
         //Consumer<ValueResult> printValues = (ValueResult s ) -> System.out.println("Consumer ValuationPrint: " +s.getValue().doubleValue() );

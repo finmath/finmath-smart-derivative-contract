@@ -15,8 +15,7 @@ import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
 import net.finmath.smartcontract.marketdata.curvecalibration.*;
-import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.time.Period;
@@ -47,7 +46,7 @@ public class MarketDataPastFixingsTests {
 
     Swap swapFromParams;
     Swap swapFromXML;
-    List<CalibrationDataSet> scenarioList;
+    List<CalibrationDataset> scenarioList;
     CalibratedCurves.CalibrationSpec[] calibrationSpecs;
     ForwardCurve fixedCurve;
     AnalyticModel modelWithPastFixings;
@@ -57,8 +56,8 @@ public class MarketDataPastFixingsTests {
         /* Retrieve and transform into calibration items */
 //        Path path = Path.of("C:\\Temp\\finmath-smart-derivative-contract-MarketData\\src\\main\\resources\\net.finmath.smartcontract.client\\md_testset1.json");
         final String jsonStr = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
-        scenarioList = CalibrationItemParser.getScenariosFromJsonString(jsonStr);
-        CalibrationParser parser = new CalibrationParserDataPoints();
+        scenarioList = CalibrationParserDataItems.getScenariosFromJsonString(jsonStr);
+        CalibrationParser parser = new CalibrationParserDataItems();
         Stream<CalibrationSpecProvider> specProviderStream = scenarioList.get(0).getDataAsCalibrationDataPointStream(parser);
         calibrationSpecs = specProviderStream.map(c -> c.getCalibrationSpec(ctx)).toArray(CalibratedCurves.CalibrationSpec[]::new);
 

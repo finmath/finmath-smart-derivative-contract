@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.demo.legacy;
 
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
-import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +20,7 @@ public class DemoLauncher {
 		final LocalDate startDate = LocalDate.of(2007, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
-		final List<CalibrationDataSet> scenarioListRaw = CalibrationItemParser.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		final List<CalibrationDataset> scenarioListRaw = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 		//final List<IRMarketDataSet> scenarioList = scenarioListRaw.stream().map(scenario->scenario.getScaled(100)).collect(Collectors.toList());
 
 

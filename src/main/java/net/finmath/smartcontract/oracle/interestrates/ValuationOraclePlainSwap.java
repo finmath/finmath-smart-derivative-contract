@@ -1,17 +1,11 @@
 package net.finmath.smartcontract.oracle.interestrates;
 
 import net.finmath.marketdata.model.AnalyticModel;
-import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
-import net.finmath.marketdata.model.curves.Curve;
-import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
-import net.finmath.marketdata.model.curves.ForwardCurveWithFixings;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
-import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.smartcontract.marketdata.curvecalibration.*;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.oracle.ValuationOracle;
-import net.finmath.time.Schedule;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -22,9 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.DoubleUnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -37,7 +29,7 @@ import java.util.stream.Stream;
 public class ValuationOraclePlainSwap implements ValuationOracle {
 
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
-	private final List<CalibrationDataSet> scenarioList;
+	private final List<CalibrationDataset> scenarioList;
 	private final Swap product;
 	private final LocalDate productStartDate;
 	private final double notionalAmount;
@@ -51,7 +43,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 * @param rounding		An operator implementing the rounding.
 	 */
-	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<CalibrationDataSet> scenarioList, DoubleUnaryOperator rounding) {
+	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<CalibrationDataset> scenarioList, DoubleUnaryOperator rounding) {
 		this.notionalAmount = notionalAmount;
 		this.product = product;
 		this.productStartDate = ((SwapLeg) this.product.getLegPayer()).getSchedule().getReferenceDate();
@@ -66,7 +58,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<CalibrationDataSet> scenarioList) {
+	public ValuationOraclePlainSwap(final Swap product, final double notionalAmount, final List<CalibrationDataset> scenarioList) {
 		this(product, notionalAmount, scenarioList, x -> Math.round(x*100)/100.0);
 	}
 
@@ -77,9 +69,9 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 
 	@Override
 	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
-		final Optional<CalibrationDataSet> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
+		final Optional<CalibrationDataset> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
-			final CalibrationDataSet scenario = optionalScenario.get();
+			final CalibrationDataset scenario = optionalScenario.get();
 
 			/** @// TODO: 2/21/2023 - IRMarketDataSet to provide the fixed part of a curve
 			 *
@@ -89,7 +81,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 			 * 				 * fixedCurve = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed",pastFixingTime,pastFixingArray,paymentOffset);
 			 */
 
-			final CalibrationParserDataPoints parser = new CalibrationParserDataPoints();
+			final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 			final Calibrator calibrator = new Calibrator();
 
 

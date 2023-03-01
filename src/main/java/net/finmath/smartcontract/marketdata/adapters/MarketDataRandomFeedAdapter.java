@@ -3,8 +3,8 @@ package net.finmath.smartcontract.marketdata.adapters;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class MarketDataRandomFeedAdapter {
 
     LocalDateTime endTime;
-    CalibrationDataSet referenceSet;
+    CalibrationDataset referenceSet;
 
     int simulationFrequencySec;
     public MarketDataRandomFeedAdapter(Period processingPeriod, String referenceMarketDataJson) throws Exception{
         this.endTime = LocalDateTime.now().plus(processingPeriod);
-        referenceSet = CalibrationItemParser.getScenariosFromJsonString(referenceMarketDataJson).get(0);
+        referenceSet = CalibrationParserDataItems.getScenariosFromJsonString(referenceMarketDataJson).get(0);
         simulationFrequencySec = 3;
     }
 
@@ -29,7 +29,7 @@ public class MarketDataRandomFeedAdapter {
     Observable<String> asObservable(){
         ObservableOnSubscribe<String> observable = emitter ->{
             while (LocalDateTime.now().isBefore(endTime)) {
-                CalibrationDataSet shiftedScenario = getShiftedReferenceSet();
+                CalibrationDataset shiftedScenario = getShiftedReferenceSet();
                 String json = "";//CalibrationItemParser.serializeToJsonDatPoints(shiftedScenario.getDataPoints());
                 emitter.onNext(json);
             }
@@ -54,10 +54,10 @@ public class MarketDataRandomFeedAdapter {
         }
     }*/
 
-    private CalibrationDataSet getShiftedReferenceSet(){
+    private CalibrationDataset getShiftedReferenceSet(){
         double randomShiftBp = ThreadLocalRandom.current().nextDouble(-1,1) / 10000;
         Set<CalibrationDataItem> shifted = this.referenceSet.getDataPoints().stream().map(datapoint->datapoint.getClonedShifted(1+randomShiftBp)).collect(Collectors.toSet());
-        CalibrationDataSet set = new CalibrationDataSet(shifted,this.referenceSet.getDate());
+        CalibrationDataset set = new CalibrationDataset(shifted,this.referenceSet.getDate());
         return set;
     }
 

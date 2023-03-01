@@ -8,14 +8,14 @@ import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import net.finmath.smartcontract.marketdata.util.CalibrationItemParser;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +62,10 @@ public class MarginCalculator {
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		List<CalibrationDataSet> marketDataSetsStart = CalibrationItemParser.getScenariosFromJsonString(marketDataStart);
+		List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
 		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
-		List<CalibrationDataSet> marketDataSetsEnd = CalibrationItemParser.getScenariosFromJsonString(marketDataEnd);
+		List<CalibrationDataset> marketDataSetsEnd = CalibrationParserDataItems.getScenariosFromJsonString(marketDataEnd);
 		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
@@ -83,7 +83,7 @@ public class MarginCalculator {
 	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		List<CalibrationDataSet> marketDataSets = CalibrationItemParser.getScenariosFromJsonString(marketData);
+		List<CalibrationDataset> marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
 		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
@@ -107,7 +107,7 @@ public class MarginCalculator {
 	 * @return The margin
 	 * @throws Exception Exception
 	 */
-	private double calculateMargin(List<CalibrationDataSet> marketDataSets, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
+	private double calculateMargin(List<CalibrationDataset> marketDataSets, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
 
 		// Build product
 		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();

@@ -10,7 +10,6 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.service.config;
 	exports net.finmath.smartcontract.oracle;
 	exports net.finmath.smartcontract.oracle.interestrates;
-	exports net.finmath.smartcontract.marketdata.util;
 	exports net.finmath.smartcontract.marketdata.curvecalibration;
 	exports net.finmath.smartcontract.service.utils;
 	exports net.finmath.smartcontract.marketdata.adapters;

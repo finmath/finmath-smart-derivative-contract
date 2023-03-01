@@ -8,42 +8,43 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataSet;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import org.springframework.cglib.core.Local;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implements Callable<String> {
 
+    private final BusinessdayCalendarExcludingTARGETHolidays bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
     private final JsonNode authJson;
     private final String position;
     private final Set<CalibrationDataItem.Spec> calibrationSpecs;
     private Set<CalibrationDataItem> calibrationDataSet;
 
-    final private PublishSubject<CalibrationDataSet > publishSubject;
+    final private PublishSubject<CalibrationDataset> publishSubject;
 
-    final private Sinks.Many<CalibrationDataSet> sink;
+    final private Sinks.Many<CalibrationDataset> sink;
 
     boolean requestSent;
 
     public MarketDataWebSocketAdapter(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
         this.authJson = authJson;
         this.position = position;
-        this.calibrationSpecs = itemList.stream().collect(Collectors.toSet());
-        this.calibrationDataSet = new HashSet<>();
+        this.calibrationSpecs = itemList.stream().collect(Collectors.toCollection( LinkedHashSet::new ));
+        this.calibrationDataSet = new LinkedHashSet<>();
         requestSent = false;
         publishSubject  = PublishSubject.create();
         sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
-
     }
 
     private CalibrationDataItem.Spec getSpec(String key){
@@ -56,7 +57,7 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
     }
 
     public void   reset(){
-        this.calibrationDataSet= new HashSet<>();
+        this.calibrationDataSet= new LinkedHashSet<>();
     }
 
     public Set<CalibrationDataItem>     getMarketDataItems(){
@@ -71,15 +72,16 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
         sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
     }
 
-    public Observable<CalibrationDataSet > asObservable(){
+    public Observable<CalibrationDataset> asObservable(){
         return this.publishSubject;
     }
 
-    public Flux<CalibrationDataSet> asFlux() { return sink.asFlux(); }
+    public Flux<CalibrationDataset> asFlux() { return sink.asFlux(); }
 
 
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
+
         JsonNode responseJson = null;
         if (!message.isEmpty()) {
 
@@ -98,37 +100,37 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
                         JsonNode fields = responseJson.get(i).get("Fields");
                         Double BID = fields.has("BID") ? fields.get("BID").doubleValue() : null;
                         Double ASK = fields.has("ASK") ? fields.get("ASK").doubleValue() : null;
-                        Double quote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0 / 100.;
+                        Double quote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0 ;
+                        quote = BigDecimal.valueOf(quote).setScale(3, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100.)).doubleValue();
                         String date = fields.get("VALUE_DT1").textValue();
                         String time = fields.get("VALUE_TS1").textValue();
-
+                        /* Adjust Time on GMT */
                         LocalDateTime localDateTime = LocalDateTime.parse(date + "T" +time, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                         ZoneId zoneId = TimeZone.getDefault().toZoneId();
                         ZoneId gmt = TimeZone.getTimeZone("GMT").toZoneId();
-                        localDateTime = localDateTime.atZone(gmt).withZoneSameInstant(zoneId).toLocalDateTime();
+                        LocalDateTime adjustedTime = localDateTime.atZone(gmt).withZoneSameInstant(zoneId).toLocalDateTime();
 
                         if (this.getSpec(ric).getProductName().equals("Fixing")){
-                            if (ric.equals("ESTR")){ // The euro short-term rate (€STR) is published on each TARGET2 business day based on transactions conducted and settled on the previous TARGET2 business day.
-                                localDateTime = localDateTime.plusDays(1);
+                            if (ric.equals("EUROSTR=")){ // The euro short-term rate (€STR) is published on each TARGET2 business day based on transactions conducted and settled on the previous TARGET2 business day.
+                                adjustedTime = bdCalendar.getRolledDate(adjustedTime.toLocalDate(),1).atTime(adjustedTime.toLocalTime());
                             }
-                            quote = quote / 100.;
-
                         }
 
-                        this.calibrationDataSet.add (new CalibrationDataItem(this.getSpec(ric),quote,localDateTime));
+                        this.calibrationDataSet.add (new CalibrationDataItem(this.getSpec(ric),quote,adjustedTime));
                     }
 
                 }
             } catch (Exception e) {
-
+                System.out.println("Fetching Quote Error:" + e);
             }
+
         }
 
 
         if ( this.allQuotesRetrieved()) {
-            Set<CalibrationDataItem> clone = new HashSet<>();
+            Set<CalibrationDataItem> clone = new LinkedHashSet<>();
             clone.addAll(this.calibrationDataSet);
-            CalibrationDataSet set = new CalibrationDataSet(clone,LocalDateTime.now());
+            CalibrationDataset set = new CalibrationDataset(clone,LocalDateTime.now());
             this.calibrationDataSet.clear();
             this.publishSubject.onNext(set);
             this.sink.tryEmitNext(set);

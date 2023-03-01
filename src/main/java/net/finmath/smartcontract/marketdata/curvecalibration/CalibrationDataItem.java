@@ -3,9 +3,13 @@ package net.finmath.smartcontract.marketdata.curvecalibration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class CalibrationDataItem {
+    final String regex = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
+
 
     public static class Spec{
         private final String key;
@@ -35,6 +39,7 @@ public class CalibrationDataItem {
         public String getMaturity() {
             return maturity;
         }
+
 
         @Override
         public int hashCode() {
@@ -100,7 +105,22 @@ public class CalibrationDataItem {
         return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    public LocalDateTime    getDateTime() {return dateTime; }
+    public Integer   getDaysToMaturity(){
+        List<String> list = Arrays.asList(getSpec().getMaturity().split(regex));
+        int nTimeUnits = Integer.parseInt(list.get(0));
+        String timeUnitKey = list.get(1);
+        if ( timeUnitKey.equals("D"))
+            return nTimeUnits;
+        if (timeUnitKey.equals("M"))
+            return nTimeUnits*30;
+        if (timeUnitKey.equals("Y"))
+            return nTimeUnits*360;
+        else
+            return 0;
+    }
+
+
+//    public LocalDateTime    getDateTime() {return dateTime; }
 
     public LocalDate    getDate() { return dateTime.toLocalDate(); }
 
