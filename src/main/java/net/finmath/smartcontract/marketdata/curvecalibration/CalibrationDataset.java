@@ -2,6 +2,7 @@ package net.finmath.smartcontract.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,8 +22,8 @@ public class CalibrationDataset {
 
 	public CalibrationDataset(final Set<CalibrationDataItem> curveDataPointSet, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
-		this.fixingDataItems  = curveDataPointSet.stream().filter(dataItem->dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparingInt(CalibrationDataItem::getDaysToMaturity)).collect(Collectors.toCollection( LinkedHashSet::new ));
-		this.calibrationDataItems = curveDataPointSet.stream().filter(dataItem->!dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparing(CalibrationDataItem::getDate)).collect(Collectors.toCollection( LinkedHashSet::new ));
+		this.fixingDataItems  = curveDataPointSet.stream().filter(dataItem->dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparing(CalibrationDataItem::getDate)).collect(Collectors.toCollection( LinkedHashSet::new ));
+		this.calibrationDataItems = curveDataPointSet.stream().filter(dataItem->!dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparing(CalibrationDataItem::getDaysToMaturity)).collect(Collectors.toCollection( LinkedHashSet::new ));
 
 	}
 
@@ -36,6 +37,11 @@ public class CalibrationDataset {
 	public Set<CalibrationDataItem> getFixingDataItems(){
 		return this.fixingDataItems;
 	}
+
+	/*public Map<LocalDate,Double>  getFixingDataMap(){
+		return fixingDataItems.stream().sorted(Comparator.comparing(CalibrationDataItem::getDate))
+				.collect(Collectors.toMap(item->item.getMaturity(), item->item.getQuote(), (x, y) -> y, LinkedHashMap::new));
+	}*/
 
 	public CalibrationDataset getClonedFixingsAdded(Set<CalibrationDataItem> newFixingDataItems){
 		// @todo - do several checks i.e. what if a fixing already exists at that date or if dataTiem is not a fixing
@@ -62,20 +68,22 @@ public class CalibrationDataset {
 		Map<String,Map<String, Map<String,Map<String, Map<String, Double > > > > > nestedMap = new LinkedHashMap<>();
 		nestedMap.put(date,new LinkedHashMap<>());
 		nestedMap.get(date).put(quoteKey, new LinkedHashMap<>());
+		/* Serialize Quotes */
 		for (CalibrationDataItem item : this.calibrationDataItems){
 			if ( !nestedMap.get(date).get(quoteKey).containsKey(item.getSpec().getCurveName()) )
 				nestedMap.get(date).get(quoteKey).put(item.getSpec().getCurveName(),new LinkedHashMap<>());
 			if ( ! nestedMap.get(date).get(quoteKey).get(item.getSpec().getCurveName()).containsKey(item.getSpec().getProductName()))
 				nestedMap.get(date).get(quoteKey).get(item.getSpec().getCurveName()).put(item.getSpec().getProductName(),new LinkedHashMap<>());
-			nestedMap.get(date).get(quoteKey).get(item.getSpec().getCurveName()).get(item.getSpec().getProductName()).put(item.getSpec().getMaturity(),item.getQuote());
+			nestedMap.get(date).get(quoteKey).get(item.getSpec().getCurveName()).get(item.getSpec().getProductName()).put(item.getSpec().getMaturity(),item.getQuote()); /*Maturity is mapped to Quote*/
 		}
+		/* Serialize Fixings */
 		nestedMap.get(date).put(fixingKey, new LinkedHashMap<>());
 		for(CalibrationDataItem item : this.fixingDataItems){
 			if ( !nestedMap.get(date).get(fixingKey).containsKey(item.getSpec().getCurveName()) )
 				nestedMap.get(date).get(fixingKey).put(item.getSpec().getCurveName(),new LinkedHashMap<>());
 			if ( !nestedMap.get(date).get(fixingKey).get(item.getSpec().getCurveName()).containsKey(item.getSpec().getProductName()))
 				nestedMap.get(date).get(fixingKey).get(item.getSpec().getCurveName()).put(item.getSpec().getProductName(),new LinkedHashMap<>());
-			nestedMap.get(date).get(fixingKey).get(item.getSpec().getCurveName()).get(item.getSpec().getProductName()).put(item.getDateString(),item.getQuote());
+			nestedMap.get(date).get(fixingKey).get(item.getSpec().getCurveName()).get(item.getSpec().getProductName()).put(item.getDateString(),item.getQuote()); /*Date is mapped to Fixing*/
 		}
 		try {
 			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nestedMap);

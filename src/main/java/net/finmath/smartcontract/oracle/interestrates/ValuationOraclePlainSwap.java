@@ -1,11 +1,22 @@
 package net.finmath.smartcontract.oracle.interestrates;
 
 import net.finmath.marketdata.model.AnalyticModel;
+import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
+import net.finmath.marketdata.model.curves.Curve;
+import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
+import net.finmath.marketdata.model.curves.ForwardCurveWithFixings;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
+import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.smartcontract.marketdata.curvecalibration.*;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.oracle.ValuationOracle;
+import net.finmath.time.FloatingpointDate;
+import net.finmath.time.Period;
+import net.finmath.time.Schedule;
+import net.finmath.time.daycount.DayCountConvention;
+import net.finmath.time.daycount.DayCountConventionFactory;
+import net.finmath.time.daycount.DayCountConvention_30E_360;
 import org.javamoney.moneta.Money;
 
 import javax.money.CurrencyUnit;
@@ -13,10 +24,9 @@ import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.DoubleUnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -72,14 +82,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 		final Optional<CalibrationDataset> optionalScenario = scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
 			final CalibrationDataset scenario = optionalScenario.get();
-
-			/** @// TODO: 2/21/2023 - IRMarketDataSet to provide the fixed part of a curve
-			 *
-			 *
-			 * * double[] pastFixingTime = {scheduleFloat.getFixing(0)};
-			 * 				 * double paymentOffset = scheduleFloat.getPayment(0);
-			 * 				 * fixedCurve = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed",pastFixingTime,pastFixingArray,paymentOffset);
-			 */
+			final LocalDate referenceDate = marketDataTime.toLocalDate();
 
 			final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 			final Calibrator calibrator = new Calibrator();
@@ -89,30 +92,29 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 
 				final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
 
-				/*@Todo - should be part of IRMarketDataSet to provide relevant map
-				1. how to convert fixing time into date
-				2. what about when we are exactly on the fixing date
-				3. what when we are exactly on the fixing date but before 11:00 am.
-				 */
-				Map<String,Double> pastFixingMap  = null;
 
-				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime.toLocalDate(), 1E-6));
+				final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 				AnalyticModel calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
 
-				/*InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) product.getLegReceiver();
-				InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) product.getLegPayer();
-
-				InterestRateSwapLegProductDescriptor floatingLeg = !legPayer.getForwardCurveName().equals("") ? legPayer : legReceiver;
+				/* Check the product */
+				SwapLeg legReceiver = (SwapLeg) product.getLegReceiver();
+				SwapLeg legPayer = (SwapLeg) product.getLegPayer();
+				SwapLeg floatingLeg = !legPayer.getForwardCurveName().equals("") ? legPayer : legReceiver;
 				String forwardCurveID = floatingLeg.getForwardCurveName();
-				Schedule schedule = floatingLeg.getLegScheduleDescriptor().getSchedule(evaluationDate.toLocalDate());
-				double[] pastFixingTime = {schedule.getFixing(0)};
-				double[] pastFixingArray = {0.0};
-				double paymentOffset = schedule.getPayment(0);
+				Schedule schedule = floatingLeg.getSchedule();
 
-				 ForwardCurveInterpolation fixedCurve = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed",pastFixingTime,pastFixingArray,paymentOffset);
-				 Curve forwardCurveWithFixings = new ForwardCurveWithFixings(calibratedModel.getForwardCurve(forwardCurveID), fixedCurve, schedule.getFixing(0), 0.0);
-				 Curve[] finalCurves = {calibratedModel.getDiscountCurve(floatingLeg.getDiscountCurveName()), calibratedModel.getForwardCurve(forwardCurveID), forwardCurveWithFixings};
-				 calibratedModel = new AnalyticModelFromCurvesAndVols(evaluationDate.toLocalDate(), finalCurves);*/
+
+				Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
+
+				// @Todo what if we have no past fixing provided
+				// @Todo what when we are exactly on the fixing date but before 11:00 am.
+				String discountCurveID = floatingLeg.getDiscountCurveName();
+				ForwardCurveInterpolation fixedCurve = this.getCurvePastFixings("fixedCurve",referenceDate,calibratedModel,discountCurveID,pastFixings);//ForwardCurveInterpolation.createForwardCurveFromForwards("pastFixingCurve", pastFixingTimeArray, pastFixingArray, paymentOffset);
+				Curve forwardCurveWithFixings = new ForwardCurveWithFixings(calibratedModel.getForwardCurve(forwardCurveID), fixedCurve, schedule.getFixing(0), 0.0);
+				Curve[] finalCurves = {calibratedModel.getDiscountCurve(floatingLeg.getDiscountCurveName()), calibratedModel.getForwardCurve(forwardCurveID), forwardCurveWithFixings};
+				calibratedModel = new AnalyticModelFromCurvesAndVols(referenceDate, finalCurves);
+
+				double fixedRate = forwardCurveWithFixings.getValue(-0.12);
 
 				final double evaluationTime = 0.0;    // Time relative to models reference date (which agrees with evaluationDate).
 				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
@@ -126,4 +128,33 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 			return null;
 		}
 	}
+
+
+	private ForwardCurveInterpolation getCurvePastFixings(final String curveID, LocalDate referenceDate, AnalyticModel model, String discountCurveName, final Set<CalibrationDataItem> pastFixings){
+		Map<Double, Double> fixingMap = new LinkedHashMap<>();
+		pastFixings.stream().forEach(item->fixingMap.put(FloatingpointDate.getFloatingPointDateFromDate(referenceDate, item.getDate()),item.getQuote()));
+		double[] pastFixingTimes = fixingMap.keySet().stream().mapToDouble(time->time).toArray();
+		double[] pastFixingsValues = Arrays.stream(pastFixingTimes).map(time->fixingMap.get(time)).toArray();
+		ForwardCurveInterpolation.InterpolationEntityForward interpolationEntityForward = ForwardCurveInterpolation.InterpolationEntityForward.FORWARD;
+		ForwardCurveInterpolation fixedCurve = ForwardCurveInterpolation.createForwardCurveFromForwards(curveID,referenceDate,"offsetcode",interpolationEntityForward,discountCurveName,model,pastFixingTimes,pastFixingsValues);
+		return fixedCurve;
+	}
 }
+
+				/*if (schedule.getFixing(0)<0) {  /* In case we have a past fixing, add a fixed forward curve to calibration model
+					Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
+					LocalDate pastFixingDate = schedule.getPeriods().get(0).getFixing();
+
+					double period = FloatingpointDate.getFloatingPointDateFromDate(evaluationDate.toLocalDate(), pastFixingDate);
+
+					double[] pastFixingTimeArray = {schedule.getFixing(0)};
+					double[] pastFixingArray = new double[1];
+					try {
+						pastFixingArray[0] = pastFixings.stream().filter(fixing -> fixing.getDate().equals(pastFixingDate)).findAny().orElseThrow().getQuote();
+					} catch (Exception e) {
+
+						pastFixingArray[0] = 0.0;
+					}
+					double paymentOffset = schedule.getPayment(0);
+
+				//} */

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class CalibrationDataItem {
-    final String regex = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
+    private static final String regex = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
 
 
     public static class Spec{
@@ -101,9 +101,6 @@ public class CalibrationDataItem {
         return quote;
     }
 
-    public String getDateString() {
-        return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    }
 
     public Integer   getDaysToMaturity(){
         List<String> list = Arrays.asList(getSpec().getMaturity().split(regex));
@@ -119,8 +116,10 @@ public class CalibrationDataItem {
             return 0;
     }
 
+    public String getDateString() {
+        return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 
-//    public LocalDateTime    getDateTime() {return dateTime; }
 
     public LocalDate    getDate() { return dateTime.toLocalDate(); }
 

@@ -7,6 +7,8 @@ import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParser;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 
@@ -17,7 +19,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -58,9 +62,17 @@ public class DemoLauncher {
         };
         //emitter.asObservable().throttleLast(10,TimeUnit.SECONDS).subscribe(marketDataWriter);
 
+		Path dir = Paths.get("C:\\Temp\\marketdata\\");  // specify your directory
+
+		Optional<Path> lastFilePath = Files.list(dir)    // here we get the stream with full directory listing
+				.filter(f -> !Files.isDirectory(f))  // exclude subdirectories from listing
+				.max(Comparator.comparingLong(f -> f.toFile().lastModified()));
+		lastFilePath.get().toUri();
+		String json = Files.readString(lastFilePath.get());
+		CalibrationDataset lastStoredSet = CalibrationParserDataItems.getScenariosFromJsonString(json).get(0);
 
 		final Consumer<CalibrationDataset> fixingHistoryCollector = new Consumer<CalibrationDataset>() {
-			CalibrationDataset fixingCollectorDataSet;
+			CalibrationDataset fixingCollectorDataSet = lastStoredSet;
 			@Override
 			public void accept(CalibrationDataset calibrationDataSet) throws Throwable {
 				//if (fixingCollectorDataSet == null || (fixingCollectorDataSet.getFixingDataItems().size() != calibrationDataSet.getFixingDataItems().size())){
@@ -74,7 +86,7 @@ public class DemoLauncher {
 				//
 			}
 		};
-		emitter.asObservable().throttleFirst(15,TimeUnit.SECONDS).subscribe(fixingHistoryCollector);
+		emitter.asObservable().throttleFirst(60,TimeUnit.MINUTES).subscribe(fixingHistoryCollector);
 
         /* Print Market Values */
         //Consumer<ValueResult> printValues = (ValueResult s ) -> System.out.println("Consumer ValuationPrint: " +s.getValue().doubleValue() );
