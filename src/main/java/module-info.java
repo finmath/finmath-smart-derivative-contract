@@ -10,17 +10,19 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.service.config;
 	exports net.finmath.smartcontract.oracle;
 	exports net.finmath.smartcontract.oracle.interestrates;
-	exports net.finmath.smartcontract.simulation.scenariogeneration;
-	exports net.finmath.smartcontract.simulation.curvecalibration;
+	exports net.finmath.smartcontract.marketdata.curvecalibration;
 	exports net.finmath.smartcontract.service.utils;
+	exports net.finmath.smartcontract.marketdata.adapters;
+	exports net.finmath.smartcontract.webflux;
+    exports net.finmath.smartcontract.reactive;
 
 	opens net.finmath.smartcontract.client;
 	opens net.finmath.smartcontract.product.xml;
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
+	opens net.finmath.smartcontract.webflux to spring.core;
 
-
-	requires java.datatransfer;
+    requires java.datatransfer;
 	requires java.logging;
 	requires java.validation;
 	requires java.annotation;
@@ -28,19 +30,25 @@ module net.finmath.smartderivativecontract {
 
 	requires javafx.swing;
 	requires javafx.graphics;
+	requires javafx.controls;
 
 	requires spring.core;
 	requires spring.web;
 	requires spring.boot;
 	requires spring.boot.autoconfigure;
 	requires spring.context;
+	requires spring.messaging;
 	requires spring.security.core;
 	requires spring.security.web;
 	requires spring.security.config;
 	requires spring.statemachine.core;
 	requires spring.beans;
+	requires spring.webflux;
+
+	requires transitive io.reactivex.rxjava3;
 
 	requires io.swagger.v3.oas.annotations;
+	requires reactor.core;
 
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.dataformat.csv;
@@ -59,5 +67,8 @@ module net.finmath.smartderivativecontract {
 	requires net.finmath.lib;
 	requires net.finmath.plots;
 	requires org.jfree.jfreechart;
-	requires javafx.controls;
+
+	requires nv.websocket.client;
+	requires org.apache.httpcomponents.httpclient;
+	requires org.apache.httpcomponents.httpcore;
 }
