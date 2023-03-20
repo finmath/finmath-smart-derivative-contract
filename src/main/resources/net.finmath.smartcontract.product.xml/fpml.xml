@@ -9,7 +9,7 @@
     <parties>
         <party>
             <name>Union-Investment</name>
-            <id>UI</id>
+            <id>CP1</id>
             <marginAccount>
                 <type>constant</type>
                 <value>50000.0</value>
@@ -50,7 +50,7 @@
             </symbols>
         </marketdata>
     </settlement>
-    <receiverPartyID>UI</receiverPartyID>
+    <receiverPartyID>CP1</receiverPartyID>
     <underlyings>
         <underlying>
             <dataDocument fpmlVersion="5-9"
@@ -60,7 +60,7 @@
                 <trade>
                     <tradeHeader>
                         <partyTradeIdentifier>
-                            <partyReference href="UI"/>
+                            <partyReference href="CP1"/>
                             <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">1267801479</tradeId>
                         </partyTradeIdentifier>
                         <partyTradeIdentifier>
@@ -71,7 +71,7 @@
                     </tradeHeader>
                     <swap>
                         <swapStream xmlns="">
-                            <payerPartyReference href="UI"/>
+                            <payerPartyReference href="CP1"/>
                             <receiverPartyReference href="DZ"/>
                             <calculationPeriodDates id="floatingCalcPeriodDates">
                                 <effectiveDate>
@@ -154,7 +154,7 @@
                         </swapStream>
                         <swapStream xmlns="">
                             <payerPartyReference href="DZ"/>
-                            <receiverPartyReference href="UI"/>
+                            <receiverPartyReference href="CP1"/>
                             <calculationPeriodDates id="fixedCalcPeriodDates">
                                 <effectiveDate>
                                     <unadjustedDate>2022-11-14</unadjustedDate>
