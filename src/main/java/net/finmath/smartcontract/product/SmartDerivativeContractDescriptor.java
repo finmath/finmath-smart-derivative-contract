@@ -1,5 +1,6 @@
 package net.finmath.smartcontract.product;
 
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Node;
 
@@ -21,6 +22,7 @@ public class SmartDerivativeContractDescriptor {
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
 	private final String recervicePartyID;
 	private final Node underlying;
+	private final List<CalibrationDataItem.Spec> marketdataItemList;
 
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
@@ -66,12 +68,13 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying) {
+	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
 		this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
 		this.recervicePartyID = recervicePartyID;
+		this.marketdataItemList =marketdataItems;
 		this.underlying = underlying;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
@@ -119,4 +122,6 @@ public class SmartDerivativeContractDescriptor {
 	public String getUnderlyingReceiverPartyID() {
 		return recervicePartyID;
 	}
+
+	public List<CalibrationDataItem.Spec>  getMarketdataItemList() { return marketdataItemList; }
 }
