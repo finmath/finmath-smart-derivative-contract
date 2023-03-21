@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="968c1683-e7a1-4148-850e-21455690a283" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/finmath.cer" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/config/finmath.cer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/finmath.p12" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/config/finmath.p12" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doc/spreadsheets/EstimationOfMarginBufferAndPenalty.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/doc/spreadsheets/EstimationOfMarginBufferAndPenalty.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/finmath-checkstyle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/finmath-checkstyle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maven-release-site.bat" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/maven-release-site.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maven-release-site.sh" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/maven-release-site.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/start-demo-visualization.sh" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/scripts/start-demo-visualization.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/start-margin-valuation-oracle.sh" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/scripts/start-margin-valuation-oracle.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/test-margin-valuation-oracle.sh" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/scripts/test-margin-valuation-oracle.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/client/ValuationClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/client/ValuationClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/client/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/client/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContract.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractSchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractSchedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractScheduleGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/contract/SmartDerivativeContractScheduleGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/contract/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/contract/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/VisualiserSDC.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/VisualiserSDC.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/DemoLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/DemoLauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/DemoScheduleSimulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/DemoScheduleSimulator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/Visualiser.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/Visualiser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartData.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGeneratorMarketValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGeneratorMarketValue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGeneratorSDCAccountBalance.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/ChartDataGeneratorSDCAccountBalance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/chartdatageneration/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/PlotGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/PlotGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/StackedBarchartGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/StackedBarchartGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/TimeSeriesChartGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/TimeSeriesChartGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/legacy/plotgeneration/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/demo/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/demo/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/legacy/descriptor/TradeDescriptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/legacy/descriptor/TradeDescriptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/legacy/descriptor/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/legacy/descriptor/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/legacy/descriptor/xmlparser/FPMLParserLegacy.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/legacy/descriptor/xmlparser/FPMLParserLegacy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/legacy/descriptor/xmlparser/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/legacy/descriptor/xmlparser/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/adapters/MarketDataRandomFeedAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/adapters/MarketDataRandomFeedAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/adapters/MarketDataWebSocketAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/adapters/MarketDataWebSocketAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/adapters/WebSocketConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/adapters/WebSocketConnector.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationContextImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationContextImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationDataItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationDataItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationDataset.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationDataset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationParserDataItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationParserDataItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderDeposit.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderDeposit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderFRA.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderFRA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderOis.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderOis.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderSwap.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/CalibrationSpecProviderSwap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/Calibrator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/Calibrator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/curvecalibration/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/marketdata/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/marketdata/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/SmartDerivativeContractSettlementOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/SmartDerivativeContractSettlementOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/StochasticValuationOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/StochasticValuationOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/ValuationOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/ValuationOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/ValuationOracleSamplePath.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/ValuationOracleSamplePath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/interestrates/ValuationOraclePlainSwap.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/interestrates/ValuationOraclePlainSwap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/interestrates/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/interestrates/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/simulated/BrownianMotionOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/simulated/BrownianMotionOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/simulated/ContinouslyCompoundedBankAccountOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/simulated/ContinouslyCompoundedBankAccountOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/simulated/GeometricBrownianMotionOracle.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/simulated/GeometricBrownianMotionOracle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/oracle/simulated/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/oracle/simulated/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/plots/Plot2DFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/plots/Plot2DFX.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/product/IRSwapGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/product/IRSwapGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/product/SmartDerivativeContractDescriptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/product/SmartDerivativeContractDescriptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/product/xml/SDCXMLParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/product/xml/SDCXMLParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/reactive/ConditionalSettlementCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/reactive/ConditionalSettlementCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/reactive/DemoLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/reactive/DemoLauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/Application.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/InfoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/InfoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/ValuationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/ValuationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/config/BasicAuthWebSecurityConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/config/BasicAuthWebSecurityConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/utils/ApplicationProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/utils/ApplicationProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/service/utils/SDCUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/service/utils/SDCUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/statemachine/SmartContractStateMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/statemachine/SmartContractStateMachine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/statemachine/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/statemachine/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/valuation/MarginCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/valuation/MarginCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/valuation/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/valuation/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/webflux/WebFluxApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/webflux/WebFluxApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/webflux/WebFluxConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/webflux/WebFluxConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/webflux/WebFluxDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/webflux/WebFluxDemo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/finmath/smartcontract/webflux/WebFluxWebSocketHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/java/net/finmath/smartcontract/webflux/WebFluxWebSocketHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/api.yml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/api.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.client/md_testset1.json" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.client/md_testset1.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.client/md_testset2.json" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.client/md_testset2.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.client/md_testset_with_fixings.json" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.client/md_testset_with_fixings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.client/vanilla-swap.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.client/vanilla-swap.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.product.xml/MisterCharles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.product.xml/MisterCharles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.product.xml/fpml.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.product.xml/fpml.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.product.xml/sdc2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.product.xml/sdc2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.product.xml/smartderivativecontract.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.product.xml/smartderivativecontract.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net.finmath.smartcontract.product.xml/smartderivativecontract.xsd" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net.finmath.smartcontract.product.xml/smartderivativecontract.xsd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net/finmath/smartcontract/demo/barchart.css" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net/finmath/smartcontract/demo/barchart.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/net/finmath/smartcontract/marketdata/util/timeseriesdatamap.json" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/net/finmath/smartcontract/marketdata/util/timeseriesdatamap.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/sdc.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/sdc.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/margin-valuation.html" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/static/margin-valuation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/product-valuation.html" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/static/product-valuation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/product-xml-test.html" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/main/resources/static/product-xml-test.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/articles/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/articles/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/articles/rethinking_part_1.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/articles/rethinking_part_1.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/articles/rethinking_part_2.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/articles/rethinking_part_2.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/articles/sketch_digital_landscape.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/articles/sketch_digital_landscape.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/coding/codingconventions.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/coding/codingconventions.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/dockerbuild.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/dockerbuild.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/markdown/valuationservice.md" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/markdown/valuationservice.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/resources/css/site.css" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/resources/css/site.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/site.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/site/site.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/SmartDerivativeContractMarginingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/SmartDerivativeContractMarginingTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/contract/SmartDerivativeContractScheduleGeneratorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/contract/SmartDerivativeContractScheduleGeneratorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/demo/DemoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/demo/DemoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/marketdata/MarketDataImportTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/marketdata/MarketDataImportTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/marketdata/MarketDataPastFixingsTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/marketdata/MarketDataPastFixingsTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/oracle/GeometricBrownianMotionOracleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/oracle/GeometricBrownianMotionOracleTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/product/xml/SDCXMLParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/product/xml/SDCXMLParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/service/ValuationControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/service/ValuationControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/statemachine/SmartContractStateMachineTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/statemachine/SmartContractStateMachineTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/finmath/smartcontract/valuation/MarginCalculatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/finmath/smartcontract/valuation/MarginCalculatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/net/simulation/HistoricalSimulationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/src/test/java/net/simulation/HistoricalSimulationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swagger-config.json" beforeDir="false" afterPath="$PROJECT_DIR$/sdc-service/swagger-config.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectId" id="2NJhQZfozRpsUtAUzwzyB7Yn8Zj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/Luca Bressan/IdeaProjects/finmath-smart-derivative-contract-addui/sdc-service/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "spring.boot",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Luca Bressan\IdeaProjects\finmath-smart-derivative-contract-addui\sdc-service\src\main\resources" />
+      <recent name="C:\Users\Luca Bressan\IdeaProjects\finmath-smart-derivative-contract-addui" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Luca Bressan\IdeaProjects\finmath-smart-derivative-contract-addui\sdc-service" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.finmath.smartcontract.product.xml" />
+      <recent name="net.finmath.smartcontract.model" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.Application">
+    <configuration name="generated-requests | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="3" requestIdentifier="#3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="HTTP Request.generated-requests | #3" />
+      <item itemvalue="npm.Angular Dev Server (sdc-frontend)" />
+      <item itemvalue="Spring Boot.Application" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.generated-requests | #3" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="968c1683-e7a1-4148-850e-21455690a283" name="Changes" comment="" />
+      <created>1679388078236</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1679388078236</updated>
+      <workItem from="1679388081589" duration="25511000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
