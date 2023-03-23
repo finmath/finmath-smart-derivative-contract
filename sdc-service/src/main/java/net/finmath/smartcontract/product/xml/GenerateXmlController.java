@@ -6,10 +6,7 @@ import net.finmath.smartcontract.model.XmlResponse;
 import net.finmath.smartcontract.product.xml.TradeXmlGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
@@ -19,9 +16,13 @@ import java.io.IOException;
 public class GenerateXmlController {
     protected Logger logger = LoggerFactory.getLogger(GenerateXmlController.class);
 
+    @GetMapping("/generatexml")
+    public String generateXml(){
+        return "Ready to generate some XMLs!";
+    }
+
     @PostMapping("/generatexml")
     public XmlResponse generateXml(HttpServletResponse response, @RequestBody TradeDescriptor tradeDescription) throws JAXBException, IOException, DatatypeConfigurationException {
-        response.addHeader("Access-Control-Allow-Origin", "localhost:4200");
         logger.info("Accepted XML generation request. Allocating response...");
         XmlResponse xmlResponse = new XmlResponse();
         logger.info("...done. Parsing request...");

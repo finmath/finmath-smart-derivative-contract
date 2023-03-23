@@ -19,12 +19,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Configuration
-@EnableWebSecurity
-@EnableConfigurationProperties(value = ApplicationProperties.class)
+// @Configuration
+// @EnableWebSecurity
+// @EnableConfigurationProperties(value = ApplicationProperties.class)
 public class BasicAuthWebSecurityConfiguration {
 
-	@Bean
+	/*@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf().disable()
@@ -45,7 +45,7 @@ public class BasicAuthWebSecurityConfiguration {
 	 * @param applicationProperties injected properties
 	 * @return List of UserDetails
 	 */
-	private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
+	/*private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
 		List<UserDetails> userDetailsList = new ArrayList<>();
 		applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
 				.withUsername(sdcUser.getUsername())
@@ -53,5 +53,5 @@ public class BasicAuthWebSecurityConfiguration {
 				.roles(sdcUser.getRole())
 				.build()));
 		return userDetailsList;
-	}
+	}*/
 }

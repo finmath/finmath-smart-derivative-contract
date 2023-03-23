@@ -17,6 +17,7 @@ import net.finmath.smartcontract.product.IRSwapGenerator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,7 +53,7 @@ public class VisualiserSDC {
 
 		final LocalDate startDate = LocalDate.of(2008, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
-		final String fileName = "timeseriesdatamap.json";
+		final String fileName = "references"+ File.separator + "timeseriesdatamap.json";
 		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 		final List<CalibrationDataset> scenarioList = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 		// CSV Method returns same List

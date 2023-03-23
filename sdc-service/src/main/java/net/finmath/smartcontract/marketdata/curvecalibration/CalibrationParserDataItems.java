@@ -1,11 +1,16 @@
 package net.finmath.smartcontract.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.finmath.smartcontract.demo.VisualiserSDC;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,8 +75,11 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	public static final List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
+
+		File startPoint = new File(VisualiserSDC.class.getResource(VisualiserSDC.class.getSimpleName()+".class").getPath());
+		File file = new File (startPoint.getParentFile().getParentFile().getParentFile().getParentFile().getParent()+File.separator+fileName);
 		try {
-			content = new String(CalibrationParserDataItems.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
+			content = new String((new FileInputStream(file)).readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			System.out.println("Please provide the market data file " + fileName);
 			throw e;
@@ -118,6 +126,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
 	private static final List<CalibrationDataset> getScenariosFromJsonContent(final String content) throws IOException {
+
 		final ObjectMapper mapper = new ObjectMapper();
 		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String,  Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
 
@@ -139,6 +148,32 @@ public class CalibrationParserDataItems implements CalibrationParser {
 				.collect(Collectors.toList());
 
 		return scenarioList;
+
+		// Luca 23/03/2023: this is how to handle the new(?) JSON format eg. timeseriesdatamap.json
+		/*final ObjectMapper mapper = new ObjectMapper();
+		final Map<String, Map<String, Map<String, Map<String, Double>>>> timeSeriesMap = mapper.readValue(content, new LinkedHashMap<String, Map<String, Map<String, Map<String, Double>>>>().getClass());
+		final List<CalibrationDataset> scenarioList = new LinkedList<>();
+		for (var scenarioData: timeSeriesMap.entrySet()){
+			final String timestampKey = scenarioData.getKey();
+			final LocalDateTime dateTime = parseTimestampString(timestampKey);
+			final Set<CalibrationDataItem> calibrationDataItemSet = new LinkedHashSet<>();
+			for(var curveData: scenarioData.getValue().entrySet()){
+				final String curveKey = curveData.getKey();
+				for(var productData: curveData.getValue().entrySet()){
+					final String productKey = productData.getKey();
+					for(var quoteData: productData.getValue().entrySet()){
+						final String quoteKey = quoteData.getKey();
+						final Double quoteValue = quoteData.getValue();
+						final String uniqueKey =  timestampKey+curveKey+productKey+quoteKey+quoteValue;
+						final CalibrationDataItem.Spec calibrationDataItemSpec = new CalibrationDataItem.Spec(uniqueKey,curveKey,productKey,quoteKey);
+						final CalibrationDataItem calibrationDataItem = new CalibrationDataItem(calibrationDataItemSpec,quoteValue, dateTime);
+						calibrationDataItemSet.add(calibrationDataItem);
+					}
+				}
+			}
+			scenarioList.add(new CalibrationDataset(calibrationDataItemSet,dateTime));
+		}
+		return scenarioList;*/
 	}
 
 	private static LocalDateTime parseTimestampString(String timeStampString) {

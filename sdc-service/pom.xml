@@ -31,6 +31,7 @@
         <src.main.java.dir>src/main/java</src.main.java.dir>
         <src.test.java.dir>src/test/java</src.test.java.dir>
         <java.version>17</java.version>
+        <start-class>net.finmath.smartcontract.service.Application</start-class>
         <src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
         <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
         <kotlin.version>1.7.10</kotlin.version>
@@ -359,6 +360,13 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <!-- Java money -->
+                    <dependency>
+                        <groupId>org.javamoney</groupId>
+                        <artifactId>moneta</artifactId>
+                        <version>1.4.2</version>
+                        <type>pom</type>
+                    </dependency>
                     <dependency>
                         <!-- add support for ssh/scp -->
                         <groupId>org.apache.maven.wagon</groupId>

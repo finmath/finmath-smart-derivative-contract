@@ -47,6 +47,7 @@ public final class TradeXmlGenerator {
         settlementHeader.marketdata.marketdataitems =
                 new Smartderivativecontract.Settlement.Marketdata.Marketdataitems();
         sdc.setSettlement(settlementHeader);
+        sdc.setReceiverPartyID("party1");
     }
 
     private static void setSdcPartiesHeader(
@@ -67,10 +68,12 @@ public final class TradeXmlGenerator {
                 new Smartderivativecontract.Parties.Party.MarginAccount();
         marginAccount1.setType("constant");
         marginAccount1.setValue(tradeDescriptor.getMarginBufferAmount());
+        party1.setMarginAccount(marginAccount1);
         Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee1 =
                 new Smartderivativecontract.Parties.Party.PenaltyFee();
         penaltyFee1.setType("constant");
         penaltyFee1.setValue(tradeDescriptor.getTerminationFeeAmount());
+        party1.setPenaltyFee(penaltyFee1);
         party1.setAddress("0x0");
 
         logger.info("Setting id 'party2' for party " + tradeDescriptor.getSecondCounterparty());
@@ -87,6 +90,8 @@ public final class TradeXmlGenerator {
         penaltyFee2.setType("constant");
         penaltyFee2.setValue(tradeDescriptor.getTerminationFeeAmount());
         party2.setAddress("0x0");
+        party2.setMarginAccount(marginAccount2);
+        party2.setPenaltyFee(penaltyFee2);
 
         partyList.add(party1);
         partyList.add(party2);
@@ -114,7 +119,7 @@ public final class TradeXmlGenerator {
                                                           DatatypeConfigurationException {
         JAXBContext jaxbContext =
                 JAXBContext.newInstance(
-                        "net.finmath.sdcbackend.xml",
+                        "net.finmath.smartcontract.product.xml",
                         this.getClass().getClassLoader()); //needs the standard classloader, prevents tomcat from overriding this
         Marshaller marshaller = jaxbContext.createMarshaller();
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

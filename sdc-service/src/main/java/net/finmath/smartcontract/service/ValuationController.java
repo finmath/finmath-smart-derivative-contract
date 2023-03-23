@@ -82,7 +82,6 @@ public class ValuationController implements ValuationApi {
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
 			logger.error("Failed to calculate value.");
-			logger.info(value.toString());
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}

@@ -4,13 +4,16 @@ import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguratio
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 
 import java.util.Collections;
 import java.util.Arrays;
@@ -25,8 +28,11 @@ import java.util.Arrays;
 	}
 )
 */
-@SpringBootApplication
-@Import(BasicAuthWebSecurityConfiguration.class)
+// @SpringBootApplication
+// @Import(BasicAuthWebSecurityConfiguration.class)
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
+@ComponentScan(basePackages = "net.finmath.smartcontract.product.xml")
+@ComponentScan(basePackages = "net.finmath.smartcontract.api")
 public class Application {
 
 
