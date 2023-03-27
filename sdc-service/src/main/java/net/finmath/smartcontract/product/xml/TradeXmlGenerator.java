@@ -4,30 +4,36 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import net.finmath.smartcontract.model.TradeDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
 
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+
+import net.finmath.smartcontract.model.TradeDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ResourceUtils;
+import org.xml.sax.SAXException;
 
 
 public final class TradeXmlGenerator {
 
-    private static Logger logger = LoggerFactory.getLogger(TradeXmlGenerator.class);
+    protected static Logger logger = LoggerFactory.getLogger(TradeXmlGenerator.class);
     private static void setSdcSettlementHeader(
             final TradeDescriptor tradeDescriptor,
             final Smartderivativecontract sdc) {
@@ -44,10 +50,7 @@ public final class TradeXmlGenerator {
         settlementHeader.marketdata =
                 new Smartderivativecontract.Settlement.Marketdata();
         settlementHeader.marketdata.provider = "refinitiv";
-        settlementHeader.marketdata.marketdataitems =
-                new Smartderivativecontract.Settlement.Marketdata.Marketdataitems();
         sdc.setSettlement(settlementHeader);
-        sdc.setReceiverPartyID("party1");
     }
 
     private static void setSdcPartiesHeader(
@@ -68,12 +71,10 @@ public final class TradeXmlGenerator {
                 new Smartderivativecontract.Parties.Party.MarginAccount();
         marginAccount1.setType("constant");
         marginAccount1.setValue(tradeDescriptor.getMarginBufferAmount());
-        party1.setMarginAccount(marginAccount1);
         Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee1 =
                 new Smartderivativecontract.Parties.Party.PenaltyFee();
         penaltyFee1.setType("constant");
         penaltyFee1.setValue(tradeDescriptor.getTerminationFeeAmount());
-        party1.setPenaltyFee(penaltyFee1);
         party1.setAddress("0x0");
 
         logger.info("Setting id 'party2' for party " + tradeDescriptor.getSecondCounterparty());
@@ -90,6 +91,9 @@ public final class TradeXmlGenerator {
         penaltyFee2.setType("constant");
         penaltyFee2.setValue(tradeDescriptor.getTerminationFeeAmount());
         party2.setAddress("0x0");
+
+        party1.setMarginAccount(marginAccount1);
+        party1.setPenaltyFee(penaltyFee1);
         party2.setMarginAccount(marginAccount2);
         party2.setPenaltyFee(penaltyFee2);
 
@@ -115,14 +119,24 @@ public final class TradeXmlGenerator {
 
     public String marshallTradeDescriptorOntoXml(
             final TradeDescriptor tradeDescriptor) throws JAXBException,
-                                                          FileNotFoundException,
-                                                          DatatypeConfigurationException {
+            IOException,
+            DatatypeConfigurationException {
+        SchemaFactory factory =
+                SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema;
+        try {
+            schema = factory.newSchema((new ClassPathResource("schemas"+File.separator+"sdc-schemas"+File.separator+"sdcml-contract.xsd")).getURL());
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        }
         JAXBContext jaxbContext =
                 JAXBContext.newInstance(
                         "net.finmath.smartcontract.product.xml",
                         this.getClass().getClassLoader()); //needs the standard classloader, prevents tomcat from overriding this
         Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setSchema(schema);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller.setSchema(schema);
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         logger.info("Accepted incoming request with body:");
@@ -130,10 +144,9 @@ public final class TradeXmlGenerator {
         // create new SDCmL file as object
         Smartderivativecontract smartDerivativeContract =
                 new Smartderivativecontract();
-        File testXML = ResourceUtils.getFile(
-                "classpath:references/sample_xml_file.xml");
+        ClassPathResource testXml = new ClassPathResource("references/sample_xml_file.xml");
         Smartderivativecontract contract =
-                (Smartderivativecontract) unmarshaller.unmarshal(testXML);
+                (Smartderivativecontract) unmarshaller.unmarshal(testXml.getInputStream());
 
         // set the SDC specific stuff in the helper methods
         setSdcValuationHeader(smartDerivativeContract);
@@ -146,12 +159,18 @@ public final class TradeXmlGenerator {
 
         Trade trade = smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(0);
         XMLGregorianCalendar formattedTradeDate = DatatypeFactory.newInstance()
-                            .newXMLGregorianCalendar(
-                               GregorianCalendar.from(tradeDescriptor.getTradeDate()
-                                                     )
-                                               );
+                .newXMLGregorianCalendar(
+                        GregorianCalendar.from(tradeDescriptor.getTradeDate()
+                        )
+                );
         formattedTradeDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         trade.tradeHeader.tradeDate.setValue(formattedTradeDate);
+        trade.tradeHeader.partyTradeIdentifier.get(0).tradeId = new TradeId();
+        trade.tradeHeader.partyTradeIdentifier.get(0).tradeId.setValue("123456");
+        trade.tradeHeader.partyTradeIdentifier.get(0).tradeId.setTradeIdScheme("test");
+        trade.tradeHeader.partyTradeIdentifier.get(1).tradeId = new TradeId();
+        trade.tradeHeader.partyTradeIdentifier.get(1).tradeId.setValue("123456");
+        trade.tradeHeader.partyTradeIdentifier.get(1).tradeId.setTradeIdScheme("test");
 
         Swap swap = ((Swap) smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(
                 0).getProduct().getValue());
@@ -160,26 +179,26 @@ public final class TradeXmlGenerator {
 
         // for each swapstream... (index is the order of appearance in the template)
         XMLGregorianCalendar formattedEffectiveDate = DatatypeFactory.newInstance()
-                                                                 .newXMLGregorianCalendar(
-                                                                         GregorianCalendar.from(tradeDescriptor.getEffectiveDate()
-                                                                                               )
-                                                                                         );
+                .newXMLGregorianCalendar(
+                        GregorianCalendar.from(tradeDescriptor.getEffectiveDate()
+                        )
+                );
         formattedEffectiveDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 
         XMLGregorianCalendar formattedTerminationDate = DatatypeFactory.newInstance()
-                                                                 .newXMLGregorianCalendar(
-                                                                         GregorianCalendar.from(tradeDescriptor.getTerminationDate()
-                                                                                               )
-                                                                                         );
+                .newXMLGregorianCalendar(
+                        GregorianCalendar.from(tradeDescriptor.getTerminationDate()
+                        )
+                );
         formattedTerminationDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         for (int i = 0; i < 2; i++) {
 
             swap.swapStream.get(i).calculationPeriodDates
-                                  .effectiveDate
-                                  .unadjustedDate.setValue(formattedEffectiveDate);
+                    .effectiveDate
+                    .unadjustedDate.setValue(formattedEffectiveDate);
             swap.swapStream.get(i).calculationPeriodDates
-                                  .terminationDate
-                                  .unadjustedDate.setValue(formattedTerminationDate);
+                    .terminationDate
+                    .unadjustedDate.setValue(formattedTerminationDate);
 
 
             swap.swapStream.get(
@@ -196,11 +215,11 @@ public final class TradeXmlGenerator {
         }
 
         if (tradeDescriptor.getFloatingPayingParty()
-                           .equals(smartDerivativeContract
-                                           .parties
-                                           .party
-                                           .get(0)
-                                           .name)
+                .equals(smartDerivativeContract
+                        .parties
+                        .party
+                        .get(0)
+                        .name)
         ) {
             floatingLeg.payerPartyReference.href =
                     smartDerivativeContract.underlyings.underlying.dataDocument.party.get(0);
@@ -221,9 +240,11 @@ public final class TradeXmlGenerator {
                     smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
         }
 
+
+
         fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
                 BigDecimal.valueOf(Double.parseDouble(Float.toString(tradeDescriptor.getFixedRate())))
-                          .divide(BigDecimal.valueOf(100L));
+                        .divide(BigDecimal.valueOf(100L));
         floatingLeg.resetDates.fixingDates.periodMultiplier =
                 BigInteger.valueOf(
                         Integer.parseInt(
@@ -234,13 +255,31 @@ public final class TradeXmlGenerator {
                 tradeDescriptor.getFixedDayCountFraction();
         ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount
                 .calculation.getRateCalculation()
-                            .getValue()).floatingRateIndex.value =
+                .getValue()).floatingRateIndex.value =
                 tradeDescriptor.getFloatingRateIndex();
 
+        smartDerivativeContract.settlement.marketdata.marketdataitems = contract.getSettlement().getMarketdata().getMarketdataitems();
+        smartDerivativeContract.receiverPartyID = "party1";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        // marshall xml out
         marshaller.marshal(smartDerivativeContract, outputStream);
-        return outputStream.toString();
+        //logger.info(outputStream.toString());
+        // marshall xml out
+        try {
+            Validator validator = schema.newValidator();
+            validator.validate(new StreamSource(new ByteArrayInputStream(outputStream.toByteArray())));
+            logger.info("Validation successful!");
+            // return outputStream.toString();
+
+            // LOOK AT THIS UGLINESS!!! NOT NICE!!!!!!!
+            logger.info("XML was correclty generated, will now do some ugliness.");
+            return outputStream.toString()
+                    .replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">","<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
+                    .replaceAll("fpml:","");
+
+        } catch (IOException | SAXException e) {
+            logger.error("Exception: "+e.getMessage());
+            return "";
+        }
 
     }
 

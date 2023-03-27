@@ -6,6 +6,7 @@ import { dayCountFractions} from "./wizard-form-data/day-count-fractions";
 import { fixingDayOffsets} from "./wizard-form-data/fixing-day-offsets";
 import { paymentFrequencies} from "./wizard-form-data/payment-frequencies";
 import { GenerateXmlService } from "./wizard-services/generate-xml.service";
+import { PricingRequestService } from "./wizard-services/pricing-request.service";
 import { WizardPopupComponent} from "./wizard-popup/wizard-popup/wizard-popup.component";
 import {TradeDescriptor} from "./wizard-services/trade-descriptor";
 import {MatDialog} from "@angular/material/dialog";
@@ -40,7 +41,7 @@ export class WizardFormComponent implements OnInit{
   secondPartySelected = false;
 
 
-  constructor(public dialog: MatDialog, private generateXmlService: GenerateXmlService, private _formBuilder: FormBuilder) {
+  constructor(public dialog: MatDialog, private generateXmlService: GenerateXmlService, private pricingRequestService: PricingRequestService, private _formBuilder: FormBuilder) {
     this.wizardFormFirstStep = this._formBuilder.group({});
     this.wizardFormSecondStep = this._formBuilder.group({});
     this.wizardFormThirdStep = this._formBuilder.group({});
@@ -106,7 +107,18 @@ export class WizardFormComponent implements OnInit{
   }
 
   pushPricingRequest(){
-    window.alert("This is where I would price your contract... if only I had a backend.")
+    let formArray = [this.wizardFormFirstStep, this.wizardFormSecondStep, this.wizardFormThirdStep, this.wizardFormFourthStep];
+    let formJoin = this._formBuilder.group({});
+    for(const formGroup of formArray){
+      for(const formControl in formGroup.controls){
+        formJoin.addControl(formControl, formGroup.get(formControl)!);
+      }
+    }
+
+    this.pricingRequestService.requestPricing(formJoin).subscribe(r => {
+      this.dialogMessage = r;
+      this.openDialog();
+    });
   }
 
   pushTradeInceptionRequest(){
