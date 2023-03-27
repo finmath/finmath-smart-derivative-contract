@@ -16,6 +16,13 @@ export class GenerateXmlService {
     this.xmlServiceURL = 'http://localhost:8080/generatexml'
   }
 
+  interpretAsUTC(date: Date){
+    var timeZoneDifference = (date.getTimezoneOffset() / 60) * -1; //convert to positive value.
+    date.setTime(date.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    date.toISOString();
+    return date;
+  }
+
   public generateXml(formJoin: FormGroup): Observable<XmlResponse> {
     let tradeDescriptor: TradeDescriptor;
     tradeDescriptor = new TradeDescriptor(
@@ -25,9 +32,9 @@ export class GenerateXmlService {
       formJoin.get('terminationFeeAmount')!.value,
       formJoin.get('notionalAmount')!.value,
       formJoin.get('currency')!.value,
-      formJoin.get('tradeDate')!.value,
-      formJoin.get('effectiveDate')!.value,
-      formJoin.get('terminationDate')!.value,
+      this.interpretAsUTC(new Date(formJoin.get('tradeDate')!.value)),
+      this.interpretAsUTC(new Date(formJoin.get('effectiveDate')!.value)),
+      this.interpretAsUTC(new Date(formJoin.get('terminationDate')!.value)),
       formJoin.get('fixedPayingParty')!.value,
       formJoin.get('fixedRate')!.value,
       formJoin.get('fixedDayCountFraction')!.value,
