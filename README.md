@@ -13,9 +13,9 @@
 
 _* unless you don't want to or you are behind some pesky firewall._
 
-## Wow, that's a lot of words! _Too bad I'm not reading them!_ 😀
+## "Wow, that's a lot of words! _Too bad I'm not reading them!_" 😀
 
-TL;DR: run `mvn clean install -DskipTests -DiNeedNode` (if you need Node) or `mvn clean install -DskipTests -DiHaveNode` (if you have Node). Then run `mvn spring-boot:run` in the **sdc-service** root folder and `npm run start` in the **sdc-frontend** root folder.
+**TL;DR:** run `mvn clean install -DskipTests -DiNeedNode` (if you need Node) or `mvn clean install -DskipTests -DiHaveNode` (if you have Node). Then run `mvn spring-boot:run` in the **sdc-service** root folder and `npm run start` in the **sdc-frontend** root folder.
 
 ## Contents of this Repo
 
