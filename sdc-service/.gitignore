@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/java,linux,macos,maven,windows,eclipse,intellij
 
 ### Eclipse ###
@@ -263,3 +262,7 @@ $RECYCLE.BIN/
 /.idea/misc.xml
 /.idea/modules.xml
 /.idea/vcs.xml
+
+# More
+*.versionsBackup
+*.iml
