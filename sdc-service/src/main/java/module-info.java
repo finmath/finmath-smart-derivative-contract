@@ -56,7 +56,7 @@ module net.finmath.smartderivativecontract {
         requires com.fasterxml.jackson.datatype.jdk8;
         requires com.fasterxml.jackson.datatype.jsr310;
         requires com.fasterxml.jackson.dataformat.javaprop;
-        requires jackson.databind.nullable;
+        requires org.openapitools.jackson.nullable;
 
         requires org.apache.commons.lang3;
         requires static org.apache.tomcat.embed.core;
