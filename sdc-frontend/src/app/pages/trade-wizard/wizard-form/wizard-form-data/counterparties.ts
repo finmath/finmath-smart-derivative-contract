@@ -1,6 +1,11 @@
 export class Counterparty{
-  id= '';
-  fullName = '';
+  id: string;
+  fullName: string;
+
+  constructor(id: string, fullName: string){
+    this.id = id;
+    this.fullName = fullName;
+  }
 }
 
 export const counterparties: Counterparty[] = [
