@@ -1,6 +1,8 @@
 package net.finmath.smartcontract.websocket;
 
+import org.java_websocket.WebSocketServerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,3 +31,4 @@ public class WebSocketConfig implements WebSocketConfigurer {
         }
     }
 }
+

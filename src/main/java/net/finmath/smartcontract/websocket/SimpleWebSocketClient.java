@@ -45,7 +45,7 @@ public class SimpleWebSocketClient {
 
     public static void main(String[] args) throws Exception {
         SimpleWebSocketClient client = new SimpleWebSocketClient();
-        client.connect("ws://localhost:8080/feed","user","password");
+        client.connect("ws://localhost:443/feed","user","password");
 
         client.getMessageObservable().subscribe(System.out::println);
 

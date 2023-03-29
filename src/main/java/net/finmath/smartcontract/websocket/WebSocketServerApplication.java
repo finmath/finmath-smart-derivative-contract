@@ -8,12 +8,17 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import java.util.Collections;
+
 @SpringBootApplication
 @EnableWebSocket
 public class WebSocketServerApplication implements WebSocketConfigurer {
 
     public static void main(String[] args) {
-        SpringApplication.run(WebSocketServerApplication.class, args);
+        SpringApplication app = new SpringApplication(WebSocketServerApplication.class);
+        app.setDefaultProperties(Collections.singletonMap("server.port", "443"));
+        app.run(args);
+        //SpringApplication.run(WebSocketServerApplication.class, args);
     }
 
     @Override
