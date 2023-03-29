@@ -13,14 +13,15 @@ module net.finmath.smartderivativecontract {
         exports net.finmath.smartcontract.marketdata.curvecalibration;
         exports net.finmath.smartcontract.service.utils;
         exports net.finmath.smartcontract.marketdata.adapters;
-        exports net.finmath.smartcontract.webflux;
+        // exports net.finmath.smartcontract.webflux;
         exports net.finmath.smartcontract.reactive;
+        exports net.finmath.smartcontract.valuation.controllers;
 
         opens net.finmath.smartcontract.client;
         opens net.finmath.smartcontract.product.xml;
         opens net.finmath.smartcontract.service to java.base, spring.core;
         opens net.finmath.smartcontract.service.config to spring.core;
-        opens net.finmath.smartcontract.webflux to spring.core;
+        // opens net.finmath.smartcontract.webflux to spring.core;
 
         requires java.datatransfer;
         requires java.logging;
@@ -43,7 +44,7 @@ module net.finmath.smartderivativecontract {
         requires spring.security.config;
         requires spring.statemachine.core;
         requires spring.beans;
-        requires spring.webflux;
+        // requires spring.webflux;
 
         requires transitive io.reactivex.rxjava3;
 
@@ -59,7 +60,7 @@ module net.finmath.smartderivativecontract {
         requires org.openapitools.jackson.nullable;
 
         requires org.apache.commons.lang3;
-        requires static org.apache.tomcat.embed.core;
+        // requires static org.apache.tomcat.embed.core;
         requires org.slf4j;
         requires java.money;
         requires org.javamoney.moneta;
@@ -75,4 +76,6 @@ module net.finmath.smartderivativecontract {
         requires jakarta.xml.bind;
         requires spring.webmvc;
         requires spring.boot.actuator.autoconfigure;
+        requires jakarta.persistence;
+        requires jakarta.servlet;
 }

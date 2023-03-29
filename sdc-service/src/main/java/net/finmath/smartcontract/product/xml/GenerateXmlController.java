@@ -1,9 +1,8 @@
 package net.finmath.smartcontract.product.xml;
-import jakarta.servlet.http.HttpServletResponse;
+
 import jakarta.xml.bind.JAXBException;
 import net.finmath.smartcontract.model.TradeDescriptor;
 import net.finmath.smartcontract.model.XmlResponse;
-import net.finmath.smartcontract.product.xml.TradeXmlGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ public class GenerateXmlController {
     }
 
     @PostMapping("/generatexml")
-    public XmlResponse generateXml(HttpServletResponse response, @RequestBody TradeDescriptor tradeDescription) throws JAXBException, IOException, DatatypeConfigurationException {
+    public XmlResponse generateXml(@RequestBody TradeDescriptor tradeDescription) throws JAXBException, IOException, DatatypeConfigurationException {
         logger.info("Accepted XML generation request. Allocating response...");
         XmlResponse xmlResponse = new XmlResponse();
         logger.info("...done. Parsing request...");

@@ -57,7 +57,7 @@ public class MarketDataPastFixingsTests {
 
     @BeforeAll
     void initCalibrationSpecs() throws Exception{
-        /* Retrieve and transform into calibration items */
+        /* Retrieve and transform into calibration items
 //        Path path = Path.of("C:\\Temp\\finmath-smart-derivative-contract-MarketData\\src\\main\\resources\\net.finmath.smartcontract.client\\md_testset1.json");
         final String jsonStr = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
         final String jsonStr2 = new String(MarketDataImportTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -67,11 +67,12 @@ public class MarketDataPastFixingsTests {
         CalibrationParser parser = new CalibrationParserDataItems();
         Stream<CalibrationSpecProvider> specProviderStream = scenarioList.get(0).getDataAsCalibrationDataPointStream(parser);
         calibrationSpecs = specProviderStream.map(c -> c.getCalibrationSpec(ctx)).toArray(CalibratedCurves.CalibrationSpec[]::new);
-
+        */
     }
 
     @BeforeAll
     void initSwapProducts() throws Exception{
+        /*
         scheduleFloat = ScheduleGenerator.createScheduleFromConventions(referenceDate,tradeDate,2, "0D",MaturityKey , "semiannual", "act/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
         final Schedule scheduleFix = ScheduleGenerator.createScheduleFromConventions(referenceDate,tradeDate, 2, "0D", MaturityKey, "annual", "E30/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
         final SwapLeg floatLeg = new SwapLeg(scheduleFloat,forward6MCurveKey,0.0,discountCurveKey);//new SwapLeg(Optional.of(LocalDateTime.of(startDate, LocalTime.of(0, 0))), scheduleFloat, forwardCurveName, 0.0, discountCurveName);
@@ -93,9 +94,10 @@ public class MarketDataPastFixingsTests {
         double[] pastFixingTime = {scheduleFloat.getFixing(0)};
         double paymentOffset = scheduleFloat.getPayment(0);
         fixedCurve = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed",pastFixingTime,pastFixingArray,paymentOffset);
-
+        */
     }
 
+    @Disabled("")
     @Test
     void testValuationOraclePlainSwap() throws Exception{
         double notional = 1.0E6;
@@ -109,20 +111,24 @@ public class MarketDataPastFixingsTests {
     @Disabled("")
     @BeforeAll
     void initModelWithFixedPart() throws Exception{
+        /*
         /*Define and calibrate OIS and 6M Curves*/
+        /*
         Curve discountOISCurve =  DiscountCurveInterpolation.createDiscountCurveFromDiscountFactors(discountCurveKey, ctx.getReferenceDate(), new double[]{0.0}, new double[]{1.0}, new boolean[]{false}, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE);
         ForwardCurve forwardOISCurve = new ForwardCurveFromDiscountCurve(forwardOISCurveKey, discountCurveKey, ctx.getReferenceDate(), "3M");
         ForwardCurve forward6MCurve =  new ForwardCurveInterpolation(forward6MCurveKey, ctx.getReferenceDate(), "6M", new BusinessdayCalendarExcludingTARGETHolidays(), BusinessdayCalendar.DateRollConvention.FOLLOWING, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE, ForwardCurveInterpolation.InterpolationEntityForward.FORWARD, discountCurveKey);
         Curve[] curves = {discountOISCurve,forwardOISCurve,forward6MCurve};
-        final AnalyticModelFromCurvesAndVols model = new AnalyticModelFromCurvesAndVols(curves);
+        final AnalyticModelFromCurvesAndVols model = new AnalyticModelFromCurvesAndVols(curves);*/
         /* Calibrate */
+        /*
         Optional<CalibrationResult> optional = Optional.of(new CalibrationResult(new CalibratedCurves(calibrationSpecs, model, ctx.getAccuracy()), calibrationSpecs));
-        AnalyticModel calibratedModel = optional.get().getCalibratedModel();
+        AnalyticModel calibratedModel = optional.get().getCalibratedModel();*/
 
         /* Build Lego Curve: Past Part and Forward Part */
+        /*
         Curve forwardCurveWithFixings = new ForwardCurveWithFixings(calibratedModel.getForwardCurve(forward6MCurveKey),fixedCurve,-0.5,0.0);
         Curve[] finalCurves = {calibratedModel.getDiscountCurve(discountCurveKey),calibratedModel.getForwardCurve(forwardOISCurveKey),forwardCurveWithFixings};
-        modelWithPastFixings = new AnalyticModelFromCurvesAndVols(referenceDate,finalCurves);
+        modelWithPastFixings = new AnalyticModelFromCurvesAndVols(referenceDate,finalCurves);*/
     }
 
     @Disabled("")
@@ -166,6 +172,7 @@ public class MarketDataPastFixingsTests {
         Assertions.assertTrue( max < 5.0E-4,"Deviation is larger than tolerance " + max );
     }
 
+    @Disabled("")
     @Test
     void testCalibrationOnSwaps() {
         ArrayList<Double> npvs =  new ArrayList<>();

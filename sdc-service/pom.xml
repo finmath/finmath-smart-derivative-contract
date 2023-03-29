@@ -25,10 +25,8 @@
         <java.version>17</java.version>
         <nv-websocket-client.version>2.14</nv-websocket-client.version>
         <moneta.version>1.4.2</moneta.version>
-        <jfreechart.version>1.5.4</jfreechart.version>
         <jcommon.version>1.0.24</jcommon.version>
         <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
-        <swagger-annotations.version>2.2.9</swagger-annotations.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <spring-boot-dependencies.version>3.0.5</spring-boot-dependencies.version>
@@ -36,7 +34,7 @@
         <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
         <maven.site-plugin.version>4.0.0-M6</maven.site-plugin.version>
-        <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
+        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
@@ -46,6 +44,16 @@
         <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
         <spring-boot-maven-plugin.version>3.0.5</spring-boot-maven-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <jaxb2-maven-plugin.version>3.1.0</jaxb2-maven-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <openapi-generator-maven-plugin.version>6.4.0</openapi-generator-maven-plugin.version>
+        <jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
+        <wagon-ssh.version>3.5.3</wagon-ssh.version>
+        <doxia-sitetools.version>2.0.0-M6</doxia-sitetools.version>
+        <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
+        <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
+        <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
 
     </properties>
 
@@ -92,7 +100,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
+           <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>
@@ -159,11 +167,6 @@
         </dependency>
 
         <!-- JFree -->
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>${jfreechart.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.jfree</groupId>
@@ -188,6 +191,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -221,21 +230,16 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger-annotations.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.openapitools</groupId>
@@ -313,7 +317,7 @@
                         <path>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
-                            <version>3.0.4</version>
+                            <version>${spring-boot-dependencies.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -419,8 +423,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>validate-project-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
                 <configuration>
                     <rules>
+                        <dependencyConvergence/>
                         <requireMavenVersion>
                             <version>[3.8.0,)</version>
                         </requireMavenVersion>
@@ -431,32 +445,10 @@
                 </configuration>
             </plugin>
 
-            <!-- Open API -->
-            <!-- Maven Dependency Plugin -->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>unpack-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.yml</includes>
-                            <outputDirectory>${project.build.directory}/openapi</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${jaxb2-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>generate-jaxb-sources</id>
@@ -477,7 +469,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>${maven-resources-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>apply-jaxb-patch</id>
@@ -499,6 +491,25 @@
                             <overwrite>true</overwrite>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>move-yaml-configs</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}${file.separator}openapi</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src${file.separator}main${file.separator}resources</directory>
+                                    <includes>
+                                        <include>**${file.separator}*.yml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -508,7 +519,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.4.0</version>
+                <version>${openapi-generator-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -544,7 +555,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <to>
                         <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
@@ -582,30 +593,30 @@
                     <dependency>
                         <groupId>org.javamoney</groupId>
                         <artifactId>moneta</artifactId>
-                        <version>1.4.2</version>
+                        <version>${moneta.version}</version>
                         <type>pom</type>
                     </dependency>
                     <dependency>
                         <!-- add support for ssh/scp -->
                         <groupId>org.apache.maven.wagon</groupId>
                         <artifactId>wagon-ssh</artifactId>
-                        <version>3.3.4</version>
+                        <version>${wagon-ssh.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-sitetools</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-sitetools.version}</version>
                         <type>pom</type>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-skin-model</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-skin-model.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-module-markdown.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -631,7 +642,7 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>5.0.0</version>
+                <version>${git-commit-id-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>

@@ -30,7 +30,7 @@ import java.util.Arrays;
 */
 // @SpringBootApplication
 // @Import(BasicAuthWebSecurityConfiguration.class)
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
 @ComponentScan(basePackages = "net.finmath.smartcontract.product.xml")
 @ComponentScan(basePackages = "net.finmath.smartcontract.api")
 @ComponentScan(basePackages = "net.finmath.smartcontract.valuation.controllers")
