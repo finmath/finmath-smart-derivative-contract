@@ -15,17 +15,15 @@ _* unless you don't want to or you are behind some pesky firewall._
 
 ## "Wow, that's a lot of words! _Too bad I'm not reading them!_" 😀
 
-**TL;DR:** run `mvn clean install -DskipTests -DiNeedNode` (if you need Node) or `mvn clean install -DskipTests -DiHaveNode` (if you have Node). Then run `mvn spring-boot:run` in the **sdc-service** root folder and `npm run start` in the **sdc-frontend** root folder.
+**TL;DR:** run `mvn clean install -DskipTests -DiNeedNode` (if you need Node) or `mvn clean install -DskipTests -DiHaveNode` (if you have Node). Then run `mvn spring-boot:run` and `npm run start`.
 
-## Contents of this repo
+## Contents of this Repo
 
 ### Contents and manual startup
 
-The **sdc-frontend** module contains the frontend application to interact with the SDC infastructure. You can build it and test it like this:
+The `src/app` contains the frontend application to interact with the SDC infastructure. You can build it and test it like this:
 - go to https://nodejs.org/en/download and check what's the latest LTS release from the v18 line;
-- bump the Node version string in `sdc-frontend/pom.xml`;
-- open a terminal;
-- move into the **sdc-frontend** root folder;
+- bump the Node version string in `pom.xml`;
 - if you are managing your own install of Node, run 
 
 ~~~
@@ -65,15 +63,14 @@ and then run
 - follow the instructions that appear on screen, if any. Then start the app using `npm run start`;
 - enjoy our work!
 
-The **sdc-service** module contains the Java part of this project. There you can find:
+The other files in the `src` contain the Java part of this project. There you can find:
 - an offline demo that briefly explains how SDC works;
 - the full backend suite (except for the blockchain-specific stuff), including the SDC Valuation Oracle.
 
-To update the **sdc-service** project deps:
+To update the project deps:
 - go to https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies and check what's the latest version;
-- bump the _spring-boot-dependencies_ version string in `sdc-service/pom.xml`;
+- bump the _spring-boot-dependencies_ version string in `pom.xml`;
 - open a terminal;
-- move into the **sdc-service** root folder;
 - Check for updates with 
 ~~~
   mvn versions:display-property-update
@@ -89,7 +86,6 @@ and apply updates if necessary with
 
 To run the offline demo, you have to:
 - open a terminal;
-- move into the **sdc-service** root folder;
 - run 
 ~~~
   mvn exec:java -Dexec.mainClass=net.finmath.smartcontract.demo.VisualiserSDC
@@ -97,7 +93,6 @@ To run the offline demo, you have to:
 
 To start the backend service, you have to:
 - open a terminal;
-- move into the **sdc-service** root folder;
 - run 
 ~~~
   mvn spring-boot:run
