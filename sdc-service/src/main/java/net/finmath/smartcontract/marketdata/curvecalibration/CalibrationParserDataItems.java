@@ -127,8 +127,9 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 */
 	private static final List<CalibrationDataset> getScenariosFromJsonContent(final String content) throws IOException {
 
-		// Luca (23/03/2023) This is how to handle the old JSON format (eg. md_testset1.json)
-		/*final ObjectMapper mapper = new ObjectMapper();
+		if(content.contains("Quotes")){	//this is a rough way to distinguish the legacy format from the new one
+			// Luca (23/03/2023) This is how to handle the old JSON format (eg. md_testset1.json)
+		final ObjectMapper mapper = new ObjectMapper();
 		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String,  Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
 
 		final List<CalibrationDataset> scenarioList = timeSeriesDatamap.entrySet().stream()
@@ -148,7 +149,8 @@ public class CalibrationParserDataItems implements CalibrationParser {
 				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
 				.collect(Collectors.toList());
 
-		return scenarioList;*/
+		return scenarioList;
+		}
 
 		// Luca 23/03/2023: this is how to handle the new(?) JSON format eg. timeseriesdatamap.json
 		final ObjectMapper mapper = new ObjectMapper();

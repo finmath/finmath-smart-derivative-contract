@@ -70,7 +70,7 @@ public class MarginCalculator {
 		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "EONIA", "EONIA").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 
 		LocalDateTime startDate = marketDataSetsStart.get(0).getDate();
 		LocalDateTime endDate = marketDataSetsEnd.get(0).getDate();

@@ -12,8 +12,8 @@ public class MarginCalculatorTest {
 
 	@Test
 	void testMargin() throws Exception {
-		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1_new_format.json").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2_new_format.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
@@ -27,7 +27,7 @@ public class MarginCalculatorTest {
 
 	@Test
 	void testValue() throws Exception {
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2_new_format.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
