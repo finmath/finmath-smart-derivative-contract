@@ -147,7 +147,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-
 components:
   schemas:
     ValueResult:
@@ -186,4 +185,11 @@ components:
           type: integer
           format: int32
         message:
+          type: string
+    XmlResponse:
+      type: object
+      required:
+        - xmlBody
+      properties:
+        xmlBody:
           type: string

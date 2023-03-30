@@ -8,9 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -24,19 +28,18 @@ import java.time.LocalDateTime;
 /**
  * Tests ValuationController / Valuation API Endpoint.
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ValuationController.class, Application.class})
+
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ContextConfiguration(classes = Application.class)
 public class ValuationControllerTest {
 
 	@Autowired
-	private WebApplicationContext webApplicationContext;
-
 	private MockMvc mockMvc;
 
-	@BeforeEach
-	public void setup() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
+	@Autowired
+	private ValuationController valuationController;
 
 	@Test
 	public void getMargin() throws Exception {
@@ -58,7 +61,7 @@ public class ValuationControllerTest {
 	@Test
 	public void getValue() throws Exception {
 
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1_new_format.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		final ValueRequest valueRequest = new ValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());

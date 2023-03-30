@@ -101,6 +101,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				SwapLeg legPayer = (SwapLeg) product.getLegPayer();
 				SwapLeg floatingLeg = !legPayer.getForwardCurveName().equals("") ? legPayer : legReceiver;
 				String forwardCurveID = floatingLeg.getForwardCurveName();
+				System.out.println("curveid: "+ forwardCurveID);
 				Schedule schedule = floatingLeg.getSchedule();
 
 
@@ -122,7 +123,8 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 
 				return rounding.applyAsDouble(valueWithCurves);
 			} catch (final Exception e) {
-				return null;
+				e.printStackTrace();
+				throw new RuntimeException();
 			}
 		} else {
 			return null;
@@ -144,17 +146,13 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				/*if (schedule.getFixing(0)<0) {  /* In case we have a past fixing, add a fixed forward curve to calibration model
 					Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
 					LocalDate pastFixingDate = schedule.getPeriods().get(0).getFixing();
-
 					double period = FloatingpointDate.getFloatingPointDateFromDate(evaluationDate.toLocalDate(), pastFixingDate);
-
 					double[] pastFixingTimeArray = {schedule.getFixing(0)};
 					double[] pastFixingArray = new double[1];
 					try {
 						pastFixingArray[0] = pastFixings.stream().filter(fixing -> fixing.getDate().equals(pastFixingDate)).findAny().orElseThrow().getQuote();
 					} catch (Exception e) {
-
 						pastFixingArray[0] = 0.0;
 					}
 					double paymentOffset = schedule.getPayment(0);
-
 				//} */

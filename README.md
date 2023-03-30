@@ -1,4 +1,4 @@
-# finmath smart derivative contracts
+# Finmath Smart Derivative Contracts
 
 ****************************************
 
@@ -6,46 +6,101 @@
 
 ****************************************
 
-## Introduction
+## Requirements
+- Java 17+ (we recommend the Eclipse Adoptium Java release);
+- Maven 3.8+;
+- _(optional, Maven can download it for you*)_ Node.js v18+ LTS;
 
-The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
-derivative contracts.
+_* unless you don't want to or you are behind some pesky firewall._
 
-## Contents
+## "Wow, that's a lot of words! _Too bad I'm not reading them!_" 😀
 
-### Visualization and Demonstration
+**TL;DR:** run `mvn clean install -DskipTests -DiNeedNode` (if you need Node) or `mvn clean install -DskipTests -DiHaveNode` (if you have Node). Then run `mvn spring-boot:run` and `npm run start`.
 
-The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
-This is a Java FX application. Run `VisualiserSDC`.
+## Contents of this Repo
 
-### Valuation Service (ReST service)
+### Contents and manual startup
 
-**You may run the valuation service through our Docker image (see below).**
+The `src/app` contains the frontend application to interact with the SDC infrastructure. You can build it and test it like this:
+- go to https://nodejs.org/en/download and check what's the latest LTS release from the v18 line;
+- bump the Node version string in `pom.xml`;
+- if you are managing your own install of Node, run 
 
-### State Machine Model for a Smart Derivative Contract
+~~~
+ mvn versions:display-property-update -DiHaveNode=true
+~~~
 
-The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
-contract.
+and apply updates if necessary with
 
-## Financial Product Description
+~~~
+  mvn versions:update-properties -DiHaveNode=true
+~~~
 
-The smart derivative contract is described in terms of the sdc.xml.
+then run
 
-For a sample XML and the XSD see `resources/net/finmath/smartcontract/product/xml`.
+~~~
+  mvn clean install -DiHaveNode=true
+~~~
 
-For details see the [project site](https://finmath.net/finmath-smart-derivative-contract).
+- if you want Maven to install a minimal Node environment instead, then run
 
-## Developer Resources
+~~~
+  mvn versions:display-property-update -DiNeedNode=true
+~~~
 
-### Languages and Build
+Apply updates if necessary with 
 
-The project requires Java 17 or better.
+~~~
+  mvn versions:update-properties -DiNeedNode=true
+~~~
 
-The Maven build file is provide. Import the project as Maven project.
+and then run 
 
-### Distribution
+~~~
+  mvn clean install -DiNeedNode=true
+~~~
 
-finmath smart-derivative-contract is distributed through the central maven repository.
+- follow the instructions that appear on screen, if any. Then start the app using `npm run start`;
+- enjoy our work!
+
+The other files in the `src` contain the Java part of this project. There you can find:
+- an offline demo that briefly explains how SDC works;
+- the full backend suite (except for the blockchain-specific stuff), including the SDC Valuation Oracle.
+
+To update the project deps:
+- go to https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies and check what's the latest version;
+- bump the _spring-boot-dependencies_ version string in `pom.xml`;
+- open a terminal;
+- Check for updates with 
+~~~
+  mvn versions:display-property-update
+~~~
+and apply updates if necessary with 
+~~~
+  mvn versions:update-properties
+~~~
+- Install the project with 
+~~~
+  mvn clean install
+~~~
+
+To run the offline demo, you have to:
+- open a terminal;
+- run 
+~~~
+  mvn exec:java -Dexec.mainClass=net.finmath.smartcontract.demo.VisualiserSDC
+~~~
+
+To start the backend service, you have to:
+- open a terminal;
+- run 
+~~~
+  mvn spring-boot:run
+~~~
+
+### Automatic startup
+
+- You may perform some of the above tasks with convenient scripts provided in the `scripts` folder _[**TODO**: update bash scripts and write PowerShell scripts for windows (batch scripts are kinda dangerous)]_ 
 
 ## License
 

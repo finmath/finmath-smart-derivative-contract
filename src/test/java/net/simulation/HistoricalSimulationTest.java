@@ -1,12 +1,17 @@
 package net.simulation;
 
 import net.finmath.marketdata.products.Swap;
+import net.finmath.smartcontract.demo.VisualiserSDC;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.IRSwapGenerator;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +26,16 @@ public class HistoricalSimulationTest {
 
 			final LocalDate startDate = LocalDate.of(2007, 1, 1);
 			final LocalDate maturity = LocalDate.of(2012, 1, 3);
-			final String fileName = "timeseriesdatamap.json";
-			final List<CalibrationDataset> scenarioListRaw = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+			final String fileName = "references"+ File.separator + "timeseriesdatamap.json";
+			final File startPoint = new File(VisualiserSDC.class.getResource(VisualiserSDC.class.getSimpleName()+".class").getPath());
+			final File file = new File (startPoint.getParentFile().getParentFile().getParentFile().getParentFile().getParent()+File.separator+fileName);
+			String jsonStr;
+			try {
+				jsonStr = new String((new FileInputStream(file)).readAllBytes(), StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				throw e;
+			}
+			final List<CalibrationDataset> scenarioListRaw = CalibrationParserDataItems.getScenariosFromJsonString(jsonStr).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 			final List<CalibrationDataset> scenarioList = scenarioListRaw.stream().map(scenario->scenario.getScaled(100)).collect(Collectors.toList());
 
 

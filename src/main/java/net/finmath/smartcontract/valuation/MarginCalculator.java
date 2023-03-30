@@ -61,6 +61,7 @@ public class MarginCalculator {
 	 */
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+		Objects.requireNonNull(productDescriptor,"Something went wrong parsing the XML.");
 
 		List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
 		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
@@ -82,8 +83,10 @@ public class MarginCalculator {
 	}
 	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+		Objects.requireNonNull(productDescriptor,"Something went wrong parsing the XML.");
 
 		List<CalibrationDataset> marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
+		logger.info(marketDataSets.toString());
 		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();

@@ -10,16 +10,21 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-@Configuration
-@EnableWebSecurity
-@EnableConfigurationProperties(value = ApplicationProperties.class)
+// @Configuration
+// @EnableWebSecurity
+// @EnableConfigurationProperties(value = ApplicationProperties.class)
 public class BasicAuthWebSecurityConfiguration {
 
-	@Bean
+	/*@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf().disable()
@@ -27,6 +32,7 @@ public class BasicAuthWebSecurityConfiguration {
 				.anyRequest().authenticated().and().httpBasic();
 		return http.build();
 	}
+
 
 	@Bean
 	public InMemoryUserDetailsManager userDetailsService(ApplicationProperties applicationProperties) {
@@ -39,7 +45,7 @@ public class BasicAuthWebSecurityConfiguration {
 	 * @param applicationProperties injected properties
 	 * @return List of UserDetails
 	 */
-	private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
+	/*private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
 		List<UserDetails> userDetailsList = new ArrayList<>();
 		applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
 				.withUsername(sdcUser.getUsername())
@@ -47,5 +53,5 @@ public class BasicAuthWebSecurityConfiguration {
 				.roles(sdcUser.getRole())
 				.build()));
 		return userDetailsList;
-	}
+	}*/
 }
