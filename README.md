@@ -21,7 +21,7 @@ _* unless you don't want to or you are behind some pesky firewall._
 
 ### Contents and manual startup
 
-The `src/app` contains the frontend application to interact with the SDC infastructure. You can build it and test it like this:
+The `src/app` contains the frontend application to interact with the SDC infrastructure. You can build it and test it like this:
 - go to https://nodejs.org/en/download and check what's the latest LTS release from the v18 line;
 - bump the Node version string in `pom.xml`;
 - if you are managing your own install of Node, run 
