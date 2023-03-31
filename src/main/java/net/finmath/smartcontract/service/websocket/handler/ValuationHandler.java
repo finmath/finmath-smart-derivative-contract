@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
  * Firste: As inbound message an xml will trigger a connect to market data adapter
  * Second: A valuation observable  will connect on the continous market data feed
  * Third: A consumer subscribes to the valuation observable and sending test messages over the websocket connection
- * @Todo: For Demo Purposes may also implement for RandomMarketDataFeed
- * @Todo: marketDataWebSocketAdapter should be a single instance shared across several handlers
- * @Todo: parse subscription settings out of product XML (i.e. settlement frequency)
- * @Todo: Add other handlers
+ * @// TODO: 3/31/2023  : For Demo Purposes may also implement for RandomMarketDataFeed
+ * @// TODO: 3/31/2023  : marketDataWebSocketAdapter should be a single instance shared across several handlers
+ * @// TODO: 3/31/2023  : parse subscription settings out of product XML (i.e. settlement frequency)
+ * @// TODO: 3/31/2023  : Add other handlers
  *
  * @author Peter Kohl-Landgraf
  */
