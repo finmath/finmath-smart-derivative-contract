@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Import;
 @Import(BasicAuthWebSecurityConfiguration.class)
 public class Application {
 
+
+
 	/**
 	 * Application entry point.
 	 *
@@ -27,4 +29,5 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
+
 }

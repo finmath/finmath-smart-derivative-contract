@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.service.controllers.ValuationController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

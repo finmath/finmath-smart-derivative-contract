@@ -2,12 +2,12 @@ openapi: "3.0.0"
 
 info:
   version: 1.0.0
-  title: Swagger
+  title: SDC Service API
   license:
-    name: Apache 2.0
+    name: Apache License 2.0
 
 servers:
-  - url: http://localhost:9090/
+  - url: http://localhost:8080/
 
 paths:
   /valuation/value:
@@ -18,19 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - marketDataStart
-                - marketDataEnd
-                - tradeData
-                - valuationDate
-              properties:
-                marketData:
-                  type: string
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
+              $ref: "#/components/schemas/ValueRequest"
       responses:
         '200':
           description: Value was calculated
@@ -53,21 +41,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - marketDataStart
-                - marketDataEnd
-                - tradeData
-                - valuationDate
-              properties:
-                marketDataStart:
-                  type: string
-                marketDataEnd:
-                  type: string
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
+              $ref: "#/components/schemas/MarginRequest"
       responses:
         '200':
           description: Margin was calculated
@@ -147,43 +121,66 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /editor/generate-xml:
+    post:
+      summary: Request mapping for generation of the trade data XML
+      operationId: generate-xml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdcXmlRequest"
+      responses:
+        '200':
+          description: XML was generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SdcXmlResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /editor/evaluate-from-editor:
+    post:
+      summary: Request mapping for valuation of the trade data coming from the editor.
+      operationId: evaluate-from-editor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdcXmlRequest"
+      responses:
+        '200':
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
 components:
   schemas:
     ValueResult:
-      type: object
-      required:
-        - value
-        - currency
-        - valuationDate
-      properties:
-        value:
-          type: number
-        currency:
-          type: string
-        valuationDate:
-          type: string
+      $ref: "schemas/openapi-schemas/ValueResult.yml"
     MarginResult:
-      type: object
-      required:
-        - value
-        - currency
-        - valuationDate
-      properties:
-        value:
-          type: number
-        currency:
-          type: string
-        valuationDate:
-          type: string
+      $ref: "schemas/openapi-schemas/MarginResult.yml"
     Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
+      $ref: "schemas/openapi-schemas/Error.yml"
+    SdcXmlResponse:
+      $ref: "schemas/openapi-schemas/SdcXmlResponse.yml"
+    ValueRequest:
+      $ref: "schemas/openapi-schemas/ValueRequest.yml"
+    MarginRequest:
+      $ref: "schemas/openapi-schemas/MarginRequest.yml"
+    SdcXmlRequest:
+      $ref: "schemas/openapi-schemas/SdcXmlRequest.yml"

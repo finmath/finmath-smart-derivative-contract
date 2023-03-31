@@ -21,11 +21,13 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
 	opens net.finmath.smartcontract.webflux to spring.core;
+	exports net.finmath.smartcontract.service.controllers;
+	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
-    requires java.datatransfer;
+	requires java.datatransfer;
 	requires java.logging;
-	requires java.validation;
-	requires java.annotation;
+	requires jakarta.validation;
+	requires jakarta.annotation;
 	requires java.desktop;
 
 	requires javafx.swing;
@@ -44,6 +46,7 @@ module net.finmath.smartderivativecontract {
 	requires spring.statemachine.core;
 	requires spring.beans;
 	requires spring.webflux;
+	requires spring.webmvc;
 
 	requires transitive io.reactivex.rxjava3;
 
@@ -56,13 +59,13 @@ module net.finmath.smartderivativecontract {
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
 	requires com.fasterxml.jackson.dataformat.javaprop;
-	requires jackson.databind.nullable;
+	requires org.openapitools.jackson.nullable;
 
 	requires org.apache.commons.lang3;
-	requires org.apache.tomcat.embed.core;
+	requires static org.apache.tomcat.embed.core;
 	requires org.slf4j;
-	requires money.api;
-	requires moneta;
+	requires java.money;
+	requires org.javamoney.moneta;
 
 	requires net.finmath.lib;
 	requires net.finmath.plots;
@@ -71,4 +74,8 @@ module net.finmath.smartderivativecontract {
 	requires nv.websocket.client;
 	requires org.apache.httpcomponents.httpclient;
 	requires org.apache.httpcomponents.httpcore;
+
+	requires jakarta.xml.bind;
+	requires jakarta.persistence;
+	// requires jakarta.servlet;
 }
