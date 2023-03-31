@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <src.main.java.dir>src/main/java</src.main.java.dir>
         <src.test.java.dir>src/test/java</src.test.java.dir>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
         <src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
         <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
         <kotlin.version>1.7.10</kotlin.version>
@@ -53,6 +53,7 @@
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-bnd-plugin.version>5.3.0</maven-bnd-plugin.version>
+        <build.encoding>UTF-8</build.encoding>
     </properties>
 
     <developers>
@@ -254,6 +255,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
             <version>2.7.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Open API -->
@@ -285,6 +287,23 @@
             <version>1.5.0</version>
         </dependency>
 
+        <!-- WEB3J -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>crypto</artifactId>
+            <version>5.0.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -601,6 +620,34 @@
                         <dirty>-dirty</dirty>
                     </gitDescribe>
                 </configuration>
+                </plugin>
+                <plugin> <!-- For web3j maven plugin config look at: https://docs.web3j.io/4.8.7/plugins/web3j_maven_plugin/ -->
+                    <groupId>org.web3j</groupId>
+                    <artifactId>web3j-maven-plugin</artifactId>
+                    <version>4.9.4</version>
+                    <configuration>
+                        <packageName>net.finmath.smartcontract.contract.solidity</packageName>
+                        <soliditySourceFiles>
+                            <directory>src/main/resources/solidity</directory>
+                            <includes>
+                                <include>**/*.sol</include>
+                            </includes>
+                        </soliditySourceFiles>
+                        <abiSourceFiles>
+                            <directory>src/main/resources/solidity</directory>
+                            <includes>
+                                <include>**/*.json</include>
+                            </includes>
+                        </abiSourceFiles>
+                        <!--<contract>
+                            <includes>
+                                <include>..put your contracts names here ...  </include>
+                            </includes>
+                            <excludes>
+                                <exclude>..put your contracts names here ...</exclude>
+                            </excludes>
+                        </contract>-->
+                    </configuration>
                 </plugin>
         </plugins>
     </build>

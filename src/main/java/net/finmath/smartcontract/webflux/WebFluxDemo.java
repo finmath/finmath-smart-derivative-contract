@@ -2,6 +2,7 @@ package net.finmath.smartcontract.webflux;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
@@ -20,6 +21,7 @@ public class WebFluxDemo {
 
         WebSocketClient client = new ReactorNettyWebSocketClient();
         URI uri = URI.create("ws://localhost:8080/uppercase");
+
 
         String username = "default";
         String password = "9ec07ca2-16d4-4768-8df7-9cca13e5ed6e";
@@ -46,6 +48,7 @@ public class WebFluxDemo {
                                 .doOnNext(System.out::println)
                 ).then()
         ).block(Duration.ofSeconds(5));
+
     }
 
 }
