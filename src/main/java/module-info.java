@@ -24,58 +24,50 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.service.controllers;
 	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
-	requires java.datatransfer;
-	requires java.logging;
-	requires jakarta.validation;
-	requires jakarta.annotation;
-	requires java.desktop;
-
-	requires javafx.swing;
-	requires javafx.graphics;
-	requires javafx.controls;
-
-	requires spring.core;
-	requires spring.web;
-	requires spring.boot;
-	requires spring.boot.autoconfigure;
-	requires spring.context;
-	requires spring.messaging;
-	requires spring.security.core;
-	requires spring.security.web;
-	requires spring.security.config;
-	requires spring.statemachine.core;
-	requires spring.beans;
-	requires spring.webflux;
-	requires spring.webmvc;
-
-	requires transitive io.reactivex.rxjava3;
-
-	requires io.swagger.v3.oas.annotations;
-	requires reactor.core;
-
+	// --- ALL CHANGED MODULES ARE BECAUSE OF OBSOLESCENCE OR REQUIRED BY THE NEW FEATURES ---
+	// requires static org.apache.tomcat.embed.core; <-- Spring Boot 3.x.y is JakartaEE 10 compliant, this module is superseded by jakarta.servlet
 	requires com.fasterxml.jackson.core;
-	requires com.fasterxml.jackson.dataformat.csv;
 	requires com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.dataformat.csv;
+	requires com.fasterxml.jackson.dataformat.javaprop;
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
-	requires com.fasterxml.jackson.dataformat.javaprop;
-	requires org.openapitools.jackson.nullable;
-
-	requires org.apache.commons.lang3;
-	requires static org.apache.tomcat.embed.core;
-	requires org.slf4j;
+	requires io.swagger.v3.oas.annotations;
+	requires jakarta.annotation; //<-- javax has been transferred to the JakartaEE project, the respective modules have been superseded
+	requires jakarta.persistence;
+	requires jakarta.servlet;
+	requires jakarta.validation;
+	requires jakarta.xml.bind;
+	requires java.datatransfer;
+	requires java.desktop;
+	requires java.logging;
 	requires java.money;
-	requires org.javamoney.moneta;
-
+	requires javafx.controls;
+	requires javafx.graphics;
+	requires javafx.swing;
 	requires net.finmath.lib;
 	requires net.finmath.plots;
-	requires org.jfree.jfreechart;
-
 	requires nv.websocket.client;
+	requires org.apache.commons.lang3;
 	requires org.apache.httpcomponents.httpclient;
 	requires org.apache.httpcomponents.httpcore;
-
-	requires jakarta.xml.bind;
-	requires jakarta.persistence;
-	// requires jakarta.servlet;
+	requires org.javamoney.moneta;
+	requires org.jfree.jfreechart;
+	requires org.openapitools.jackson.nullable;
+	requires org.slf4j;
+	requires reactor.core;
+	requires spring.beans;
+	requires spring.boot.autoconfigure;
+	requires spring.boot;
+	requires spring.context;
+	requires spring.core;
+	requires spring.messaging;
+	requires spring.security.config;
+	requires spring.security.core;
+	requires spring.security.web;
+	requires spring.statemachine.core;
+	requires spring.web;
+	requires spring.webflux;
+	requires spring.webmvc; //<-- required for CORS config
+	requires transitive io.reactivex.rxjava3;
 }

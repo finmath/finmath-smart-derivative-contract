@@ -1,0 +1,12 @@
+type: object
+required:
+  - value
+  - currency
+  - valuationDate
+properties:
+  value:
+    type: number
+  currency:
+    type: string
+  valuationDate:
+    type: string
