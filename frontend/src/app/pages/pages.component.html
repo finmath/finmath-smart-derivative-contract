@@ -1,12 +1,16 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport
-               [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-               [mode]="(isHandset$ | async) ? 'over' : 'side'"
-               [opened]="(isHandset$ | async) === false">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
       <a [routerLinkActive]="['active']" [routerLink]="['./trade-wizard']">
-        <mat-list-item >
+        <mat-list-item>
           <mat-icon matListItemIcon>edit</mat-icon>
           <h3 matListItemTitle>New Trade Wizard</h3>
           <span>Functionality not yet implemented!</span>
@@ -20,7 +24,8 @@
         type="button"
         aria-label="Toggle sidenav"
         mat-icon-button
-        (click)="drawer.toggle()">
+        (click)="drawer.toggle()"
+      >
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span>SDC Trader's application - EXPERIMENTAL</span>

@@ -1,4 +1,9 @@
-export const paymentFrequencies: any = [
+export interface PaymentFrequency{
+  id: string,
+  fullName: string
+}
+
+export const paymentFrequencies: PaymentFrequency[] = [
   {
     id: '12',
     fullName: '12 months',

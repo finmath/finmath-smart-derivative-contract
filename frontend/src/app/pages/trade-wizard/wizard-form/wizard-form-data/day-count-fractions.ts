@@ -1,4 +1,9 @@
-export const dayCountFractions: any = [
+export interface DayCountFraction{
+  id: string,
+  fullName: string,
+}
+
+export const dayCountFractions: DayCountFraction[] = [
   {
     id: 'ACT/ACT',
     fullName: 'ACT/ACT',

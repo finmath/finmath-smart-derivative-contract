@@ -2,11 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
-    <parent>
+    <!--<parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-    </parent>
+    </parent>-->
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
@@ -240,11 +240,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>-->
 
         <dependency>
             <groupId>jakarta.validation</groupId>

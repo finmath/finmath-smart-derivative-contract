@@ -8,18 +8,9 @@ import org.springframework.context.annotation.Import;
 /**
  * Spring boot entry point.
  */
-/*
-@OpenAPIDefinition(
-	servers = {
-		@Server(url = "/", description = "Default Server URL")
-	}
-)
-*/
 @SpringBootApplication
 @Import(BasicAuthWebSecurityConfiguration.class)
 public class Application {
-
-
 
 	/**
 	 * Application entry point.

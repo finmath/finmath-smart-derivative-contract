@@ -11,14 +11,14 @@ import { MaterialImportsModule } from "../../../material-imports.module";
 import {STEPPER_GLOBAL_OPTIONS} from "@angular/cdk/stepper";
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import { WizardPopupComponent } from './wizard-popup/wizard-popup/wizard-popup.component';
-import {ExcludeFilterPipe} from "../../../shared/exclude-filter.pipe";
+import {ExcludeCounterpartyFilterPipe} from "../../../shared/exclude-filter.pipe";
 
 
 @NgModule({
   declarations: [
     WizardFormComponent,
     WizardPopupComponent,
-    ExcludeFilterPipe,
+    ExcludeCounterpartyFilterPipe,
   ],
     imports: [
         CommonModule,

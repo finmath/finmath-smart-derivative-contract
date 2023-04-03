@@ -1,4 +1,9 @@
-export const fixingDayOffsets: any = [
+export interface FixingDayOffset{
+  id: string,
+  fullName: string
+}
+
+export const fixingDayOffsets: FixingDayOffset[] = [
   {
     id: '-2',
     fullName: '-2',

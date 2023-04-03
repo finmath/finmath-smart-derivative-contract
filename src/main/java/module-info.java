@@ -15,13 +15,13 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.marketdata.adapters;
 	exports net.finmath.smartcontract.webflux;
     exports net.finmath.smartcontract.reactive;
+	exports net.finmath.smartcontract.service.controllers;
 
 	opens net.finmath.smartcontract.client;
 	opens net.finmath.smartcontract.product.xml;
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
 	opens net.finmath.smartcontract.webflux to spring.core;
-	exports net.finmath.smartcontract.service.controllers;
 	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
 	// --- ALL CHANGED MODULES ARE BECAUSE OF OBSOLESCENCE OR REQUIRED BY THE NEW FEATURES ---

@@ -1,9 +1,6 @@
 package net.finmath.smartcontract.product.xml;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.*;
 import net.finmath.smartcontract.model.SdcXmlRequest;
 
 import org.slf4j.Logger;
@@ -119,27 +116,49 @@ public final class TradeXmlGenerator {
         smartDerivativeContract.setValuation(valuationHeader);
     }
 
-    public String marshallTradeDescriptorOntoXml(
-            final SdcXmlRequest tradeDescriptor) throws JAXBException,
-            IOException,
-            DatatypeConfigurationException {
-        SchemaFactory factory =
-                SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    public String marshallTradeDescriptorOntoXml(final SdcXmlRequest tradeDescriptor) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema;
         try {
             schema = factory.newSchema((new ClassPathResource("schemas"+File.separator+"sdc-schemas"+File.separator+"sdcml-contract.xsd")).getURL());
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | SAXException e) {
+            logger.error("Failed to recover XSD schema. The file '"+"schemas"+File.separator+"sdc-schemas"+File.separator+"sdcml-contract.xsd"+"' is missing, unreachable or invalid.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
         }
-        JAXBContext jaxbContext =
-                JAXBContext.newInstance(
-                        "net.finmath.smartcontract.product.xml",
-                        this.getClass().getClassLoader()); //needs the standard classloader, prevents tomcat from overriding this
-        Marshaller marshaller = jaxbContext.createMarshaller();
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = JAXBContext.newInstance("net.finmath.smartcontract.product.xml", this.getClass().getClassLoader());
+        } catch (JAXBException e) {
+            logger.error("Failed to load JAXB context.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
+        Marshaller marshaller;
+        try {
+            marshaller = jaxbContext.createMarshaller();
+        } catch (JAXBException e) {
+            logger.error("Failed to load JAXB marshaller.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         marshaller.setSchema(schema);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller unmarshaller;
+        try {
+            unmarshaller = jaxbContext.createUnmarshaller();
+        } catch (JAXBException e) {
+            logger.error("Failed to load JAXB unmarshaller.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         unmarshaller.setSchema(schema);
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        try {
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        } catch (PropertyException e) {
+            logger.error("Failed to configure JAXB marshaller.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
 
         logger.info("Accepted incoming request with body:");
         logger.info(tradeDescriptor.toString());
@@ -147,8 +166,18 @@ public final class TradeXmlGenerator {
         Smartderivativecontract smartDerivativeContract =
                 new Smartderivativecontract();
         ClassPathResource testXml = new ClassPathResource("references/sample_xml_file.xml");
-        Smartderivativecontract contract =
-                (Smartderivativecontract) unmarshaller.unmarshal(testXml.getInputStream());
+        Smartderivativecontract contract;
+        try {
+            contract = (Smartderivativecontract) unmarshaller.unmarshal(testXml.getInputStream());
+        } catch (JAXBException e) {
+            logger.error("Failed to unmarshall the XML template file.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        } catch (IOException e) {
+            logger.error("An IO error occured while unmarshalling the template file..");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
 
         // set the SDC specific stuff in the helper methods
         setSdcValuationHeader(smartDerivativeContract);
@@ -160,10 +189,17 @@ public final class TradeXmlGenerator {
         smartDerivativeContract.setUnderlyings(contract.getUnderlyings());
 
         Trade trade = smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(0);
-        XMLGregorianCalendar formattedTradeDate = DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(
-                        GregorianCalendar.from(tradeDescriptor.getTradeDate().toZonedDateTime())
-                );
+        XMLGregorianCalendar formattedTradeDate;
+        try {
+            formattedTradeDate = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(
+                            GregorianCalendar.from(tradeDescriptor.getTradeDate().toZonedDateTime())
+                    );
+        } catch (DatatypeConfigurationException e) {
+            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field tradeDate");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         formattedTradeDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         trade.tradeHeader.tradeDate.setValue(formattedTradeDate);
         trade.tradeHeader.partyTradeIdentifier.get(0).tradeId = new TradeId();
@@ -179,18 +215,32 @@ public final class TradeXmlGenerator {
         InterestRateStream fixedLeg = swap.swapStream.get(1);
 
         // for each swapstream... (index is the order of appearance in the template)
-        XMLGregorianCalendar formattedEffectiveDate = DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(
-                        GregorianCalendar.from(tradeDescriptor.getEffectiveDate().toZonedDateTime()
-                        )
-                );
+        XMLGregorianCalendar formattedEffectiveDate;
+        try {
+            formattedEffectiveDate = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(
+                            GregorianCalendar.from(tradeDescriptor.getEffectiveDate().toZonedDateTime()
+                            )
+                    );
+        } catch (DatatypeConfigurationException e) {
+            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field effectiveDate");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         formattedEffectiveDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 
-        XMLGregorianCalendar formattedTerminationDate = DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(
-                        GregorianCalendar.from(tradeDescriptor.getTerminationDate().toZonedDateTime()
-                        )
-                );
+        XMLGregorianCalendar formattedTerminationDate;
+        try {
+            formattedTerminationDate = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(
+                            GregorianCalendar.from(tradeDescriptor.getTerminationDate().toZonedDateTime()
+                            )
+                    );
+        } catch (DatatypeConfigurationException e) {
+            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field terminationDate");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         formattedTerminationDate.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
         for (int i = 0; i < 2; i++) {
 
@@ -253,8 +303,13 @@ public final class TradeXmlGenerator {
         smartDerivativeContract.settlement.marketdata.marketdataitems = contract.getSettlement().getMarketdata().getMarketdataitems();
         smartDerivativeContract.receiverPartyID = "party1";
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        marshaller.marshal(smartDerivativeContract, outputStream);
-        //logger.info(outputStream.toString());
+        try {
+            marshaller.marshal(smartDerivativeContract, outputStream);
+        } catch (JAXBException e) {
+            logger.error("Failed to marshall out the generated XML. Check your inputs.");
+            logger.error("I will now rethrow the exception and fail. Sorry! :(");
+            throw e;
+        }
         // marshall xml out
         try {
             Validator validator = schema.newValidator();
@@ -268,9 +323,14 @@ public final class TradeXmlGenerator {
                     .replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">","<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
                     .replaceAll("fpml:","");
 
-        } catch (IOException | SAXException e) {
-            logger.error("Exception: "+e.getMessage());
-            return "";
+        } catch (SAXException e) {
+            logger.error("Failed to validate the generated XML or some unrecoverable error occured while validating.");
+            logger.error("Details: "+e.getMessage());
+            throw e;
+        } catch (IOException e) {
+            logger.error("Failed to marshall out the generated XML file.");
+            logger.error("Details: "+e.getMessage());
+            throw e;
         }
 
     }

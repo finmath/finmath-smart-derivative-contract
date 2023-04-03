@@ -7,25 +7,18 @@
 
 package net.finmath.smartcontract.service.controllers;
 
-import jakarta.xml.bind.JAXBException;
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
-import net.finmath.smartcontract.product.xml.TradeXmlGenerator;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
