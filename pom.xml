@@ -54,6 +54,7 @@
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-bnd-plugin.version>5.3.0</maven-bnd-plugin.version>
         <build.encoding>UTF-8</build.encoding>
+        <solidity.version>0.8.13</solidity.version>
     </properties>
 
     <developers>
@@ -67,6 +68,7 @@
         <developer>
             <id>pekola</id>
             <name>Peter Kohl-Landgraf</name>
+            <email>peter.landgraf@mailbox.org</email>
             <timezone>1</timezone>
         </developer>
         <developer>
@@ -85,13 +87,11 @@
     </licenses>
 
     <dependencies>
-
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
-
         <!-- finnmath lib -->
         <dependency>
             <groupId>net.finmath</groupId>
@@ -109,7 +109,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <!-- apache commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -130,21 +129,6 @@
             <version>${spring-statemachine.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.neovisionaries</groupId>
-            <artifactId>nv-websocket-client</artifactId>
-            <version>2.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4.15</version>
-        </dependency>
 
         <!-- Java money -->
 		<dependency>
@@ -182,18 +166,8 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
-            <version>${jackson-dataformat-csv.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -239,11 +213,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <version>2.7.3</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>2.7.4</version>
-        </dependency>
+
 
         <!-- Open API -->
         <dependency>
@@ -262,7 +232,24 @@
             <version>2.0.1.Final</version>
         </dependency>
 
-        <!-- Dependencies for market data adapter -->
+        <!-- Dependencies for market data adapter and websocket -->
+        <dependency>
+            <groupId>com.neovisionaries</groupId>
+            <artifactId>nv-websocket-client</artifactId>
+            <version>2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.15</version>
+        </dependency>
+
+        <!-- Dependencies for reactive  websocket feed -->
         <dependency>
             <groupId>io.reactivex.rxjava3</groupId>
             <artifactId>rxjava</artifactId>
@@ -281,32 +268,36 @@
             <version>2.7.4</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-
-        <!-- WEB3J -->
+        <!-- Dependencies for Web3J -->
         <dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
             <version>5.0.0</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>crypto</artifactId>
-            <version>5.0.0</version>
-        </dependency>-->
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>openzeppelin__contracts</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources/solidity/node_modules</directory>
+                <includes>
+                    <include>@openzeppelin/**/*.sol</include>
+                </includes>
+            </resource>
+        </resources>
         <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <sourceDirectory>${src.main.java.dir}</sourceDirectory>
@@ -630,7 +621,7 @@
                         <soliditySourceFiles>
                             <directory>src/main/resources/solidity</directory>
                             <includes>
-                                <include>**/*.sol</include>
+                                <include>Greeting.sol</include>
                             </includes>
                         </soliditySourceFiles>
                         <abiSourceFiles>
@@ -647,8 +638,34 @@
                                 <exclude>..put your contracts names here ...</exclude>
                             </excludes>
                         </contract>-->
+                        <pathPrefixes>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <pathPrefix>@openzeppelin=./node_modules/@openzeppelin</pathPrefix>
+                        </pathPrefixes>
                     </configuration>
                 </plugin>
+            <!-- Install with NPM -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}/src/main/resources/solidity</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
