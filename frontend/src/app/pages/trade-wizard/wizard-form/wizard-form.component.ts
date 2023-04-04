@@ -12,6 +12,7 @@ import { DefaultService } from "../../../openapi/api/default.service";
 import { Counterparty } from "../../../openapi/model/counterparty";
 import { SdcXmlRequest } from "../../../openapi/model/sdcXmlRequest";
 import { HttpHeaders } from "@angular/common/http";
+import { debounceTime } from "rxjs";
 
 export interface DialogData {
   dialogMessage: string;
@@ -27,14 +28,11 @@ const httpOptions = {
 @Component({
   selector: "app-wizard-form",
   templateUrl: "./wizard-form.component.html",
-  styleUrls: ["./wizard-form.component.css"],
+  styleUrls: ["./wizard-form.component.scss"],
 })
 export class WizardFormComponent implements OnInit {
   isLinear = false;
-  wizardFormFirstStep: FormGroup;
-  wizardFormSecondStep: FormGroup;
-  wizardFormThirdStep: FormGroup;
-  wizardFormFourthStep: FormGroup;
+  swapForm: FormGroup;
   currencyPrefix: string;
   counterparties = counterparties;
   currencies = currencies;
@@ -45,6 +43,7 @@ export class WizardFormComponent implements OnInit {
   selectedParties = [] as Counterparty[];
   firstPartySelected = false;
   secondPartySelected = false;
+  currentNpv=0;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -52,10 +51,7 @@ export class WizardFormComponent implements OnInit {
     public dialog: MatDialog,
     private _formBuilder: FormBuilder
   ) {
-    this.wizardFormFirstStep = this._formBuilder.group({});
-    this.wizardFormSecondStep = this._formBuilder.group({});
-    this.wizardFormThirdStep = this._formBuilder.group({});
-    this.wizardFormFourthStep = this._formBuilder.group({});
+    this.swapForm = this._formBuilder.group({});
     this.currencyPrefix = "€";
   }
 
@@ -82,42 +78,45 @@ export class WizardFormComponent implements OnInit {
       Authorization: "Basic " + window.btoa("user1:password1"),
     });
 
-    this.wizardFormFirstStep = this._formBuilder.group({
+    this.swapForm = this._formBuilder.group({
       firstCounterparty: ["", Validators.required],
       secondCounterparty: ["", Validators.required],
       marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
       terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
-    });
-    this.wizardFormSecondStep = this._formBuilder.group({
       notionalAmount: [0, Validators.min(0)],
       currency: ["", Validators.required],
       tradeDate: ["", Validators.required],
       effectiveDate: ["", Validators.required],
       terminationDate: ["", Validators.required],
-    });
-    this.wizardFormThirdStep = this._formBuilder.group({
       fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
       fixedRate: ["", Validators.required],
       fixedDayCountFraction: ["", Validators.required],
-    });
-    this.wizardFormFourthStep = this._formBuilder.group({
       floatingPayingParty: [{ value: "", disabled: true }, Validators.required],
       floatingRateIndex: ["", Validators.required],
       floatingDayCountFraction: ["", Validators.required],
       floatingFixingDayOffset: ["", Validators.required],
       floatingPaymentFrequency: ["", Validators.required],
+      currentNpv: "",
     });
 
-    this.wizardFormSecondStep.get("currency")!.setValue(currencyDefault.code);
-    this.wizardFormThirdStep
+    this.swapForm.get("currency")!.setValue(currencyDefault.code);
+    this.swapForm
       .get("fixedDayCountFraction")!
       .setValue(fixedDayCountFractionDefault.id);
-    this.wizardFormFourthStep
+    this.swapForm
       .get("floatingDayCountFraction")!
       .setValue(floatingDayCountFractionDefault.id);
-    this.wizardFormFourthStep
+    this.swapForm
       .get("floatingFixingDayOffset")!
       .setValue(floatingFixingDayOffsetDefault.id);
+
+    this.swapForm.valueChanges.pipe(debounceTime(500)).subscribe(selectedValue  => {
+      console.log('hi mom');
+      if(this.isAllControlsValid()){
+        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: loading...";
+        this.pushPricingRequest();
+      }
+    });
   }
 
   pushXMLGenerationRequest() {
@@ -125,51 +124,51 @@ export class WizardFormComponent implements OnInit {
       firstCounterparty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFirstStep.get("firstCounterparty")!.value
+          this.swapForm.get("firstCounterparty")!.value
       ),
       secondCounterparty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFirstStep.get("secondCounterparty")!.value
+          this.swapForm.get("secondCounterparty")!.value
       ),
       marginBufferAmount:
-        this.wizardFormFirstStep.get("marginBufferAmount")!.value,
-      terminationFeeAmount: this.wizardFormFirstStep.get(
+        this.swapForm.get("marginBufferAmount")!.value,
+      terminationFeeAmount: this.swapForm.get(
         "terminationFeeAmount"
       )!.value,
-      notionalAmount: this.wizardFormSecondStep.get("notionalAmount")!.value,
-      currency: this.wizardFormSecondStep.get("currency")!.value,
+      notionalAmount: this.swapForm.get("notionalAmount")!.value,
+      currency: this.swapForm.get("currency")!.value,
       tradeDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("tradeDate")!.value)
+        new Date(this.swapForm.get("tradeDate")!.value)
       ).toISOString(),
       effectiveDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("effectiveDate")!.value)
+        new Date(this.swapForm.get("effectiveDate")!.value)
       ).toISOString(),
       terminationDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("terminationDate")!.value)
+        new Date(this.swapForm.get("terminationDate")!.value)
       ).toISOString(),
       fixedPayingParty: this.counterparties.find(
         (cp) =>
-          cp.bicCode === this.wizardFormThirdStep.get("fixedPayingParty")!.value
+          cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
       ),
-      fixedRate: this.wizardFormThirdStep.get("fixedRate")!.value,
-      fixedDayCountFraction: this.wizardFormThirdStep.get(
+      fixedRate: this.swapForm.get("fixedRate")!.value,
+      fixedDayCountFraction: this.swapForm.get(
         "fixedDayCountFraction"
       )!.value,
       floatingPayingParty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFourthStep.get("floatingPayingParty")!.value
+          this.swapForm.get("floatingPayingParty")!.value
       ),
       floatingRateIndex:
-        this.wizardFormFourthStep.get("floatingRateIndex")!.value,
-      floatingDayCountFraction: this.wizardFormFourthStep.get(
+        this.swapForm.get("floatingRateIndex")!.value,
+      floatingDayCountFraction: this.swapForm.get(
         "floatingDayCountFraction"
       )!.value,
-      floatingFixingDayOffset: this.wizardFormFourthStep.get(
+      floatingFixingDayOffset: this.swapForm.get(
         "floatingFixingDayOffset"
       )!.value,
-      floatingPaymentFrequency: this.wizardFormFourthStep.get(
+      floatingPaymentFrequency: this.swapForm.get(
         "floatingPaymentFrequency"
       )!.value,
     } as SdcXmlRequest;
@@ -194,70 +193,73 @@ export class WizardFormComponent implements OnInit {
     });
   }
 
+  loadTemplate(){
+    window.alert("This is where I would show you your templates... if only I knew how.");
+  }
+
   pushPricingRequest() {
     let sdcXmlRequest = {
       firstCounterparty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFirstStep.get("firstCounterparty")!.value
+          this.swapForm.get("firstCounterparty")!.value
       ),
       secondCounterparty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFirstStep.get("secondCounterparty")!.value
+          this.swapForm.get("secondCounterparty")!.value
       ),
       marginBufferAmount:
-        this.wizardFormFirstStep.get("marginBufferAmount")!.value,
-      terminationFeeAmount: this.wizardFormFirstStep.get(
+        this.swapForm.get("marginBufferAmount")!.value,
+      terminationFeeAmount: this.swapForm.get(
         "terminationFeeAmount"
       )!.value,
-      notionalAmount: this.wizardFormSecondStep.get("notionalAmount")!.value,
-      currency: this.wizardFormSecondStep.get("currency")!.value,
+      notionalAmount: this.swapForm.get("notionalAmount")!.value,
+      currency: this.swapForm.get("currency")!.value,
       tradeDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("tradeDate")!.value)
+        new Date(this.swapForm.get("tradeDate")!.value)
       ).toISOString(),
       effectiveDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("effectiveDate")!.value)
+        new Date(this.swapForm.get("effectiveDate")!.value)
       ).toISOString(),
       terminationDate: this.interpretAsUTC(
-        new Date(this.wizardFormSecondStep.get("terminationDate")!.value)
+        new Date(this.swapForm.get("terminationDate")!.value)
       ).toISOString(),
       fixedPayingParty: this.counterparties.find(
         (cp) =>
-          cp.bicCode === this.wizardFormThirdStep.get("fixedPayingParty")!.value
+          cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
       ),
-      fixedRate: this.wizardFormThirdStep.get("fixedRate")!.value,
-      fixedDayCountFraction: this.wizardFormThirdStep.get(
+      fixedRate: this.swapForm.get("fixedRate")!.value,
+      fixedDayCountFraction: this.swapForm.get(
         "fixedDayCountFraction"
       )!.value,
       floatingPayingParty: this.counterparties.find(
         (cp) =>
           cp.bicCode ===
-          this.wizardFormFourthStep.get("floatingPayingParty")!.value
+          this.swapForm.get("floatingPayingParty")!.value
       ),
       floatingRateIndex:
-        this.wizardFormFourthStep.get("floatingRateIndex")!.value,
-      floatingDayCountFraction: this.wizardFormFourthStep.get(
+        this.swapForm.get("floatingRateIndex")!.value,
+      floatingDayCountFraction: this.swapForm.get(
         "floatingDayCountFraction"
       )!.value,
-      floatingFixingDayOffset: this.wizardFormFourthStep.get(
+      floatingFixingDayOffset: this.swapForm.get(
         "floatingFixingDayOffset"
       )!.value,
-      floatingPaymentFrequency: this.wizardFormFourthStep.get(
+      floatingPaymentFrequency: this.swapForm.get(
         "floatingPaymentFrequency"
       )!.value,
     } as SdcXmlRequest;
 
     this.defaultService.evaluateFromEditor(sdcXmlRequest).subscribe({
       next: (valueResponse) => {
-        this.dialogMessage =
-          valueResponse.value +
-          valueResponse.currency +
-          "@" +
-          valueResponse.valuationDate;
-        this.openDialog();
+       /*this.dialogMessage = valueResponse.value.toString();
+        this.openDialog();*/
+        console.log(JSON.stringify(valueResponse));
+        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: "+valueResponse.value+this.currencyPrefix;
       },
       error: (error) => {
+        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: last valuation failed!";
         this._snackBar.open(
           "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
           "OK",
@@ -272,29 +274,19 @@ export class WizardFormComponent implements OnInit {
     });
   }
 
+
   pushTradeInceptionRequest() {
     window.alert(
       "This is where I would incept your trade... if only I had a backend."
     );
   }
+
   isAllControlsValid() {
-    let formArray = [
-      this.wizardFormFirstStep,
-      this.wizardFormSecondStep,
-      this.wizardFormThirdStep,
-      this.wizardFormFourthStep,
-    ];
-    let formJoin = this._formBuilder.group({});
-    for (const formGroup of formArray) {
-      for (const formControl in formGroup.controls) {
-        formJoin.addControl(formControl, formGroup.get(formControl)!);
-      }
-    }
-    return formJoin.valid;
+    return this.swapForm.valid;
   }
 
   onCurrencyChange() {
-    let currencyCode = this.wizardFormSecondStep.get("currency")!.value;
+    let currencyCode = this.swapForm.get("currency")!.value;
     this.currencyPrefix = this.currencies.find(
       (c: Currency) => c.code === currencyCode
     )!.symbol;
@@ -306,7 +298,7 @@ export class WizardFormComponent implements OnInit {
         counterparties.find(
           (p: any) =>
             p.bicCode ===
-            this.wizardFormFirstStep.get("firstCounterparty")!.value
+            this.swapForm.get("firstCounterparty")!.value
         )!
       );
       this.firstPartySelected = true;
@@ -315,11 +307,11 @@ export class WizardFormComponent implements OnInit {
     if (this.selectedParties.length == 2) {
       this.selectedParties[0] = counterparties.find(
         (p: any) =>
-          p.bicCode === this.wizardFormFirstStep.get("firstCounterparty")!.value
+          p.bicCode === this.swapForm.get("firstCounterparty")!.value
       )!;
       console.log("enabling form");
-      this.wizardFormThirdStep.get("fixedPayingParty")!.enable();
-      this.wizardFormFourthStep.get("floatingPayingParty")!.enable();
+      this.swapForm.get("fixedPayingParty")!.enable();
+      this.swapForm.get("floatingPayingParty")!.enable();
     }
     console.log(this.selectedParties.length);
   }
@@ -330,7 +322,7 @@ export class WizardFormComponent implements OnInit {
         counterparties.find(
           (p: any) =>
             p.bicCode ===
-            this.wizardFormFirstStep.get("secondCounterparty")!.value
+            this.swapForm.get("secondCounterparty")!.value
         )!
       );
       this.secondPartySelected = true;
@@ -340,10 +332,10 @@ export class WizardFormComponent implements OnInit {
       this.selectedParties[1] = counterparties.find(
         (p: any) =>
           p.bicCode ===
-          this.wizardFormFirstStep.get("secondCounterparty")!.value
+          this.swapForm.get("secondCounterparty")!.value
       )!;
-      this.wizardFormThirdStep.get("fixedPayingParty")!.enable();
-      this.wizardFormFourthStep.get("floatingPayingParty")!.enable();
+      this.swapForm.get("fixedPayingParty")!.enable();
+      this.swapForm.get("floatingPayingParty")!.enable();
     }
 
     console.log(this.selectedParties.length);
@@ -351,25 +343,25 @@ export class WizardFormComponent implements OnInit {
 
   onPayerPartySelection() {
     if (
-      this.wizardFormThirdStep.get("fixedPayingParty")!.value ===
-        this.wizardFormFourthStep.get("floatingPayingParty")!.value &&
-      this.wizardFormThirdStep.get("fixedPayingParty")!.dirty &&
-      this.wizardFormFourthStep.get("floatingPayingParty")!.dirty
+      this.swapForm.get("fixedPayingParty")!.value ===
+        this.swapForm.get("floatingPayingParty")!.value &&
+      this.swapForm.get("fixedPayingParty")!.dirty &&
+      this.swapForm.get("floatingPayingParty")!.dirty
     ) {
       //do not report errors unless the user actually tried to do the wrong thing
-      this.wizardFormThirdStep
+      this.swapForm
         .get("fixedPayingParty")!
         .setErrors({ incorrect: true });
-      this.wizardFormFourthStep
+      this.swapForm
         .get("floatingPayingParty")!
         .setErrors({ incorrect: true });
-      this.wizardFormThirdStep.updateValueAndValidity();
-      this.wizardFormFourthStep.updateValueAndValidity();
+      this.swapForm.updateValueAndValidity();
+      this.swapForm.updateValueAndValidity();
     } else {
-      this.wizardFormThirdStep.get("fixedPayingParty")!.setErrors(null);
-      this.wizardFormFourthStep.get("floatingPayingParty")!.setErrors(null);
-      this.wizardFormThirdStep.updateValueAndValidity();
-      this.wizardFormFourthStep.updateValueAndValidity();
+      this.swapForm.get("fixedPayingParty")!.setErrors(null);
+      this.swapForm.get("floatingPayingParty")!.setErrors(null);
+      this.swapForm.updateValueAndValidity();
+      this.swapForm.updateValueAndValidity();
     }
   }
 

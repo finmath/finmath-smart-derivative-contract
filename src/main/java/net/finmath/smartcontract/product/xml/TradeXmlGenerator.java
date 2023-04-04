@@ -288,7 +288,7 @@ public final class TradeXmlGenerator {
 
 
         fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
-                BigDecimal.valueOf(tradeDescriptor.getFixedRate()).divide(BigDecimal.valueOf(100L), RoundingMode.HALF_EVEN);
+                BigDecimal.valueOf(tradeDescriptor.getFixedRate()).setScale(32,RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(32,RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
         floatingLeg.resetDates.fixingDates.periodMultiplier =
                 BigInteger.valueOf(tradeDescriptor.getFloatingFixingDayOffset().longValue());
         floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
