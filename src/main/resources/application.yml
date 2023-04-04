@@ -16,6 +16,9 @@ server:
 #    key-store-type: pkcs12
 #  port: 8443
   forward-headers-strategy: framework
+  error:
+    include-message: always
+    include-stacktrace: always
 
 springdoc:
   swagger-ui:
@@ -31,3 +34,6 @@ springdoc:
 spring:
   thymeleaf:
     prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
+
+hostname: localhost:8080
+

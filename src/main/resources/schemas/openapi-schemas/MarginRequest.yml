@@ -1,0 +1,15 @@
+type: object
+required:
+  - marketDataStart
+  - marketDataEnd
+  - tradeData
+  - valuationDate
+properties:
+  marketDataStart:
+    type: string
+  marketDataEnd:
+    type: string
+  tradeData:
+    type: string
+  valuationDate:
+    type: string
