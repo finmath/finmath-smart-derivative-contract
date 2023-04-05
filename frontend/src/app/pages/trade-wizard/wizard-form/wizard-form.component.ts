@@ -1,9 +1,21 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { counterparties } from "./wizard-form-data/counterparties";
 import { Currency, currencies } from "./wizard-form-data/currencies";
-import { DayCountFraction, dayCountFractions } from "./wizard-form-data/day-count-fractions";
-import { FixingDayOffset, fixingDayOffsets } from "./wizard-form-data/fixing-day-offsets";
+import {
+  DayCountFraction,
+  dayCountFractions,
+} from "./wizard-form-data/day-count-fractions";
+import {
+  FixingDayOffset,
+  fixingDayOffsets,
+} from "./wizard-form-data/fixing-day-offsets";
 import { paymentFrequencies } from "./wizard-form-data/payment-frequencies";
 import { WizardPopupComponent } from "./wizard-popup/wizard-popup/wizard-popup.component";
 import { MatDialog } from "@angular/material/dialog";
@@ -13,15 +25,17 @@ import { Counterparty } from "../../../openapi/model/counterparty";
 import { SdcXmlRequest } from "../../../openapi/model/sdcXmlRequest";
 import { HttpHeaders } from "@angular/common/http";
 import { debounceTime } from "rxjs";
+import * as moment from "moment";
 
 export interface DialogData {
   dialogMessage: string;
+  dialogWindowTitle: string;
 }
 
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json",
-    Authorization: "Basic " + window.btoa('user1:password1'),
+    Authorization: "Basic " + window.btoa("user1:password1"),
   }),
 };
 
@@ -40,10 +54,16 @@ export class WizardFormComponent implements OnInit {
   paymentFrequencies = paymentFrequencies;
   fixingDayOffsets = fixingDayOffsets;
   dialogMessage: string | undefined;
+  dialogWindowTitle: string | undefined;
   selectedParties = [] as Counterparty[];
   firstPartySelected = false;
   secondPartySelected = false;
-  currentNpv=0;
+  currentNpv = 0;
+  terminationDateQuickCommand: FormControl;
+  tradeDateQuickCommand: FormControl;
+  effectiveDateQuickCommand: FormControl;
+  quickCommandRegExp: RegExp =
+    /(?<now>^\!$)|(?<notJustNow>^(?<baseDate>[\!tem])?(?<addRemove>[\+\-])(?<dateMsd>\d+[ymd])(?<date2sd>\d+[md])?(?<dateLsd>\d+d)?$)/gm;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -53,6 +73,9 @@ export class WizardFormComponent implements OnInit {
   ) {
     this.swapForm = this._formBuilder.group({});
     this.currencyPrefix = "€";
+    this.terminationDateQuickCommand = this._formBuilder.control("");
+    this.tradeDateQuickCommand = this._formBuilder.control("");
+    this.effectiveDateQuickCommand = this._formBuilder.control("");
   }
 
   interpretAsUTC(date: Date) {
@@ -62,7 +85,9 @@ export class WizardFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    const currencyDefault = this.currencies.find((c: Currency) => c.code === "EUR")!;
+    const currencyDefault = this.currencies.find(
+      (c: Currency) => c.code === "EUR"
+    )!;
     const fixedDayCountFractionDefault = this.dayCountFractions.find(
       (c: DayCountFraction) => c.id === "30E/360"
     )!;
@@ -110,32 +135,31 @@ export class WizardFormComponent implements OnInit {
       .get("floatingFixingDayOffset")!
       .setValue(floatingFixingDayOffsetDefault.id);
 
-    this.swapForm.valueChanges.pipe(debounceTime(500)).subscribe(selectedValue  => {
-      console.log('hi mom');
-      if(this.isAllControlsValid()){
-        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: loading...";
-        this.pushPricingRequest();
-      }
-    });
+    this.swapForm.valueChanges
+      .pipe(debounceTime(500))
+      .subscribe((selectedValue) => {
+        console.log("hi mom");
+        if (this.isAllControlsValid()) {
+          (
+            document
+              .getElementsByClassName("currentNpvLabelArea")
+              .item(0) as HTMLDivElement
+          ).innerHTML = "Current NPV: loading...";
+          this.pushPricingRequest();
+        }
+      });
   }
 
   pushXMLGenerationRequest() {
     let sdcXmlRequest = {
       firstCounterparty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("firstCounterparty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("firstCounterparty")!.value
       ),
       secondCounterparty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("secondCounterparty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("secondCounterparty")!.value
       ),
-      marginBufferAmount:
-        this.swapForm.get("marginBufferAmount")!.value,
-      terminationFeeAmount: this.swapForm.get(
-        "terminationFeeAmount"
-      )!.value,
+      marginBufferAmount: this.swapForm.get("marginBufferAmount")!.value,
+      terminationFeeAmount: this.swapForm.get("terminationFeeAmount")!.value,
       notionalAmount: this.swapForm.get("notionalAmount")!.value,
       currency: this.swapForm.get("currency")!.value,
       tradeDate: this.interpretAsUTC(
@@ -148,72 +172,59 @@ export class WizardFormComponent implements OnInit {
         new Date(this.swapForm.get("terminationDate")!.value)
       ).toISOString(),
       fixedPayingParty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
       ),
       fixedRate: this.swapForm.get("fixedRate")!.value,
-      fixedDayCountFraction: this.swapForm.get(
-        "fixedDayCountFraction"
-      )!.value,
+      fixedDayCountFraction: this.swapForm.get("fixedDayCountFraction")!.value,
       floatingPayingParty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("floatingPayingParty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("floatingPayingParty")!.value
       ),
-      floatingRateIndex:
-        this.swapForm.get("floatingRateIndex")!.value,
-      floatingDayCountFraction: this.swapForm.get(
-        "floatingDayCountFraction"
-      )!.value,
-      floatingFixingDayOffset: this.swapForm.get(
-        "floatingFixingDayOffset"
-      )!.value,
-      floatingPaymentFrequency: this.swapForm.get(
-        "floatingPaymentFrequency"
-      )!.value,
+      floatingRateIndex: this.swapForm.get("floatingRateIndex")!.value,
+      floatingDayCountFraction: this.swapForm.get("floatingDayCountFraction")!
+        .value,
+      floatingFixingDayOffset: this.swapForm.get("floatingFixingDayOffset")!
+        .value,
+      floatingPaymentFrequency: this.swapForm.get("floatingPaymentFrequency")!
+        .value,
     } as SdcXmlRequest;
 
     this.defaultService.generateXml(sdcXmlRequest).subscribe({
-        next: (sdcXmlResponse) => {
-          this.dialogMessage = sdcXmlResponse.xmlBody;
-          this.openDialog();
-        },
-        error: (error) => {
-          this._snackBar.open(
-            "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
-            "OK",
-            {
-              horizontalPosition: "right",
-              verticalPosition: "top",
-              duration: 3000,
-            }
-          );
-          console.log(JSON.stringify(error));
-        }
+      next: (sdcXmlResponse) => {
+        this.dialogMessage = sdcXmlResponse.xmlBody;
+        this.dialogWindowTitle = "Your SDCmL document:";
+        this.openDialog();
+      },
+      error: (error) => {
+        this._snackBar.open(
+          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
     });
   }
 
-  loadTemplate(){
-    window.alert("This is where I would show you your templates... if only I knew how.");
+  loadTemplate() {
+    window.alert(
+      "This is where I would show you your templates... if only I knew how."
+    );
   }
 
   pushPricingRequest() {
     let sdcXmlRequest = {
       firstCounterparty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("firstCounterparty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("firstCounterparty")!.value
       ),
       secondCounterparty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("secondCounterparty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("secondCounterparty")!.value
       ),
-      marginBufferAmount:
-        this.swapForm.get("marginBufferAmount")!.value,
-      terminationFeeAmount: this.swapForm.get(
-        "terminationFeeAmount"
-      )!.value,
+      marginBufferAmount: this.swapForm.get("marginBufferAmount")!.value,
+      terminationFeeAmount: this.swapForm.get("terminationFeeAmount")!.value,
       notionalAmount: this.swapForm.get("notionalAmount")!.value,
       currency: this.swapForm.get("currency")!.value,
       tradeDate: this.interpretAsUTC(
@@ -226,40 +237,38 @@ export class WizardFormComponent implements OnInit {
         new Date(this.swapForm.get("terminationDate")!.value)
       ).toISOString(),
       fixedPayingParty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
       ),
       fixedRate: this.swapForm.get("fixedRate")!.value,
-      fixedDayCountFraction: this.swapForm.get(
-        "fixedDayCountFraction"
-      )!.value,
+      fixedDayCountFraction: this.swapForm.get("fixedDayCountFraction")!.value,
       floatingPayingParty: this.counterparties.find(
-        (cp) =>
-          cp.bicCode ===
-          this.swapForm.get("floatingPayingParty")!.value
+        (cp) => cp.bicCode === this.swapForm.get("floatingPayingParty")!.value
       ),
-      floatingRateIndex:
-        this.swapForm.get("floatingRateIndex")!.value,
-      floatingDayCountFraction: this.swapForm.get(
-        "floatingDayCountFraction"
-      )!.value,
-      floatingFixingDayOffset: this.swapForm.get(
-        "floatingFixingDayOffset"
-      )!.value,
-      floatingPaymentFrequency: this.swapForm.get(
-        "floatingPaymentFrequency"
-      )!.value,
+      floatingRateIndex: this.swapForm.get("floatingRateIndex")!.value,
+      floatingDayCountFraction: this.swapForm.get("floatingDayCountFraction")!
+        .value,
+      floatingFixingDayOffset: this.swapForm.get("floatingFixingDayOffset")!
+        .value,
+      floatingPaymentFrequency: this.swapForm.get("floatingPaymentFrequency")!
+        .value,
     } as SdcXmlRequest;
 
     this.defaultService.evaluateFromEditor(sdcXmlRequest).subscribe({
       next: (valueResponse) => {
-       /*this.dialogMessage = valueResponse.value.toString();
-        this.openDialog();*/
         console.log(JSON.stringify(valueResponse));
-        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: "+valueResponse.value+this.currencyPrefix;
+        (
+          document
+            .getElementsByClassName("currentNpvLabelArea")
+            .item(0) as HTMLDivElement
+        ).innerHTML =
+          "Current NPV: " + valueResponse.value + this.currencyPrefix;
       },
       error: (error) => {
-        (document.getElementsByClassName("currentNpvLabelArea").item(0) as HTMLDivElement).innerHTML = "Current NPV: last valuation failed!";
+        (
+          document
+            .getElementsByClassName("currentNpvLabelArea")
+            .item(0) as HTMLDivElement
+        ).innerHTML = "Current NPV: last valuation failed!";
         this._snackBar.open(
           "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
           "OK",
@@ -270,10 +279,9 @@ export class WizardFormComponent implements OnInit {
           }
         );
         console.log(JSON.stringify(error));
-      }
+      },
     });
   }
-
 
   pushTradeInceptionRequest() {
     window.alert(
@@ -297,8 +305,7 @@ export class WizardFormComponent implements OnInit {
       this.selectedParties.push(
         counterparties.find(
           (p: any) =>
-            p.bicCode ===
-            this.swapForm.get("firstCounterparty")!.value
+            p.bicCode === this.swapForm.get("firstCounterparty")!.value
         )!
       );
       this.firstPartySelected = true;
@@ -306,8 +313,7 @@ export class WizardFormComponent implements OnInit {
 
     if (this.selectedParties.length == 2) {
       this.selectedParties[0] = counterparties.find(
-        (p: any) =>
-          p.bicCode === this.swapForm.get("firstCounterparty")!.value
+        (p: any) => p.bicCode === this.swapForm.get("firstCounterparty")!.value
       )!;
       console.log("enabling form");
       this.swapForm.get("fixedPayingParty")!.enable();
@@ -321,8 +327,7 @@ export class WizardFormComponent implements OnInit {
       this.selectedParties.push(
         counterparties.find(
           (p: any) =>
-            p.bicCode ===
-            this.swapForm.get("secondCounterparty")!.value
+            p.bicCode === this.swapForm.get("secondCounterparty")!.value
         )!
       );
       this.secondPartySelected = true;
@@ -330,9 +335,7 @@ export class WizardFormComponent implements OnInit {
 
     if (this.selectedParties.length == 2) {
       this.selectedParties[1] = counterparties.find(
-        (p: any) =>
-          p.bicCode ===
-          this.swapForm.get("secondCounterparty")!.value
+        (p: any) => p.bicCode === this.swapForm.get("secondCounterparty")!.value
       )!;
       this.swapForm.get("fixedPayingParty")!.enable();
       this.swapForm.get("floatingPayingParty")!.enable();
@@ -349,12 +352,8 @@ export class WizardFormComponent implements OnInit {
       this.swapForm.get("floatingPayingParty")!.dirty
     ) {
       //do not report errors unless the user actually tried to do the wrong thing
-      this.swapForm
-        .get("fixedPayingParty")!
-        .setErrors({ incorrect: true });
-      this.swapForm
-        .get("floatingPayingParty")!
-        .setErrors({ incorrect: true });
+      this.swapForm.get("fixedPayingParty")!.setErrors({ incorrect: true });
+      this.swapForm.get("floatingPayingParty")!.setErrors({ incorrect: true });
       this.swapForm.updateValueAndValidity();
       this.swapForm.updateValueAndValidity();
     } else {
@@ -369,11 +368,158 @@ export class WizardFormComponent implements OnInit {
     const dialogRef = this.dialog.open(WizardPopupComponent, {
       data: {
         dialogMessage: this.dialogMessage,
+        dialogWindowTitle: this.dialogWindowTitle,
       },
       width: "50%",
       height: "50%",
     });
 
     dialogRef.afterClosed().subscribe((result) => {});
+  }
+
+  onQuickCommandChange(
+    _targetControl: AbstractControl | null,
+    quickCommandControl: FormControl
+  ): void {
+    let quickCommand = quickCommandControl.value as string;
+    if (!_targetControl) {
+      console.log("wtf?");
+    }
+    let targetControl = _targetControl as FormControl;
+    let baseDate: Date = new Date();
+    let timeDiff: moment.Duration = moment.duration("00:00:00");
+    let addOrSubtract: (
+      timeDiff: moment.Duration,
+      amount: string,
+      unit: any
+    ) => moment.Duration = (
+      timeDiff: moment.Duration,
+      amount: string,
+      unit: any
+    ) => timeDiff.add(amount, unit);
+
+    if (!quickCommand.match(this.quickCommandRegExp)) {
+      console.log("not a valid command");
+      quickCommandControl.setErrors({ incorrect: true });
+      this._snackBar.open(
+        "This was not a valid command. Syntax: {! | REF_SELECTOR{+|-}TIME_LENGTH}. If you need more help, see the documentation or ask a dev.",
+        "OK",
+        {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          duration: 7500,
+        }
+      );
+      quickCommandControl.reset();
+      return;
+    }
+
+    for (const match of quickCommand.matchAll(this.quickCommandRegExp)) {
+      if (match.groups!["now"]) {
+        targetControl.setValue(new Date());
+        targetControl.updateValueAndValidity();
+        this._snackBar.open(
+          "Date set!",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        quickCommandControl.reset();
+      }
+      if (match.groups!["notJustNow"]) {
+        switch (match.groups!["baseDate"]) {
+          case "!":
+            baseDate = new Date();
+            break;
+          case "t":
+            baseDate = this.swapForm.get("tradeDate")!.value;
+            break;
+          case "e":
+            baseDate = this.swapForm.get("effectiveDate")!.value;
+            break;
+          case "m":
+            baseDate = this.swapForm.get("terminationDate")!.value;
+            break;
+        }
+
+        switch (match.groups!["addRemove"]) {
+          case "-":
+            addOrSubtract = (
+              timeDiff: moment.Duration,
+              amount: string,
+              unit: any
+            ) => timeDiff.subtract(amount, unit);
+            break;
+          case "+":
+            addOrSubtract = (
+              timeDiff: moment.Duration,
+              amount: string,
+              unit: any
+            ) => timeDiff.add(amount, unit);
+            break;
+        }
+
+        switch (match.groups!["dateMsd"].slice(-1)) {
+          case "y":
+            addOrSubtract(
+              timeDiff,
+              match.groups!["dateMsd"].slice(0, -1),
+              "years"
+            );
+            break;
+          case "m":
+            addOrSubtract(
+              timeDiff,
+              match.groups!["dateMsd"].slice(0, -1),
+              "months"
+            );
+            break;
+          case "d":
+            addOrSubtract(
+              timeDiff,
+              match.groups!["dateMsd"].slice(0, -1),
+              "days"
+            );
+            break;
+        }
+        if (match.groups!["date2sd"]) {
+          switch (match.groups!["date2sd"].slice(-1)) {
+            case "m":
+              addOrSubtract(
+                timeDiff,
+                match.groups!["dateMsd"].slice(0, -1),
+                "months"
+              );
+              break;
+            case "d":
+              addOrSubtract(
+                timeDiff,
+                match.groups!["dateMsd"].slice(0, -1),
+                "days"
+              );
+              break;
+          }
+        }
+        if (match.groups!["dateLsd"]) {
+          addOrSubtract(timeDiff, match.groups!["dateMsd"].slice(0, -1), "days");
+        }
+
+        targetControl.setValue(moment(baseDate).add(timeDiff).toDate());
+        targetControl.updateValueAndValidity();
+        this._snackBar.open(
+          "Date set!",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 1500,
+          }
+        );
+        quickCommandControl.reset();
+      }
+    }
   }
 }

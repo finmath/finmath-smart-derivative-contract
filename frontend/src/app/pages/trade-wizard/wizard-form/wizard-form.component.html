@@ -9,7 +9,7 @@
         matTooltip="Generate XML."
         (click)="pushXMLGenerationRequest()"
       >
-      <mat-icon aria-hidden="false" aria-label="Generate XML">code</mat-icon>
+        <mat-icon aria-hidden="false" aria-label="Generate XML">code</mat-icon>
       </button>
     </div>
     <div class="saveInChainButtonArea">
@@ -21,7 +21,9 @@
         matTooltip="Load template."
         (click)="loadTemplate()"
       >
-      <mat-icon aria-hidden="false" aria-label="Load Template">create</mat-icon>
+        <mat-icon aria-hidden="false" aria-label="Load Template"
+          >create</mat-icon
+        >
       </button>
     </div>
     <div class="loadTemplateButtonArea">
@@ -33,7 +35,9 @@
         matTooltip="Save trade on chain."
         (click)="pushTradeInceptionRequest()"
       >
-      <mat-icon aria-hidden="false" aria-label="Store Trade on Chain">cloud_upload</mat-icon>
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
+          >cloud_upload</mat-icon
+        >
       </button>
     </div>
     <div class="currentNpvLabelArea">Current NPV: not yet available.</div>
@@ -168,9 +172,54 @@
     </div>
     <div class="quickTradeDateSelectionArea">
       <mat-form-field>
-        <input matInput type="text" placeholder="+?" />
+        <input
+          matInput
+          type="text"
+          placeholder="+?"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('tradeDate'),
+              tradeDateQuickCommand
+            )
+          "
+          [formControl]="tradeDateQuickCommand"
+        />
       </mat-form-field>
     </div>
+    <div class="effectiveDateInputArea">
+      <mat-form-field>
+        <mat-label>Effective date:</mat-label>
+        <input
+          matInput
+          formControlName="effectiveDate"
+          [matDatepicker]="picker2"
+        />
+        <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker2"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+        <mat-error>You must specify a date.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="quickEffectiveDateSelectionAea">
+      <mat-form-field>
+        <input
+          matInput
+          type="text"
+          placeholder="+?"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('effectiveDate'),
+              effectiveDateQuickCommand
+            )
+          "
+          [formControl]="effectiveDateQuickCommand"
+        />
+      </mat-form-field>
+    </div>
+
     <div class="terminationDateInputArea">
       <mat-form-field>
         <mat-label>Termination date:</mat-label>
@@ -190,24 +239,18 @@
     </div>
     <div class="quickMaturitySelectionAea">
       <mat-form-field>
-        <input matInput type="text" placeholder="+?" />
-      </mat-form-field>
-    </div>
-    <div class="effectiveDateInputArea">
-      <mat-form-field>
-        <mat-label>Effective date:</mat-label>
         <input
           matInput
-          formControlName="effectiveDate"
-          [matDatepicker]="picker2"
+          type="text"
+          placeholder="+?"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('terminationDate'),
+              terminationDateQuickCommand
+            )
+          "
+          [formControl]="terminationDateQuickCommand"
         />
-        <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
-        <mat-datepicker-toggle
-          matIconSuffix
-          [for]="picker2"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker2></mat-datepicker>
-        <mat-error>You must specify a date.</mat-error>
       </mat-form-field>
     </div>
   </div>
