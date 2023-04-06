@@ -165,10 +165,10 @@ public final class TradeXmlGenerator {
         // create new SDCmL file as object
         Smartderivativecontract smartDerivativeContract =
                 new Smartderivativecontract();
-        ClassPathResource testXml = new ClassPathResource("references/sample_xml_file.xml");
+        ClassPathResource templateXmlResource = new ClassPathResource("references/template2.xml");
         Smartderivativecontract contract;
         try {
-            contract = (Smartderivativecontract) unmarshaller.unmarshal(testXml.getInputStream());
+            contract = (Smartderivativecontract) unmarshaller.unmarshal(templateXmlResource.getInputStream());
         } catch (JAXBException e) {
             logger.error("Failed to unmarshall the XML template file.");
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
