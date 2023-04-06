@@ -25,14 +25,20 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 
 public final class TradeXmlGenerator {
 
     static Logger logger = LoggerFactory.getLogger(TradeXmlGenerator.class);
+
+    private static boolean isFloatingLeg(InterestRateStream swapStream){
+        return swapStream.getCalculationPeriodAmount().getCalculation().getRateCalculation().getDeclaredType().equals(FloatingRateCalculation.class) && Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getFixedRateSchedule());
+    }
+
+    private static boolean isFixedLeg(InterestRateStream swapStream){
+        return !Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getFixedRateSchedule()) && Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getRateCalculation());
+    }
     private static void setSdcSettlementHeader(
             final SdcXmlRequest tradeDescriptor,
             final Smartderivativecontract sdc) {
@@ -116,7 +122,7 @@ public final class TradeXmlGenerator {
         smartDerivativeContract.setValuation(valuationHeader);
     }
 
-    public String marshallTradeDescriptorOntoXml(final SdcXmlRequest tradeDescriptor) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
+    public String marshallTradeDescriptorOntoXml(final SdcXmlRequest sdcXmlRequest) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema;
         try {
@@ -161,7 +167,7 @@ public final class TradeXmlGenerator {
         }
 
         logger.info("Accepted incoming request with body:");
-        logger.info(tradeDescriptor.toString());
+        logger.info(sdcXmlRequest.toString());
         // create new SDCmL file as object
         Smartderivativecontract smartDerivativeContract =
                 new Smartderivativecontract();
@@ -181,8 +187,8 @@ public final class TradeXmlGenerator {
 
         // set the SDC specific stuff in the helper methods
         setSdcValuationHeader(smartDerivativeContract);
-        setSdcPartiesHeader(tradeDescriptor, smartDerivativeContract);
-        setSdcSettlementHeader(tradeDescriptor, smartDerivativeContract);
+        setSdcPartiesHeader(sdcXmlRequest, smartDerivativeContract);
+        setSdcSettlementHeader(sdcXmlRequest, smartDerivativeContract);
 
         // set the FPmL body... FPmL is tough!
         // clone the template
@@ -193,10 +199,10 @@ public final class TradeXmlGenerator {
         try {
             formattedTradeDate = DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(
-                            GregorianCalendar.from(tradeDescriptor.getTradeDate().toZonedDateTime())
+                            GregorianCalendar.from(sdcXmlRequest.getTradeDate().toZonedDateTime())
                     );
         } catch (DatatypeConfigurationException e) {
-            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field tradeDate");
+            logger.error("Failed to convert OffsetDateTime to XMLGregorianCalendar. This occured while processing field tradeDate");
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
             throw e;
         }
@@ -211,15 +217,23 @@ public final class TradeXmlGenerator {
 
         Swap swap = ((Swap) smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(
                 0).getProduct().getValue());
-        InterestRateStream floatingLeg = swap.swapStream.get(0);
-        InterestRateStream fixedLeg = swap.swapStream.get(1);
+
+        Optional<InterestRateStream> fixedLegOptional = swap.swapStream.stream().filter(swapStream -> isFixedLeg(swapStream)).findFirst();
+        if(fixedLegOptional.isEmpty())
+            throw new IllegalStateException("The template has issues: failed to find valid candidate for fixed leg swapStream definition. I will fail now, sorry! :(");
+        InterestRateStream fixedLeg = fixedLegOptional.get();
+
+        Optional<InterestRateStream> floatingLegOptional = swap.swapStream.stream().filter(swapStream -> isFloatingLeg(swapStream)).findFirst();
+        if(floatingLegOptional.isEmpty())
+            throw new IllegalStateException("The template has issues: failed to find valid candidate for floating leg swapStream definition. I will fail now, sorry! :(");
+        InterestRateStream floatingLeg = floatingLegOptional.get();
 
         // for each swapstream... (index is the order of appearance in the template)
         XMLGregorianCalendar formattedEffectiveDate;
         try {
             formattedEffectiveDate = DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(
-                            GregorianCalendar.from(tradeDescriptor.getEffectiveDate().toZonedDateTime()
+                            GregorianCalendar.from(sdcXmlRequest.getEffectiveDate().toZonedDateTime()
                             )
                     );
         } catch (DatatypeConfigurationException e) {
@@ -233,7 +247,7 @@ public final class TradeXmlGenerator {
         try {
             formattedTerminationDate = DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(
-                            GregorianCalendar.from(tradeDescriptor.getTerminationDate().toZonedDateTime()
+                            GregorianCalendar.from(sdcXmlRequest.getTerminationDate().toZonedDateTime()
                             )
                     );
         } catch (DatatypeConfigurationException e) {
@@ -255,16 +269,14 @@ public final class TradeXmlGenerator {
             swap.swapStream.get(
                     i).calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.initialValue =
                     BigDecimal.valueOf(Double.parseDouble(Float.toString(
-                            tradeDescriptor.getNotionalAmount().floatValue())));
+                            sdcXmlRequest.getNotionalAmount().floatValue())));
             swap.swapStream.get(
                     i).calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.currency.value =
-                    tradeDescriptor.getCurrency();
-            swap.swapStream.get(
-                    i).paymentDates.paymentFrequency.periodMultiplier =
-                    BigInteger.valueOf(tradeDescriptor.getFloatingPaymentFrequency().longValue());
+                    sdcXmlRequest.getCurrency();
+
         }
 
-        if (tradeDescriptor.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)
+        if (sdcXmlRequest.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)
         ) {
             floatingLeg.payerPartyReference.href =
                     smartDerivativeContract.underlyings.underlying.dataDocument.party.get(0);
@@ -288,17 +300,20 @@ public final class TradeXmlGenerator {
 
 
         fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
-                BigDecimal.valueOf(tradeDescriptor.getFixedRate()).setScale(32,RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(32,RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
+                BigDecimal.valueOf(sdcXmlRequest.getFixedRate()).setScale(32,RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(5,RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
         floatingLeg.resetDates.fixingDates.periodMultiplier =
-                BigInteger.valueOf(tradeDescriptor.getFloatingFixingDayOffset().longValue());
+                BigInteger.valueOf(sdcXmlRequest.getFloatingFixingDayOffset().longValue());
         floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
-                tradeDescriptor.getFloatingDayCountFraction();
+                sdcXmlRequest.getFloatingDayCountFraction();
         fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
-                tradeDescriptor.getFixedDayCountFraction();
+                sdcXmlRequest.getFixedDayCountFraction();
         ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount
                 .calculation.getRateCalculation()
                 .getValue()).floatingRateIndex.value =
-                tradeDescriptor.getFloatingRateIndex();
+                sdcXmlRequest.getFloatingRateIndex();
+        floatingLeg.paymentDates.paymentFrequency.periodMultiplier =
+                BigInteger.valueOf(sdcXmlRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
+        floatingLeg.paymentDates.paymentFrequency.period = sdcXmlRequest.getFloatingPaymentFrequency().getPeriod();
 
         smartDerivativeContract.settlement.marketdata.marketdataitems = contract.getSettlement().getMarketdata().getMarketdataitems();
         smartDerivativeContract.receiverPartyID = "party1";

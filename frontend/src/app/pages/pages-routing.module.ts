@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PagesComponent } from './pages.component';
 
+
 const routes: Routes = [
   {
     path: '',
@@ -9,7 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: 'trade-wizard',
-        loadChildren: () => import('./trade-wizard/trade-wizard.module').then(m => m.TradeWizardModule)
+        loadChildren: () => import('./trade-wizard/trade-wizard.module').then(m => m.TradeWizardModule),
       }
     ],
   }

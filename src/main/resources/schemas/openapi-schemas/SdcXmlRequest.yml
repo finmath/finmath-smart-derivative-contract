@@ -64,5 +64,4 @@ properties:
     minimum: -2
     maximum: 2
   floatingPaymentFrequency:
-    type: integer
-    minimum: 0
+    $ref: "PaymentFrequency.yml"

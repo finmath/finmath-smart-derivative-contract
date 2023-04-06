@@ -1,4 +1,4 @@
-import {Counterparty} from '../../../../openapi/model/counterparty'
+import {Counterparty} from 'src/app/openapi/model/counterparty'
 
 export const counterparties: Counterparty[] = [
   {

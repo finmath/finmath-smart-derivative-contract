@@ -335,7 +335,7 @@
         >
           <mat-option
             *ngFor="let paymentFrequency of paymentFrequencies"
-            [value]="paymentFrequency.id"
+            [value]="paymentFrequency.fullName"
           >
             {{ paymentFrequency.fullName }}
           </mat-option>

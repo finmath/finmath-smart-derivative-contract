@@ -83,7 +83,7 @@ public class EditorController implements EditorApi {
         String marketData;
         try {
             marketData = (new ClassPathResource(
-                    "net.finmath.smartcontract.client" + File.separator + "md_testset1.json"))
+                    "net.finmath.smartcontract.client" + File.separator + "md_testset2.json"))
                     .getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,

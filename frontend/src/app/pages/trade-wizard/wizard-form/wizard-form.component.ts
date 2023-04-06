@@ -27,6 +27,7 @@ import { HttpHeaders } from "@angular/common/http";
 import { debounceTime } from "rxjs";
 import * as moment from "moment";
 
+
 export interface DialogData {
   dialogMessage: string;
   dialogWindowTitle: string;
@@ -103,26 +104,31 @@ export class WizardFormComponent implements OnInit {
       Authorization: "Basic " + window.btoa("user1:password1"),
     });
 
-    this.swapForm = this._formBuilder.group({
-      firstCounterparty: ["", Validators.required],
-      secondCounterparty: ["", Validators.required],
-      marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
-      terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
-      notionalAmount: [0, Validators.min(0)],
-      currency: ["", Validators.required],
-      tradeDate: ["", Validators.required],
-      effectiveDate: ["", Validators.required],
-      terminationDate: ["", Validators.required],
-      fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
-      fixedRate: ["", Validators.required],
-      fixedDayCountFraction: ["", Validators.required],
-      floatingPayingParty: [{ value: "", disabled: true }, Validators.required],
-      floatingRateIndex: ["", Validators.required],
-      floatingDayCountFraction: ["", Validators.required],
-      floatingFixingDayOffset: ["", Validators.required],
-      floatingPaymentFrequency: ["", Validators.required],
-      currentNpv: "",
-    });
+    this.swapForm = this._formBuilder.group(
+      {
+        firstCounterparty: ["", Validators.required],
+        secondCounterparty: ["", Validators.required],
+        marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
+        terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
+        notionalAmount: [0, Validators.min(0)],
+        currency: ["", Validators.required],
+        tradeDate: ["", Validators.required],
+        effectiveDate: ["", Validators.required],
+        terminationDate: ["", Validators.required],
+        fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
+        fixedRate: ["", Validators.required],
+        fixedDayCountFraction: ["", Validators.required],
+        floatingPayingParty: [
+          { value: "", disabled: true },
+          Validators.required,
+        ],
+        floatingRateIndex: ["", Validators.required],
+        floatingDayCountFraction: ["", Validators.required],
+        floatingFixingDayOffset: ["", Validators.required],
+        floatingPaymentFrequency: ["", Validators.required],
+        currentNpv: "",
+      }
+    );
 
     this.swapForm.get("currency")!.setValue(currencyDefault.code);
     this.swapForm
@@ -184,8 +190,10 @@ export class WizardFormComponent implements OnInit {
         .value,
       floatingFixingDayOffset: this.swapForm.get("floatingFixingDayOffset")!
         .value,
-      floatingPaymentFrequency: this.swapForm.get("floatingPaymentFrequency")!
-        .value,
+      floatingPaymentFrequency: this.paymentFrequencies.find(
+        (pf) =>
+          pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
+      ),
     } as SdcXmlRequest;
 
     this.defaultService.generateXml(sdcXmlRequest).subscribe({
@@ -249,8 +257,10 @@ export class WizardFormComponent implements OnInit {
         .value,
       floatingFixingDayOffset: this.swapForm.get("floatingFixingDayOffset")!
         .value,
-      floatingPaymentFrequency: this.swapForm.get("floatingPaymentFrequency")!
-        .value,
+      floatingPaymentFrequency: this.paymentFrequencies.find(
+        (pf) =>
+          pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
+      ),
     } as SdcXmlRequest;
 
     this.defaultService.evaluateFromEditor(sdcXmlRequest).subscribe({
@@ -355,12 +365,12 @@ export class WizardFormComponent implements OnInit {
       this.swapForm.get("fixedPayingParty")!.setErrors({ incorrect: true });
       this.swapForm.get("floatingPayingParty")!.setErrors({ incorrect: true });
       this.swapForm.updateValueAndValidity();
-      this.swapForm.updateValueAndValidity();
+      
     } else {
       this.swapForm.get("fixedPayingParty")!.setErrors(null);
       this.swapForm.get("floatingPayingParty")!.setErrors(null);
       this.swapForm.updateValueAndValidity();
-      this.swapForm.updateValueAndValidity();
+      
     }
   }
 
@@ -418,15 +428,11 @@ export class WizardFormComponent implements OnInit {
       if (match.groups!["now"]) {
         targetControl.setValue(new Date());
         targetControl.updateValueAndValidity();
-        this._snackBar.open(
-          "Date set!",
-          "OK",
-          {
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            duration: 7500,
-          }
-        );
+        this._snackBar.open("Date set!", "OK", {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          duration: 7500,
+        });
         quickCommandControl.reset();
       }
       if (match.groups!["notJustNow"]) {
@@ -504,20 +510,20 @@ export class WizardFormComponent implements OnInit {
           }
         }
         if (match.groups!["dateLsd"]) {
-          addOrSubtract(timeDiff, match.groups!["dateMsd"].slice(0, -1), "days");
+          addOrSubtract(
+            timeDiff,
+            match.groups!["dateMsd"].slice(0, -1),
+            "days"
+          );
         }
 
         targetControl.setValue(moment(baseDate).add(timeDiff).toDate());
         targetControl.updateValueAndValidity();
-        this._snackBar.open(
-          "Date set!",
-          "OK",
-          {
-            horizontalPosition: "right",
-            verticalPosition: "top",
-            duration: 1500,
-          }
-        );
+        this._snackBar.open("Date set!", "OK", {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          duration: 1500,
+        });
         quickCommandControl.reset();
       }
     }
