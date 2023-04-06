@@ -1,0 +1,214 @@
+.mat-mdc-form-field {
+  margin-top: 8px;
+  width: calc(100% - 8px);
+}
+
+.wizard-end-buttons {
+  margin: 1%;
+}
+
+form {
+  display: grid;
+}
+
+.swapBuildingForm {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 12.5% 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  align-items: baseline;
+  grid-template-areas:
+    "commandInfoArea commandInfoArea commandInfoArea commandInfoArea"
+    "basicDefinitionArea financialDefinitionArea floatingLegArea fixedLegArea";
+  width: 100%;
+  height: 100%;
+}
+
+.commandInfoArea {
+  display: grid;
+  grid-template-columns: 10% 10% 10% 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: "generateXmlButtonArea saveInChainButtonArea loadTemplateButtonArea currentNpvLabelArea";
+  grid-area: commandInfoArea;
+  justify-items: stretch;
+}
+
+.generateXmlButtonArea {
+  grid-area: generateXmlButtonArea;
+}
+.saveInChainButtonArea {
+  grid-area: saveInChainButtonArea;
+}
+.loadTemplateButtonArea {
+  grid-area: loadTemplateButtonArea;
+}
+.currentNpvLabelArea {
+  grid-area: currentNpvLabelArea;
+  text-align: right;
+  font-weight: bold;
+}
+
+.basicDefinitionArea {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "basicDefinitionTitleArea"
+    "firstCounterpartySelectionArea"
+    "secondCounterpartySelectionArea"
+    "marginBufferInputArea"
+    "penaltyFeeInputArea";
+  grid-area: basicDefinitionArea;
+}
+
+.basicDefinitionTitleArea {
+  grid-area: basicDefinitionTitleArea;
+}
+
+.firstCounterpartySelectionArea {
+  grid-area: firstCounterpartySelectionArea;
+}
+
+.secondCounterpartySelectionArea {
+  grid-area: secondCounterpartySelectionArea;
+}
+
+.marginBufferInputArea {
+  grid-area: marginBufferInputArea;
+}
+
+.penaltyFeeInputArea {
+  grid-area: penaltyFeeInputArea;
+}
+
+.financialDefinitionArea {
+  display: grid;
+  grid-template-columns: 1fr 33%;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "financialDefinitionTitleArea financialDefinitionTitleArea"
+    "currencySelectionArea currencySelectionArea"
+    "notionalAmountInputArea notionalAmountInputArea"
+    "tradeDateInputArea quickTradeDateSelectionArea"
+    "effectiveDateInputArea quickEffectiveDateSelectionAea"
+    "terminationDateInputArea quickMaturitySelectionAea";
+  grid-area: financialDefinitionArea;
+}
+
+.financialDefinitionTitleArea {
+  grid-area: financialDefinitionTitleArea;
+}
+
+.currencySelectionArea {
+  grid-area: currencySelectionArea;
+}
+
+.notionalAmountInputArea {
+  grid-area: notionalAmountInputArea;
+}
+
+.tradeDateInputArea {
+  grid-area: tradeDateInputArea;
+}
+
+.quickTradeDateSelectionArea {
+  grid-area: quickTradeDateSelectionArea;
+}
+
+.terminationDateInputArea {
+  grid-area: terminationDateInputArea;
+}
+
+.quickMaturitySelectionAea {
+  grid-area: quickMaturitySelectionAea;
+}
+
+.quickEffectiveDateSelectionAea {
+  grid-area: quickEffectiveDateSelectionAea;
+}
+
+.effectiveDateInputArea {
+  grid-area: effectiveDateInputArea;
+}
+
+.floatingLegArea {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "floatingLegDefinitionTitleArea"
+    "floatingLegPayerPartySelectionArea"
+    "floatingIndexSelectionArea"
+    "floatingDayCountFractionSelectionArea"
+    "fixingOffsetSelectionArea"
+    "floatingPaymentFrequencyArea";
+  grid-area: floatingLegArea;
+}
+
+.floatingLegPayerPartySelectionArea {
+  grid-area: floatingLegPayerPartySelectionArea;
+}
+
+.floatingIndexSelectionArea {
+  grid-area: floatingIndexSelectionArea;
+}
+
+.floatingDayCountFractionSelectionArea {
+  grid-area: floatingDayCountFractionSelectionArea;
+}
+
+.fixingOffsetSelectionArea {
+  grid-area: fixingOffsetSelectionArea;
+}
+
+.floatingPaymentFrequencyArea {
+  grid-area: floatingPaymentFrequencyArea;
+}
+
+.floatingLegDefinitionTitleArea {
+  grid-area: floatingLegDefinitionTitleArea;
+}
+
+.fixedLegArea {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "fixedLegDefinitionTitleArea"
+    "fixedLegPayerPartySelectionArea"
+    "fixedLegDayCountFractionSelectionArea"
+    "fixedRateInputArea";
+  grid-area: fixedLegArea;
+}
+
+.fixedLegDefinitionTitleArea {
+  grid-area: fixedLegDefinitionTitleArea;
+}
+
+.fixedLegDayCountFractionSelectionArea {
+  grid-area: fixedLegDayCountFractionSelectionArea;
+}
+
+.fixedRateInputArea {
+  grid-area: fixedRateInputArea;
+}
+
+.fixedLegPayerPartySelectionArea {
+  grid-area: fixedLegPayerPartySelectionArea;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+}

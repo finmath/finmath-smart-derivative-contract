@@ -268,3 +268,4 @@ $RECYCLE.BIN/
 /frontend/.angular
 /frontend/node_modules
 /frontend/src/app/openapi/**
+.vscode/**
