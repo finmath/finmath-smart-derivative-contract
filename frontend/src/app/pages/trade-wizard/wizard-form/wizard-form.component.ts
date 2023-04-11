@@ -26,9 +26,10 @@ import { SdcXmlRequest } from "../../../openapi/model/sdcXmlRequest";
 import { HttpHeaders } from "@angular/common/http";
 import { debounceTime } from "rxjs";
 import * as moment from "moment";
+import { WizardTableDialogComponent } from "./wizard-table-dialog/wizard-table-dialog.component";
+import { CashflowPeriod } from "src/app/openapi";
 
-
-export interface DialogData {
+export interface TextDialogData {
   dialogMessage: string;
   dialogWindowTitle: string;
 }
@@ -46,7 +47,6 @@ const httpOptions = {
   styleUrls: ["./wizard-form.component.scss"],
 })
 export class WizardFormComponent implements OnInit {
-  isLinear = false;
   swapForm: FormGroup;
   currencyPrefix: string;
   counterparties = counterparties;
@@ -104,31 +104,27 @@ export class WizardFormComponent implements OnInit {
       Authorization: "Basic " + window.btoa("user1:password1"),
     });
 
-    this.swapForm = this._formBuilder.group(
-      {
-        firstCounterparty: ["", Validators.required],
-        secondCounterparty: ["", Validators.required],
-        marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
-        terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
-        notionalAmount: [0, Validators.min(0)],
-        currency: ["", Validators.required],
-        tradeDate: ["", Validators.required],
-        effectiveDate: ["", Validators.required],
-        terminationDate: ["", Validators.required],
-        fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
-        fixedRate: ["", Validators.required],
-        fixedDayCountFraction: ["", Validators.required],
-        floatingPayingParty: [
-          { value: "", disabled: true },
-          Validators.required,
-        ],
-        floatingRateIndex: ["", Validators.required],
-        floatingDayCountFraction: ["", Validators.required],
-        floatingFixingDayOffset: ["", Validators.required],
-        floatingPaymentFrequency: ["", Validators.required],
-        currentNpv: "",
-      }
-    );
+    this.swapForm = this._formBuilder.group({
+      firstCounterparty: ["", Validators.required],
+      secondCounterparty: ["", Validators.required],
+      marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
+      terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
+      notionalAmount: [0, Validators.min(0)],
+      currency: ["", Validators.required],
+      tradeDate: ["", Validators.required],
+      effectiveDate: ["", Validators.required],
+      terminationDate: ["", Validators.required],
+      fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
+      fixedRate: ["", Validators.required],
+      fixedDayCountFraction: ["", Validators.required],
+      fixedPaymentFrequency: ["", Validators.required],
+      floatingPayingParty: [{ value: "", disabled: true }, Validators.required],
+      floatingRateIndex: ["", Validators.required],
+      floatingDayCountFraction: ["", Validators.required],
+      floatingFixingDayOffset: ["", Validators.required],
+      floatingPaymentFrequency: ["", Validators.required],
+      currentNpv: "",
+    });
 
     this.swapForm.get("currency")!.setValue(currencyDefault.code);
     this.swapForm
@@ -156,8 +152,8 @@ export class WizardFormComponent implements OnInit {
       });
   }
 
-  pushXMLGenerationRequest() {
-    let sdcXmlRequest = {
+  mapRequest() {
+    return {
       firstCounterparty: this.counterparties.find(
         (cp) => cp.bicCode === this.swapForm.get("firstCounterparty")!.value
       ),
@@ -182,6 +178,10 @@ export class WizardFormComponent implements OnInit {
       ),
       fixedRate: this.swapForm.get("fixedRate")!.value,
       fixedDayCountFraction: this.swapForm.get("fixedDayCountFraction")!.value,
+      fixedPaymentFrequency: this.paymentFrequencies.find(
+        (pf) =>
+          pf.fullName === this.swapForm.get("fixedPaymentFrequency")!.value
+      ),
       floatingPayingParty: this.counterparties.find(
         (cp) => cp.bicCode === this.swapForm.get("floatingPayingParty")!.value
       ),
@@ -195,12 +195,61 @@ export class WizardFormComponent implements OnInit {
           pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
       ),
     } as SdcXmlRequest;
+    
+  }
 
-    this.defaultService.generateXml(sdcXmlRequest).subscribe({
+  pushXMLGenerationRequest() {
+    this.defaultService.generateXml(this.mapRequest()).subscribe({
       next: (sdcXmlResponse) => {
         this.dialogMessage = sdcXmlResponse.xmlBody;
         this.dialogWindowTitle = "Your SDCmL document:";
-        this.openDialog();
+        this.openTextDialog();
+      },
+      error: (error) => {
+        this._snackBar.open(
+          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
+    });
+  }
+
+  pushFixedScheduleGenerationRequest() {
+    console.log(this.mapRequest());
+    this.defaultService.getFixedSchedule(this.mapRequest()).subscribe({
+      next: (cashflowPeriods) => {
+        this.dialogMessage = JSON.stringify(cashflowPeriods);
+        this.dialogWindowTitle = "Your SDCmL document:";
+        this.openTableDialog(cashflowPeriods);
+      },
+      error: (error) => {
+        this._snackBar.open(
+          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
+    });
+  }
+
+  pushFloatingScheduleGenerationRequest() {
+    console.log(this.mapRequest());
+    this.defaultService.getFloatingSchedule(this.mapRequest()).subscribe({
+      next: (cashflowPeriods) => {
+        this.dialogMessage = JSON.stringify(cashflowPeriods);
+        this.dialogWindowTitle = "Your SDCmL document:";
+        this.openTableDialog(cashflowPeriods);
       },
       error: (error) => {
         this._snackBar.open(
@@ -224,46 +273,7 @@ export class WizardFormComponent implements OnInit {
   }
 
   pushPricingRequest() {
-    let sdcXmlRequest = {
-      firstCounterparty: this.counterparties.find(
-        (cp) => cp.bicCode === this.swapForm.get("firstCounterparty")!.value
-      ),
-      secondCounterparty: this.counterparties.find(
-        (cp) => cp.bicCode === this.swapForm.get("secondCounterparty")!.value
-      ),
-      marginBufferAmount: this.swapForm.get("marginBufferAmount")!.value,
-      terminationFeeAmount: this.swapForm.get("terminationFeeAmount")!.value,
-      notionalAmount: this.swapForm.get("notionalAmount")!.value,
-      currency: this.swapForm.get("currency")!.value,
-      tradeDate: this.interpretAsUTC(
-        new Date(this.swapForm.get("tradeDate")!.value)
-      ).toISOString(),
-      effectiveDate: this.interpretAsUTC(
-        new Date(this.swapForm.get("effectiveDate")!.value)
-      ).toISOString(),
-      terminationDate: this.interpretAsUTC(
-        new Date(this.swapForm.get("terminationDate")!.value)
-      ).toISOString(),
-      fixedPayingParty: this.counterparties.find(
-        (cp) => cp.bicCode === this.swapForm.get("fixedPayingParty")!.value
-      ),
-      fixedRate: this.swapForm.get("fixedRate")!.value,
-      fixedDayCountFraction: this.swapForm.get("fixedDayCountFraction")!.value,
-      floatingPayingParty: this.counterparties.find(
-        (cp) => cp.bicCode === this.swapForm.get("floatingPayingParty")!.value
-      ),
-      floatingRateIndex: this.swapForm.get("floatingRateIndex")!.value,
-      floatingDayCountFraction: this.swapForm.get("floatingDayCountFraction")!
-        .value,
-      floatingFixingDayOffset: this.swapForm.get("floatingFixingDayOffset")!
-        .value,
-      floatingPaymentFrequency: this.paymentFrequencies.find(
-        (pf) =>
-          pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
-      ),
-    } as SdcXmlRequest;
-
-    this.defaultService.evaluateFromEditor(sdcXmlRequest).subscribe({
+    this.defaultService.evaluateFromEditor(this.mapRequest()).subscribe({
       next: (valueResponse) => {
         console.log(JSON.stringify(valueResponse));
         (
@@ -365,16 +375,14 @@ export class WizardFormComponent implements OnInit {
       this.swapForm.get("fixedPayingParty")!.setErrors({ incorrect: true });
       this.swapForm.get("floatingPayingParty")!.setErrors({ incorrect: true });
       this.swapForm.updateValueAndValidity();
-      
     } else {
       this.swapForm.get("fixedPayingParty")!.setErrors(null);
       this.swapForm.get("floatingPayingParty")!.setErrors(null);
       this.swapForm.updateValueAndValidity();
-      
     }
   }
 
-  openDialog(): void {
+  openTextDialog(): void {
     const dialogRef = this.dialog.open(WizardPopupComponent, {
       data: {
         dialogMessage: this.dialogMessage,
@@ -382,6 +390,16 @@ export class WizardFormComponent implements OnInit {
       },
       width: "50%",
       height: "50%",
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {});
+  }
+
+  openTableDialog(tableData: CashflowPeriod[]): void {
+    const dialogRef = this.dialog.open(WizardTableDialogComponent, {
+      data: tableData,
+      width: "80%",
+      height: "80%",
     });
 
     dialogRef.afterClosed().subscribe((result) => {});

@@ -344,14 +344,39 @@
       </mat-form-field>
     </div>
     <div class="floatingLegDefinitionTitleArea">
-      <label>Floating leg definition</label>
+      <label>Floating leg definition <a (click)="pushFloatingScheduleGenerationRequest()">(show schedule)</a></label>
       <mat-divider></mat-divider>
     </div>
   </div>
   <div class="fixedLegArea">
     <div class="fixedLegDefinitionTitleArea">
-      <label>Fixed leg definition</label>
+      <label>Fixed leg definition <a (click)="pushFixedScheduleGenerationRequest()">(show schedule)</a></label>
       <mat-divider></mat-divider>
+    </div>
+    <div class="fixedLegPayerPartySelectionArea">
+      <mat-form-field>
+        <mat-label>Paying party:</mat-label>
+        <mat-select
+          formControlName="fixedPayingParty"
+          (selectionChange)="onPayerPartySelection()"
+          [placeholder]="
+            selectedParties.length < 2
+              ? 'Select at least two parties in the first step.'
+              : 'Select paying party...'
+          "
+        >
+          <mat-option
+            *ngFor="let counterparty of selectedParties"
+            [value]="counterparty.bicCode"
+          >
+            {{ counterparty.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          >You must specify the paying party and it must differ from the one of
+          the floating leg.</mat-error
+        >
+      </mat-form-field>
     </div>
     <div class="fixedLegDayCountFractionSelectionArea">
       <mat-form-field>
@@ -383,30 +408,23 @@
         <mat-error>You must specify the fixed rate.</mat-error>
       </mat-form-field>
     </div>
-    <div class="fixedLegPayerPartySelectionArea">
+    <div class="fixedPaymentFrequencyArea">
       <mat-form-field>
-        <mat-label>Paying party:</mat-label>
+        <mat-label>Payment frequency:</mat-label>
         <mat-select
-          formControlName="fixedPayingParty"
-          (selectionChange)="onPayerPartySelection()"
-          [placeholder]="
-            selectedParties.length < 2
-              ? 'Select at least two parties in the first step.'
-              : 'Select paying party...'
-          "
+          formControlName="fixedPaymentFrequency"
+          placeholder="Select payment frequency..."
         >
           <mat-option
-            *ngFor="let counterparty of selectedParties"
-            [value]="counterparty.bicCode"
+            *ngFor="let paymentFrequency of paymentFrequencies"
+            [value]="paymentFrequency.fullName"
           >
-            {{ counterparty.fullName }}
+            {{ paymentFrequency.fullName }}
           </mat-option>
         </mat-select>
-        <mat-error
-          >You must specify the paying party and it must differ from the one of
-          the floating leg.</mat-error
-        >
+        <mat-error>You must specify the day count fraction.</mat-error>
       </mat-form-field>
     </div>
   </div>
 </form>
+

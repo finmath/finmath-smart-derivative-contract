@@ -1,8 +1,15 @@
 package net.finmath.smartcontract.product.xml;
 
 import jakarta.xml.bind.*;
+import net.finmath.modelling.descriptor.ScheduleDescriptor;
+import net.finmath.smartcontract.model.CashflowPeriod;
 import net.finmath.smartcontract.model.SdcXmlRequest;
 
+import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.time.Period;
+import net.finmath.time.ScheduleGenerator;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -24,21 +31,31 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
 public final class TradeXmlGenerator {
 
-    static Logger logger = LoggerFactory.getLogger(TradeXmlGenerator.class);
+    public enum LegSelector{
+        FIXED_LEG,
+        FLOATING_LEG
+    }
 
-    private static boolean isFloatingLeg(InterestRateStream swapStream){
+    static Logger logger = LoggerFactory.getLogger(TradeXmlGenerator.class);
+    private final Smartderivativecontract smartDerivativeContract;
+    private final Schema sdcmlSchema;
+    private final Marshaller marshaller;
+
+    private static boolean isFloatingLeg(InterestRateStream swapStream) {
         return swapStream.getCalculationPeriodAmount().getCalculation().getRateCalculation().getDeclaredType().equals(FloatingRateCalculation.class) && Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getFixedRateSchedule());
     }
 
-    private static boolean isFixedLeg(InterestRateStream swapStream){
+    private static boolean isFixedLeg(InterestRateStream swapStream) {
         return !Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getFixedRateSchedule()) && Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getRateCalculation());
     }
+
     private static void setSdcSettlementHeader(
             final SdcXmlRequest tradeDescriptor,
             final Smartderivativecontract sdc) {
@@ -122,13 +139,12 @@ public final class TradeXmlGenerator {
         smartDerivativeContract.setValuation(valuationHeader);
     }
 
-    public String marshallTradeDescriptorOntoXml(final SdcXmlRequest sdcXmlRequest) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema;
+    public TradeXmlGenerator(final SdcXmlRequest sdcXmlRequest) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
         try {
-            schema = factory.newSchema((new ClassPathResource("schemas"+File.separator+"sdc-schemas"+File.separator+"sdcml-contract.xsd")).getURL());
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            sdcmlSchema = schemaFactory.newSchema((new ClassPathResource("schemas" + File.separator + "sdc-schemas" + File.separator + "sdcml-contract.xsd")).getURL());
         } catch (IOException | SAXException e) {
-            logger.error("Failed to recover XSD schema. The file '"+"schemas"+File.separator+"sdc-schemas"+File.separator+"sdcml-contract.xsd"+"' is missing, unreachable or invalid.");
+            logger.error("Failed to recover XSD schema. The file '" + "schemas" + File.separator + "sdc-schemas" + File.separator + "sdcml-contract.xsd" + "' is missing, unreachable or invalid.");
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
             throw e;
         }
@@ -140,7 +156,6 @@ public final class TradeXmlGenerator {
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
             throw e;
         }
-        Marshaller marshaller;
         try {
             marshaller = jaxbContext.createMarshaller();
         } catch (JAXBException e) {
@@ -148,7 +163,7 @@ public final class TradeXmlGenerator {
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
             throw e;
         }
-        marshaller.setSchema(schema);
+        marshaller.setSchema(sdcmlSchema);
         Unmarshaller unmarshaller;
         try {
             unmarshaller = jaxbContext.createUnmarshaller();
@@ -157,7 +172,7 @@ public final class TradeXmlGenerator {
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
             throw e;
         }
-        unmarshaller.setSchema(schema);
+        unmarshaller.setSchema(sdcmlSchema);
         try {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         } catch (PropertyException e) {
@@ -169,12 +184,11 @@ public final class TradeXmlGenerator {
         logger.info("Accepted incoming request with body:");
         logger.info(sdcXmlRequest.toString());
         // create new SDCmL file as object
-        Smartderivativecontract smartDerivativeContract =
-                new Smartderivativecontract();
-        ClassPathResource templateXmlResource = new ClassPathResource("references/template2.xml");
-        Smartderivativecontract contract;
+        smartDerivativeContract = new Smartderivativecontract();
+        Smartderivativecontract templateContract;
         try {
-            contract = (Smartderivativecontract) unmarshaller.unmarshal(templateXmlResource.getInputStream());
+            ClassPathResource templateXmlResource = new ClassPathResource("references/template2.xml");
+            templateContract = (Smartderivativecontract) unmarshaller.unmarshal(templateXmlResource.getInputStream());
         } catch (JAXBException e) {
             logger.error("Failed to unmarshall the XML template file.");
             logger.error("I will now rethrow the exception and fail. Sorry! :(");
@@ -192,7 +206,7 @@ public final class TradeXmlGenerator {
 
         // set the FPmL body... FPmL is tough!
         // clone the template
-        smartDerivativeContract.setUnderlyings(contract.getUnderlyings());
+        smartDerivativeContract.setUnderlyings(templateContract.getUnderlyings());
 
         Trade trade = smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(0);
         XMLGregorianCalendar formattedTradeDate;
@@ -218,15 +232,15 @@ public final class TradeXmlGenerator {
         Swap swap = ((Swap) smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(
                 0).getProduct().getValue());
 
-        Optional<InterestRateStream> fixedLegOptional = swap.swapStream.stream().filter(swapStream -> isFixedLeg(swapStream)).findFirst();
-        if(fixedLegOptional.isEmpty())
-            throw new IllegalStateException("The template has issues: failed to find valid candidate for fixed leg swapStream definition. I will fail now, sorry! :(");
-        InterestRateStream fixedLeg = fixedLegOptional.get();
+        /*Optional<InterestRateStream> fixedLegOptional = swap.swapStream.stream().filter(TradeXmlGenerator::isFixedLeg).findFirst();
+        if (fixedLegOptional.isEmpty())
+            throw new IllegalStateException("The template has issues: failed to find valid candidate for fixed leg swapStream definition. I will fail now, sorry! :(");*/
+        InterestRateStream fixedLeg =  swap.swapStream.get(1);
 
-        Optional<InterestRateStream> floatingLegOptional = swap.swapStream.stream().filter(swapStream -> isFloatingLeg(swapStream)).findFirst();
-        if(floatingLegOptional.isEmpty())
-            throw new IllegalStateException("The template has issues: failed to find valid candidate for floating leg swapStream definition. I will fail now, sorry! :(");
-        InterestRateStream floatingLeg = floatingLegOptional.get();
+        /*Optional<InterestRateStream> floatingLegOptional = swap.swapStream.stream().filter(TradeXmlGenerator::isFloatingLeg).findFirst();
+        if (floatingLegOptional.isEmpty())
+            throw new IllegalStateException("The template has issues: failed to find valid candidate for floating leg swapStream definition. I will fail now, sorry! :(");*/
+        InterestRateStream floatingLeg =  swap.swapStream.get(0);
 
         // for each swapstream... (index is the order of appearance in the template)
         XMLGregorianCalendar formattedEffectiveDate;
@@ -299,24 +313,33 @@ public final class TradeXmlGenerator {
 
 
 
-        fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
-                BigDecimal.valueOf(sdcXmlRequest.getFixedRate()).setScale(32,RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(5,RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
         floatingLeg.resetDates.fixingDates.periodMultiplier =
                 BigInteger.valueOf(sdcXmlRequest.getFloatingFixingDayOffset().longValue());
         floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
                 sdcXmlRequest.getFloatingDayCountFraction();
-        fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
-                sdcXmlRequest.getFixedDayCountFraction();
+        floatingLeg.paymentDates.paymentFrequency.periodMultiplier =
+                BigInteger.valueOf(sdcXmlRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
+        floatingLeg.paymentDates.paymentFrequency.setPeriod(sdcXmlRequest.getFloatingPaymentFrequency().getPeriod());
+        logger.info("Set floating leg period as "+fixedLeg.paymentDates.paymentFrequency.period);
         ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount
                 .calculation.getRateCalculation()
                 .getValue()).floatingRateIndex.value =
                 sdcXmlRequest.getFloatingRateIndex();
-        floatingLeg.paymentDates.paymentFrequency.periodMultiplier =
-                BigInteger.valueOf(sdcXmlRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-        floatingLeg.paymentDates.paymentFrequency.period = sdcXmlRequest.getFloatingPaymentFrequency().getPeriod();
+        fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value =
+                sdcXmlRequest.getFixedDayCountFraction();
+        fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
+                BigDecimal.valueOf(sdcXmlRequest.getFixedRate()).setScale(32, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(5, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
+        fixedLeg.paymentDates.paymentFrequency.periodMultiplier =
+                BigInteger.valueOf(sdcXmlRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
+        fixedLeg.paymentDates.paymentFrequency.setPeriod(sdcXmlRequest.getFixedPaymentFrequency().getPeriod());
+        logger.info("Set fixed leg period as "+fixedLeg.paymentDates.paymentFrequency.period);
 
-        smartDerivativeContract.settlement.marketdata.marketdataitems = contract.getSettlement().getMarketdata().getMarketdataitems();
+        smartDerivativeContract.settlement.marketdata.marketdataitems = templateContract.getSettlement().getMarketdata().getMarketdataitems();
         smartDerivativeContract.receiverPartyID = "party1";
+
+    }
+
+    public String getContractAsXmlString() throws IOException, SAXException, JAXBException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             marshaller.marshal(smartDerivativeContract, outputStream);
@@ -327,7 +350,7 @@ public final class TradeXmlGenerator {
         }
         // marshall xml out
         try {
-            Validator validator = schema.newValidator();
+            Validator validator = sdcmlSchema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(outputStream.toByteArray())));
             logger.info("Validation successful!");
             // return outputStream.toString();
@@ -335,18 +358,116 @@ public final class TradeXmlGenerator {
             // LOOK AT THIS UGLINESS!!! NOT NICE!!!!!!!
             logger.info("XML was correclty generated, will now do some ugliness.");
             return outputStream.toString()
-                    .replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">","<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
-                    .replaceAll("fpml:","");
+                    .replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
+                    .replaceAll("fpml:", "");
 
         } catch (SAXException e) {
-            logger.error("Failed to validate the generated XML or some unrecoverable error occured while validating.");
-            logger.error("Details: "+e.getMessage());
+            logger.error("Failed to validate the generated XML or some unrecoverable error occurred while validating.");
+            logger.error("Details: " + e.getMessage());
             throw e;
         } catch (IOException e) {
             logger.error("Failed to marshall out the generated XML file.");
-            logger.error("Details: "+e.getMessage());
+            logger.error("Details: " + e.getMessage());
             throw e;
         }
+
+    }
+
+    public Smartderivativecontract getContract() {
+        return this.smartDerivativeContract;
+
+    }
+
+    public List<CashflowPeriod> getSchedule(LegSelector legSelector) {
+        Swap swap = ((Swap) smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(
+                0).getProduct().getValue());
+        InterestRateStream swapLeg;
+        switch(legSelector){
+            case FIXED_LEG -> {swapLeg = swap.swapStream.stream().filter(TradeXmlGenerator::isFixedLeg).findFirst().get(); logger.info("Fixed leg detected.");}
+            case FLOATING_LEG -> {swapLeg = swap.swapStream.stream().filter(TradeXmlGenerator::isFloatingLeg).findFirst().get(); logger.info("Floating leg detected.");}
+            default -> throw new IllegalArgumentException("Failed to detect leg type");
+        }
+        final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
+        logger.info("Start date detected: " + startDate.toString());
+        final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
+        logger.info("Maturity date detected: " + maturityDate.toString());
+        int fixingOffsetDays=0;
+        try {
+            fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
+        }catch (NullPointerException npe){
+            logger.warn("No fixing offset was detected, 0 implied.");
+
+        }
+        int paymentOffsetDays=0;
+        try {
+            paymentOffsetDays = swapLeg.getPaymentDates().getPaymentDaysOffset().getPeriodMultiplier().intValue();
+        }catch (NullPointerException npe){
+            logger.warn("No payment offset was detected, 0 implied.");
+
+        }
+
+
+        final BusinessdayCalendar.DateRollConvention dateRollConvention;
+        switch (swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention()) {
+            case PRECEDING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.PRECEDING;
+            case MODPRECEDING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_PRECEDING;
+            case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
+            case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
+            case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
+            default ->
+                    throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getResetDates().getResetDatesAdjustments().getBusinessDayConvention());
+        }
+
+        logger.info("Date roll convention detected: " + dateRollConvention);
+
+        final ScheduleGenerator.DaycountConvention daycountConvention = ScheduleGenerator.DaycountConvention.getEnum(swapLeg.getCalculationPeriodAmount().getCalculation().getDayCountFraction().getValue());
+        ScheduleGenerator.Frequency frequency = null;
+        final int multiplier = swapLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().getPeriodMultiplier().intValue();
+
+        logger.info("Reading period symbol: " + swapLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().getPeriod());
+        switch (swapLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().getPeriod()) {
+            case "D" -> {
+                if (multiplier == 1) {
+                    frequency = ScheduleGenerator.Frequency.DAILY;
+                }
+            }
+            case "Y" -> {
+                if (multiplier == 1) {
+                    frequency = ScheduleGenerator.Frequency.ANNUAL;
+                }
+            }
+            case "M" -> frequency = switch (multiplier) {
+                case 1 -> ScheduleGenerator.Frequency.MONTHLY;
+                case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
+                case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
+                default ->
+                        throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().getPeriod() + ".");
+            };
+            default ->
+                    throw new IllegalArgumentException("Unknown period " + swapLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().getPeriod() + ".");
+        }
+
+        //build schedule
+        logger.info("Payment frequency detected: " + frequency.toString());
+        final ScheduleDescriptor schedule = new ScheduleDescriptor(startDate, maturityDate, frequency, daycountConvention, ScheduleGenerator.ShortPeriodConvention.LAST,
+                dateRollConvention, new BusinessdayCalendarExcludingTARGETHolidays(), fixingOffsetDays, paymentOffsetDays);
+
+        List<Period> schedulePeriods = schedule.getPeriods();
+        List<CashflowPeriod> cashflowPeriods = new ArrayList<>();
+
+        for (Period schedulePeriod : schedulePeriods) {
+            cashflowPeriods.add(new CashflowPeriod()
+                    .cashflow(new ValueResult().currency("EUR")
+                            .valuationDate(new Date().toString())
+                            .value(BigDecimal.valueOf(0))) // TODO: just some placeholders, these will contain the actual amounts
+                    .fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC))
+                    .paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC))
+                    .periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC))
+                    .periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)));
+        }
+
+        return cashflowPeriods;
+
 
     }
 

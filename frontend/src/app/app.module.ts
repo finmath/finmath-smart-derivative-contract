@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from "@angular/common";
 import { MAT_DATE_LOCALE } from "@angular/material/core";
 import { ApiModule } from "./openapi/api.module"
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ApiModule } from "./openapi/api.module"
     MaterialImportsModule,
     CommonModule,
     ApiModule,
+    MatTableModule,
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'it-IT'},

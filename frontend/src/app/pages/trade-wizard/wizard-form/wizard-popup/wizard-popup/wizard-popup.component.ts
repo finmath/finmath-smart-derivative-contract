@@ -1,6 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { DialogData } from "../../wizard-form.component";
+import { TextDialogData } from "../../wizard-form.component";
 
 @Component({
   selector: "app-wizard-popup",
@@ -10,7 +10,7 @@ import { DialogData } from "../../wizard-form.component";
 export class WizardPopupComponent {
   constructor(
     public dialogRef: MatDialogRef<WizardPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
+    @Inject(MAT_DIALOG_DATA) public data: TextDialogData
   ) {}
 
   onNoClick(): void {

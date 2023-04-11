@@ -2,6 +2,7 @@ package net.finmath.smartcontract.service.controllers;
 
 import jakarta.xml.bind.JAXBException;
 import net.finmath.smartcontract.api.EditorApi;
+import net.finmath.smartcontract.model.CashflowPeriod;
 import net.finmath.smartcontract.model.SdcXmlRequest;
 import net.finmath.smartcontract.model.SdcXmlResponse;
 import net.finmath.smartcontract.model.ValueResult;
@@ -18,11 +19,13 @@ import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.SAXException;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -56,7 +59,7 @@ public class EditorController implements EditorApi {
         logger.info("...done. Parsing request...");
         String xmlBody;
         try {
-            xmlBody = (new TradeXmlGenerator()).marshallTradeDescriptorOntoXml(sdcXmlRequest);
+            xmlBody = new TradeXmlGenerator(sdcXmlRequest).getContractAsXmlString();
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
@@ -72,7 +75,7 @@ public class EditorController implements EditorApi {
     public ResponseEntity<ValueResult> evaluateFromEditor(SdcXmlRequest sdcXmlRequest) {
         String xmlBody;
         try {
-            xmlBody = (new TradeXmlGenerator()).marshallTradeDescriptorOntoXml(sdcXmlRequest);
+            xmlBody = new TradeXmlGenerator(sdcXmlRequest).getContractAsXmlString();
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                     ErrorDetails.JAXB_ERROR_DETAIL);
@@ -102,5 +105,32 @@ public class EditorController implements EditorApi {
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
         return ResponseEntity.ok(valueResult);
+    }
+
+
+    @Override
+    public ResponseEntity<List<CashflowPeriod>> getFixedSchedule(SdcXmlRequest sdcXmlRequest) {
+        try {
+            return ResponseEntity.ok(new TradeXmlGenerator(sdcXmlRequest).getSchedule(TradeXmlGenerator.LegSelector.FIXED_LEG));
+        } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
+            ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
+            pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
+            pd.setTitle(ErrorDetails.JAXB_ERROR_DETAIL);
+            throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<List<CashflowPeriod>> getFloatingSchedule(SdcXmlRequest sdcXmlRequest) {
+        try {
+            return ResponseEntity.ok(new TradeXmlGenerator(sdcXmlRequest).getSchedule(TradeXmlGenerator.LegSelector.FLOATING_LEG));
+        } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
+            ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
+            pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
+            pd.setTitle(ErrorDetails.JAXB_ERROR_DETAIL);
+            throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
+        }
+
     }
 }
