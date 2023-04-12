@@ -10,6 +10,15 @@ export interface Currency{
 
 export const currencies: Currency[] = [
   {
+    "symbol": "$",
+    "name": "US Dollar",
+    "symbol_native": "$",
+    "decimal_digits": 2,
+    "rounding": 0,
+    "code": "USD",
+    "name_plural": "US dollars"
+  },
+  {
     "symbol": "CA$",
     "name": "Canadian Dollar",
     "symbol_native": "$",

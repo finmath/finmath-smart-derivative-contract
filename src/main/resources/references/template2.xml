@@ -606,7 +606,7 @@
                                 <calculationPeriodFrequency>
                                     <periodMultiplier>1</periodMultiplier>
                                     <period>Y</period>
-                                    <rollConvention>14</rollConvention>
+                                    <rollConvention>EOM</rollConvention>
                                 </calculationPeriodFrequency>
                             </calculationPeriodDates>
                             <paymentDates>

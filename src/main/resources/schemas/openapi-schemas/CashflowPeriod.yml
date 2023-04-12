@@ -1,0 +1,22 @@
+type: object
+required:
+  - periodStart
+  - periodEnd
+  - fixingDate
+  - paymentDate
+  - cashflow
+properties:
+  periodStart:
+    type: string
+    format: date-time
+  periodEnd:
+    type: string
+    format: date-time
+  fixingDate:
+    type: string
+    format: date-time
+  paymentDate:
+    type: string
+    format: date-time
+  cashflow:
+    $ref: "ValueResult.yml"

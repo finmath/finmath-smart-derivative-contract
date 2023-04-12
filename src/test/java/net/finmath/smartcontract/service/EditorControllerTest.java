@@ -6,7 +6,6 @@ import net.finmath.smartcontract.model.Counterparty;
 import net.finmath.smartcontract.model.PaymentFrequency;
 import net.finmath.smartcontract.model.SdcXmlRequest;
 import net.finmath.smartcontract.model.ValueResult;
-import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.EditorController;
@@ -67,6 +66,10 @@ public class EditorControllerTest {
                 .period("M")
                 .periodMultiplier(6)
                 .fullName("Semiannual");
+        final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency()
+                .period("Y")
+                .periodMultiplier(1)
+                .fullName("Annual");
         final Counterparty secondCounterparty = new Counterparty()
                 .baseUrl("bbb")
                 .bicCode("EFDGXXXX")
@@ -84,6 +87,7 @@ public class EditorControllerTest {
                 .floatingPayingParty(firstCounterparty)
                 .fixedRate(3.95)
                 .fixedDayCountFraction("30E/360")
+                .fixedPaymentFrequency(fixedPaymentFrequency)
                 .floatingRateIndex("EUR-LIBOR-BBA")
                 .floatingDayCountFraction("ACT/360")
                 .floatingFixingDayOffset(-2)

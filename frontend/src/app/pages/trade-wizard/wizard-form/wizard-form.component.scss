@@ -181,14 +181,15 @@ form {
 .fixedLegArea {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
     "fixedLegDefinitionTitleArea"
     "fixedLegPayerPartySelectionArea"
     "fixedLegDayCountFractionSelectionArea"
-    "fixedRateInputArea";
+    "fixedRateInputArea"
+    "fixedPaymentFrequencyArea";
   grid-area: fixedLegArea;
 }
 
@@ -206,6 +207,10 @@ form {
 
 .fixedLegPayerPartySelectionArea {
   grid-area: fixedLegPayerPartySelectionArea;
+}
+
+.fixedPaymentFrequencyArea {
+  grid-area: fixedPaymentFrequencyArea;
 }
 
 .footer {

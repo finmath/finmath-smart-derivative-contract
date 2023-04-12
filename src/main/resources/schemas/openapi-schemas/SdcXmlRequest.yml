@@ -12,6 +12,7 @@ required:
   - fixedPayingParty
   - fixedRate
   - fixedDayCountFraction
+  - fixedPaymentFrequency
   - floatingPayingParty
   - floatingRateIndex
   - floatingDayCountFraction
@@ -52,6 +53,8 @@ properties:
     format: double
   fixedDayCountFraction:
     type: string
+  fixedPaymentFrequency:
+    $ref: "PaymentFrequency.yml"
   floatingPayingParty:
     $ref: "Counterparty.yml"
   floatingRateIndex:

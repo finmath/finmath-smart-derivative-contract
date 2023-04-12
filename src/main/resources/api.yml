@@ -166,7 +166,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /editor/get-fixed-schedule:
+    post:
+      summary: Request payment schedule for the fixed leg defined in the editor.
+      operationId: get-fixed-schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdcXmlRequest"
+      responses:
+        '200':
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CashflowPeriod"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
+  /editor/get-floating-schedule:
+    post:
+      summary: Request payment schedule for the floating leg defined in the editor.
+      operationId: get-floating-schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdcXmlRequest"
+      responses:
+        '200':
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CashflowPeriod"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -184,3 +232,5 @@ components:
       $ref: "schemas/openapi-schemas/MarginRequest.yml"
     SdcXmlRequest:
       $ref: "schemas/openapi-schemas/SdcXmlRequest.yml"
+    CashflowPeriod:
+      $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
