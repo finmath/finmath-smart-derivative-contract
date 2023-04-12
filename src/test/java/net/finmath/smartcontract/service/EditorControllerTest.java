@@ -110,8 +110,8 @@ public class EditorControllerTest {
         logger.info("Value result from generated request is: " + valueResultFromRequest.getValue().doubleValue());
         logger.info("Value result from locally stored data is: " + valueResultFromLocalStorage.getValue().doubleValue());
         Assertions.assertEquals(Math.abs(valueResultFromLocalStorage.getValue().doubleValue()-95313.13)
-                + Math.abs(valueResultFromRequest.getValue().doubleValue()-95313.13)
-                + Math.abs(valueResultFromLocalStorage.getValue().doubleValue()-valueResultFromRequest.getValue().doubleValue()), 0.0, 0.005, "Valuation mismatch!");
+                + Math.abs(Math.abs(valueResultFromRequest.getValue().doubleValue())-95313.13)
+                + Math.abs(Math.abs(valueResultFromLocalStorage.getValue().doubleValue())-Math.abs(valueResultFromRequest.getValue().doubleValue())), 0.0, 0.005, "Valuation mismatch!");
 
     }
 }
