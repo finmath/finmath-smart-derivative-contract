@@ -250,7 +250,7 @@ public final class TradeXmlGenerator { //TODO: this code needs some cleaning up
         logger.info("Reading back fixed day count fraction " + fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
         fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue =
                 BigDecimal.valueOf(sdcXmlRequest.getFixedRate()).setScale(32, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(5, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
-        logger.info("Reading back notional amount: " + fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
+        logger.info("Reading back fixed rate: " + fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
         fixedLeg.paymentDates.paymentFrequency.periodMultiplier =
                 BigInteger.valueOf(sdcXmlRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
         logger.info("Reading back fixed period multiplier: " + fixedLeg.paymentDates.paymentFrequency.periodMultiplier);
@@ -559,7 +559,9 @@ public final class TradeXmlGenerator { //TODO: this code needs some cleaning up
                     .fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC))
                     .paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC))
                     .periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC))
-                    .periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)));
+                    .periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC))
+                    .rate(rate));
+
             i++;
         }
 

@@ -524,7 +524,7 @@
                                 <calculationPeriodFrequency>
                                     <periodMultiplier>6</periodMultiplier>
                                     <period>M</period>
-                                    <rollConvention>14</rollConvention>
+                                    <rollConvention>EOM</rollConvention>
                                 </calculationPeriodFrequency>
                             </calculationPeriodDates>
                             <paymentDates>
@@ -548,7 +548,7 @@
                                     <dayType>Business</dayType>
                                     <businessDayConvention>NONE</businessDayConvention>
                                     <businessCenters>
-                                        <businessCenter>GBLO</businessCenter>
+                                        <businessCenter>DEFR</businessCenter>
                                     </businessCenters>
                                     <dateRelativeTo href="resetDates"/>
                                 </fixingDates>
@@ -571,7 +571,7 @@
                                         </notionalStepSchedule>
                                     </notionalSchedule>
                                     <floatingRateCalculation>
-                                        <floatingRateIndex>EUR-LIBOR-BBA</floatingRateIndex>
+                                        <floatingRateIndex>EUR-EURIBOR-Reuters</floatingRateIndex>
                                         <indexTenor>
                                             <periodMultiplier>6</periodMultiplier>
                                             <period>M</period>

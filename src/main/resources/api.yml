@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: "3.0.3"
 
 info:
   version: 1.0.0
@@ -209,6 +209,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CashflowPeriod"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /editor/get-par-rate:
+    post:
+      summary: Request the par rate for the swap defined in the editor.
+      operationId: get-par-rate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SdcXmlRequest"
+      responses:
+        '200':
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: number
+                format: double
         default:
           description: unexpected error
           content:

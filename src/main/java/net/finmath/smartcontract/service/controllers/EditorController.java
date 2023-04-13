@@ -1,6 +1,7 @@
 package net.finmath.smartcontract.service.controllers;
 
 import jakarta.xml.bind.JAXBException;
+import net.finmath.rootfinder.BisectionSearch;
 import net.finmath.smartcontract.api.EditorApi;
 import net.finmath.smartcontract.model.CashflowPeriod;
 import net.finmath.smartcontract.model.SdcXmlRequest;
@@ -8,6 +9,7 @@ import net.finmath.smartcontract.model.SdcXmlResponse;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.product.xml.TradeXmlGenerator;
 import net.finmath.smartcontract.valuation.MarginCalculator;
+import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.DoubleUnaryOperator;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -126,6 +130,51 @@ public class EditorController implements EditorApi {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
             pd.setTitle(ErrorDetails.JAXB_ERROR_DETAIL);
+            throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
+        }
+
+    }
+
+    @Override
+    public ResponseEntity<Double> getParRate(SdcXmlRequest sdcXmlRequest) {
+        TriFunction<DoubleUnaryOperator, Double, Double, Double> getRoot = (valueOperator, xMin, xMax) -> {
+
+            BisectionSearch rootFinder = new BisectionSearch(xMin, xMax);
+            while (rootFinder.getAccuracy() > 1E-12 && !rootFinder.isDone()) {
+                final double x = rootFinder.getNextPoint();
+                final double y = valueOperator.applyAsDouble(x);
+                rootFinder.setValue(y);
+            }
+            return rootFinder.getBestPoint();
+        };
+
+        String marketData;
+        try {
+            marketData = (new ClassPathResource("net.finmath.smartcontract.client" + File.separator + "md_testset2.json")).getContentAsString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.MARKET_DATA_ERROR_DETAIL);
+            pd.setType(URI.create(hostname + ErrorTypeURI.MARKET_DATA_ERROR_URI));
+            pd.setTitle(ErrorDetails.MARKET_DATA_ERROR_DETAIL);
+            throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
+        }
+
+        try {
+
+            DoubleUnaryOperator swapValue = (swapRate) -> {
+                sdcXmlRequest.fixedRate(swapRate);
+                try {
+                    return (new MarginCalculator()).getValue(marketData, new TradeXmlGenerator(sdcXmlRequest).getContractAsXmlString()).getValue().doubleValue();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            };
+
+            return ResponseEntity.ok(getRoot.apply(swapValue,-100.0,100.0));
+
+        } catch (Exception e) {
+            ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Valuation error.");
+            pd.setType(URI.create(hostname + ErrorTypeURI.VALUATION_ERROR_URI));
+            pd.setTitle(ErrorDetails.VALUATION_ERROR_DETAIL);
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
 

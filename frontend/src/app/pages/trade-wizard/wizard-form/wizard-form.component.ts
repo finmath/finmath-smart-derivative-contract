@@ -145,7 +145,8 @@ export class WizardFormComponent implements OnInit {
           (
             document
               .getElementsByClassName("currentNpvLabelArea")
-              .item(0) as HTMLDivElement
+              .item(0)!
+              .childNodes.item(0) as HTMLAnchorElement
           ).innerHTML = "Current NPV: loading...";
           this.pushPricingRequest();
         }
@@ -195,7 +196,6 @@ export class WizardFormComponent implements OnInit {
           pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
       ),
     } as SdcXmlRequest;
-    
   }
 
   pushXMLGenerationRequest() {
@@ -227,6 +227,38 @@ export class WizardFormComponent implements OnInit {
         this.dialogMessage = JSON.stringify(cashflowPeriods);
         this.dialogWindowTitle = "Your SDCmL document:";
         this.openTableDialog(cashflowPeriods);
+      },
+      error: (error) => {
+        this._snackBar.open(
+          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
+    });
+  }
+
+  pushParRateRequest() {
+    (
+      document
+        .getElementsByClassName("currentNpvLabelArea")
+        .item(0)!
+        .childNodes.item(0) as HTMLAnchorElement
+    ).innerHTML = "Current NPV: calculating par rate...";
+    this.defaultService.getParRate(this.mapRequest()).subscribe({
+      next: (parRate) => {
+        this.swapForm.get("fixedRate")!.setValue(parRate);
+        this.swapForm.get("fixedRate")!.updateValueAndValidity();
+        this._snackBar.open("Par rate set!", "OK", {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          duration: 3500,
+        });
       },
       error: (error) => {
         this._snackBar.open(
@@ -279,7 +311,8 @@ export class WizardFormComponent implements OnInit {
         (
           document
             .getElementsByClassName("currentNpvLabelArea")
-            .item(0) as HTMLDivElement
+            .item(0)!
+            .childNodes.item(0) as HTMLAnchorElement
         ).innerHTML =
           "Current NPV: " + valueResponse.value + this.currencyPrefix;
       },
@@ -287,7 +320,8 @@ export class WizardFormComponent implements OnInit {
         (
           document
             .getElementsByClassName("currentNpvLabelArea")
-            .item(0) as HTMLDivElement
+            .item(0)!
+            .childNodes.item(0) as HTMLAnchorElement
         ).innerHTML = "Current NPV: last valuation failed!";
         this._snackBar.open(
           "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",

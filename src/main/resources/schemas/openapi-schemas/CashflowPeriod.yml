@@ -5,6 +5,7 @@ required:
   - fixingDate
   - paymentDate
   - cashflow
+  - rate
 properties:
   periodStart:
     type: string
@@ -20,3 +21,6 @@ properties:
     format: date-time
   cashflow:
     $ref: "ValueResult.yml"
+  rate:
+    type: number
+    format: double

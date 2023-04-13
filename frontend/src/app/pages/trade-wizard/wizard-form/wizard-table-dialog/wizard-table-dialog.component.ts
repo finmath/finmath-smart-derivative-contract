@@ -13,7 +13,8 @@ export class WizardTableDialogComponent {
     "paymentDate",
     "periodStart",
     "periodEnd",
-    "cashflow"
+    "cashflow",
+    "rate"
   ];
 
   constructor(

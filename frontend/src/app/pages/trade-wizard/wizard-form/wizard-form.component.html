@@ -40,7 +40,14 @@
         >
       </button>
     </div>
-    <div class="currentNpvLabelArea">Current NPV: not yet available.</div>
+    <div class="currentNpvLabelArea">
+      <a
+        [class.disabled]="!isAllControlsValid()"
+        matTooltip="Double click to set fixed rate to par."
+        (dblclick)="isAllControlsValid() && pushParRateRequest()"
+        >Current NPV: not yet available.</a
+      >
+    </div>
   </div>
   <div class="basicDefinitionArea">
     <div class="basicDefinitionTitleArea">
@@ -344,13 +351,31 @@
       </mat-form-field>
     </div>
     <div class="floatingLegDefinitionTitleArea">
-      <label>Floating leg definition <a class="dummyclass" (click)="pushFloatingScheduleGenerationRequest()">(show schedule)</a></label>
+      <label
+        >Floating leg definition
+        <a
+          class="dummyclass"
+          [class.disabled]="!isAllControlsValid()"
+          (click)="
+            isAllControlsValid() && pushFloatingScheduleGenerationRequest()
+          "
+          >(show schedule)</a
+        ></label
+      >
       <mat-divider></mat-divider>
     </div>
   </div>
   <div class="fixedLegArea">
     <div class="fixedLegDefinitionTitleArea">
-      <label>Fixed leg definition <a class="dummyclass" (click)="pushFixedScheduleGenerationRequest()">(show schedule)</a></label>
+      <label
+        >Fixed leg definition
+        <a
+          class="dummyclass"
+          [class.disabled]="!isAllControlsValid()"
+          (click)="isAllControlsValid() && pushFixedScheduleGenerationRequest()"
+          >(show schedule)</a
+        ></label
+      >
       <mat-divider></mat-divider>
     </div>
     <div class="fixedLegPayerPartySelectionArea">
@@ -427,4 +452,3 @@
     </div>
   </div>
 </form>
-
