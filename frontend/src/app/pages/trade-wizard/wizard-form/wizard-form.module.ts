@@ -14,6 +14,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
 import { WizardPopupComponent } from "./wizard-popup/wizard-popup/wizard-popup.component";
 import { ExcludeCounterpartyFilterPipe } from "../../../shared/exclude-filter.pipe";
 import { WizardTableDialogComponent } from "./wizard-table-dialog/wizard-table-dialog.component";
+import { WizardSymbolsDialogComponent } from "./wizard-symbols-dialog/wizard-symbols-dialog.component";
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { WizardTableDialogComponent } from "./wizard-table-dialog/wizard-table-d
     WizardPopupComponent,
     ExcludeCounterpartyFilterPipe,
     WizardTableDialogComponent,
+    WizardSymbolsDialogComponent,
   ],
   imports: [
     CommonModule,

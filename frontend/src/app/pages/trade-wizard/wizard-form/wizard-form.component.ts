@@ -27,7 +27,8 @@ import { HttpHeaders } from "@angular/common/http";
 import { debounceTime } from "rxjs";
 import * as moment from "moment";
 import { WizardTableDialogComponent } from "./wizard-table-dialog/wizard-table-dialog.component";
-import { CashflowPeriod } from "src/app/openapi";
+import { CashflowPeriod, JsonMarketDataItem } from "src/app/openapi";
+import { WizardSymbolsDialogComponent } from "./wizard-symbols-dialog/wizard-symbols-dialog.component";
 
 export interface TextDialogData {
   dialogMessage: string;
@@ -65,6 +66,7 @@ export class WizardFormComponent implements OnInit {
   effectiveDateQuickCommand: FormControl;
   quickCommandRegExp: RegExp =
     /(?<now>^\!$)|(?<notJustNow>^(?<baseDate>[\!tem])?(?<addRemove>[\+\-])(?<dateMsd>\d+[ymd])(?<date2sd>\d+[md])?(?<dateLsd>\d+d)?$)/gm;
+  selectedSymbols: JsonMarketDataItem[] | undefined;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -140,7 +142,6 @@ export class WizardFormComponent implements OnInit {
     this.swapForm.valueChanges
       .pipe(debounceTime(500))
       .subscribe((selectedValue) => {
-        console.log("hi mom");
         if (this.isAllControlsValid()) {
           (
             document
@@ -195,6 +196,7 @@ export class WizardFormComponent implements OnInit {
         (pf) =>
           pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
       ),
+      valuationSymbols: this.selectedSymbols,
     } as SdcXmlRequest;
   }
 
@@ -344,7 +346,11 @@ export class WizardFormComponent implements OnInit {
   }
 
   isAllControlsValid() {
-    return this.swapForm.valid;
+    return (
+      this.swapForm.valid &&
+      this.selectedSymbols &&
+      this.selectedSymbols?.length > 0
+    );
   }
 
   onCurrencyChange() {
@@ -422,8 +428,8 @@ export class WizardFormComponent implements OnInit {
         dialogMessage: this.dialogMessage,
         dialogWindowTitle: this.dialogWindowTitle,
       },
-      width: "50%",
-      height: "50%",
+      width: "80%",
+      height: "80%",
     });
 
     dialogRef.afterClosed().subscribe((result) => {});
@@ -437,6 +443,29 @@ export class WizardFormComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {});
+  }
+
+  openSymbolSelection() {
+    const dialogRef = this.dialog.open(WizardSymbolsDialogComponent, {
+      data: this.selectedSymbols,
+      width: "80%",
+      height: "80%",
+    });
+
+    dialogRef
+      .afterClosed()
+      .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
+        this.selectedSymbols = selectedSymbols;
+        if (this.isAllControlsValid()) {
+          (
+            document
+              .getElementsByClassName("currentNpvLabelArea")
+              .item(0)!
+              .childNodes.item(0) as HTMLAnchorElement
+          ).innerHTML = "Current NPV: loading...";
+          this.pushPricingRequest();
+        }
+      });
   }
 
   onQuickCommandChange(

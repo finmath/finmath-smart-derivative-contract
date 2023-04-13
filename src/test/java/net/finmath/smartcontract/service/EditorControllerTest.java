@@ -2,10 +2,7 @@ package net.finmath.smartcontract.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.finmath.smartcontract.model.Counterparty;
-import net.finmath.smartcontract.model.PaymentFrequency;
-import net.finmath.smartcontract.model.SdcXmlRequest;
-import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.EditorController;
@@ -36,7 +33,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-
 /**
  * Tests ValuationController / Valuation API Endpoint.
  */
@@ -57,7 +53,8 @@ public class EditorControllerTest {
     void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
 
         final String marketData = new ClassPathResource("net.finmath.smartcontract.client"+File.separator+"md_testset2.json").getContentAsString(StandardCharsets.UTF_8);
-        String product =  new ClassPathResource("references"+File.separator+"template2.xml").getContentAsString(StandardCharsets.UTF_8);
+        final String product =  new ClassPathResource("references"+File.separator+"template2.xml").getContentAsString(StandardCharsets.UTF_8);
+        final String fullSymbolListFromTemplate =  new ClassPathResource("references"+File.separator+"template2_symbolslist.json").getContentAsString(StandardCharsets.UTF_8);
         final Counterparty firstCounterparty = new Counterparty()
                 .baseUrl("aaa")
                 .bicCode("ABCDXXXX")
@@ -92,7 +89,8 @@ public class EditorControllerTest {
                 .floatingDayCountFraction("ACT/360")
                 .floatingFixingDayOffset(-2)
                 .floatingPaymentFrequency(floatingPaymentFrequency)
-                .notionalAmount(1000000.00);
+                .notionalAmount(1000000.00)
+                .valuationSymbols(objectMapper.readerForListOf(JsonMarketDataItem.class).readValue(fullSymbolListFromTemplate));
         String jsonSdcXmlRequest = objectMapper.writeValueAsString(sdcXmlRequest);
 
         MvcResult serverResponse =mockMvc.perform(MockMvcRequestBuilders

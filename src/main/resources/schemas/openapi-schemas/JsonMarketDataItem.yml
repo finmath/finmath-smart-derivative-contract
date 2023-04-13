@@ -1,0 +1,16 @@
+type: object
+required:
+  - symbol
+  - curve
+  - itemType
+  - tenor
+properties:
+  symbol:
+    type: string
+  curve:
+    type: string
+  itemType:
+    type: string
+  tenor:
+    type: string
+    pattern: '^[0-9]+[DMY]$'

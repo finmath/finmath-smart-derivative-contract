@@ -27,13 +27,17 @@ form {
 
 .commandInfoArea {
   display: grid;
-  grid-template-columns: 10% 10% 10% 1fr;
+  grid-template-columns: 10% 10% 10% 10% 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-auto-flow: row;
-  grid-template-areas: "generateXmlButtonArea saveInChainButtonArea loadTemplateButtonArea currentNpvLabelArea";
+  grid-template-areas: "loadTemplateButtonArea selectSymbolsArea generateXmlButtonArea saveInChainButtonArea currentNpvLabelArea";
   grid-area: commandInfoArea;
   justify-items: stretch;
+}
+
+.selectSymbolsArea {
+  grid-area: selectSymbolsArea;
 }
 
 .generateXmlButtonArea {

@@ -18,6 +18,7 @@ required:
   - floatingDayCountFraction
   - floatingFixingDayOffset
   - floatingPaymentFrequency
+  - valuationSymbols
 properties:
   firstCounterparty:
     $ref: "Counterparty.yml"
@@ -68,3 +69,7 @@ properties:
     maximum: 2
   floatingPaymentFrequency:
     $ref: "PaymentFrequency.yml"
+  valuationSymbols:
+    type: array
+    items:
+      $ref: "JsonMarketDataItem.yml"

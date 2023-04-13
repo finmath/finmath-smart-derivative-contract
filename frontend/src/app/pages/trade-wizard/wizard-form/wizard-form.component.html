@@ -2,6 +2,7 @@
   <div class="commandInfoArea">
     <div class="generateXmlButtonArea">
       <button
+        type="button"
         class="wizard-end-buttons"
         [disabled]="!isAllControlsValid()"
         color="primary"
@@ -12,10 +13,11 @@
         <mat-icon aria-hidden="false" aria-label="Generate XML">code</mat-icon>
       </button>
     </div>
-    <div class="saveInChainButtonArea">
+    <div class="loadTemplateButtonArea">
       <button
+        type="button"
         class="wizard-end-buttons"
-        [disabled]="!isAllControlsValid()"
+        [disabled]="false"
         color="accent"
         mat-mini-fab
         matTooltip="Load template."
@@ -26,8 +28,9 @@
         >
       </button>
     </div>
-    <div class="loadTemplateButtonArea">
+    <div class="saveInChainButtonArea">
       <button
+        type="button"
         class="wizard-end-buttons"
         [disabled]="!isAllControlsValid()"
         color="warn"
@@ -37,6 +40,21 @@
       >
         <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
           >cloud_upload</mat-icon
+        >
+      </button>
+    </div>
+    <div class="selectSymbolsArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Select valuation symbols."
+        (click)="openSymbolSelection()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
+          >list</mat-icon
         >
       </button>
     </div>

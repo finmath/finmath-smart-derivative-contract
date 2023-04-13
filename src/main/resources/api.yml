@@ -257,3 +257,5 @@ components:
       $ref: "schemas/openapi-schemas/SdcXmlRequest.yml"
     CashflowPeriod:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
+    JsonMarketDataItem:
+      $ref: "schemas/openapi-schemas/JsonMarketDataItem.yml"

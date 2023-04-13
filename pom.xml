@@ -592,7 +592,7 @@
                 <configuration>
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
-                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED</argLine>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 

@@ -9,6 +9,7 @@ import net.finmath.marketdata.model.curves.ForwardCurveWithFixings;
 import net.finmath.modelling.descriptor.ScheduleDescriptor;
 import net.finmath.smartcontract.marketdata.curvecalibration.*;
 import net.finmath.smartcontract.model.CashflowPeriod;
+import net.finmath.smartcontract.model.JsonMarketDataItem;
 import net.finmath.smartcontract.model.SdcXmlRequest;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.time.FloatingpointDate;
@@ -277,7 +278,21 @@ public final class TradeXmlGenerator { //TODO: this code needs some cleaning up
         // end of dubious lines
 
 
-        smartDerivativeContract.settlement.marketdata.marketdataitems = templateContract.getSettlement().getMarketdata().getMarketdataitems();
+        Smartderivativecontract.Settlement.Marketdata.Marketdataitems marketDataItems = new Smartderivativecontract.Settlement.Marketdata.Marketdataitems();
+        for(JsonMarketDataItem marketDataItem: sdcXmlRequest.getValuationSymbols()){
+            Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item newItem = new  Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item();
+            newItem.curve = new ArrayList<String>();
+            newItem.symbol = new ArrayList<String>();
+            newItem.type = new ArrayList<String>();
+            newItem.tenor = new ArrayList<String>();
+            newItem.curve.add(marketDataItem.getCurve());
+            newItem.symbol.add(marketDataItem.getSymbol());
+            newItem.type.add(marketDataItem.getItemType());
+            newItem.tenor.add(marketDataItem.getTenor());
+            marketDataItems.getItem().add(newItem);
+        }
+        smartDerivativeContract.settlement.marketdata.marketdataitems = marketDataItems;
+        //smartDerivativeContract.settlement.marketdata.marketdataitems = templateContract.getSettlement().getMarketdata().getMarketdataitems();
         smartDerivativeContract.receiverPartyID = "party2";
 
         logger.info("Instance built!");
