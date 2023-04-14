@@ -1,0 +1,59 @@
+<h1 mat-dialog-title>Schedule data:</h1>
+<div mat-dialog-content>
+  <table mat-table [dataSource]="data" class="mat-elevation-z8">
+    <!--- Note that these columns can be defined in any order.
+              The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="fixingDate">
+      <th mat-header-cell *matHeaderCellDef>Fixing date</th>
+      <td mat-cell *matCellDef="let period">
+        {{ period.fixingDate | date : "Y-MMM-dd" }}
+      </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="paymentDate">
+      <th mat-header-cell *matHeaderCellDef>Payment date</th>
+      <td mat-cell *matCellDef="let period">
+        {{ period.paymentDate | date : "Y-MMM-dd" }}
+      </td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="periodStart">
+      <th mat-header-cell *matHeaderCellDef>Period start</th>
+      <td mat-cell *matCellDef="let period">
+        {{ period.periodStart | date : "Y-MMM-dd" }}
+      </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="periodEnd">
+      <th mat-header-cell *matHeaderCellDef>Period end</th>
+      <td mat-cell *matCellDef="let period">
+        {{ period.periodEnd | date : "Y-MMM-dd" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cashflow">
+      <th mat-header-cell *matHeaderCellDef>Amount</th>
+      <td mat-cell *matCellDef="let period">
+        {{ period.cashflow.value.toFixed(2) }} {{ period.cashflow.currency }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="rate">
+      <th mat-header-cell *matHeaderCellDef>Rate</th>
+      <td mat-cell *matCellDef="let period">
+        {{ (period.rate * 100).toFixed(6) }}&percnt;
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Close</button>
+</div>

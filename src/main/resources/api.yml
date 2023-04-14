@@ -20,7 +20,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ValueRequest"
       responses:
-        '200':
+        "200":
           description: Value was calculated
           content:
             application/json:
@@ -43,7 +43,7 @@ paths:
             schema:
               $ref: "#/components/schemas/MarginRequest"
       responses:
-        '200':
+        "200":
           description: Margin was calculated
           content:
             application/json:
@@ -72,7 +72,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        '200':
+        "200":
           description: Value was calculated
           content:
             application/json:
@@ -90,7 +90,7 @@ paths:
       summary: Request info on Git version and tags
       operationId: info-git
       responses:
-        '200':
+        "200":
           description: Info returned
           content:
             application/json:
@@ -108,7 +108,7 @@ paths:
       summary: Request info on finmath-lib version and tags
       operationId: info-finmath
       responses:
-        '200':
+        "200":
           description: Info returned
           content:
             application/json:
@@ -121,22 +121,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /editor/generate-xml:
+  /plain-swap-editor/generate-xml:
     post:
-      summary: Request mapping for generation of the trade data XML
-      operationId: generate-xml
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for generation of the trade data SDCmL
+      operationId: generate-plain-swap-sdcml
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SdcXmlRequest"
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
       responses:
-        '200':
-          description: XML was generated
+        "200":
+          description: SDCmL was generated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SdcXmlResponse"
+                type: string
         default:
           description: unexpected error
           content:
@@ -144,17 +146,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /editor/evaluate-from-editor:
+  /plain-swap-editor/evaluate-from-editor:
     post:
+      tags:
+        - plainSwapEditor
       summary: Request mapping for valuation of the trade data coming from the editor.
-      operationId: evaluate-from-editor
+      operationId: evaluate-from-plain-swap-editor
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SdcXmlRequest"
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
       responses:
-        '200':
+        "200":
           description: Valuation successful.
           content:
             application/json:
@@ -166,17 +170,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /editor/get-fixed-schedule:
+  /plain-swap-editor/get-fixed-schedule:
     post:
+      tags:
+        - plainSwapEditor
       summary: Request payment schedule for the fixed leg defined in the editor.
       operationId: get-fixed-schedule
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SdcXmlRequest"
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
       responses:
-        '200':
+        "200":
           description: Schedule generation successful.
           content:
             application/json:
@@ -191,17 +197,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /editor/get-floating-schedule:
+  /plain-swap-editor/get-floating-schedule:
     post:
+      tags:
+        - plainSwapEditor
       summary: Request payment schedule for the floating leg defined in the editor.
       operationId: get-floating-schedule
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SdcXmlRequest"
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
       responses:
-        '200':
+        "200":
           description: Schedule generation successful.
           content:
             application/json:
@@ -215,17 +223,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /editor/get-par-rate:
+  /plain-swap-editor/get-par-rate:
     post:
+      tags:
+        - plainSwapEditor
       summary: Request the par rate for the swap defined in the editor.
       operationId: get-par-rate
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SdcXmlRequest"
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
       responses:
-        '200':
+        "200":
           description: Schedule generation successful.
           content:
             application/json:
@@ -247,14 +257,14 @@ components:
       $ref: "schemas/openapi-schemas/MarginResult.yml"
     Error:
       $ref: "schemas/openapi-schemas/Error.yml"
-    SdcXmlResponse:
-      $ref: "schemas/openapi-schemas/SdcXmlResponse.yml"
+    PlainSwapOperationResponse:
+      $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
     ValueRequest:
       $ref: "schemas/openapi-schemas/ValueRequest.yml"
     MarginRequest:
       $ref: "schemas/openapi-schemas/MarginRequest.yml"
-    SdcXmlRequest:
-      $ref: "schemas/openapi-schemas/SdcXmlRequest.yml"
+    PlainSwapOperationRequest:
+      $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
     JsonMarketDataItem:

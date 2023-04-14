@@ -6,7 +6,7 @@ import { map, shareReplay } from "rxjs/operators";
 @Component({
   selector: "app-pages",
   templateUrl: "./pages.component.html",
-  styleUrls: ["./pages.component.css"],
+  styleUrls: ["./pages.component.scss"],
 })
 export class PagesComponent {
   isHandset$: Observable<boolean> = this.breakpointObserver

@@ -1,23 +1,25 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { PagesComponent } from './pages.component';
-
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { PagesComponent } from "./pages.component";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: PagesComponent,
     children: [
       {
-        path: 'trade-wizard',
-        loadChildren: () => import('./trade-wizard/trade-wizard.module').then(m => m.TradeWizardModule),
-      }
+        path: "trade-wizard",
+        loadChildren: () =>
+          import("./plain-swap-editor/plain-swap-editor.module").then(
+            (m) => m.PlainSwapEditorModule
+          ),
+      },
     ],
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class PagesRoutingModule { }
+export class PagesRoutingModule {}

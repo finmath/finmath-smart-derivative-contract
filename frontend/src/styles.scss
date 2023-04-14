@@ -1,11 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 @include mat.core();
 
-$dense-ui: mat.define-light-theme((
- density: -3,
-));
+$dense-ui: mat.define-light-theme(
+  (
+    density: -3,
+  )
+);
 
 // Emit theme-dependent styles for common features used across multiple components.
 @include mat.core-theme($dense-ui);
@@ -19,7 +21,6 @@ $dense-ui: mat.define-light-theme((
 @include mat.all-component-densities(minimum);
 
 // Include the theme mixins for other components you use here.
-
 
 html {
   height: 100%;
