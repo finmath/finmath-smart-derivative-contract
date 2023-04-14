@@ -100,7 +100,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         try {
             unmarshaller = jaxbContext.createUnmarshaller();
         } catch (JAXBException e) {
-            logger.error("Failed to load JAXB unmarshaller.");
+            logger.error("Failed to load JAXB un-marshaller.");
 
             throw e;
         }
@@ -124,7 +124,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
             throw e;
         } catch (IOException e) {
-            logger.error("An IO error occured while unmarshalling the template file.");
+            logger.error("An IO error occurred while unmarshalling the template file.");
 
             throw e;
         }
@@ -143,7 +143,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         try {
             formattedTradeDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(plainSwapOperationRequest.getTradeDate().toZonedDateTime()));
         } catch (DatatypeConfigurationException e) {
-            logger.error("Failed to convert OffsetDateTime to XMLGregorianCalendar. This occured while processing field tradeDate");
+            logger.error("Failed to convert OffsetDateTime to XMLGregorianCalendar. This occurred while processing field tradeDate");
 
             throw e;
         }
@@ -168,12 +168,12 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
             throw new IllegalStateException("The template has issues: failed to find valid candidate for floating leg swapStream definition. I will fail now, sorry! :(");
         floatingLeg = floatingLegOptional.get();
 
-        // for each swapstream... (index is the order of appearance in the template)
+        // for each swap stream... (index is the order of appearance in the template)
         final XMLGregorianCalendar formattedEffectiveDate;
         try {
             formattedEffectiveDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(plainSwapOperationRequest.getEffectiveDate().toZonedDateTime()));
         } catch (DatatypeConfigurationException e) {
-            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field effectiveDate");
+            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occurred while processing field effectiveDate");
 
             throw e;
         }
@@ -183,7 +183,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         try {
             formattedTerminationDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar.from(plainSwapOperationRequest.getTerminationDate().toZonedDateTime()));
         } catch (DatatypeConfigurationException e) {
-            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occured while processing field terminationDate");
+            logger.error("Failed to convert ZonedDateTime to XMLGregorianCalendar. This occurred while processing field terminationDate");
 
             throw e;
         }
@@ -285,7 +285,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
     }
 
     private static void setSdcPartiesHeader(final PlainSwapOperationRequest tradeDescriptor, final Smartderivativecontract smartDerivativeContract) {
-        logger.info("Setting SDC header of reponse.");
+        logger.info("Setting SDC header of response.");
         Smartderivativecontract.Parties parties = new Smartderivativecontract.Parties();
         List<Smartderivativecontract.Parties.Party> partyList = new ArrayList<>();
 
@@ -360,7 +360,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
             // return outputStream.toString();
 
             // LOOK AT THIS UGLINESS!!! NOT NICE!!!!!!!
-            logger.info("XML was correclty generated, will now do some ugliness.");
+            logger.info("XML was correctly generated, will now do some ugliness.");
             return outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
         } catch (SAXException e) {
@@ -389,7 +389,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
      * Returns a list of cashflow periods representing the payment streams involved in the plain swap described.
      *
      * @param legSelector the leg for which the schedule should be calculated.
-     * @param marketData  the market data used for calibration of the model used for the payments calculation.
+     * @param marketData  the market data used for calibration of the model used for the payments' calculation.
      * @return the payment schedule.
      */
     public List<CashflowPeriod> getSchedule(LegSelector legSelector, String marketData) throws IOException, CloneNotSupportedException {
@@ -482,9 +482,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         int i = 0;
         for (Period schedulePeriod : schedule) {
             double rate = legSelector.equals(LegSelector.FIXED_LEG) ? swapLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue.doubleValue() : calibratedModel.getForwardCurve(forwardCurveID).getForward(calibratedModel, schedule.getFixing(i));
-            double homePartyisPayerPartyFactor = ((Party) swapLeg.payerPartyReference.href).id.equals(this.smartDerivativeContract.receiverPartyID) ? 1.0 : -1.0;
+            double homePartyIsPayerPartyFactor = ((Party) swapLeg.payerPartyReference.href).id.equals(this.smartDerivativeContract.receiverPartyID) ? 1.0 : -1.0;
 
-            cashflowPeriods.add(new CashflowPeriod().cashflow(new ValueResult().currency("EUR").valuationDate(new Date().toString()).value(BigDecimal.valueOf(homePartyisPayerPartyFactor * schedule.getPeriodLength(i) * notional * rate))).fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC)).paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC)).periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC)).periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)).rate(rate));
+            cashflowPeriods.add(new CashflowPeriod().cashflow(new ValueResult().currency("EUR").valuationDate(new Date().toString()).value(BigDecimal.valueOf(homePartyIsPayerPartyFactor * schedule.getPeriodLength(i) * notional * rate))).fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC)).paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC)).periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC)).periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)).rate(rate));
 
             i++;
         }
