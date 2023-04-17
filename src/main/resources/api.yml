@@ -136,7 +136,7 @@ paths:
         "200":
           description: SDCmL was generated
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
         default:

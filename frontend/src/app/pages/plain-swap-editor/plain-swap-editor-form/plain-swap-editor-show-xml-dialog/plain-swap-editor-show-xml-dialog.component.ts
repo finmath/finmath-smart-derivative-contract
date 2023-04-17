@@ -5,7 +5,7 @@ import { TextDialogData } from "../plain-swap-editor-form.component";
 @Component({
   selector: "app-plain-swap-editor-show-xml-dialog",
   templateUrl: "./plain-swap-editor-show-xml-dialog.component.html",
-  styleUrls: ["./plain-swap-editor-show-xml-dialog.component.css"],
+  styleUrls: ["./plain-swap-editor-show-xml-dialog.component.scss"],
 })
 export class PlainSwapEditorShowXmlDialogComponent {
   constructor(

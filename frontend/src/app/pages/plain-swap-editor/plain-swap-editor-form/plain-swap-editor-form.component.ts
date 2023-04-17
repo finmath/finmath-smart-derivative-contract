@@ -205,7 +205,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
 
   pushXMLGenerationRequest() {
     this.plainSwapEditorService
-      .generatePlainSwapSdcml(this.mapRequest())
+      .generatePlainSwapSdcml(this.mapRequest(), 'body', false, {httpHeaderAccept: "text/plain"})
       .subscribe({
         next: (sdcmlBody) => {
           this.dialogMessage = sdcmlBody;
