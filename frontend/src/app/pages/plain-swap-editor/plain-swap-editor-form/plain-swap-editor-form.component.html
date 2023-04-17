@@ -185,7 +185,7 @@
     <div class="tradeDateInputArea">
       <mat-form-field>
         <mat-label>Trade date:</mat-label>
-        <input matInput formControlName="tradeDate" [matDatepicker]="picker1" />
+        <input matInput formControlName="tradeDate" [matDatepicker]="picker1" (dateChange)="onStartDelayChange();"/>
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
           matIconSuffix
@@ -197,6 +197,7 @@
     </div>
     <div class="quickTradeDateSelectionArea">
       <mat-form-field>
+        <mat-label>Quick command: </mat-label>
         <input
           matInput
           type="text"
@@ -218,7 +219,7 @@
           matInput
           formControlName="effectiveDate"
           [matDatepicker]="picker2"
-          (dateChange)="onMaturityChange()"
+          (dateChange)="onMaturityChange();  onStartDelayChange();"
         />
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
@@ -231,15 +232,16 @@
     </div>
     <div class="quickEffectiveDateSelectionAea">
       <mat-form-field>
+        <mat-label>QC/Start offset: </mat-label>
         <input
           matInput
           type="text"
-          placeholder="+?"
+          [placeholder]="this.startDelayString"
           (change)="
             onQuickCommandChange(
               swapForm.get('effectiveDate'),
               effectiveDateQuickCommand
-            ); onMaturityChange();
+            ); onMaturityChange(); onStartDelayChange();
           "
           [formControl]="effectiveDateQuickCommand"
         />
@@ -266,6 +268,7 @@
     </div>
     <div class="quickMaturitySelectionAea">
       <mat-form-field>
+        <mat-label>QC/Maturity: </mat-label>
         <input
           matInput
           type="text"

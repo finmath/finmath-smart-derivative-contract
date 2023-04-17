@@ -71,6 +71,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
     /(?<now>^\!$)|(?<notJustNow>^(?<baseDate>[\!tem])?(?<addRemove>[\+\-])(?<dateMsd>\d+[ymd])(?<date2sd>\d+[md])?(?<dateLsd>\d+d)?$)/gm;
   selectedSymbols: JsonMarketDataItem[] | undefined;
   swapMaturityString: string = "+?";
+  startDelayString: string = "+?";
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -231,7 +232,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   pushFixedScheduleGenerationRequest() {
-    
     this.plainSwapEditorService.getFixedSchedule(this.mapRequest()).subscribe({
       next: (cashflowPeriods) => {
         this.dialogMessage = JSON.stringify(cashflowPeriods);
@@ -286,7 +286,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   pushFloatingScheduleGenerationRequest() {
-    
     this.plainSwapEditorService
       .getFloatingSchedule(this.mapRequest())
       .subscribe({
@@ -361,7 +360,13 @@ export class PlainSwapEditorFormComponent implements OnInit {
     return (
       this.swapForm.valid &&
       this.selectedSymbols &&
-      this.selectedSymbols?.length > 0
+      this.selectedSymbols?.length > 0 &&
+      !moment(this.swapForm.get("effectiveDate")!.value).isSameOrAfter(
+        moment(this.swapForm.get("terminationDate")!.value)
+      ) &&
+      moment(this.swapForm.get("effectiveDate")!.value).isSameOrAfter(
+        moment(this.swapForm.get("tradeDate")!.value)
+      )
     );
   }
 
@@ -387,11 +392,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
       this.selectedParties[0] = counterparties.find(
         (p: any) => p.bicCode === this.swapForm.get("firstCounterparty")!.value
       )!;
-      
+
       this.swapForm.get("fixedPayingParty")!.enable();
       this.swapForm.get("floatingPayingParty")!.enable();
     }
-    
   }
 
   onSecondPartySelection() {
@@ -412,8 +416,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
       this.swapForm.get("fixedPayingParty")!.enable();
       this.swapForm.get("floatingPayingParty")!.enable();
     }
-
-    
   }
 
   onPayerPartySelection() {
@@ -499,7 +501,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
     ) => timeDiff.add(amount, unit);
 
     if (!quickCommand.match(this.quickCommandRegExp)) {
-      
       quickCommandControl.setErrors({ incorrect: true });
       this._snackBar.open(
         "This was not a valid command. Syntax: {! | REF_SELECTOR{+|-}TIME_LENGTH}. If you need more help, see the documentation or ask a dev.",
@@ -606,16 +607,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
             "days"
           );
         }
-
-        console.log(
-          "timediff is " +
-            timeDiff.years() +
-            "y" +
-            timeDiff.months() +
-            "m" +
-            timeDiff.days() +
-            "d"
-        );
         targetControl.setValue(moment(baseDate).add(timeDiff).toDate());
         targetControl.updateValueAndValidity();
         this._snackBar.open("Date set!", "OK", {
@@ -629,7 +620,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   onMaturityChange() {
-    
     if (
       this.swapForm.get("effectiveDate")!.value != "" &&
       this.swapForm.get("terminationDate")!.value != ""
@@ -645,6 +635,26 @@ export class PlainSwapEditorFormComponent implements OnInit {
       );
       this.swapMaturityString =
         diff.years() + "y" + diff.months() + "m" + diff.days() + "d";
+    }
+  }
+
+  onStartDelayChange() {
+    if (
+      this.swapForm.get("effectiveDate")!.value != "" &&
+      this.swapForm.get("tradeDate")!.value != ""
+    ) {
+      let effectiveDateAsMoment = moment(
+        this.swapForm.get("effectiveDate")!.value
+      );
+      let tradeDateAsMoment = moment(this.swapForm.get("tradeDate")!.value);
+      let diff = moment.duration(effectiveDateAsMoment.diff(tradeDateAsMoment));
+
+      if (diff.asDays() < 1 && diff.asMilliseconds() > 0) {
+        this.startDelayString = "Spot";
+      } else {
+        this.startDelayString =
+          "in " + diff.years() + "y" + diff.months() + "m" + diff.days() + "d";
+      }
     }
   }
 }
