@@ -70,6 +70,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   quickCommandRegExp: RegExp =
     /(?<now>^\!$)|(?<notJustNow>^(?<baseDate>[\!tem])?(?<addRemove>[\+\-])(?<dateMsd>\d+[ymd])(?<date2sd>\d+[md])?(?<dateLsd>\d+d)?$)/gm;
   selectedSymbols: JsonMarketDataItem[] | undefined;
+  swapMaturityString: string = "+?";
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -205,7 +206,9 @@ export class PlainSwapEditorFormComponent implements OnInit {
 
   pushXMLGenerationRequest() {
     this.plainSwapEditorService
-      .generatePlainSwapSdcml(this.mapRequest(), 'body', false, {httpHeaderAccept: "text/plain"})
+      .generatePlainSwapSdcml(this.mapRequest(), "body", false, {
+        httpHeaderAccept: "text/plain",
+      })
       .subscribe({
         next: (sdcmlBody) => {
           this.dialogMessage = sdcmlBody;
@@ -586,14 +589,14 @@ export class PlainSwapEditorFormComponent implements OnInit {
             case "m":
               addOrSubtract(
                 timeDiff,
-                match.groups!["dateMsd"].slice(0, -1),
+                match.groups!["date2sd"].slice(0, -1),
                 "months"
               );
               break;
             case "d":
               addOrSubtract(
                 timeDiff,
-                match.groups!["dateMsd"].slice(0, -1),
+                match.groups!["date2sd"].slice(0, -1),
                 "days"
               );
               break;
@@ -602,11 +605,20 @@ export class PlainSwapEditorFormComponent implements OnInit {
         if (match.groups!["dateLsd"]) {
           addOrSubtract(
             timeDiff,
-            match.groups!["dateMsd"].slice(0, -1),
+            match.groups!["dateLsd"].slice(0, -1),
             "days"
           );
         }
 
+        console.log(
+          "timediff is " +
+            timeDiff.years() +
+            "y" +
+            timeDiff.months() +
+            "m" +
+            timeDiff.days() +
+            "d"
+        );
         targetControl.setValue(moment(baseDate).add(timeDiff).toDate());
         targetControl.updateValueAndValidity();
         this._snackBar.open("Date set!", "OK", {
@@ -616,6 +628,26 @@ export class PlainSwapEditorFormComponent implements OnInit {
         });
         quickCommandControl.reset();
       }
+    }
+  }
+
+  onMaturityChange() {
+    console.log("aaa");
+    if (
+      this.swapForm.get("effectiveDate")!.value != "" &&
+      this.swapForm.get("terminationDate")!.value != ""
+    ) {
+      let effectiveDateAsMoment = moment(
+        this.swapForm.get("effectiveDate")!.value
+      );
+      let terminationDateAsMoment = moment(
+        this.swapForm.get("terminationDate")!.value
+      );
+      let diff = moment.duration(
+        terminationDateAsMoment.diff(effectiveDateAsMoment)
+      );
+      this.swapMaturityString =
+        diff.years() + "y" + diff.months() + "m" + diff.days() + "d";
     }
   }
 }

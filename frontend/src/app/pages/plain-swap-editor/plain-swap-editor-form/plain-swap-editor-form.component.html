@@ -218,6 +218,7 @@
           matInput
           formControlName="effectiveDate"
           [matDatepicker]="picker2"
+          (dateChange)="onMaturityChange()"
         />
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
@@ -238,7 +239,7 @@
             onQuickCommandChange(
               swapForm.get('effectiveDate'),
               effectiveDateQuickCommand
-            )
+            ); onMaturityChange();
           "
           [formControl]="effectiveDateQuickCommand"
         />
@@ -252,6 +253,7 @@
           matInput
           formControlName="terminationDate"
           [matDatepicker]="picker3"
+          (dateChange)="onMaturityChange()"
         />
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
@@ -267,12 +269,12 @@
         <input
           matInput
           type="text"
-          placeholder="+?"
+          [placeholder]="this.swapMaturityString"
           (change)="
             onQuickCommandChange(
               swapForm.get('terminationDate'),
               terminationDateQuickCommand
-            )
+            ); onMaturityChange();
           "
           [formControl]="terminationDateQuickCommand"
         />
