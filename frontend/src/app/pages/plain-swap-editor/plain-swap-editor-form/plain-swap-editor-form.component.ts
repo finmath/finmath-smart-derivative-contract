@@ -231,7 +231,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   pushFixedScheduleGenerationRequest() {
-    console.log(this.mapRequest());
+    
     this.plainSwapEditorService.getFixedSchedule(this.mapRequest()).subscribe({
       next: (cashflowPeriods) => {
         this.dialogMessage = JSON.stringify(cashflowPeriods);
@@ -286,7 +286,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   pushFloatingScheduleGenerationRequest() {
-    console.log(this.mapRequest());
+    
     this.plainSwapEditorService
       .getFloatingSchedule(this.mapRequest())
       .subscribe({
@@ -387,11 +387,11 @@ export class PlainSwapEditorFormComponent implements OnInit {
       this.selectedParties[0] = counterparties.find(
         (p: any) => p.bicCode === this.swapForm.get("firstCounterparty")!.value
       )!;
-      console.log("enabling form");
+      
       this.swapForm.get("fixedPayingParty")!.enable();
       this.swapForm.get("floatingPayingParty")!.enable();
     }
-    console.log(this.selectedParties.length);
+    
   }
 
   onSecondPartySelection() {
@@ -413,7 +413,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
       this.swapForm.get("floatingPayingParty")!.enable();
     }
 
-    console.log(this.selectedParties.length);
+    
   }
 
   onPayerPartySelection() {
@@ -485,9 +485,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
     quickCommandControl: FormControl
   ): void {
     let quickCommand = quickCommandControl.value as string;
-    if (!_targetControl) {
-      console.log("wtf?");
-    }
     let targetControl = _targetControl as FormControl;
     let baseDate: Date = new Date();
     let timeDiff: moment.Duration = moment.duration("00:00:00");
@@ -502,7 +499,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
     ) => timeDiff.add(amount, unit);
 
     if (!quickCommand.match(this.quickCommandRegExp)) {
-      console.log("not a valid command");
+      
       quickCommandControl.setErrors({ incorrect: true });
       this._snackBar.open(
         "This was not a valid command. Syntax: {! | REF_SELECTOR{+|-}TIME_LENGTH}. If you need more help, see the documentation or ask a dev.",
@@ -632,7 +629,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   onMaturityChange() {
-    console.log("aaa");
+    
     if (
       this.swapForm.get("effectiveDate")!.value != "" &&
       this.swapForm.get("terminationDate")!.value != ""
