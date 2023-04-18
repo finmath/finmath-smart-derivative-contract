@@ -31,7 +31,6 @@ import java.util.function.DoubleUnaryOperator;
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class PlainSwapEditorController implements PlainSwapEditorApi {
 
-    private final String templatePath = "references/template2.xml";   // will be changed when the template system is in place
     private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd"; //may be changed to allow for different versions of the schema
     private final String marketDataPath = "net.finmath.smartcontract.client" + File.separator + "md_testset2.json";  // will be changed when we will accept market data from external sources
     @Value("${hostname}")
@@ -40,7 +39,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     @Override
     public ResponseEntity<String> generatePlainSwapSdcml(PlainSwapOperationRequest plainSwapOperationRequest) {
         try {
-            return ResponseEntity.ok( new PlainSwapEditorHandler(plainSwapOperationRequest, templatePath, schemaPath).getContractAsXmlString());
+            return ResponseEntity.ok( new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString());
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
@@ -55,7 +54,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     public ResponseEntity<ValueResult> evaluateFromPlainSwapEditor(PlainSwapOperationRequest plainSwapOperationRequest) {
         String sdcmlBody;
         try {
-            sdcmlBody = new PlainSwapEditorHandler(plainSwapOperationRequest, templatePath, schemaPath).getContractAsXmlString();
+            sdcmlBody = new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString();
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
@@ -95,7 +94,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
         try {
-            return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest, templatePath, schemaPath).getSchedule(PlainSwapEditorHandler.LegSelector.FIXED_LEG, marketData));
+            return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getSchedule(PlainSwapEditorHandler.LegSelector.FIXED_LEG, marketData));
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
@@ -122,7 +121,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
         try {
-            return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest, templatePath, schemaPath).getSchedule(PlainSwapEditorHandler.LegSelector.FLOATING_LEG, marketData));
+            return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getSchedule(PlainSwapEditorHandler.LegSelector.FLOATING_LEG, marketData));
         } catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ErrorDetails.JAXB_ERROR_DETAIL);
             pd.setType(URI.create(hostname + ErrorTypeURI.JAXB_ERROR_URI));
@@ -165,7 +164,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             DoubleUnaryOperator swapValue = (swapRate) -> {
                 plainSwapOperationRequest.fixedRate(swapRate);
                 try {
-                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest, templatePath, schemaPath).getContractAsXmlString()).getValue().doubleValue();
+                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString()).getValue().doubleValue();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

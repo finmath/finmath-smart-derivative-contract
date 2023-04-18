@@ -15,6 +15,7 @@ import { PlainSwapEditorShowXmlDialogComponent } from "./plain-swap-editor-show-
 import { ExcludeCounterpartyFilterPipe } from "../../../shared/exclude-counterparty-filter.pipe";
 import { PlainSwapEditorScheduleViewerComponent } from "./plain-swap-editor-schedule-viewer/plain-swap-editor-schedule-viewer.component";
 import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symbol-selector/plain-swap-editor-symbol-selector.component";
+import { PlainSwapEditorGeneratorSelectorComponent } from "./plain-swap-editor-generator-selector/plain-swap-editor-generator-selector.component";
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symb
     ExcludeCounterpartyFilterPipe,
     PlainSwapEditorScheduleViewerComponent,
     PlainSwapEditorSymbolSelectorComponent,
+    PlainSwapEditorGeneratorSelectorComponent
   ],
   imports: [
     CommonModule,

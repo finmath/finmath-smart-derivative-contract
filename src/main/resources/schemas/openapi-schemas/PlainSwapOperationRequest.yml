@@ -19,6 +19,7 @@ required:
   - floatingFixingDayOffset
   - floatingPaymentFrequency
   - valuationSymbols
+  - currentGenerator
 properties:
   firstCounterparty:
     $ref: "Counterparty.yml"
@@ -73,3 +74,5 @@ properties:
     type: array
     items:
       $ref: "JsonMarketDataItem.yml"
+  currentGenerator:
+    type: string

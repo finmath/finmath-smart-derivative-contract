@@ -32,6 +32,8 @@ import {
   PlainSwapOperationRequest,
 } from "src/app/openapi";
 import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symbol-selector/plain-swap-editor-symbol-selector.component";
+import { PlainSwapEditorGeneratorSelectorComponent } from "./plain-swap-editor-generator-selector/plain-swap-editor-generator-selector.component";
+import { PlainSwapEditorGenerator } from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
 
 export interface TextDialogData {
   dialogMessage: string;
@@ -72,6 +74,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   selectedSymbols: JsonMarketDataItem[] | undefined;
   swapMaturityString: string = "+?";
   startDelayString: string = "+?";
+  generatorFileName: string | undefined;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -202,6 +205,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
           pf.fullName === this.swapForm.get("floatingPaymentFrequency")!.value
       ),
       valuationSymbols: this.selectedSymbols,
+      currentGenerator: this.generatorFileName,
     } as PlainSwapOperationRequest;
   }
 
@@ -307,12 +311,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
           console.log(JSON.stringify(error));
         },
       });
-  }
-
-  loadTemplate() {
-    window.alert(
-      "This is where I would show you your templates... if only I knew how."
-    );
   }
 
   pushPricingRequest() {
@@ -482,13 +480,44 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
+  openGeneratorSelection() {
+    const dialogRef = this.dialog.open(
+      PlainSwapEditorGeneratorSelectorComponent,
+      {
+        data: this.selectedSymbols,
+        width: "80%",
+        height: "80%",
+      }
+    );
+
+    dialogRef
+      .afterClosed()
+      .subscribe((currentGenerator: PlainSwapEditorGenerator) => {
+        this.selectedSymbols = currentGenerator.defaultSymbolsList;
+        this.generatorFileName = currentGenerator.fileName;
+        this.swapForm.get("floatingFixingDayOffset")!.setValue(currentGenerator.floatingFixingDayOffset.id);
+        this.swapForm.get("floatingRateIndex")!.setValue(currentGenerator.indexName);
+        this.swapForm.get("fixedPaymentFrequency")!.setValue(currentGenerator.fixedPaymentFrequency.fullName);
+        this.swapForm.get("floatingPaymentFrequency")!.setValue(currentGenerator.floatingPaymentFrequency.fullName);
+        this.swapForm.get("floatingDayCountFraction")!.setValue(currentGenerator.floatingDayCountFraction.id);
+        this.swapForm.get("fixedDayCountFraction")!.setValue(currentGenerator.fixedDayCountFraction.id);
+        this.swapForm.updateValueAndValidity();
+      });
+  }
+
   onQuickCommandChange(
     _targetControl: AbstractControl | null,
     quickCommandControl: FormControl
   ): void {
     let quickCommand = quickCommandControl.value as string;
     let targetControl = _targetControl as FormControl;
-    let baseDate: Date = new Date();
+    let baseDate: Date = moment()
+      .utc(true)
+      .hours(0)
+      .minutes(0)
+      .seconds(0)
+      .milliseconds(0)
+      .toDate();
     let timeDiff: moment.Duration = moment.duration("00:00:00");
     let addOrSubtract: (
       timeDiff: moment.Duration,
@@ -529,7 +558,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
       if (match.groups!["notJustNow"]) {
         switch (match.groups!["baseDate"]) {
           case "!":
-            baseDate = new Date();
             break;
           case "t":
             baseDate = this.swapForm.get("tradeDate")!.value;
