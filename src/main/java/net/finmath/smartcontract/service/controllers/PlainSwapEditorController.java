@@ -141,7 +141,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         TriFunction<DoubleUnaryOperator, Double, Double, Double> getRoot = (valueOperator, xMin, xMax) -> {
 
             BisectionSearch rootFinder = new BisectionSearch(xMin, xMax);
-            while (rootFinder.getAccuracy() > 1E-12 && !rootFinder.isDone()) {
+            while (rootFinder.getAccuracy() > 1E-7 && !rootFinder.isDone()) {
                 final double x = rootFinder.getNextPoint();
                 final double y = valueOperator.applyAsDouble(x);
                 rootFinder.setValue(y);
@@ -164,7 +164,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             DoubleUnaryOperator swapValue = (swapRate) -> {
                 plainSwapOperationRequest.fixedRate(swapRate);
                 try {
-                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest.notionalAmount(1E7), plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString()).getValue().doubleValue();
+                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest.notionalAmount(1E15), plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString()).getValue().doubleValue();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
