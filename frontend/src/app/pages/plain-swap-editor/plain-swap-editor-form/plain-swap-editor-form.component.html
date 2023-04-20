@@ -185,7 +185,12 @@
     <div class="tradeDateInputArea">
       <mat-form-field>
         <mat-label>Trade date:</mat-label>
-        <input matInput formControlName="tradeDate" [matDatepicker]="picker1" (dateChange)="onStartDelayChange();"/>
+        <input
+          matInput
+          formControlName="tradeDate"
+          [matDatepicker]="picker1"
+          (dateChange)="onStartDelayChange()"
+        />
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
           matIconSuffix
@@ -219,7 +224,7 @@
           matInput
           formControlName="effectiveDate"
           [matDatepicker]="picker2"
-          (dateChange)="onMaturityChange();  onStartDelayChange();"
+          (dateChange)="onMaturityChange(); onStartDelayChange()"
         />
         <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
         <mat-datepicker-toggle
@@ -241,7 +246,9 @@
             onQuickCommandChange(
               swapForm.get('effectiveDate'),
               effectiveDateQuickCommand
-            ); onMaturityChange(); onStartDelayChange();
+            );
+            onMaturityChange();
+            onStartDelayChange()
           "
           [formControl]="effectiveDateQuickCommand"
         />
@@ -277,7 +284,8 @@
             onQuickCommandChange(
               swapForm.get('terminationDate'),
               terminationDateQuickCommand
-            ); onMaturityChange();
+            );
+            onMaturityChange()
           "
           [formControl]="terminationDateQuickCommand"
         />
@@ -451,6 +459,12 @@
           type="number"
           placeholder="~"
           formControlName="fixedRate"
+          (change)="
+            this.swapForm
+              .get('fixedRate')!
+              .setValue(this.swapForm.get('fixedRate')!.value.toFixed(6));
+            this.swapForm.updateValueAndValidity()
+          "
         />
         <span matTextSuffix>&nbsp;%</span>
         <mat-error>You must specify the fixed rate.</mat-error>

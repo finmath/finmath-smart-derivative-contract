@@ -164,7 +164,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             DoubleUnaryOperator swapValue = (swapRate) -> {
                 plainSwapOperationRequest.fixedRate(swapRate);
                 try {
-                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest, plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString()).getValue().doubleValue();
+                    return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(plainSwapOperationRequest.notionalAmount(1E7), plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString()).getValue().doubleValue();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

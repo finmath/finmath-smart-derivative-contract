@@ -75,6 +75,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   swapMaturityString: string = "+?";
   startDelayString: string = "+?";
   generatorFileName: string | undefined;
+  firstVaild: boolean = false;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -266,7 +267,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
     ).innerHTML = "Current NPV: calculating par rate...";
     this.plainSwapEditorService.getParRate(this.mapRequest()).subscribe({
       next: (parRate) => {
-        this.swapForm.get("fixedRate")!.setValue(parRate);
+        this.swapForm.get("fixedRate")!.setValue(parRate.toFixed(6));
         this.swapForm.get("fixedRate")!.updateValueAndValidity();
         this._snackBar.open("Par rate set!", "OK", {
           horizontalPosition: "right",
@@ -325,7 +326,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
               .item(0)!
               .childNodes.item(0) as HTMLAnchorElement
           ).innerHTML =
-            "Current NPV: " + valueResponse.value + this.currencyPrefix;
+            "Current NPV: " + valueResponse.value.toFixed(2) + this.currencyPrefix;
         },
         error: (error) => {
           (

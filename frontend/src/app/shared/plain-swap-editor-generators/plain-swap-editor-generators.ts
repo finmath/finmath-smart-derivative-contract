@@ -18,7 +18,7 @@ export const plainSwapEditorGenerators: PlainSwapEditorGenerator[] = [
   {
     name: "EUR-EURIBOR Y/S",
     fileName: "generators/eur_euribor_y_s.xml",
-    indexName: "EUR-EURIBOR-Reuters",
+    indexName: "EURIBOR 6M",
     fixedPaymentFrequency: {
       period: "Y",
       periodMultiplier: 1,
