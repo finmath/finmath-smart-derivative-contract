@@ -118,15 +118,15 @@ export class PlainSwapEditorFormComponent implements OnInit {
     this.swapForm = this._formBuilder.group({
       firstCounterparty: ["", Validators.required],
       secondCounterparty: ["", Validators.required],
-      marginBufferAmount: [0, [Validators.required, Validators.min(0)]],
-      terminationFeeAmount: [0, [Validators.required, Validators.min(0)]],
-      notionalAmount: [0, Validators.min(0)],
+      marginBufferAmount: [0.0, [Validators.required, Validators.min(0)]],
+      terminationFeeAmount: [0.0, [Validators.required, Validators.min(0)]],
+      notionalAmount: [0.0, Validators.min(0)],
       currency: ["", Validators.required],
       tradeDate: ["", Validators.required],
       effectiveDate: ["", Validators.required],
       terminationDate: ["", Validators.required],
       fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
-      fixedRate: ["", Validators.required],
+      fixedRate: [0.0, Validators.required],
       fixedDayCountFraction: ["", Validators.required],
       fixedPaymentFrequency: ["", Validators.required],
       floatingPayingParty: [{ value: "", disabled: true }, Validators.required],
@@ -356,6 +356,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   isAllControlsValid() {
+
     return (
       this.swapForm.valid &&
       this.selectedSymbols &&
@@ -684,6 +685,37 @@ export class PlainSwapEditorFormComponent implements OnInit {
         this.startDelayString =
           "in " + diff.years() + "y" + diff.months() + "m" + diff.days() + "d";
       }
+    }
+  }
+
+  useSuffixes(
+    _targetControl: AbstractControl | null
+  ): void {
+    let targetControl = _targetControl as FormControl;
+    let quickCommand = targetControl.value as string;
+    let multiplier = 1;
+    if (!quickCommand.match("^[0-9]+[.]?[0-9]*[kmG]?$")) {
+      this._snackBar.open(
+        "That's not how you write a number!",
+        "OK",
+        {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          duration: 7500,
+        }
+      );
+      targetControl.reset();
+      targetControl.setErrors({ incorrect: true });
+    }else{
+      switch(quickCommand.slice(-1)){
+        case "G": multiplier = 1_000_000_000; break;
+        case "m": multiplier = 1_000_000; break;
+        case "k": multiplier = 1_000; break;
+        default: multiplier = 1; break;
+      }
+
+      targetControl.setValue(Number.parseFloat(multiplier==1? quickCommand: quickCommand.slice(0,-1))*multiplier);
+      targetControl.updateValueAndValidity();
     }
   }
 }

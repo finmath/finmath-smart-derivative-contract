@@ -119,9 +119,14 @@
         <mat-label>Margin buffer amount:</mat-label>
         <input
           matInput
-          type="number"
+          type="text"
           placeholder="~"
           formControlName="marginBufferAmount"
+          (change)="
+            useSuffixes(
+              swapForm.get('marginBufferAmount')!
+            )
+          "
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error
@@ -134,9 +139,14 @@
         <mat-label>Termination fee amount:</mat-label>
         <input
           matInput
-          type="number"
+          type="text"
           placeholder="~"
           formControlName="terminationFeeAmount"
+          (change)="
+            useSuffixes(
+              swapForm.get('terminationFeeAmount')!
+            )
+          "
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error
@@ -172,9 +182,14 @@
         <mat-label>Notional amount:</mat-label>
         <input
           matInput
-          type="number"
-          placeholder="100000"
+          type="text"
+          placeholder="~"
           formControlName="notionalAmount"
+          (change)="
+            useSuffixes(
+              swapForm.get('notionalAmount')!
+            )
+          "
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error
