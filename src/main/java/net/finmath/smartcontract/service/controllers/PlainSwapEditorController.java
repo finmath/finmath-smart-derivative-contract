@@ -50,9 +50,6 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     @Value("${storage.basedir}")
     private String storageBaseDir;
 
-    @Value("file:///${storage.basedir}/user1.savedcontracts/*")
-    private Resource[] savedContracts;
-
     @Autowired
     private ResourcePatternResolver resourcePatternResolver;
 
@@ -211,6 +208,12 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     @Override
     public ResponseEntity<List<String>> getSavedContracts(){
         List<String> savedContractsFilenames = new ArrayList<>();
+        Resource[] savedContracts;
+        try {
+            savedContracts = resourcePatternResolver.getResources("file:///"+Objects.requireNonNull(env.getProperty("storage.basedir"))+"/user1.savedcontracts/*");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         for (final Resource savedContract : savedContracts) {
                 savedContractsFilenames.add(savedContract.getFilename());
         }
@@ -219,6 +222,12 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 
     @Override
     public ResponseEntity<PlainSwapOperationRequest> loadContract(String requestedFilename){
+        Resource[] savedContracts;
+        try {
+            savedContracts = resourcePatternResolver.getResources("file:///"+Objects.requireNonNull(env.getProperty("storage.basedir"))+"/user1.savedcontracts/*");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Resource requestedContract = Arrays.stream(savedContracts).filter(contract -> Objects.requireNonNull(contract.getFilename()).contentEquals(requestedFilename)).findFirst().get();
         try {
             PlainSwapOperationRequest requestedRequest = objectMapper.readValue(requestedContract.getContentAsString(StandardCharsets.UTF_8), PlainSwapOperationRequest.class);
