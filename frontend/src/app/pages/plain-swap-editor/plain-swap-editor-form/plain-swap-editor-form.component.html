@@ -28,6 +28,23 @@
         >
       </button>
     </div>
+
+    <div class="saveLoadContractButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Save/Load contract."
+        (click)="openSaveLoadDialog()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Save/Load Contract"
+          >save</mat-icon
+        >
+      </button>
+    </div>
+
     <div class="saveInChainButtonArea">
       <button
         type="button"

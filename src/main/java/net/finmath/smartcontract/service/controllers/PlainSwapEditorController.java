@@ -1,16 +1,23 @@
 package net.finmath.smartcontract.service.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBException;
 import net.finmath.rootfinder.BisectionSearch;
 import net.finmath.smartcontract.api.PlainSwapEditorApi;
 import net.finmath.smartcontract.model.CashflowPeriod;
 import net.finmath.smartcontract.model.PlainSwapOperationRequest;
+import net.finmath.smartcontract.model.SaveContractRequest;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.product.xml.PlainSwapEditorHandler;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import net.finmath.util.TriFunction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +31,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 
 @RestController
@@ -35,6 +46,22 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     private final String marketDataPath = "net.finmath.smartcontract.client" + File.separator + "md_testset2.json";  // will be changed when we will accept market data from external sources
     @Value("${hostname}")
     private String hostname;
+
+    @Value("${storage.basedir}")
+    private String storageBaseDir;
+
+    @Value("file:///${storage.basedir}/user1.savedcontracts/*")
+    private Resource[] savedContracts;
+
+    @Autowired
+    private ResourcePatternResolver resourcePatternResolver;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private Environment env;
+
 
     @Override
     public ResponseEntity<String> generatePlainSwapSdcml(PlainSwapOperationRequest plainSwapOperationRequest) {
@@ -180,6 +207,49 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         }
 
     }
+
+    @Override
+    public ResponseEntity<List<String>> getSavedContracts(){
+        List<String> savedContractsFilenames = new ArrayList<>();
+        for (final Resource savedContract : savedContracts) {
+                savedContractsFilenames.add(savedContract.getFilename());
+        }
+        return ResponseEntity.ok(savedContractsFilenames);
+    }
+
+    @Override
+    public ResponseEntity<PlainSwapOperationRequest> loadContract(String requestedFilename){
+        Resource requestedContract = Arrays.stream(savedContracts).filter(contract -> Objects.requireNonNull(contract.getFilename()).contentEquals(requestedFilename)).findFirst().get();
+        try {
+            PlainSwapOperationRequest requestedRequest = objectMapper.readValue(requestedContract.getContentAsString(StandardCharsets.UTF_8), PlainSwapOperationRequest.class);
+            return ResponseEntity.ok(requestedRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> saveContract(SaveContractRequest saveContractRequest){
+        String regex = "^[A-za-z0-9]{1,255}$";
+        LocalDate date = LocalDate.now();
+        if(saveContractRequest.getName().matches(regex)){
+            File baseFolder = new File(Objects.requireNonNull(env.getProperty("storage.basedir"))+"/user1.savedcontracts/");
+            File targetFile = new File(baseFolder,date.toString()+saveContractRequest.getName()+".json");
+            try {
+                targetFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                objectMapper.writeValue(targetFile,saveContractRequest.getPlainSwapOperationRequest());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return ResponseEntity.ok(date.toString()+saveContractRequest.getName()+".json");
+        }
+        return ResponseEntity.ok("Request not fulfilled.");
+    }
+
 
     private static final class ErrorDetails {
 

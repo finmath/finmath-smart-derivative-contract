@@ -1,3 +1,4 @@
+import { PlainSwapEditorSaveLoadDialogComponent, CombinedData } from "./plain-swap-editor-save-load-dialog/plain-swap-editor-save-load-dialog.component";
 import { Component, OnInit } from "@angular/core";
 import {
   AbstractControl,
@@ -18,7 +19,7 @@ import {
 } from "../../../shared/form-data/fixing-day-offsets";
 import { paymentFrequencies } from "../../../shared/form-data/payment-frequencies";
 import { PlainSwapEditorShowXmlDialogComponent } from "./plain-swap-editor-show-xml-dialog/plain-swap-editor-show-xml-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Counterparty } from "../../../openapi/model/counterparty";
 import { HttpHeaders } from "@angular/common/http";
@@ -34,7 +35,6 @@ import {
 import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symbol-selector/plain-swap-editor-symbol-selector.component";
 import { PlainSwapEditorGeneratorSelectorComponent } from "./plain-swap-editor-generator-selector/plain-swap-editor-generator-selector.component";
 import { PlainSwapEditorGenerator } from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
-
 export interface TextDialogData {
   dialogMessage: string;
   dialogWindowTitle: string;
@@ -126,7 +126,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
       effectiveDate: ["", Validators.required],
       terminationDate: ["", Validators.required],
       fixedPayingParty: [{ value: "", disabled: true }, Validators.required],
-      fixedRate: [0.0, Validators.required],
+      fixedRate: ["", Validators.required],
       fixedDayCountFraction: ["", Validators.required],
       fixedPaymentFrequency: ["", Validators.required],
       floatingPayingParty: [{ value: "", disabled: true }, Validators.required],
@@ -326,7 +326,9 @@ export class PlainSwapEditorFormComponent implements OnInit {
               .item(0)!
               .childNodes.item(0) as HTMLAnchorElement
           ).innerHTML =
-            "Current NPV: " + valueResponse.value.toFixed(2) + this.currencyPrefix;
+            "Current NPV: " +
+            valueResponse.value.toFixed(2) +
+            this.currencyPrefix;
         },
         error: (error) => {
           (
@@ -356,7 +358,6 @@ export class PlainSwapEditorFormComponent implements OnInit {
   }
 
   isAllControlsValid() {
-
     return (
       this.swapForm.valid &&
       this.selectedSymbols &&
@@ -494,19 +495,108 @@ export class PlainSwapEditorFormComponent implements OnInit {
 
     dialogRef
       .afterClosed()
-      .subscribe((currentGenerator: PlainSwapEditorGenerator) => {
-        this.selectedSymbols = currentGenerator.defaultSymbolsList;
-        this.generatorFileName = currentGenerator.fileName;
-        this.swapForm.get("floatingFixingDayOffset")!.setValue(currentGenerator.floatingFixingDayOffset.id);
-        this.swapForm.get("floatingRateIndex")!.setValue(currentGenerator.indexName);
-        this.swapForm.get("fixedPaymentFrequency")!.setValue(currentGenerator.fixedPaymentFrequency.fullName);
-        this.swapForm.get("floatingPaymentFrequency")!.setValue(currentGenerator.floatingPaymentFrequency.fullName);
-        this.swapForm.get("floatingDayCountFraction")!.setValue(currentGenerator.floatingDayCountFraction.id);
-        this.swapForm.get("fixedDayCountFraction")!.setValue(currentGenerator.fixedDayCountFraction.id);
-        this.swapForm.updateValueAndValidity();
+      .subscribe((currentGenerator: PlainSwapEditorGenerator | undefined) => {
+        if (currentGenerator) {
+          this.selectedSymbols = currentGenerator.defaultSymbolsList;
+          this.generatorFileName = currentGenerator.fileName;
+          this.swapForm
+            .get("floatingFixingDayOffset")!
+            .setValue(currentGenerator.floatingFixingDayOffset.id);
+          this.swapForm
+            .get("floatingRateIndex")!
+            .setValue(currentGenerator.indexName);
+          this.swapForm
+            .get("fixedPaymentFrequency")!
+            .setValue(currentGenerator.fixedPaymentFrequency.fullName);
+          this.swapForm
+            .get("floatingPaymentFrequency")!
+            .setValue(currentGenerator.floatingPaymentFrequency.fullName);
+          this.swapForm
+            .get("floatingDayCountFraction")!
+            .setValue(currentGenerator.floatingDayCountFraction.id);
+          this.swapForm
+            .get("fixedDayCountFraction")!
+            .setValue(currentGenerator.fixedDayCountFraction.id);
+          this.swapForm.updateValueAndValidity();
+        }
       });
   }
 
+  openSaveLoadDialog() {
+    this.plainSwapEditorService.getSavedContracts().subscribe((response) => {
+      console.log(response);
+      const dialogRef = this.dialog.open(
+        PlainSwapEditorSaveLoadDialogComponent,
+        {
+          data: {data: response, contract: this.isAllControlsValid() ? this.mapRequest(): undefined} as CombinedData,
+          width: "80%",
+          height: "80%",
+        }
+      );
+      dialogRef
+        .afterClosed()
+        .subscribe((currentSettings: PlainSwapOperationRequest | undefined) => {
+          if (currentSettings) {
+            this.selectedSymbols = currentSettings.valuationSymbols;
+            this.generatorFileName = currentSettings.currentGenerator;
+            this.swapForm
+              .get("floatingFixingDayOffset")!
+              .setValue(currentSettings.floatingFixingDayOffset.toString());
+            this.swapForm
+              .get("floatingRateIndex")!
+              .setValue(currentSettings.floatingRateIndex);
+            this.swapForm
+              .get("fixedPaymentFrequency")!
+              .setValue(currentSettings.fixedPaymentFrequency.fullName);
+            this.swapForm
+              .get("floatingPaymentFrequency")!
+              .setValue(currentSettings.floatingPaymentFrequency.fullName);
+            this.swapForm
+              .get("floatingDayCountFraction")!
+              .setValue(currentSettings.floatingDayCountFraction);
+            this.swapForm
+              .get("fixedDayCountFraction")!
+              .setValue(currentSettings.fixedDayCountFraction);
+            this.swapForm.get("fixedRate")!.setValue(currentSettings.fixedRate);
+            this.swapForm
+              .get("firstCounterparty")!
+              .setValue(currentSettings.firstCounterparty.bicCode);
+            this.swapForm.updateValueAndValidity();
+            this.onFirstPartySelection();
+            this.swapForm.get("tradeDate")!.setValue(currentSettings.tradeDate);
+            this.swapForm
+              .get("terminationDate")!
+              .setValue(currentSettings.terminationDate);
+            this.swapForm
+              .get("effectiveDate")!
+              .setValue(currentSettings.effectiveDate);
+            this.swapForm
+              .get("secondCounterparty")!
+              .setValue(currentSettings.secondCounterparty.bicCode);
+            this.swapForm.updateValueAndValidity();
+            this.onSecondPartySelection();
+            this.swapForm
+              .get("marginBufferAmount")!
+              .setValue(currentSettings.marginBufferAmount);
+            this.swapForm
+              .get("terminationFeeAmount")!
+              .setValue(currentSettings.terminationFeeAmount);
+            this.swapForm
+              .get("floatingPayingParty")!
+              .setValue(currentSettings.floatingPayingParty.bicCode);
+            this.swapForm
+              .get("fixedPayingParty")!
+              .setValue(currentSettings.fixedPayingParty.bicCode);
+            this.swapForm
+              .get("notionalAmount")!
+              .setValue(currentSettings.notionalAmount);
+            this.onStartDelayChange();
+            this.onMaturityChange();
+            this.swapForm.updateValueAndValidity();
+          }
+        });
+    });
+  }
   onQuickCommandChange(
     _targetControl: AbstractControl | null,
     quickCommandControl: FormControl
@@ -688,33 +778,36 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
-  useSuffixes(
-    _targetControl: AbstractControl | null
-  ): void {
+  useSuffixes(_targetControl: AbstractControl | null): void {
     let targetControl = _targetControl as FormControl;
     let quickCommand = targetControl.value as string;
     let multiplier = 1;
-    if (!quickCommand.match("^[0-9]+[.]?[0-9]*[kmG]?$")) {
-      this._snackBar.open(
-        "That's not how you write a number!",
-        "OK",
-        {
-          horizontalPosition: "right",
-          verticalPosition: "top",
-          duration: 7500,
-        }
-      );
+    if (!quickCommand.match("^\\d+[.]?\\d*[kmG]?$")) {
+      this._snackBar.open("That's not how you write a number!", "OK", {
+        horizontalPosition: "right",
+        verticalPosition: "top",
+        duration: 7500,
+      });
       targetControl.reset();
       targetControl.setErrors({ incorrect: true });
-    }else{
-      switch(quickCommand.slice(-1)){
-        case "G": multiplier = 1_000_000_000; break;
-        case "m": multiplier = 1_000_000; break;
-        case "k": multiplier = 1_000; break;
-        default: multiplier = 1; break;
+    } else {
+      switch (quickCommand.slice(-1)) {
+        case "G":
+          multiplier = 1_000_000_000;
+          break;
+        case "m":
+          multiplier = 1_000_000;
+          break;
+        case "k":
+          multiplier = 1_000;
+          break;
       }
 
-      targetControl.setValue(Number.parseFloat(multiplier==1? quickCommand: quickCommand.slice(0,-1))*multiplier);
+      targetControl.setValue(
+        Number.parseFloat(
+          multiplier == 1 ? quickCommand : quickCommand.slice(0, -1)
+        ) * multiplier
+      );
       targetControl.updateValueAndValidity();
     }
   }
