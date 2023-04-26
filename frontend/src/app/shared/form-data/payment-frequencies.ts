@@ -1,5 +1,8 @@
 import { PaymentFrequency } from "src/app/openapi";
 
+/**
+ * List of payment frequencies recogniyed by the valuation oracle.
+ */
 export const paymentFrequencies: PaymentFrequency[] = [
   {
     period: "M",

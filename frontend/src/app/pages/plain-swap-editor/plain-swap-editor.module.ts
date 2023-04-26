@@ -12,6 +12,9 @@ import { LayoutModule } from "@angular/cdk/layout";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
+/**
+ * Plain swap editor module.
+ */
 @NgModule({
   declarations: [PlainSwapEditorComponent],
   imports: [

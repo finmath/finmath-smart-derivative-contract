@@ -11,6 +11,7 @@ form {
   display: grid;
 }
 
+//TODO: at some DPI settings the grid is no longer aligned, why?
 .swapBuildingForm {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

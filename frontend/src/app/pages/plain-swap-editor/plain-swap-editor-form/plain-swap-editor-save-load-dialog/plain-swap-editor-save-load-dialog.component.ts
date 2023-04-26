@@ -10,9 +10,9 @@ import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 import { FormControl } from "@angular/forms";
 
-export interface CombinedData {
-  data: string[];
-  contract: PlainSwapOperationRequest | undefined;
+export interface SaveLoadInteractionData {
+  serverStoredSavedContracts: string[];
+  currentContractFromEditor: PlainSwapOperationRequest | undefined;
 }
 
 @Component({
@@ -59,10 +59,10 @@ export class PlainSwapEditorSaveLoadDialogComponent implements AfterViewInit {
   constructor(
     private _snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<PlainSwapEditorSaveLoadDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public combinedData: CombinedData,
+    @Inject(MAT_DIALOG_DATA) public combinedData: SaveLoadInteractionData,
     private plainSwapEditorService: PlainSwapEditorService
   ) {
-    this.data = combinedData.data;
+    this.data = combinedData.serverStoredSavedContracts;
     this.selection = new SelectionModel<string>(false);
     this.dataSource = new MatTableDataSource<string>(this.data);
     this.dataSource.filterPredicate = (data: string, filter: string) => {
@@ -81,11 +81,11 @@ export class PlainSwapEditorSaveLoadDialogComponent implements AfterViewInit {
   }
 
   onSaveAndClose(): void {
-    if (this.combinedData.contract)
+    if (this.combinedData.currentContractFromEditor)
       this.plainSwapEditorService
         .saveContract({
           name: this.saveAsInput.value,
-          plainSwapOperationRequest: this.combinedData.contract,
+          plainSwapOperationRequest: this.combinedData.currentContractFromEditor,
         } as SaveContractRequest, "body", false, {
           httpHeaderAccept: "text/plain",
         })

@@ -1,5 +1,8 @@
 import { JsonMarketDataItem } from "src/app/openapi/model/jsonMarketDataItem";
 
+/**
+ * List of known maret data symbols.
+ */
 export const marketDataItems: JsonMarketDataItem[] = [
   {
     symbol: "EUROSTR=",

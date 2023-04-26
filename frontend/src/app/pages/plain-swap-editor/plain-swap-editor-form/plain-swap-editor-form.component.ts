@@ -1,4 +1,7 @@
-import { PlainSwapEditorSaveLoadDialogComponent, CombinedData } from "./plain-swap-editor-save-load-dialog/plain-swap-editor-save-load-dialog.component";
+import {
+  PlainSwapEditorSaveLoadDialogComponent,
+  SaveLoadInteractionData,
+} from "./plain-swap-editor-save-load-dialog/plain-swap-editor-save-load-dialog.component";
 import { Component, OnInit } from "@angular/core";
 import {
   AbstractControl,
@@ -35,11 +38,20 @@ import {
 import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symbol-selector/plain-swap-editor-symbol-selector.component";
 import { PlainSwapEditorGeneratorSelectorComponent } from "./plain-swap-editor-generator-selector/plain-swap-editor-generator-selector.component";
 import { PlainSwapEditorGenerator } from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
+
+/**
+ * Interface that represents the data that is passed to a pure text dialog box
+ */
 export interface TextDialogData {
   dialogMessage: string;
   dialogWindowTitle: string;
 }
 
+/**
+ * Header options to be used when calling the valuation service API.#
+ *
+ * @TODO once the authentication system is in place, remove this plain text storage of username and password.
+ */
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json",
@@ -47,35 +59,98 @@ const httpOptions = {
   }),
 };
 
+/**
+ * Plain swap editor form component.
+ *
+ * @TODO check if this arrangement is still optimal, may need to remove routing from the parent card.
+ */
 @Component({
   selector: "app-plain-swap-editor-form",
   templateUrl: "./plain-swap-editor-form.component.html",
   styleUrls: ["./plain-swap-editor-form.component.scss"],
 })
 export class PlainSwapEditorFormComponent implements OnInit {
-  swapForm: FormGroup;
-  currencyPrefix: string;
-  counterparties = counterparties;
-  currencies = currencies;
-  dayCountFractions = dayCountFractions;
-  paymentFrequencies = paymentFrequencies;
-  fixingDayOffsets = fixingDayOffsets;
-  dialogMessage: string | undefined;
-  dialogWindowTitle: string | undefined;
-  selectedParties = [] as Counterparty[];
-  firstPartySelected = false;
-  secondPartySelected = false;
-  currentNpv = 0;
-  terminationDateQuickCommand: FormControl;
-  tradeDateQuickCommand: FormControl;
-  effectiveDateQuickCommand: FormControl;
-  quickCommandRegExp: RegExp =
+  /**
+   * Main form control group, excludes the quick command bars.
+   */
+  protected swapForm: FormGroup;
+
+  /**
+   * Currency prefix to be used throughout the UI.
+   */
+  protected currencyPrefix: string;
+
+  /**
+   * List of counterparties available for interaction.
+   */
+  protected counterparties = counterparties;
+  /**
+   * List of currencies available for interaction.
+   */
+  protected currencies = currencies;
+  /**
+   * List of day count fractions available for interaction.
+   */
+  protected dayCountFractions = dayCountFractions;
+  /**
+   * List of payment frequency available for interaction.
+   */
+  protected paymentFrequencies = paymentFrequencies;
+  /**
+   * List of fixing offsets available for interaction.
+   */
+  protected fixingDayOffsets = fixingDayOffsets;
+
+  /**
+   * Dialog pop up message.
+   */
+  private dialogMessage: string | undefined;
+
+  /**
+   * Dialog pop up title.
+   */
+  private dialogWindowTitle: string | undefined;
+  /**
+   * Currently selected parties
+   */
+  protected selectedParties = [] as Counterparty[];
+
+  /**
+   * Indicates where the first (home) party has been selected.
+   */
+  private firstPartySelected = false;
+  /**
+   * Indicates where the second party has been selected.
+   */
+  private secondPartySelected = false;
+  protected terminationDateQuickCommand: FormControl;
+  protected tradeDateQuickCommand: FormControl;
+  protected effectiveDateQuickCommand: FormControl;
+  /**
+   * Time arithmetic quick commands parser regex.
+   */
+  private quickCommandRegExp: RegExp =
     /(?<now>^\!$)|(?<notJustNow>^(?<baseDate>[\!tem])?(?<addRemove>[\+\-])(?<dateMsd>\d+[ymd])(?<date2sd>\d+[md])?(?<dateLsd>\d+d)?$)/gm;
-  selectedSymbols: JsonMarketDataItem[] | undefined;
-  swapMaturityString: string = "+?";
-  startDelayString: string = "+?";
-  generatorFileName: string | undefined;
-  firstVaild: boolean = false;
+
+  /**
+   * List of currently selected valuation symbols.
+   */
+  protected selectedSymbols: JsonMarketDataItem[] | undefined;
+
+  /**
+   * String that contains the effective-maturity timespan length.
+   */
+  protected swapMaturityString: string = "+?";
+
+  /**
+   * String that contains the trade-effective timespan length.
+   */
+  protected startDelayString: string = "+?";
+
+  /**
+   * Currently selected generator filename.
+   */
+  protected generatorFileName: string | undefined;
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -90,7 +165,14 @@ export class PlainSwapEditorFormComponent implements OnInit {
     this.effectiveDateQuickCommand = this._formBuilder.control("");
   }
 
-  interpretAsUTC(date: Date) {
+  /**
+   * Strips the time zone information from a date while preserving the local time.
+   * @param {Date} date Date for which the timezone info must be removed.
+   * @returns {Date} the input date interpreted as UTC.
+   *
+   * @TODO explore whether there is a better way to do this now that moment.js is imported (related to the larger issue of dates handling).
+   */
+  interpretAsUTC(date: Date): Date {
     let timeZoneDifference = (date.getTimezoneOffset() / 60) * -1; //convert to positive value.
     date.setTime(date.getTime() + timeZoneDifference * 60 * 60 * 1000);
     return date;
@@ -163,7 +245,11 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
-  mapRequest() {
+  /**
+   * Scans the main form group and the component object to create a PlainSwapOperationRequest.
+   * @returns {PlainSwapOperationRequest} the resulting request.
+   */
+  mapRequest(): PlainSwapOperationRequest {
     return {
       firstCounterparty: this.counterparties.find(
         (cp) => cp.bicCode === this.swapForm.get("firstCounterparty")!.value
@@ -210,7 +296,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
     } as PlainSwapOperationRequest;
   }
 
-  pushXMLGenerationRequest() {
+  /**
+   * Scans the main form to ask the backend service for the SDCmL file relative to the contract.
+   */
+  pushXMLGenerationRequest(): void {
     this.plainSwapEditorService
       .generatePlainSwapSdcml(this.mapRequest(), "body", false, {
         httpHeaderAccept: "text/plain",
@@ -236,12 +325,15 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
-  pushFixedScheduleGenerationRequest() {
+  /**
+   * Scans the main form to ask the backend service for the payment schedule relative to the fixed leg.
+   */
+  pushFixedScheduleGenerationRequest(): void {
     this.plainSwapEditorService.getFixedSchedule(this.mapRequest()).subscribe({
       next: (cashflowPeriods) => {
         this.dialogMessage = JSON.stringify(cashflowPeriods);
         this.dialogWindowTitle = "Your SDCmL document:";
-        this.openTableDialog(cashflowPeriods);
+        this.openPaymentScheduleDialog(cashflowPeriods);
       },
       error: (error) => {
         this._snackBar.open(
@@ -258,13 +350,16 @@ export class PlainSwapEditorFormComponent implements OnInit {
     });
   }
 
-  pushParRateRequest() {
+  /**
+   * Scans the main form to ask the backend service for the par rate.
+   */
+  pushParRateRequest(): void {
     (
       document
         .getElementsByClassName("currentNpvLabelArea")
         .item(0)!
         .childNodes.item(0) as HTMLAnchorElement
-    ).innerHTML = "Current NPV: calculating par rate...";
+    ).innerHTML = "Current NPV: calculating par rate..."; // @TODO this is not a reliable way to interact with the NPV element. Maybe use references?
     this.plainSwapEditorService.getParRate(this.mapRequest()).subscribe({
       next: (parRate) => {
         this.swapForm.get("fixedRate")!.setValue(parRate.toFixed(6));
@@ -290,14 +385,17 @@ export class PlainSwapEditorFormComponent implements OnInit {
     });
   }
 
-  pushFloatingScheduleGenerationRequest() {
+  /**
+   * Scans the main form to ask the backend service for the payment schedule relative to the floating leg.
+   */
+  pushFloatingScheduleGenerationRequest(): void {
     this.plainSwapEditorService
       .getFloatingSchedule(this.mapRequest())
       .subscribe({
         next: (cashflowPeriods) => {
           this.dialogMessage = JSON.stringify(cashflowPeriods);
           this.dialogWindowTitle = "Your SDCmL document:";
-          this.openTableDialog(cashflowPeriods);
+          this.openPaymentScheduleDialog(cashflowPeriods);
         },
         error: (error) => {
           this._snackBar.open(
@@ -314,6 +412,9 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
+  /**
+   * Scans the main form to ask the backend service for the current NPV of the contract.
+   */
   pushPricingRequest() {
     this.plainSwapEditorService
       .evaluateFromPlainSwapEditor(this.mapRequest())
@@ -327,7 +428,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
               .childNodes.item(0) as HTMLAnchorElement
           ).innerHTML =
             "Current NPV: " +
-            valueResponse.value.toFixed(2) +
+            valueResponse.value.toFixed(2) + //@TODO use the number of decimals specified in the currency object
             this.currencyPrefix;
         },
         error: (error) => {
@@ -357,27 +458,41 @@ export class PlainSwapEditorFormComponent implements OnInit {
     );
   }
 
-  isAllControlsValid() {
-    return (
+  /**
+   * Scans the main form to check whether there is enough information to interact with the valuation server.
+   *
+   * @TODO this is clunky, maybe writing some custom validators is better?
+   */
+  isAllControlsValid(): boolean {
+    let selectionValid =
+      !!this.selectedSymbols && this.selectedSymbols?.length > 0;
+    let formValid: boolean =
+      selectionValid &&
       this.swapForm.valid &&
-      this.selectedSymbols &&
-      this.selectedSymbols?.length > 0 &&
       !moment(this.swapForm.get("effectiveDate")!.value).isSameOrAfter(
         moment(this.swapForm.get("terminationDate")!.value)
       ) &&
       moment(this.swapForm.get("effectiveDate")!.value).isSameOrAfter(
         moment(this.swapForm.get("tradeDate")!.value)
-      )
-    );
+      );
+    return formValid;
   }
 
-  onCurrencyChange() {
+  /**
+   * Changes the currency prefix in the UI on currency selection change.
+   */
+  onCurrencyChange(): void {
     let currencyCode = this.swapForm.get("currency")!.value;
     this.currencyPrefix = this.currencies.find(
       (c: Currency) => c.code === currencyCode
     )!.symbol;
   }
 
+  /**
+   * Checks whether the home party has been selected and updates internal state accordingly.
+   *
+   * @TODO seems kind of clunky, but I have no idea on how to make it more streamlined. I miss Java:(
+   */
   onFirstPartySelection() {
     if (!this.firstPartySelected) {
       this.selectedParties.push(
@@ -399,6 +514,11 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Checks whether the second party has been selected and updates internal state accordingly.
+   *
+   * @TODO seems kind of clunky, but I have no idea on how to make it more streamlined. I miss Java:(
+   */
   onSecondPartySelection() {
     if (!this.secondPartySelected) {
       this.selectedParties.push(
@@ -419,6 +539,11 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Checks whether the main form is trying to define a contract with the same parties both as originating and receiving.
+   *
+   * @TODO clunky, could definitely be a custom validator.
+   */
   onPayerPartySelection() {
     if (
       this.swapForm.get("fixedPayingParty")!.value ===
@@ -437,6 +562,9 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Checks internal state and opens a plain text dialog.
+   */
   openTextDialog(): void {
     const dialogRef = this.dialog.open(PlainSwapEditorShowXmlDialogComponent, {
       data: {
@@ -450,9 +578,14 @@ export class PlainSwapEditorFormComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {});
   }
 
-  openTableDialog(tableData: CashflowPeriod[]): void {
+  /**
+   * Opens a payment schedule dialog.
+   *
+   * @param paymentScheduleData the payment schedule to be shown within the dialog.
+   */
+  openPaymentScheduleDialog(paymentScheduleData: CashflowPeriod[]): void {
     const dialogRef = this.dialog.open(PlainSwapEditorScheduleViewerComponent, {
-      data: tableData,
+      data: paymentScheduleData,
       width: "80%",
       height: "80%",
     });
@@ -460,7 +593,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {});
   }
 
-  openSymbolSelection() {
+  /**
+   * Opens the symbol selection dialog.
+   */
+  openSymbolSelection(): void {
     const dialogRef = this.dialog.open(PlainSwapEditorSymbolSelectorComponent, {
       data: this.selectedSymbols,
       width: "80%",
@@ -483,7 +619,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
-  openGeneratorSelection() {
+  /**
+   * Opens the generator selection dialog.
+   */
+  openGeneratorSelection(): void {
     const dialogRef = this.dialog.open(
       PlainSwapEditorGeneratorSelectorComponent,
       {
@@ -522,13 +661,19 @@ export class PlainSwapEditorFormComponent implements OnInit {
       });
   }
 
-  openSaveLoadDialog() {
+  /**
+   * Opens the save/load selection dialog.
+   */
+  openSaveLoadDialog(): void {
     this.plainSwapEditorService.getSavedContracts().subscribe((response) => {
       console.log(response);
       const dialogRef = this.dialog.open(
         PlainSwapEditorSaveLoadDialogComponent,
         {
-          data: {data: response, contract: this.isAllControlsValid() ? this.mapRequest(): undefined} as CombinedData,
+          data: {
+            serverStoredSavedContracts: response,
+            currentContractFromEditor: this.isAllControlsValid() ? this.mapRequest() : undefined,
+          } as SaveLoadInteractionData,
           width: "80%",
           height: "80%",
         }
@@ -597,6 +742,12 @@ export class PlainSwapEditorFormComponent implements OnInit {
         });
     });
   }
+
+  /**
+   * Parses time arithmetic quick commands
+   * @param _targetControl the datepicker that acts as the operand.
+   * @param quickCommandControl the quick command input that acts as the operator.
+   */
   onQuickCommandChange(
     _targetControl: AbstractControl | null,
     quickCommandControl: FormControl
@@ -739,7 +890,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
-  onMaturityChange() {
+  /**
+   * Recalculates the effective-maturity time difference and updates view accodingly.
+   */
+  onMaturityChange(): void {
     if (
       this.swapForm.get("effectiveDate")!.value != "" &&
       this.swapForm.get("terminationDate")!.value != ""
@@ -758,7 +912,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
-  onStartDelayChange() {
+  /**
+   * Recalculates the effective-trade time difference and updates view accodingly.
+   */
+  onStartDelayChange(): void {
     if (
       this.swapForm.get("effectiveDate")!.value != "" &&
       this.swapForm.get("tradeDate")!.value != ""
@@ -778,6 +935,10 @@ export class PlainSwapEditorFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Converts a text input in the format number or number-suffix and assigns it as number to the input itself.
+   * @param _targetControl the control containing the number or number-suffix info.
+   */
   useSuffixes(_targetControl: AbstractControl | null): void {
     let targetControl = _targetControl as FormControl;
     let quickCommand = targetControl.value as string;
