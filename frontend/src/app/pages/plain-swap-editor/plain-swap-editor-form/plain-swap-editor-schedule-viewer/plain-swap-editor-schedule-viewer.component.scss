@@ -1,0 +1,6 @@
+.tr:nth-child(2n + 1) {
+  background-color: #e4f0ec;
+}
+.tr:not(:nth-child(4n + 1)) {
+  background-color: #ffffff;
+}
