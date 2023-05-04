@@ -323,7 +323,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /plain-swap-editor/upload-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request to upload market data
+      operationId: upload-market-data
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - tradeData
+              properties:
+                tradeData:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Upload successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
