@@ -47,14 +47,14 @@ import java.time.ZoneOffset;
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters // Junit cannot mind his own business and will disable Spring Jackson autoconfig
 @AutoConfigureJson
-@Disabled("Disabled because the test would depend on an absolute path.")
+@Disabled("Class disabled because the test would depend on an absolute path.")
 public class PlainSwapEditorControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorControllerTest.class);
 
     @Test
     @WithUserDetails("user1")
-    @Disabled("Disabled because the test would depend on an absolute path.")
+    @Disabled("Test disabled because the test would depend on an absolute path.")
     void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
 
         final String marketData = new ClassPathResource("net.finmath.smartcontract.client" + File.separator + "md_testset2.json").getContentAsString(StandardCharsets.UTF_8);
