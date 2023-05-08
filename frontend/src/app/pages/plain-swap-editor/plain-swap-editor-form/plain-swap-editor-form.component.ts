@@ -1,8 +1,9 @@
+import { DefaultService } from "./../../../openapi/api/default.service";
 import {
   PlainSwapEditorSaveLoadDialogComponent,
   SaveLoadInteractionData,
 } from "./plain-swap-editor-save-load-dialog/plain-swap-editor-save-load-dialog.component";
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
 import {
   AbstractControl,
   FormBuilder,
@@ -25,8 +26,8 @@ import { PlainSwapEditorShowXmlDialogComponent } from "./plain-swap-editor-show-
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Counterparty } from "../../../openapi/model/counterparty";
-import { HttpHeaders } from "@angular/common/http";
-import { debounceTime } from "rxjs";
+import { HttpHeaders, HttpClient } from "@angular/common/http";
+import { debounceTime, first, firstValueFrom, interval, map } from "rxjs";
 import * as moment from "moment";
 import { PlainSwapEditorScheduleViewerComponent } from "./plain-swap-editor-schedule-viewer/plain-swap-editor-schedule-viewer.component";
 import {
@@ -69,7 +70,10 @@ const httpOptions = {
   templateUrl: "./plain-swap-editor-form.component.html",
   styleUrls: ["./plain-swap-editor-form.component.scss"],
 })
-export class PlainSwapEditorFormComponent implements OnInit {
+export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
+  protected serverStatusMsg: string = "Server status is UNKNOWN.";
+  protected npvlabel: string = "Current NPV: waiting for data...";
+
   /**
    * Main form control group, excludes the quick command bars.
    */
@@ -155,6 +159,8 @@ export class PlainSwapEditorFormComponent implements OnInit {
   constructor(
     private _snackBar: MatSnackBar,
     private readonly plainSwapEditorService: PlainSwapEditorService,
+    private readonly defaultService: DefaultService,
+    private httpClient: HttpClient,
     public dialog: MatDialog,
     private _formBuilder: FormBuilder
   ) {
@@ -163,6 +169,36 @@ export class PlainSwapEditorFormComponent implements OnInit {
     this.terminationDateQuickCommand = this._formBuilder.control("");
     this.tradeDateQuickCommand = this._formBuilder.control("");
     this.effectiveDateQuickCommand = this._formBuilder.control("");
+  }
+
+  ngAfterViewInit() {
+    let serverstatus = document.getElementById(
+      "serverstatus"
+    ) as HTMLAnchorElement;
+    this.source.subscribe(() => {
+      this.defaultService
+        .infoFinmath("response")
+        .pipe(first())
+        .subscribe({
+          next: (r) => {
+            if (r.ok) {
+              serverstatus.classList.remove("server-unavail");
+              serverstatus.classList.add("server-active");
+              this.serverStatusMsg =
+                "Server status is AVAILABLE. Double click to upload market data.";
+            } else {
+              serverstatus.classList.add("server-unavail");
+              serverstatus.classList.remove("server-active");
+              this.serverStatusMsg = "Server status is UNAVAILABLE.";
+            }
+          },
+          error: (e) => {
+            serverstatus.classList.add("server-unavail");
+            serverstatus.classList.remove("server-active");
+            this.serverStatusMsg = "Server status is UNAVAILABLE.";
+          },
+        });
+    });
   }
 
   /**
@@ -193,6 +229,11 @@ export class PlainSwapEditorFormComponent implements OnInit {
     )!;
 
     this.plainSwapEditorService.defaultHeaders = new HttpHeaders({
+      "Content-Type": "application/json",
+      Authorization: "Basic " + window.btoa("user1:password1"),
+    });
+
+    this.defaultService.defaultHeaders = new HttpHeaders({
       "Content-Type": "application/json",
       Authorization: "Basic " + window.btoa("user1:password1"),
     });
@@ -234,12 +275,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
       .pipe(debounceTime(500))
       .subscribe((selectedValue) => {
         if (this.isAllControlsValid()) {
-          (
-            document
-              .getElementsByClassName("currentNpvLabelArea")
-              .item(0)!
-              .childNodes.item(0) as HTMLAnchorElement
-          ).innerHTML = "Current NPV: loading...";
+          this.npvlabel = "Current NPV: loading...";
           this.pushPricingRequest();
         }
       });
@@ -354,12 +390,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
    * Scans the main form to ask the backend service for the par rate.
    */
   pushParRateRequest(): void {
-    (
-      document
-        .getElementsByClassName("currentNpvLabelArea")
-        .item(0)!
-        .childNodes.item(0) as HTMLAnchorElement
-    ).innerHTML = "Current NPV: calculating par rate..."; // @TODO this is not a reliable way to interact with the NPV element. Maybe use references?
+    this.npvlabel = "Current NPV: calculating par rate..."; // @TODO this is not a reliable way to interact with the NPV element. Maybe use references?
     this.plainSwapEditorService.getParRate(this.mapRequest()).subscribe({
       next: (parRate) => {
         this.swapForm.get("fixedRate")!.setValue(parRate.toFixed(6));
@@ -421,23 +452,13 @@ export class PlainSwapEditorFormComponent implements OnInit {
       .subscribe({
         next: (valueResponse) => {
           console.log(JSON.stringify(valueResponse));
-          (
-            document
-              .getElementsByClassName("currentNpvLabelArea")
-              .item(0)!
-              .childNodes.item(0) as HTMLAnchorElement
-          ).innerHTML =
+          this.npvlabel =
             "Current NPV: " +
             valueResponse.value.toFixed(2) + //@TODO use the number of decimals specified in the currency object
             this.currencyPrefix;
         },
         error: (error) => {
-          (
-            document
-              .getElementsByClassName("currentNpvLabelArea")
-              .item(0)!
-              .childNodes.item(0) as HTMLAnchorElement
-          ).innerHTML = "Current NPV: last valuation failed!";
+          this.npvlabel = "Current NPV: last valuation failed!";
           this._snackBar.open(
             "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
             "OK",
@@ -608,12 +629,7 @@ export class PlainSwapEditorFormComponent implements OnInit {
       .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
         this.selectedSymbols = selectedSymbols;
         if (this.isAllControlsValid()) {
-          (
-            document
-              .getElementsByClassName("currentNpvLabelArea")
-              .item(0)!
-              .childNodes.item(0) as HTMLAnchorElement
-          ).innerHTML = "Current NPV: loading...";
+          this.npvlabel = "Current NPV: loading...";
           this.pushPricingRequest();
         }
       });
@@ -672,7 +688,9 @@ export class PlainSwapEditorFormComponent implements OnInit {
         {
           data: {
             serverStoredSavedContracts: response,
-            currentContractFromEditor: this.isAllControlsValid() ? this.mapRequest() : undefined,
+            currentContractFromEditor: this.isAllControlsValid()
+              ? this.mapRequest()
+              : undefined,
           } as SaveLoadInteractionData,
           width: "80%",
           height: "80%",
@@ -971,5 +989,41 @@ export class PlainSwapEditorFormComponent implements OnInit {
       );
       targetControl.updateValueAndValidity();
     }
+  }
+
+  private source = interval(1000);
+
+  uploadMarketData(_event: Event): void {
+    const event = _event.target as HTMLInputElement;
+    const fileToUpload = event.files!.item(0);
+    var fd = new FormData();
+    fd.append("tradeData", fileToUpload as Blob);
+    this.httpClient
+      .post<string>(
+        "http://localhost:8080/plain-swap-editor/upload-market-data",
+        fd,
+        {
+          headers: new HttpHeaders({
+            Authorization: "Basic " + window.btoa("user1:password1"), // @TODO: this is a clear-text password. It was necessary during testing, but obsviously this is not a good soultion!
+            Accept: "text/plain",
+          }),
+          responseType: "text" as "json",
+        }
+      )
+      .subscribe({
+        next: (r) => this.isAllControlsValid() && this.pushPricingRequest(),
+        error: (e) => {
+          this._snackBar.open(
+            "The server did not accept your market data. A developer might want to know about the stuff in the console log.",
+            "OK",
+            {
+              horizontalPosition: "right",
+              verticalPosition: "top",
+              duration: 7500,
+            }
+          );
+          console.log(JSON.stringify(e));
+        },
+      });
   }
 }

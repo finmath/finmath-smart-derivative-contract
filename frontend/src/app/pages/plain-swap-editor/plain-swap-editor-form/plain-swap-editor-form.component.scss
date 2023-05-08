@@ -11,6 +11,39 @@ form {
   display: grid;
 }
 
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.server-active {
+  background-color: #41e441;
+}
+
+.server-unavail {
+  animation-duration: 500ms;
+  animation-name: blink;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: steps(2, end);
+}
+
+@keyframes blink {
+  0% {
+    background-color: red;
+  }
+  50% {
+    background-color: #bbb;
+  }
+
+  100% {
+    background-color: #bbb;
+  }
+}
+
 //TODO: at some DPI settings the grid is no longer aligned, why?
 .swapBuildingForm {
   display: grid;
@@ -41,7 +74,7 @@ form {
   grid-area: selectSymbolsArea;
 }
 
-.saveLoadContractButtonArea{
+.saveLoadContractButtonArea {
   grid-area: saveLoadContractButtonArea;
 }
 
