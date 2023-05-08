@@ -43,6 +43,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatTreeModule } from "@angular/material/tree";
 import { OverlayModule } from "@angular/cdk/overlay";
 
+/**
+ * Module enabling the full Angular Material component suite.
+ */
 @NgModule({
   exports: [
     A11yModule,

@@ -1,13 +1,43 @@
+/**
+ * Interface containing informations about a currency.
+ */
 export interface Currency {
+  /**
+   * Glyph or symbol for the currency according to international standards.
+   */
   symbol: string;
+
+  /**
+   * English singular name of the currency.
+   */
   name: string;
+
+  /**
+   * Glyph or symbol for the currency according to local standards.
+   */
   symbol_native: string;
+
+  /**
+   * Number of decimal digits to be used when showing a monetary amount in this currency.
+   */
   decimal_digits: number;
+
   rounding: number;
+
+  /**
+   * ISO 4217 code of the currency
+   */
   code: string;
+
+  /**
+   * English plural name of the currency.
+   */
   name_plural: string;
 }
 
+/**
+ * List of currencies.
+ */
 export const currencies: Currency[] = [
   {
     symbol: "$",

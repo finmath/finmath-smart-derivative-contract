@@ -1,5 +1,8 @@
 import { Counterparty } from "src/app/openapi/model/counterparty";
 
+/**
+ * List of counterparties available for selection.
+ */
 export const counterparties: Counterparty[] = [
   {
     bicCode: "P1BKDEMM",

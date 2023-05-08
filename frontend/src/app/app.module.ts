@@ -12,6 +12,9 @@ import { MAT_DATE_LOCALE } from "@angular/material/core";
 import { ApiModule } from "./openapi/api.module";
 import { MatTableModule } from "@angular/material/table";
 
+/**
+ * Root application module.
+ */
 @NgModule({
   declarations: [AppComponent],
   imports: [

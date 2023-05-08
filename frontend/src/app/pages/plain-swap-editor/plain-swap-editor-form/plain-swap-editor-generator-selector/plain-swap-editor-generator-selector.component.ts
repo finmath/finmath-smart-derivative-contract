@@ -4,21 +4,25 @@ import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { Inject, AfterViewInit, Component, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
-import { PlainSwapEditorGenerator, plainSwapEditorGenerators } from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
+import {
+  PlainSwapEditorGenerator,
+  plainSwapEditorGenerators,
+} from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
 
 @Component({
-  selector: "app-plain-swap-editor-generator-selector",
+  selector: "app-plain-swap-editor-save-load-dialog",
   styleUrls: ["./plain-swap-editor-generator-selector.component.scss"],
   templateUrl: "./plain-swap-editor-generator-selector.component.html",
 })
-export class PlainSwapEditorGeneratorSelectorComponent implements AfterViewInit {
-  displayedColumns: string[] = [
-    "select",
-    "name",
-    "fileName",
-  ];
-  plainSwapEditorGenerators: PlainSwapEditorGenerator[] = plainSwapEditorGenerators;
-  dataSource = new MatTableDataSource<PlainSwapEditorGenerator>(this.plainSwapEditorGenerators);
+export class PlainSwapEditorGeneratorSelectorComponent
+  implements AfterViewInit
+{
+  displayedColumns: string[] = ["select", "name", "fileName"];
+  plainSwapEditorGenerators: PlainSwapEditorGenerator[] =
+    plainSwapEditorGenerators;
+  dataSource = new MatTableDataSource<PlainSwapEditorGenerator>(
+    this.plainSwapEditorGenerators
+  );
   selection: SelectionModel<PlainSwapEditorGenerator>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -54,11 +58,16 @@ export class PlainSwapEditorGeneratorSelectorComponent implements AfterViewInit 
     public dialogRef: MatDialogRef<PlainSwapEditorGeneratorSelectorComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PlainSwapEditorGenerator[]
   ) {
-    this.selection = new SelectionModel<PlainSwapEditorGenerator>(false, this.data);
+    this.selection = new SelectionModel<PlainSwapEditorGenerator>(
+      false,
+      this.data
+    );
   }
 
   onClose(): void {
-    this.dialogRef.close(this.selection.selected[0]);
+    if (this.selection.selected.length)
+      this.dialogRef.close(this.selection.selected[0]);
+    else this.dialogRef.close();
   }
 
   ngAfterViewInit() {

@@ -1,0 +1,24 @@
+.chooseOrSaveArea {
+    display: grid;
+    grid-template-columns: 25% 1fr 25% 15%;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas: "filterArea orArea saveAsArea saveButtonArea";
+    grid-area: chooseOrSaveArea;
+    justify-items: stretch;
+  }
+
+  .filterArea {
+    grid-area: filterArea;
+  }
+  .orArea {
+    grid-area: orArea;
+    text-align: end;
+  }
+  .saveAsArea {
+    grid-area: saveAsArea;
+  }
+  .saveButtonArea {
+    grid-area: saveButtonArea;
+  }
