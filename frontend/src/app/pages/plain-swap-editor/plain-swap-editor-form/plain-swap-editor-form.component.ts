@@ -348,7 +348,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           this._snackBar.open(
-            "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the stuff in the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -373,7 +373,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this._snackBar.open(
-          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "Something went wrong. A developer might want to know about the stuff in the console log.",
           "OK",
           {
             horizontalPosition: "right",
@@ -403,7 +403,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this._snackBar.open(
-          "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+          "Something went wrong. A developer might want to know about the stuff in the console log.",
           "OK",
           {
             horizontalPosition: "right",
@@ -430,7 +430,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           this._snackBar.open(
-            "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the stuff in the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -460,7 +460,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         error: (error) => {
           this.npvlabel = "Current NPV: last valuation failed!";
           this._snackBar.open(
-            "Oopsies, something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the stuff in the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -962,7 +962,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
     let quickCommand = targetControl.value as string;
     let multiplier = 1;
     if (!quickCommand.match("^\\d+[.]?\\d*[kmG]?$")) {
-      this._snackBar.open("That's not how you write a number!", "OK", {
+      this._snackBar.open("Bad syntax.", "OK", {
         horizontalPosition: "right",
         verticalPosition: "top",
         duration: 7500,
