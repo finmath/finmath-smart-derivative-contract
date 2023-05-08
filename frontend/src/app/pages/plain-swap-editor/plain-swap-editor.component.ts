@@ -48,7 +48,7 @@ export class PlainSwapEditorComponent {
     private _activatedRoute: ActivatedRoute
   ) {
     this._router.events.subscribe((event) => {
-      //i'm not entirely sure that this is good practice, but at least it works.
+      //@TODO: this might be a suboptimal solution.
       if (
         event instanceof NavigationEnd ||
         event instanceof NavigationSkipped
