@@ -1000,7 +1000,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
     fd.append("tradeData", fileToUpload as Blob);
     this.httpClient
       .post<string>(
-        "http://localhost:8080/plain-swap-editor/upload-market-data",
+        "http://34.159.3.234:8080/plain-swap-editor/upload-market-data",
         fd,
         {
           headers: new HttpHeaders({
