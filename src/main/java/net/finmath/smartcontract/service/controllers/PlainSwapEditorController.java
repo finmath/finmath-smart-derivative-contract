@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:4200", "${serviceUrl}"}, allowCredentials = "true")
 public class PlainSwapEditorController implements PlainSwapEditorApi {
 
     private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd"; //may be changed to allow for different versions of the schema

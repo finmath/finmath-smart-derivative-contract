@@ -30,7 +30,7 @@ import java.io.InputStream;
  * @author Peter Kohl-Landgraf
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:4200", "${serviceUrl}"}, allowCredentials = "true")
 public class InfoController implements InfoApi {
 
 	private final Logger logger = LoggerFactory.getLogger(InfoController.class);

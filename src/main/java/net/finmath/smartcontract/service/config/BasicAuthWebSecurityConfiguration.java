@@ -15,6 +15,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ import java.util.List;
 public class BasicAuthWebSecurityConfiguration {
 
 	Logger logger = LoggerFactory.getLogger(BasicAuthWebSecurityConfiguration.class);
+        @Value("${serviceUrl}")
+	String serviceUrl;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,7 +52,7 @@ public class BasicAuthWebSecurityConfiguration {
 		return new WebMvcConfigurer() {
 
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/editor/**").allowedOrigins("http://localhost:4200"); // localhost:4200 is the angular dev server
+				registry.addMapping("/editor/**").allowedOrigins("http://localhost:4200", serviceUrl); // localhost:4200 is the angular dev server
 			}
 		};
 	}

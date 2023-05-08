@@ -35,8 +35,10 @@ spring:
   thymeleaf:
     prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
 
-hostname: localhost:8080
+serviceUrl: 'http://34.159.3.234:4200'
+
+# hostname: localhost:8080
 
 storage:
-  basedir: 'C:/Users/xn85719/IdeaProjects/finmath-smart-derivative-contract/serverstorage'
+  basedir: '/usr/serverstorage'
 
