@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStream;
@@ -29,6 +30,7 @@ import java.io.InputStream;
  * @author Peter Kohl-Landgraf
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class InfoController implements InfoApi {
 
 	private final Logger logger = LoggerFactory.getLogger(InfoController.class);

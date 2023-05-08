@@ -3,6 +3,9 @@ import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 
+/**
+ * Navigation bar and master viewport component.
+ */
 @Component({
   selector: "app-pages",
   templateUrl: "./pages.component.html",

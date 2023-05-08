@@ -37,3 +37,6 @@ spring:
 
 hostname: localhost:8080
 
+storage:
+  basedir: 'C:/Users/xn85719/IdeaProjects/finmath-smart-derivative-contract/serverstorage'
+

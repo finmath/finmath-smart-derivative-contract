@@ -28,6 +28,23 @@
         >
       </button>
     </div>
+
+    <div class="saveLoadContractButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Save/Load contract."
+        (click)="openSaveLoadDialog()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Save/Load Contract"
+          >save</mat-icon
+        >
+      </button>
+    </div>
+
     <div class="saveInChainButtonArea">
       <button
         type="button"
@@ -59,11 +76,27 @@
       </button>
     </div>
     <div class="currentNpvLabelArea">
+      <div
+        class="dot"
+        [matTooltip]="this.serverStatusMsg"
+        id="serverstatus"
+        (dblclick)="fileInput.click()"
+      >
+        <input
+          #fileInput
+          type="file"
+          (change)="uploadMarketData($event)"
+          style="display: none"
+        />
+      </div>
+      &nbsp;
+
       <a
         [class.disabled]="!isAllControlsValid()"
         matTooltip="Double click to set fixed rate to par."
         (dblclick)="isAllControlsValid() && pushParRateRequest()"
-        >Current NPV: not yet available.</a
+        id="currentNpvLabel"
+        >{{this.npvlabel}}</a
       >
     </div>
   </div>
@@ -122,11 +155,7 @@
           type="text"
           placeholder="~"
           formControlName="marginBufferAmount"
-          (change)="
-            useSuffixes(
-              swapForm.get('marginBufferAmount')!
-            )
-          "
+          (change)="useSuffixes(swapForm.get('marginBufferAmount')!)"
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error
@@ -142,11 +171,7 @@
           type="text"
           placeholder="~"
           formControlName="terminationFeeAmount"
-          (change)="
-            useSuffixes(
-              swapForm.get('terminationFeeAmount')!
-            )
-          "
+          (change)="useSuffixes(swapForm.get('terminationFeeAmount')!)"
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error
@@ -185,11 +210,7 @@
           type="text"
           placeholder="~"
           formControlName="notionalAmount"
-          (change)="
-            useSuffixes(
-              swapForm.get('notionalAmount')!
-            )
-          "
+          (change)="useSuffixes(swapForm.get('notionalAmount')!)"
         />
         <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
         <mat-error

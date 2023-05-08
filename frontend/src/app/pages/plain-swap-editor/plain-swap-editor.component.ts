@@ -8,6 +8,9 @@ import {
   Router,
 } from "@angular/router";
 
+/**
+ * Plain swap editor component.
+ */
 @Component({
   selector: "app-plain-swap-editor",
   templateUrl: "./plain-swap-editor.component.html",

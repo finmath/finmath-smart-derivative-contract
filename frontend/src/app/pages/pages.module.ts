@@ -10,6 +10,9 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 
+/**
+ * Navigation bar and master viewport module.
+ */
 @NgModule({
   declarations: [PagesComponent],
   imports: [

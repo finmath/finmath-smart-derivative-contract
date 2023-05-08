@@ -248,6 +248,111 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /plain-swap-editor/get-saved-contracts:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request the list of saved contracts.
+      operationId: get-saved-contracts
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+  /plain-swap-editor/load-contract:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request a saved contract.
+      operationId: load-contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlainSwapOperationRequest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/save-contract:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request to save a contract.
+      operationId: save-contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plainSwapOperationRequest:
+                  $ref: "#/components/schemas/PlainSwapOperationRequest"
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Save successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/upload-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request to upload market data
+      operationId: upload-market-data
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - tradeData
+              properties:
+                tradeData:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Upload successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
