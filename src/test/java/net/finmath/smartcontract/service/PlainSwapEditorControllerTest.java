@@ -45,7 +45,7 @@ import java.time.ZoneOffset;
         useMainMethod = SpringBootTest.UseMainMethod.ALWAYS) // <--- use the same ApplicationContext as the regular (non-test) server
 @ContextConfiguration(classes = {BasicAuthWebSecurityConfiguration.class, Application.class, MockUserAuthConfig.class})
 @AutoConfigureMockMvc
-@AutoConfigureJsonTesters // Junit cannot mind his own business and will disable Spring Jackson autoconfig
+@AutoConfigureJsonTesters // manually reenable Spring Jackson autoconfig
 @AutoConfigureJson
 @Disabled("Class disabled because the test would depend on an absolute path.")
 public class PlainSwapEditorControllerTest {
