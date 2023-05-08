@@ -359,8 +359,8 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
             logger.info("Validation successful!");
             // return outputStream.toString();
 
-            // LOOK AT THIS UGLINESS!!! NOT NICE!!!!!!!
-            logger.info("XML was correctly generated, will now do some ugliness.");
+            // This solution is suboptimal.
+            logger.info("XML was correctly generated, will now do some suboptimal text handling.");
             return outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
         } catch (SAXException e) {
