@@ -348,7 +348,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           this._snackBar.open(
-            "Something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -373,7 +373,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this._snackBar.open(
-          "Something went wrong. A developer might want to know about the stuff in the console log.",
+          "Something went wrong. A developer might want to know about the contents of the console log.",
           "OK",
           {
             horizontalPosition: "right",
@@ -403,7 +403,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this._snackBar.open(
-          "Something went wrong. A developer might want to know about the stuff in the console log.",
+          "Something went wrong. A developer might want to know about the contents of the console log.",
           "OK",
           {
             horizontalPosition: "right",
@@ -430,7 +430,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           this._snackBar.open(
-            "Something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -460,7 +460,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         error: (error) => {
           this.npvlabel = "Current NPV: last valuation failed!";
           this._snackBar.open(
-            "Something went wrong. A developer might want to know about the stuff in the console log.",
+            "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
             {
               horizontalPosition: "right",
@@ -475,7 +475,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
 
   pushTradeInceptionRequest() {
     window.alert(
-      "This is where I would incept your trade... if only I had a backend."
+      "Not yet implemented."
     );
   }
 
@@ -1014,7 +1014,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         next: (r) => this.isAllControlsValid() && this.pushPricingRequest(),
         error: (e) => {
           this._snackBar.open(
-            "The server did not accept your market data. A developer might want to know about the stuff in the console log.",
+            "The server did not accept your market data. A developer might want to know about the contents of the console log.",
             "OK",
             {
               horizontalPosition: "right",
