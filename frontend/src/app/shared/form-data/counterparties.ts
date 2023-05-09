@@ -11,12 +11,12 @@ export const counterparties: Counterparty[] = [
   },
   {
     bicCode: "PHCAIT3S",
-    fullName: "Party Hard Capital",
-    baseUrl: "https://www.partyhardcapital.it/",
+    fullName: "Party Two Capital",
+    baseUrl: "https://www.partytwocapital.it/",
   },
   {
     bicCode: "PRCKCHZH",
-    fullName: "Party Rock Investment",
-    baseUrl: "https://zentrale.prck.ch/",
+    fullName: "Party Three Investment",
+    baseUrl: "https://zentrale.p3.ch/",
   },
 ];
