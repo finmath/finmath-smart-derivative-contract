@@ -2,6 +2,7 @@ package net.finmath.smartcontract.reactive;
 
 
 import com.neovisionaries.ws.client.WebSocket;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
 import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
@@ -9,8 +10,10 @@ import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParser;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.valuation.MarginCalculator;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +39,7 @@ public class DemoLauncher {
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-        String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
+		String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -45,22 +48,22 @@ public class DemoLauncher {
 		final WebSocket socket = connector.getWebSocket();
 
 		/* Market Data Adapter */
-		final MarketDataWebSocketAdapter emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(),connector.getPosition(), mdItemList );
+		final MarketDataWebSocketAdapter emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
 		socket.addListener(emitter);
 		socket.connect();
 
-        /* Write Market Data to File */
-        final Consumer<CalibrationDataset> marketDataWriter = new Consumer<CalibrationDataset>() {
-            @Override
-            public void accept(CalibrationDataset s) throws Throwable {
-                String json = s.serializeToJson();
-                String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-                System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
-                Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
-                Files.write(path,json.getBytes());
-            }
-        };
-        //emitter.asObservable().throttleLast(10,TimeUnit.SECONDS).subscribe(marketDataWriter);
+		/* Write Market Data to File */
+		final Consumer<CalibrationDataset> marketDataWriter = new Consumer<CalibrationDataset>() {
+			@Override
+			public void accept(CalibrationDataset s) throws Throwable {
+				String json = s.serializeToJson();
+				String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+				System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
+				Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
+				Files.write(path, json.getBytes());
+			}
+		};
+		//emitter.asObservable().throttleLast(10,TimeUnit.SECONDS).subscribe(marketDataWriter);
 
 		Path dir = Paths.get("C:\\Temp\\marketdata\\");  // specify your directory
 
@@ -73,31 +76,32 @@ public class DemoLauncher {
 
 		final Consumer<CalibrationDataset> fixingHistoryCollector = new Consumer<CalibrationDataset>() {
 			CalibrationDataset fixingCollectorDataSet = lastStoredSet;
+
 			@Override
 			public void accept(CalibrationDataset calibrationDataSet) throws Throwable {
 				//if (fixingCollectorDataSet == null || (fixingCollectorDataSet.getFixingDataItems().size() != calibrationDataSet.getFixingDataItems().size())){
-					fixingCollectorDataSet = fixingCollectorDataSet == null ? calibrationDataSet : calibrationDataSet.getClonedFixingsAdded(fixingCollectorDataSet.getFixingDataItems());
-					String json = fixingCollectorDataSet.serializeToJson();
-					String timeStamp = fixingCollectorDataSet.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-					System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
-					Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
-					Files.write(path,json.getBytes());
-					//fixingCollectorDataSet = calibrationDataSet;
+				fixingCollectorDataSet = fixingCollectorDataSet == null ? calibrationDataSet : calibrationDataSet.getClonedFixingsAdded(fixingCollectorDataSet.getFixingDataItems());
+				String json = fixingCollectorDataSet.serializeToJson();
+				String timeStamp = fixingCollectorDataSet.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+				System.out.println("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
+				Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
+				Files.write(path, json.getBytes());
+				//fixingCollectorDataSet = calibrationDataSet;
 				//
 			}
 		};
-		emitter.asObservable().throttleFirst(60,TimeUnit.MINUTES).subscribe(fixingHistoryCollector);
+		//emitter.asObservable().throttleFirst(60,TimeUnit.MINUTES).subscribe(fixingHistoryCollector);
 
-        /* Print Market Values */
-        //Consumer<ValueResult> printValues = (ValueResult s ) -> System.out.println("Consumer ValuationPrint: " +s.getValue().doubleValue() );
+		/* Print Market Values */
+		Consumer<ValueResult> printValues = (ValueResult s) -> System.out.println("Consumer ValuationPrint: " + s.getValue().doubleValue());
 
-        /*final Observable observableValuation = emitter.asObservable().throttleLast(5,TimeUnit.SECONDS).map(marketData->{
-            MarginCalculator calculator = new MarginCalculator();
-            return calculator.getValue(marketData.serializeToJson(),sdcXML);
-        });
-       observableValuation.subscribe(printValues);*/
+		final Observable observableValuation = emitter.asObservable().throttleLast(5, TimeUnit.SECONDS).map(marketData -> {
+			MarginCalculator calculator = new MarginCalculator();
+			return calculator.getValue(marketData.serializeToJson(), sdcXML);
+		});
+		observableValuation.subscribe(printValues);
 
-        /* Conditional Settlements */
+		/* Conditional Settlements */
         /*BigDecimal settlementTriggerValue = BigDecimal.valueOf(100.);
 		ConditionalSettlementCalculator marginCalculator = new ConditionalSettlementCalculator(sdcXML,settlementTriggerValue);
 		final Observable<MarginResult > conditionalSettlementEmitter = emitter.asObservable()
@@ -108,12 +112,6 @@ public class DemoLauncher {
 
 
         conditionalSettlementEmitter.subscribe();*/
-
-
-		while(socket.isOpen()){ // keep thread running as far is socket connection is open
-			;
-		}
-
 
 	}
 }
