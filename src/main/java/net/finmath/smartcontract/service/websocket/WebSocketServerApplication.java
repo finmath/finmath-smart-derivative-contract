@@ -1,10 +1,9 @@
 package net.finmath.smartcontract.service.websocket;
 
-import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
+import net.finmath.smartcontract.service.BasicAuthWebSecurityConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.socket.config.annotation.*;
 
 import java.util.Collections;
 

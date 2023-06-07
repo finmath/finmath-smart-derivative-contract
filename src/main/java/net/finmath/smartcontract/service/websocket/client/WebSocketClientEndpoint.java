@@ -2,8 +2,8 @@ package net.finmath.smartcontract.service.websocket.client;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import jakarta.websocket.*;
 
-import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

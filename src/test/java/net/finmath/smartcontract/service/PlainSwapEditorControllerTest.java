@@ -3,7 +3,6 @@ package net.finmath.smartcontract.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.model.*;
-import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.PlainSwapEditorController;
 import net.finmath.smartcontract.valuation.MarginCalculator;

@@ -5,7 +5,7 @@
  * Created on 15 Oct 2018
  */
 
-package net.finmath.smartcontract.service.controllers;
+package net.finmath.smartcontract.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;

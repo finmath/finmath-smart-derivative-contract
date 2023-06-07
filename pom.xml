@@ -268,6 +268,45 @@
             <artifactId>commons-cli</artifactId>
             <version>${commons-cli.version}</version>
         </dependency>
+
+        <!-- Dependencies for market data adapter -->
+        <dependency>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>3.1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+
+        <!-- WEB3J -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 
@@ -348,7 +387,7 @@
                                 <configuration>
                                     <rules>
                                         <requireMavenVersion>
-                                            <version>[3.8.0,)</version>
+                                            <version>[3.6.0,)</version>
                                         </requireMavenVersion>
                                     </rules>
                                 </configuration>
@@ -432,7 +471,7 @@
                                 <configuration>
                                     <rules>
                                         <requireMavenVersion>
-                                            <version>[3.8.0,)</version>
+                                            <version>[3.6.0,)</version>
                                         </requireMavenVersion>
                                     </rules>
                                 </configuration>
@@ -636,7 +675,7 @@
                 <configuration>
                     <rules>
                         <requireMavenVersion>
-                            <version>[3.8.0,)</version>
+                            <version>[3.6.0,)</version>
                         </requireMavenVersion>
                         <requireJavaVersion>
                             <version>17</version>

@@ -5,11 +5,14 @@
  * Created on 15 Oct 2018
  */
 
-package net.finmath.smartcontract.service.controllers;
+package net.finmath.smartcontract.service;
 
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.client.ValuationClient;
-import net.finmath.smartcontract.model.*;
+import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.MarginResult;
+import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.charset.StandardCharsets;
 
 /**
