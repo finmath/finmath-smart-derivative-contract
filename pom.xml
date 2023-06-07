@@ -53,6 +53,8 @@
         <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-bnd-plugin.version>5.3.0</maven-bnd-plugin.version>
+        <build.encoding>UTF-8</build.encoding>
+        <solidity.version>0.8.13</solidity.version>
     </properties>
 
     <developers>
@@ -199,11 +201,6 @@
             <artifactId>jackson-dataformat-properties</artifactId>
             <version>${jackson-dataformat-properties.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.4.16</version>
-        </dependency>
 
         <!-- Spring boot -->
         <dependency>
@@ -212,7 +209,7 @@
             <version>${spring-boot-starter-web.version}</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot-starter-test.version}</version>
@@ -222,14 +219,7 @@
                     <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!--Template engine (XML/HTML) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <version>2.4.0</version>
-        </dependency>
+        </dependency>-->
 
         <!-- Spring Doc -->
         <dependency>
@@ -253,7 +243,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>2.7.3</version>
+            <version>2.7.4</version>
         </dependency>
 
         <!-- Open API -->
@@ -279,12 +269,38 @@
             <artifactId>rxjava</artifactId>
             <version>3.1.5</version>
         </dependency>
+
         <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+
+        <!--<dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.5.0</version>
+        </dependency>-->
+
+        <!-- WEB3J -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.0</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -602,6 +618,60 @@
                     </gitDescribe>
                 </configuration>
                 </plugin>
+                <plugin> <!-- For web3j maven plugin config look at: https://docs.web3j.io/4.8.7/plugins/web3j_maven_plugin/ -->
+                    <groupId>org.web3j</groupId>
+                    <artifactId>web3j-maven-plugin</artifactId>
+                    <version>4.9.4</version>
+                    <configuration>
+                        <packageName>net.finmath.smartcontract.contract.solidity</packageName>
+                        <soliditySourceFiles>
+                            <directory>src/main/resources/solidity</directory>
+                            <includes>
+                                <include>Greeting.sol</include>
+                            </includes>
+                        </soliditySourceFiles>
+                        <abiSourceFiles>
+                            <directory>src/main/resources/solidity</directory>
+                            <includes>
+                                <include>**/*.json</include>
+                            </includes>
+                        </abiSourceFiles>
+                        <!--<contract>
+                            <includes>
+                                <include>..put your contracts names here ...  </include>
+                            </includes>
+                            <excludes>
+                                <exclude>..put your contracts names here ...</exclude>
+                            </excludes>
+                        </contract>-->
+                        <pathPrefixes>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <pathPrefix>@openzeppelin=./node_modules/@openzeppelin</pathPrefix>
+                        </pathPrefixes>
+                    </configuration>
+                </plugin>
+            <!-- Install with NPM -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}/src/main/resources/solidity</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

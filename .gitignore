@@ -15,6 +15,9 @@ local.properties
 .loadpath
 .recommenders
 
+#node modules
+node_modules
+
 # External tool builders
 .externalToolBuilders/
 
