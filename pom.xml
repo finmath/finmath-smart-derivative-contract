@@ -165,6 +165,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.neovisionaries</groupId>
             <artifactId>nv-websocket-client</artifactId>
             <version>${nv-websocket-client.version}</version>
@@ -268,6 +281,21 @@
             <artifactId>commons-cli</artifactId>
             <version>${commons-cli.version}</version>
         </dependency>
+
+
+        <!-- WEB3J -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+        </dependency>
     </dependencies>
 
 
@@ -348,7 +376,7 @@
                                 <configuration>
                                     <rules>
                                         <requireMavenVersion>
-                                            <version>[3.8.0,)</version>
+                                            <version>[3.6.0,)</version>
                                         </requireMavenVersion>
                                     </rules>
                                 </configuration>
@@ -432,7 +460,7 @@
                                 <configuration>
                                     <rules>
                                         <requireMavenVersion>
-                                            <version>[3.8.0,)</version>
+                                            <version>[3.6.0,)</version>
                                         </requireMavenVersion>
                                     </rules>
                                 </configuration>
@@ -478,6 +506,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
+                    <include>**/*.html</include>
                     <include>**/*.xml</include>
                     <include>**/*.xsd</include>
                     <include>**/*.yml</include>
@@ -636,7 +665,7 @@
                 <configuration>
                     <rules>
                         <requireMavenVersion>
-                            <version>[3.8.0,)</version>
+                            <version>[3.6.0,)</version>
                         </requireMavenVersion>
                         <requireJavaVersion>
                             <version>17</version>
