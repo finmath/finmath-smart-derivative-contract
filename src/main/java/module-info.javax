@@ -24,8 +24,6 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.webflux to spring.core;
 	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
-	// --- ALL CHANGED MODULES ARE BECAUSE OF OBSOLESCENCE OR REQUIRED BY THE NEW FEATURES ---
-	// requires static org.apache.tomcat.embed.core; <-- Spring Boot 3.x.y is JakartaEE 10 compliant, this module is superseded by jakarta.servlet
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.dataformat.csv;
@@ -33,7 +31,7 @@ module net.finmath.smartderivativecontract {
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
 	requires io.swagger.v3.oas.annotations;
-	requires jakarta.annotation; //<-- javax has been transferred to the JakartaEE project, the respective modules have been superseded
+	requires jakarta.annotation;
 	requires jakarta.persistence;
 	requires jakarta.servlet;
 	requires jakarta.validation;
@@ -68,6 +66,8 @@ module net.finmath.smartderivativecontract {
 	requires spring.statemachine.core;
 	requires spring.web;
 	requires spring.webflux;
-	requires spring.webmvc; //<-- required for CORS config
+	requires spring.webmvc; // required for CORS config
 	requires transitive io.reactivex.rxjava3;
+	requires abi;	// org.web3j.abi
+	requires crypto;	// org.web3j.crypto
 }
