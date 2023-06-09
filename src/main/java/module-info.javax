@@ -21,7 +21,6 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.product.xml;
 	opens net.finmath.smartcontract.service to java.base, spring.core;
 	opens net.finmath.smartcontract.service.config to spring.core;
-	opens net.finmath.smartcontract.webflux to spring.core;
 	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
 	requires com.fasterxml.jackson.core;
@@ -68,6 +67,4 @@ module net.finmath.smartderivativecontract {
 	requires spring.webflux;
 	requires spring.webmvc; // required for CORS config
 	requires transitive io.reactivex.rxjava3;
-	requires abi;	// org.web3j.abi
-	requires crypto;	// org.web3j.crypto
 }

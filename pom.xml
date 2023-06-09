@@ -34,6 +34,7 @@
         <finmath-lib.version>6.0.12</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
+        <!-- maven plugins -->
         <maven.site-plugin.version>4.0.0-M6</maven.site-plugin.version>
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
@@ -55,8 +56,35 @@
         <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
         <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
-
     </properties>
+
+    <developers>
+        <developer>
+            <id>fries</id>
+            <name>Christian Fries</name>
+            <email>email@christian-fries.de</email>
+            <url>http://www.christian-fries.de</url>
+            <timezone>1</timezone>
+        </developer>
+        <developer>
+            <id>pekola</id>
+            <name>Peter Kohl-Landgraf</name>
+            <timezone>1</timezone>
+        </developer>
+        <developer>
+            <id>delre</id>
+            <name>Luca Del Re</name>
+            <timezone>1</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <dependencyManagement>
         <dependencies>
@@ -220,7 +248,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -287,7 +314,7 @@
         <dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
-            <version>5.0.0</version>
+            <version>4.9.4</version>
         </dependency>
 
 
@@ -299,33 +326,6 @@
     </dependencies>
 
 
-    <developers>
-        <developer>
-            <id>fries</id>
-            <name>Christian Fries</name>
-            <email>email@christian-fries.de</email>
-            <url>http://www.christian-fries.de</url>
-            <timezone>1</timezone>
-        </developer>
-        <developer>
-            <id>pekola</id>
-            <name>Peter Kohl-Landgraf</name>
-            <timezone>1</timezone>
-        </developer>
-        <developer>
-            <id>delre</id>
-            <name>Luca Del Re</name>
-            <timezone>1</timezone>
-        </developer>
-    </developers>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
 
 
 
