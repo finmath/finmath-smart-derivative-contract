@@ -1,0 +1,46 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'over'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <mat-toolbar
+      >
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Menu</span>
+    </mat-toolbar>
+    <mat-nav-list>
+      <a [routerLinkActive]="['active']" [routerLink]="['./trade-wizard']">
+        <mat-list-item>
+          <mat-icon matListItemIcon>swap_horiz</mat-icon>
+          <h3 matListItemTitle>Plain swap editor</h3>
+          <span>Status: experimental</span>
+        </mat-list-item>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>SDC Trader's application - EXPERIMENTAL</span>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,15 +1,21 @@
 package net.finmath.smartcontract.service.config;
 
 import net.finmath.smartcontract.service.utils.ApplicationProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +25,39 @@ import java.util.List;
 @EnableConfigurationProperties(value = ApplicationProperties.class)
 public class BasicAuthWebSecurityConfiguration {
 
+	Logger logger = LoggerFactory.getLogger(BasicAuthWebSecurityConfiguration.class);
+        @Value("${serviceUrl}")
+	String serviceUrl;
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.csrf().disable()
-				.authorizeRequests()
-				.anyRequest().authenticated().and().httpBasic();
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(authz -> {
+					try {
+						authz.anyRequest().authenticated().and().httpBasic();
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.cors();
 		return http.build();
 	}
+
+	// when using OpenAPI/Swagger class-level annotations are ignored, this is the global config to work around that
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+
+		logger.info("CORS filter has been loaded.");
+		return new WebMvcConfigurer() {
+
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/editor/**").allowedOrigins("http://localhost:4200", serviceUrl); // localhost:4200 is the angular dev server
+			}
+		};
+	}
+
+
 
 	@Bean
 	public InMemoryUserDetailsManager userDetailsService(ApplicationProperties applicationProperties) {

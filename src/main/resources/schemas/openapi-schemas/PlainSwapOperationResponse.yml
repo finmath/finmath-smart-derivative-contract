@@ -1,0 +1,6 @@
+type: object
+required:
+  - xmlBody
+properties:
+  xmlBody:
+    type: string

@@ -2,11 +2,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
-    <parent>
+    <!--<parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-    </parent>
+    </parent>-->
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
@@ -24,37 +24,38 @@
         <src.main.java.dir>src/main/java</src.main.java.dir>
         <src.test.java.dir>src/test/java</src.test.java.dir>
         <java.version>17</java.version>
-        <src.main.kotlin.dir>src/main/kotlin</src.main.kotlin.dir>
-        <src.test.kotlin.dir>src/test/kotlin</src.test.kotlin.dir>
-        <kotlin.version>1.7.10</kotlin.version>
-        <!-- dependencies -->
-        <junit.jupiter.version>5.9.0</junit.jupiter.version>
-        <finmath-lib.version>6.0.8</finmath-lib.version>
-        <finmath-lib-plot-extensions.version>0.4.7</finmath-lib-plot-extensions.version>
-        <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
-        <spring-boot-starter-web.version>2.7.3</spring-boot-starter-web.version>
-        <spring-boot-starter-security.version>2.7.3</spring-boot-starter-security.version>
-        <spring-boot-starter-test.version>2.7.3</spring-boot-starter-test.version>
+        <nv-websocket-client.version>2.14</nv-websocket-client.version>
+        <moneta.version>1.4.2</moneta.version>
+        <jcommon.version>1.0.24</jcommon.version>
+        <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <commons-cli.version>1.5.0</commons-cli.version>
+        <spring-boot-dependencies.version>3.0.5</spring-boot-dependencies.version>
+        <finmath-lib.version>6.0.12</finmath-lib.version>
+        <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
-        <jackson-core.version>2.13.3</jackson-core.version>
-        <jackson-databind.version>2.13.3</jackson-databind.version>
-        <jackson-annotations.version>2.13.3</jackson-annotations.version>
-        <jackson-dataformat-csv.version>2.13.3</jackson-dataformat-csv.version>
-        <jackson-dataformat-properties.version>2.13.3</jackson-dataformat-properties.version>
         <!-- maven plugins -->
-        <maven.compiler-plugin.version>3.8.1</maven.compiler-plugin.version>
-        <maven.surefire-plugin.version>3.0.0-M5</maven.surefire-plugin.version>
-        <maven.surefire-report-plugin.version>3.0.0-M5</maven.surefire-report-plugin.version>
-        <maven.javadoc-plugin.version>3.3.2</maven.javadoc-plugin.version>
-        <maven.jar-plugin.version>3.2.0</maven.jar-plugin.version>
-        <maven.source-plugin.version>3.2.1</maven.source-plugin.version>
-        <maven.site-plugin.version>3.12.1</maven.site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.1.0</maven-project-info-reports-plugin.version>
-        <maven-scm-publish-plugin.version>3.1.0</maven-scm-publish-plugin.version>
-        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-        <maven-bnd-plugin.version>5.3.0</maven-bnd-plugin.version>
-        <build.encoding>UTF-8</build.encoding>
-        <solidity.version>0.8.13</solidity.version>
+        <maven.site-plugin.version>4.0.0-M6</maven.site-plugin.version>
+        <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
+        <spring-boot-maven-plugin.version>3.0.5</spring-boot-maven-plugin.version>
+        <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <jaxb2-maven-plugin.version>3.1.0</jaxb2-maven-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <openapi-generator-maven-plugin.version>6.4.0</openapi-generator-maven-plugin.version>
+        <jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
+        <wagon-ssh.version>3.5.3</wagon-ssh.version>
+        <doxia-sitetools.version>2.0.0-M6</doxia-sitetools.version>
+        <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
+        <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
+        <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
     </properties>
 
     <developers>
@@ -85,20 +86,78 @@
         </license>
     </licenses>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
 
+        <!-- BEGINNING OF UPDATED STUFF -->
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- finnmath lib -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-properties</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-csv</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>net.finmath</groupId>
             <artifactId>finmath-lib</artifactId>
             <version>${finmath-lib.version}</version>
         </dependency>
+
         <dependency>
             <groupId>net.finmath</groupId>
             <artifactId>finmath-lib-plot-extensions</artifactId>
@@ -111,14 +170,16 @@
             </exclusions>
         </dependency>
 
-        <!-- apache commons -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${apache-commons-lang3.version}</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
 
-        <!--Spring State Machine -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.statemachine</groupId>
             <artifactId>spring-statemachine-autoconfigure</artifactId>
@@ -129,145 +190,6 @@
             <groupId>org.springframework.statemachine</groupId>
             <artifactId>spring-statemachine-test</artifactId>
             <version>${spring-statemachine.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.neovisionaries</groupId>
-            <artifactId>nv-websocket-client</artifactId>
-            <version>2.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4.15</version>
-        </dependency>
-
-        <!-- Java money -->
-		<dependency>
-		    <groupId>org.javamoney</groupId>
-		    <artifactId>moneta</artifactId>
-		    <version>1.1</version>
-		</dependency>
-
-        <!-- JFree -->
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.5.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jcommon</artifactId>
-            <version>1.0.24</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson-annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-csv</artifactId>
-            <version>${jackson-dataformat-csv.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-properties</artifactId>
-            <version>${jackson-dataformat-properties.version}</version>
-        </dependency>
-
-        <!-- Spring boot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot-starter-web.version}</version>
-        </dependency>
-
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot-starter-test.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
-        <!-- Spring Doc -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.9</version>
-        </dependency>
-
-        <!-- Basic Auth -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <version>${spring-boot-starter-security.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>2.7.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>2.7.4</version>
-        </dependency>
-
-        <!-- Open API -->
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-
-        <!-- Dependencies for market data adapter -->
-        <dependency>
-            <groupId>io.reactivex.rxjava3</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>3.1.5</version>
         </dependency>
 
         <dependency>
@@ -282,17 +204,117 @@
             <version>2.7.4</version>
         </dependency>
 
-        <!--<dependency>
+
+        <dependency>
+            <groupId>com.neovisionaries</groupId>
+            <artifactId>nv-websocket-client</artifactId>
+            <version>${nv-websocket-client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.javamoney</groupId>
+            <artifactId>moneta</artifactId>
+            <version>${moneta.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- JFree -->
+
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>${jcommon.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+
+        <!-- Spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+
+        <!--Template engine (XML/HTML) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Basic Auth -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+        </dependency>
+
+        <!-- Spring Doc -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.5.0</version>
-        </dependency>-->
+            <version>${commons-cli.version}</version>
+        </dependency>
+
 
         <!-- WEB3J -->
         <dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
-            <version>5.0.0</version>
+            <version>4.9.4</version>
         </dependency>
 
 
@@ -303,16 +325,221 @@
         </dependency>
     </dependencies>
 
+
+
+
+
+    <profiles>
+        <profile>
+            <id>i-need-node</id>
+            <activation>
+                <property>
+                    <name>iNeedNode</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <node.version>v18.15.0</node.version>
+                <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
+                <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
+                <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>${maven-enforcer-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-maven</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <version>[3.6.0,)</version>
+                                        </requireMavenVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                            </execution>
+                            <execution>
+                                <id>install angular and other dependencies</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <workingDirectory>src/main/frontend</workingDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>i-have-node</id>
+            <activation>
+                <property>
+                    <name>iHaveNode</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <node.version>v18.15.0</node.version>
+                <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
+                <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+                <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <version>${exec-maven-plugin.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>${maven-enforcer-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-maven</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <version>[3.6.0,)</version>
+                                        </requireMavenVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>install-angular-and-other-dependencies</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <commandlineArgs>install</commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>no-tests</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+
     <build>
         <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <sourceDirectory>${src.main.java.dir}</sourceDirectory>
         <testSourceDirectory>${src.test.java.dir}</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.html</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${versions-maven-plugin.version}</version>
+                <configuration>
+                    <dependencyManagementExcludes>org.springframework.boot:spring-boot-dependencies</dependencyManagementExcludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -321,16 +548,15 @@
                         <path>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
-                            <version>2.7.2</version>
+                            <version>${spring-boot-dependencies.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -344,7 +570,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <doctitle>${project.name} (${project.version}) documentation</doctitle>
                     <stylesheetfile>stylesheet.css</stylesheetfile>
@@ -391,18 +617,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <forkCount>1</forkCount>
+                    <forkCount>4C</forkCount>
                     <reuseForks>false</reuseForks>
-                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED</argLine>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>finmath-checkstyle.xml</configLocation>
                 </configuration>
@@ -411,13 +637,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
             </plugin>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.7.3</version>
+                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <mainClass>net.finmath.smartcontract.service.Application</mainClass>
                     <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
@@ -427,50 +652,114 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>validate-project-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
                 <configuration>
-                    <rules><dependencyConvergence /></rules>
-                    <fail>false</fail>
+                    <rules>
+                        <requireMavenVersion>
+                            <version>[3.6.0,)</version>
+                        </requireMavenVersion>
+                        <requireJavaVersion>
+                            <version>17</version>
+                        </requireJavaVersion>
+                    </rules>
                 </configuration>
             </plugin>
 
-            <!-- Open API -->
-            <!-- Maven Dependency Plugin -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${jaxb2-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>unpack-api</id>
+                        <id>generate-jaxb-sources</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <locale>en</locale>
+                    <packageName>net.finmath.smartcontract.product.xml</packageName>
+                    <sources>
+                        <source>
+                            src${file.separator}main${file.separator}resources${file.separator}schemas${file.separator}sdc-schemas${file.separator}sdcml-contract.xsd
+                        </source>
+                    </sources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>apply-jaxb-patch</id>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <includes>**/*.yml</includes>
-                            <outputDirectory>${project.build.directory}/openapi</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <outputDirectory>target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src${file.separator}patches</directory>
+                                    <includes>
+                                        <include>package-info.java</include>
+                                        <include>TradeIdentifier.java</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>move-yaml-configs</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}${file.separator}openapi</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src${file.separator}main${file.separator}resources</directory>
+                                    <includes>
+                                        <include>**${file.separator}*.yml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+
+
             <!-- OpenApi Generator Plugin -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.0.1</version>
+                <version>${openapi-generator-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/api.yml</inputSpec>
+                            <inputSpec>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml</inputSpec>
                             <generatorName>spring</generatorName>
                             <library>spring-boot</library>
                             <configOptions>
+                                <useSpringBoot3>true</useSpringBoot3>
                                 <sourceFolder>src/generated/java/main</sourceFolder>
                                 <sourceFolder>src/main/gen</sourceFolder>
                                 <dateLibrary>java8</dateLibrary>
@@ -490,33 +779,12 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <source>src/main/java</source>
-                                <source>target/generated-sources/annotations</source>
-                                <source>target/generated-sources/openapi/src/main/gen</source>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <to>
                         <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
@@ -550,27 +818,34 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <!-- Java money -->
+                    <dependency>
+                        <groupId>org.javamoney</groupId>
+                        <artifactId>moneta</artifactId>
+                        <version>${moneta.version}</version>
+                        <type>pom</type>
+                    </dependency>
                     <dependency>
                         <!-- add support for ssh/scp -->
                         <groupId>org.apache.maven.wagon</groupId>
                         <artifactId>wagon-ssh</artifactId>
-                        <version>3.3.4</version>
+                        <version>${wagon-ssh.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-sitetools</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-sitetools.version}</version>
                         <type>pom</type>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-skin-model</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-skin-model.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.11.1</version>
+                        <version>${doxia-module-markdown.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -596,7 +871,7 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>5.0.0</version>
+                <version>${git-commit-id-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>
@@ -618,72 +893,10 @@
                         <dirty>-dirty</dirty>
                     </gitDescribe>
                 </configuration>
-                </plugin>
-                <plugin> <!-- For web3j maven plugin config look at: https://docs.web3j.io/4.8.7/plugins/web3j_maven_plugin/ -->
-                    <groupId>org.web3j</groupId>
-                    <artifactId>web3j-maven-plugin</artifactId>
-                    <version>4.9.4</version>
-                    <configuration>
-                        <packageName>net.finmath.smartcontract.contract.solidity</packageName>
-                        <soliditySourceFiles>
-                            <directory>src/main/resources/solidity</directory>
-                            <includes>
-                                <include>Greeting.sol</include>
-                            </includes>
-                        </soliditySourceFiles>
-                        <abiSourceFiles>
-                            <directory>src/main/resources/solidity</directory>
-                            <includes>
-                                <include>**/*.json</include>
-                            </includes>
-                        </abiSourceFiles>
-                        <!--<contract>
-                            <includes>
-                                <include>..put your contracts names here ...  </include>
-                            </includes>
-                            <excludes>
-                                <exclude>..put your contracts names here ...</exclude>
-                            </excludes>
-                        </contract>-->
-                        <pathPrefixes>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <pathPrefix>@openzeppelin=./node_modules/@openzeppelin</pathPrefix>
-                        </pathPrefixes>
-                    </configuration>
-                </plugin>
-            <!-- Install with NPM -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>npm-install</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <workingDirectory>${project.basedir}/src/main/resources/solidity</workingDirectory>
-                            <arguments>
-                                <argument>install</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>no-tests</id>
-            <properties>
-                <maven.test.skip>true</maven.test.skip>
-            </properties>
-        </profile>
-    </profiles>
 
     <issueManagement>
         <system>GitHub</system>
@@ -695,7 +908,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven.javadoc-plugin.version}</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
                     <reportSet><!-- by default, id = "default" -->
                         <reports><!-- select non-aggregate reports -->
@@ -706,6 +919,7 @@
                 </reportSets>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
                 <reportSets>
@@ -734,10 +948,10 @@
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
         </site>
-<!--        <site>-->
-<!--            <id>finmath-site</id>-->
-<!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
-<!--        </site>-->
+        <!--        <site>-->
+        <!--            <id>finmath-site</id>-->
+        <!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
+        <!--        </site>-->
     </distributionManagement>
 
     <scm>
@@ -747,4 +961,5 @@
         </developerConnection>
         <tag>HEAD</tag>
     </scm>
+
 </project>

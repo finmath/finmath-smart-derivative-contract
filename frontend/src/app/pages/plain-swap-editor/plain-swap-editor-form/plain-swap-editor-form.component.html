@@ -1,0 +1,527 @@
+<form [formGroup]="swapForm" class="swapBuildingForm">
+  <div class="commandInfoArea">
+    <div class="generateXmlButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="!isAllControlsValid()"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Generate XML."
+        (click)="pushXMLGenerationRequest()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Generate XML">code</mat-icon>
+      </button>
+    </div>
+    <div class="loadTemplateButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Load template."
+        (click)="openGeneratorSelection()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Load Template"
+          >create</mat-icon
+        >
+      </button>
+    </div>
+
+    <div class="saveLoadContractButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Save/Load contract."
+        (click)="openSaveLoadDialog()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Save/Load Contract"
+          >save</mat-icon
+        >
+      </button>
+    </div>
+
+    <div class="saveInChainButtonArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="!isAllControlsValid()"
+        color="warn"
+        mat-mini-fab
+        matTooltip="Save trade on chain."
+        (click)="pushTradeInceptionRequest()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
+          >cloud_upload</mat-icon
+        >
+      </button>
+    </div>
+    <div class="selectSymbolsArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Select valuation symbols."
+        (click)="openSymbolSelection()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
+          >list</mat-icon
+        >
+      </button>
+    </div>
+    <div class="currentNpvLabelArea">
+      <div
+        class="dot"
+        [matTooltip]="this.serverStatusMsg"
+        id="serverstatus"
+        (dblclick)="fileInput.click()"
+      >
+        <input
+          #fileInput
+          type="file"
+          (change)="uploadMarketData($event)"
+          style="display: none"
+        />
+      </div>
+      &nbsp;
+
+      <a
+        [class.disabled]="!isAllControlsValid()"
+        matTooltip="Double click to set fixed rate to par."
+        (dblclick)="isAllControlsValid() && pushParRateRequest()"
+        id="currentNpvLabel"
+        >{{this.npvlabel}}</a
+      >
+    </div>
+  </div>
+  <div class="basicDefinitionArea">
+    <div class="basicDefinitionTitleArea">
+      <label>Basic definition</label>
+      <mat-divider></mat-divider>
+    </div>
+    <div class="firstCounterpartySelectionArea">
+      <mat-form-field>
+        <mat-label>Operating on behalf of:</mat-label>
+        <mat-select
+          formControlName="firstCounterparty"
+          (selectionChange)="onFirstPartySelection()"
+          placeholder="Select counterparty..."
+        >
+          <mat-option
+            *ngFor="
+              let counterparty of counterparties
+                | excludeFilter : swapForm.get('secondCounterparty')!.value
+            "
+            [value]="counterparty.bicCode"
+          >
+            {{ counterparty.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify a counterparty here.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="secondCounterpartySelectionArea">
+      <mat-form-field>
+        <mat-label>Other party:</mat-label>
+        <mat-select
+          formControlName="secondCounterparty"
+          (selectionChange)="onSecondPartySelection()"
+          placeholder="Select counterparty..."
+        >
+          <mat-option
+            *ngFor="
+              let counterparty of counterparties
+                | excludeFilter : swapForm.get('firstCounterparty')!.value
+            "
+            [value]="counterparty.bicCode"
+          >
+            {{ counterparty.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify a counterparty here.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="marginBufferInputArea">
+      <mat-form-field>
+        <mat-label>Margin buffer amount:</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="~"
+          formControlName="marginBufferAmount"
+          (change)="useSuffixes(swapForm.get('marginBufferAmount')!)"
+        />
+        <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
+        <mat-error
+          >You must specify an amount, and it has to be non negative.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <div class="penaltyFeeInputArea">
+      <mat-form-field>
+        <mat-label>Termination fee amount:</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="~"
+          formControlName="terminationFeeAmount"
+          (change)="useSuffixes(swapForm.get('terminationFeeAmount')!)"
+        />
+        <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
+        <mat-error
+          >You must specify an amount, and it has to be non negative.</mat-error
+        >
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="financialDefinitionArea">
+    <div class="financialDefinitionTitleArea">
+      <label>Financial definition</label>
+      <mat-divider></mat-divider>
+    </div>
+    <div class="currencySelectionArea">
+      <mat-form-field>
+        <mat-label>Currency:</mat-label>
+        <mat-select
+          formControlName="currency"
+          (selectionChange)="onCurrencyChange()"
+          placeholder="Select currency..."
+        >
+          <mat-option
+            *ngFor="let currency of currencies"
+            [value]="currency.code"
+          >
+            {{ currency.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="notionalAmountInputArea">
+      <mat-form-field>
+        <mat-label>Notional amount:</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="~"
+          formControlName="notionalAmount"
+          (change)="useSuffixes(swapForm.get('notionalAmount')!)"
+        />
+        <span matTextPrefix>{{ currencyPrefix }}&nbsp;</span>
+        <mat-error
+          >You must specify an amount, and it has to be non negative.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <div class="tradeDateInputArea">
+      <mat-form-field>
+        <mat-label>Trade date:</mat-label>
+        <input
+          matInput
+          formControlName="tradeDate"
+          [matDatepicker]="picker1"
+          (dateChange)="onStartDelayChange()"
+        />
+        <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker1"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error>You must specify a date.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="quickTradeDateSelectionArea">
+      <mat-form-field>
+        <mat-label>Quick command: </mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="+?"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('tradeDate'),
+              tradeDateQuickCommand
+            )
+          "
+          [formControl]="tradeDateQuickCommand"
+        />
+      </mat-form-field>
+    </div>
+    <div class="effectiveDateInputArea">
+      <mat-form-field>
+        <mat-label>Effective date:</mat-label>
+        <input
+          matInput
+          formControlName="effectiveDate"
+          [matDatepicker]="picker2"
+          (dateChange)="onMaturityChange(); onStartDelayChange()"
+        />
+        <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker2"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+        <mat-error>You must specify a date.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="quickEffectiveDateSelectionAea">
+      <mat-form-field>
+        <mat-label>QC/Start offset: </mat-label>
+        <input
+          matInput
+          type="text"
+          [placeholder]="this.startDelayString"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('effectiveDate'),
+              effectiveDateQuickCommand
+            );
+            onMaturityChange();
+            onStartDelayChange()
+          "
+          [formControl]="effectiveDateQuickCommand"
+        />
+      </mat-form-field>
+    </div>
+
+    <div class="terminationDateInputArea">
+      <mat-form-field>
+        <mat-label>Termination date:</mat-label>
+        <input
+          matInput
+          formControlName="terminationDate"
+          [matDatepicker]="picker3"
+          (dateChange)="onMaturityChange()"
+        />
+        <mat-hint>DD/MM/YYYY, omit leading zeroes</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker3"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker3></mat-datepicker>
+        <mat-error>You must specify a date.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="quickMaturitySelectionAea">
+      <mat-form-field>
+        <mat-label>QC/Maturity: </mat-label>
+        <input
+          matInput
+          type="text"
+          [placeholder]="this.swapMaturityString"
+          (change)="
+            onQuickCommandChange(
+              swapForm.get('terminationDate'),
+              terminationDateQuickCommand
+            );
+            onMaturityChange()
+          "
+          [formControl]="terminationDateQuickCommand"
+        />
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="floatingLegArea">
+    <div class="floatingLegPayerPartySelectionArea">
+      <mat-form-field>
+        <mat-label>Paying party:</mat-label>
+        <mat-select
+          formControlName="floatingPayingParty"
+          (selectionChange)="onPayerPartySelection()"
+          [placeholder]="
+            selectedParties.length < 2
+              ? 'Select at least two parties in the first step.'
+              : 'Select paying party...'
+          "
+        >
+          <mat-option
+            *ngFor="let counterparty of selectedParties"
+            [value]="counterparty.bicCode"
+          >
+            {{ counterparty.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          >You must specify the paying party and it must differ from the one of
+          the fixed leg.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <div class="floatingIndexSelectionArea">
+      <mat-form-field>
+        <mat-label>Floating rate index:</mat-label>
+        <input
+          matInput
+          type="text"
+          placeholder="eg. EONIA, ESTR..."
+          formControlName="floatingRateIndex"
+        />
+        <mat-error>You must specify the reference index.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="floatingDayCountFractionSelectionArea">
+      <mat-form-field>
+        <mat-label>Day count fraction:</mat-label>
+        <mat-select
+          formControlName="floatingDayCountFraction"
+          placeholder="Select day count fraction..."
+        >
+          <mat-option
+            *ngFor="let dayCountFraction of dayCountFractions"
+            [value]="dayCountFraction.id"
+          >
+            {{ dayCountFraction.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify the day count fraction.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="fixingOffsetSelectionArea">
+      <mat-form-field>
+        <mat-label>Fixing day offset:</mat-label>
+        <mat-select
+          formControlName="floatingFixingDayOffset"
+          placeholder="Select fixing day offset..."
+        >
+          <mat-option
+            *ngFor="let fixingDayOffset of fixingDayOffsets"
+            [value]="fixingDayOffset.id"
+          >
+            {{ fixingDayOffset.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify the fixing offset.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="floatingPaymentFrequencyArea">
+      <mat-form-field>
+        <mat-label>Payment frequency:</mat-label>
+        <mat-select
+          formControlName="floatingPaymentFrequency"
+          placeholder="Select payment frequency..."
+        >
+          <mat-option
+            *ngFor="let paymentFrequency of paymentFrequencies"
+            [value]="paymentFrequency.fullName"
+          >
+            {{ paymentFrequency.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify the day count fraction.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="floatingLegDefinitionTitleArea">
+      <label
+        >Floating leg definition
+        <a
+          class="dummyclass"
+          [class.disabled]="!isAllControlsValid()"
+          (click)="
+            isAllControlsValid() && pushFloatingScheduleGenerationRequest()
+          "
+          >(show schedule)</a
+        ></label
+      >
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+  <div class="fixedLegArea">
+    <div class="fixedLegDefinitionTitleArea">
+      <label
+        >Fixed leg definition
+        <a
+          class="dummyclass"
+          [class.disabled]="!isAllControlsValid()"
+          (click)="isAllControlsValid() && pushFixedScheduleGenerationRequest()"
+          >(show schedule)</a
+        ></label
+      >
+      <mat-divider></mat-divider>
+    </div>
+    <div class="fixedLegPayerPartySelectionArea">
+      <mat-form-field>
+        <mat-label>Paying party:</mat-label>
+        <mat-select
+          formControlName="fixedPayingParty"
+          (selectionChange)="onPayerPartySelection()"
+          [placeholder]="
+            selectedParties.length < 2
+              ? 'Select at least two parties in the first step.'
+              : 'Select paying party...'
+          "
+        >
+          <mat-option
+            *ngFor="let counterparty of selectedParties"
+            [value]="counterparty.bicCode"
+          >
+            {{ counterparty.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error
+          >You must specify the paying party and it must differ from the one of
+          the floating leg.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <div class="fixedLegDayCountFractionSelectionArea">
+      <mat-form-field>
+        <mat-label>Day count fraction:</mat-label>
+        <mat-select
+          formControlName="fixedDayCountFraction"
+          placeholder="Select day count fraction..."
+        >
+          <mat-option
+            *ngFor="let dayCountFraction of dayCountFractions"
+            [value]="dayCountFraction.id"
+          >
+            {{ dayCountFraction.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify the day count fraction.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="fixedRateInputArea">
+      <mat-form-field>
+        <mat-label>Fixed rate:</mat-label>
+        <input
+          matInput
+          type="number"
+          placeholder="~"
+          formControlName="fixedRate"
+          (change)="
+            this.swapForm
+              .get('fixedRate')!
+              .setValue(this.swapForm.get('fixedRate')!.value.toFixed(6));
+            this.swapForm.updateValueAndValidity()
+          "
+        />
+        <span matTextSuffix>&nbsp;%</span>
+        <mat-error>You must specify the fixed rate.</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="fixedPaymentFrequencyArea">
+      <mat-form-field>
+        <mat-label>Payment frequency:</mat-label>
+        <mat-select
+          formControlName="fixedPaymentFrequency"
+          placeholder="Select payment frequency..."
+        >
+          <mat-option
+            *ngFor="let paymentFrequency of paymentFrequencies"
+            [value]="paymentFrequency.fullName"
+          >
+            {{ paymentFrequency.fullName }}
+          </mat-option>
+        </mat-select>
+        <mat-error>You must specify the day count fraction.</mat-error>
+      </mat-form-field>
+    </div>
+  </div>
+</form>
