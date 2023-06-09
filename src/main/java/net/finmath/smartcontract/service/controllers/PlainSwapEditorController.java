@@ -41,7 +41,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 
     private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd"; //may be changed to allow for different versions of the schema
 
-    @Value("${hostname}")
+    @Value("${hostname:localhost:8080}")
     private String hostname;
 
     @Value("${storage.basedir}")
@@ -67,8 +67,6 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             pd.setTitle(ErrorDetails.JAXB_ERROR_DETAIL);
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
-
-
     }
 
     @Override
@@ -275,7 +273,6 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         return ResponseEntity.ok("ok");
 
     }
-
 
     private static final class ErrorDetails {
 

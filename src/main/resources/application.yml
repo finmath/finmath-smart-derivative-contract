@@ -37,7 +37,7 @@ spring:
 
 serviceUrl: 'http://34.159.3.234:4200'
 
-hostname: localhost:8080
+#hostname: localhost:8080
 
 storage:
   basedir: '/usr/serverstorage'
