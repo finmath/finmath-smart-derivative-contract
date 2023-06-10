@@ -7,29 +7,20 @@ import net.finmath.smartcontract.model.ValueRequest;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.ValuationController;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebMergedContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -43,6 +34,7 @@ import java.time.LocalDateTime;
 				useMainMethod = SpringBootTest.UseMainMethod.ALWAYS) // <--- use the same ApplicationContext as the regular (non test) server
 @ContextConfiguration(classes = {BasicAuthWebSecurityConfiguration.class, Application.class, MockUserAuthConfig.class})
 @AutoConfigureMockMvc
+@WebAppConfiguration
 public class ValuationControllerTest {
 
 
