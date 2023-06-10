@@ -13,9 +13,9 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.marketdata.curvecalibration;
 	exports net.finmath.smartcontract.service.utils;
 	exports net.finmath.smartcontract.marketdata.adapters;
-	exports net.finmath.smartcontract.webflux;
     exports net.finmath.smartcontract.reactive;
 	exports net.finmath.smartcontract.service.controllers;
+	exports net.finmath.smartcontract.contract.solidity;
 
 	opens net.finmath.smartcontract.client;
 	opens net.finmath.smartcontract.product.xml;
@@ -23,28 +23,35 @@ module net.finmath.smartderivativecontract {
 	opens net.finmath.smartcontract.service.config to spring.core;
 	opens net.finmath.smartcontract.service.controllers to java.base, spring.core;
 
+	requires java.datatransfer;
+	requires java.desktop;
+	requires java.logging;
+	requires java.money;
+
+	requires javafx.controls;
+	requires javafx.graphics;
+	requires javafx.swing;
+
+	requires net.finmath.lib;
+	requires net.finmath.plots;
+
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.dataformat.csv;
 	requires com.fasterxml.jackson.dataformat.javaprop;
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
+
 	requires io.swagger.v3.oas.annotations;
+	requires io.reactivex.rxjava3;
+
 	requires jakarta.annotation;
 	requires jakarta.persistence;
 	requires jakarta.servlet;
 	requires jakarta.validation;
 	requires jakarta.xml.bind;
-	requires java.datatransfer;
-	requires java.desktop;
-	requires java.logging;
-	requires java.money;
-	requires javafx.controls;
-	requires javafx.graphics;
-	requires javafx.swing;
-	requires net.finmath.lib;
-	requires net.finmath.plots;
 	requires nv.websocket.client;
+
 	requires org.apache.commons.lang3;
 	requires org.apache.httpcomponents.httpclient;
 	requires org.apache.httpcomponents.httpcore;
@@ -52,7 +59,9 @@ module net.finmath.smartderivativecontract {
 	requires org.jfree.jfreechart;
 	requires org.openapitools.jackson.nullable;
 	requires org.slf4j;
+
 	requires reactor.core;
+
 	requires spring.beans;
 	requires spring.boot.autoconfigure;
 	requires spring.boot;
@@ -64,7 +73,11 @@ module net.finmath.smartderivativecontract {
 	requires spring.security.web;
 	requires spring.statemachine.core;
 	requires spring.web;
-	requires spring.webflux;
+	requires spring.websocket;
 	requires spring.webmvc; // required for CORS config
-	requires transitive io.reactivex.rxjava3;
+
+	requires core;
+	requires crypto;
+	requires abi;
+
 }
