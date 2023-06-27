@@ -1,0 +1,16 @@
+.vscode
+.idea/*.xml
+.idea
+.idea/
+target/
+node_modules
+*.iml
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+#Hardhat files
+cache
+artifacts
