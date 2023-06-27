@@ -70,29 +70,21 @@ contract SDC is ISDC {
          */
         Idle,
         /*
-         * @dev The process is initiated (incepted, but not yet completed confimation). Next: AwaitingFunding
+         * @dev The process is initiated (incepted, but not yet completed confimation). Next: Initiation
          */
         Initiation,
         /*
-         * @dev Awaiiting preparation for funding the smart contract. Next: Funding
+         * @dev Awaiting preparation for Rebalancing the smart contract. Next: Rebalanced
          */
-        AwaitingFunding,
+        AwaitingRebalancing,
         /*
          * @dev Prefunding the smart contract. Next: AwaitingSettlement
          */
-        Funding,
+        Rebalanced,
         /*
-         * @dev The smart contract is completely funded and awaits settlement. Next: ValuationAndSettlement
+         * @dev The valuation is initiated. Next: Awaiting Rebalancing
          */
-        Funded,
-        /*
-         * @dev The settlement process is initiated. Next: Settled or InTermination
-         */
-        ValuationAndSettlement,
-        /*
-         * @dev Termination started.
-         */
-        InTermination
+        ValuationAndSettlement
     }
 
     struct MarginRequirement {
@@ -100,9 +92,11 @@ contract SDC is ISDC {
         int256 terminationFee;
     }
 
+
+
     /*
-     * Modifiers serve as guards whether at a specific process state a specific function can be called
-     */
+    * Modifiers serve as guards whether at a specific process state a specific function can be called
+    */
 
     modifier onlyCounterparty() {
         require(msg.sender == party1 || msg.sender == party2, "You are not a counterparty."); _;
@@ -113,15 +107,16 @@ contract SDC is ISDC {
     modifier onlyWhenTradeIncepted() {
         require(tradeState == TradeState.Incepted, "Trade state is not 'Incepted'."); _;
     }
-    modifier onlyWhenProcessAwaitingFunding() {
-        require(processState == ProcessState.AwaitingFunding, "Process state is not 'AwaitingFunding'."); _;
+    modifier onlyWhenRebalanced() {
+        require(processState == ProcessState.Rebalanced, "Process state is not 'Rebalanced'."); _;
     }
-    modifier onlyWhenProcessFundedAndTradeActive() {
-        require(processState == ProcessState.Funded && tradeState == TradeState.Active, "Process state is not 'Funded' or Trade is not 'Active'."); _;
+    modifier onlyWhenValuationAndSettlement() {
+        require(processState == ProcessState.ValuationAndSettlement, "Process state is not 'ValuationSettlement'."); _;
     }
-    modifier onlyWhenProcessValuationAndSettlement() {
-        require(processState == ProcessState.ValuationAndSettlement, "Process state is not 'ValuationAndSettlement'."); _;
+    modifier onlyWhenAwaitingRebalancing() {
+        require(processState == ProcessState.AwaitingRebalancing, "Process state is not 'AwaitingRebalancing'."); _;
     }
+
     TradeState private tradeState;
     ProcessState private processState;
 
@@ -179,9 +174,8 @@ contract SDC is ISDC {
         processState = ProcessState.Initiation;
         tradeState = TradeState.Incepted; // Set TradeState to Incepted
 
-        _upfrontPayment; // To silence warning... TODO: Implement new feature.
 
-        uint256 hash = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData)));
+        uint256 hash = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData, _upfrontPayment)));
         pendingRequests[hash] = msg.sender;
         tradeID = Strings.toString(hash);
         tradeData = _tradeData; // Set trade data to enable querying already in inception state
@@ -196,10 +190,10 @@ contract SDC is ISDC {
      * emits a TradeConfirmed
      * can be called only when TradeState = Incepted
      */
-    function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeIncepted
+    function confirmTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external override onlyCounterparty onlyWhenTradeIncepted
     {
         address pendingRequestParty = msg.sender == party1 ? party2 : party1;
-        uint256 tradeIDConf = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData)));
+        uint256 tradeIDConf = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData, _upfrontPayment)));
         require(pendingRequests[tradeIDConf] == pendingRequestParty, "Confirmation fails due to inconsistent trade data or wrong party address");
         delete pendingRequests[tradeIDConf]; // Delete Pending Request
 
@@ -211,8 +205,8 @@ contract SDC is ISDC {
             tradeState = TradeState.Active;
             emit TradeActivated(tradeID);
 
-            processState = ProcessState.AwaitingFunding;
-            emit ProcessAwaitingFunding();
+            processState = ProcessState.AwaitingRebalancing;
+            emit ProcessAwaitingRebalancing();
         }
     }
 
@@ -256,8 +250,7 @@ contract SDC is ISDC {
      * Puts Process state to Margin Account Check
      * can be called only when ProcessState = AwaitingFunding
      */
-    function initiatePrefunding() external override onlyWhenProcessAwaitingFunding {
-        processState = ProcessState.Funding;
+    function rebalance() external override onlyWhenAwaitingRebalancing {
 
         uint256 balanceParty1 = liquidityToken.balanceOf(party1);
         uint256 balanceParty2 = liquidityToken.balanceOf(party2);
@@ -272,16 +265,14 @@ contract SDC is ISDC {
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
             liquidityToken.transferFrom(party1, address(this), gapAmountParty1);  // Transfer of GapAmount to sdc contract
             liquidityToken.transferFrom(party2, address(this), gapAmountParty2);  // Transfer of GapAmount to sdc contract
-            processState = ProcessState.Funded;
+            processState = ProcessState.Rebalanced;
             adjustSDCBalances(int(gapAmountParty1),int(gapAmountParty2));  // Update internal balances
-            emit ProcessFunded();
+            emit ProcessRebalanced();
         }
         /* Party 1 - Bad case: Balances are insufficient or token has not enough approval */
         else if ( (balanceParty1 < gapAmountParty1 || liquidityToken.allowance(party1,address(this)) < gapAmountParty1) &&
             (balanceParty2 >= gapAmountParty2 && liquidityToken.allowance(party2,address(this)) >= gapAmountParty2) ) {
             tradeState = TradeState.Terminated;
-            processState = ProcessState.InTermination;
-
             adjustSDCBalances(-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee); // Update internal balances
 
             _processTermination(); // Release all buffers
@@ -291,7 +282,6 @@ contract SDC is ISDC {
         else if ( (balanceParty1 >= gapAmountParty1 && liquidityToken.allowance(party1,address(this)) >= gapAmountParty1) &&
             (balanceParty2 < gapAmountParty2 || liquidityToken.allowance(party2,address(this)) < gapAmountParty2) ) {
             tradeState = TradeState.Terminated;
-            processState = ProcessState.InTermination;
 
             adjustSDCBalances(marginRequirements[party2].terminationFee,-marginRequirements[party2].terminationFee); // Update internal balances
 
@@ -301,7 +291,6 @@ contract SDC is ISDC {
         /* Both parties fail: Cross Transfer of Termination Fee */
         else {
             tradeState = TradeState.Terminated;
-            processState = ProcessState.InTermination;
             // if ( (balanceParty1 < gapAmountParty1 || liquidityToken.allowance(party1,address(this)) < gapAmountParty1) &&  (balanceParty2 < gapAmountParty2 || liquidityToken.allowance(party2,address(this)) < gapAmountParty2) ) { tradeState = TradeState.Terminated;
             adjustSDCBalances(marginRequirements[party2].terminationFee-marginRequirements[party1].terminationFee,marginRequirements[party1].terminationFee-marginRequirements[party2].terminationFee); // Update internal balances: Cross Booking of termination fee
 
@@ -315,7 +304,7 @@ contract SDC is ISDC {
      * Changes Process State to Valuation&Settlement
      * can be called only when ProcessState = Funded and TradeState = Active
      */
-    function initiateSettlement() external override onlyCounterparty onlyWhenProcessFundedAndTradeActive
+    function initiateSettlement() external override onlyCounterparty onlyWhenRebalanced
     {
         processState = ProcessState.ValuationAndSettlement;
         emit ProcessSettlementRequest(tradeData, lastSettlementData);
@@ -327,7 +316,7 @@ contract SDC is ISDC {
      * Checks Settlement amount according to valuationViewParty: If SettlementAmount is > 0, valuationViewParty receives
      * can be called only when ProcessState = ValuationAndSettlement
      */
-    function performSettlement(int256 settlementAmount, string memory settlementData) onlyWhenProcessValuationAndSettlement external override
+    function settlement(int256 settlementAmount, string memory settlementData) onlyWhenValuationAndSettlement external override
     {
         lastSettlementData = settlementData;
         address receivingParty  = settlementAmount > 0 ? receivingPartyAddress : other(receivingPartyAddress);
@@ -344,17 +333,15 @@ contract SDC is ISDC {
         liquidityToken.transfer(receivingParty, uint256(transferAmount)); // SDC contract performs transfer to receiving party
 
         if (noTermination) {   // Regular Settlement
-            emit ProcessSettled();
-            processState = ProcessState.AwaitingFunding;  // Set ProcessState to 'AwaitingFunding'
+            emit ProcessAwaitingRebalancing();
+            processState = ProcessState.AwaitingRebalancing;  // Set ProcessState to 'AwaitingFunding'
         } else {  // Termination Event, buffer not sufficient, transfer margin buffer and termination fee and process termination
             tradeState = TradeState.Terminated;
-            processState = ProcessState.InTermination;
             _processTermination(); // Transfer all locked amounts
             emit TradeTerminated("Termination due to margin buffer exceedance");
         }
 
         if (mutuallyTerminated) {  // Both counterparties agreed on a premature termination
-            processState = ProcessState.InTermination;
             _processTermination();
         }
     }
@@ -369,7 +356,7 @@ contract SDC is ISDC {
      * TerminationRequest is emitted
      * can be called only when ProcessState = Funded and TradeState = Active
      */
-    function requestTradeTermination(string memory _tradeID) external override onlyCounterparty onlyWhenProcessFundedAndTradeActive
+    function requestTradeTermination(string memory _tradeID) external override onlyCounterparty onlyWhenRebalanced
     {
         require(keccak256(abi.encodePacked(tradeID)) == keccak256(abi.encodePacked(_tradeID)), "Trade ID mismatch");
         uint256 hash = uint256(keccak256(abi.encode(_tradeID, "terminate")));
@@ -383,7 +370,7 @@ contract SDC is ISDC {
      * confirming party generates same hash, looks into pendingRequests, if entry is found with correct address, tradeState is put to terminated
      * can be called only when ProcessState = Funded and TradeState = Active
      */
-    function confirmTradeTermination(string memory tradeId) external override onlyCounterparty onlyWhenProcessFundedAndTradeActive
+    function confirmTradeTermination(string memory tradeId) external override onlyCounterparty onlyWhenRebalanced
     {
         address pendingRequestParty = msg.sender == party1 ? party2 : party1;
         uint256 hashConfirm = uint256(keccak256(abi.encode(tradeId, "terminate")));

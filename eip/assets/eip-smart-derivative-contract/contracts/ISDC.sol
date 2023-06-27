@@ -94,12 +94,12 @@ interface ISDC {
     /**
      * @dev Emitted when funding phase is initiated
      */
-    event ProcessAwaitingFunding();
+    event ProcessAwaitingRebalancing();
 
     /**
      * @dev Emitted when margin balance was updated and sufficient funding is provided
      */
-    event ProcessFunded();
+    event ProcessRebalanced();
 
     /**
      * @dev Emitted when a valuation and settlement is requested
@@ -107,11 +107,6 @@ interface ISDC {
      * @param lastSettlementData holding the settlementdata from previous settlement (next settlement will be the increment of next valuation compared to former valuation)
      */
     event ProcessSettlementRequest(string tradeData, string lastSettlementData);
-
-    /**
-     * @dev Emitted when a settlement was processed succesfully
-     */
-    event ProcessSettled();
 
     /**
      * @dev Emitted when a counterparty proactively requests an early termination of the underlying trade
@@ -146,15 +141,15 @@ interface ISDC {
      * @param _tradeData a description of the trade in sdc.xml, e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-    function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external;
+    function confirmTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external;
 
     /// Settlement Cycle: Prefunding
 
     /**
-     * @notice Called from outside to check and secure pre-funding. Terminate the trade if prefunding fails.
-     * @dev emits a {ProcessFunded} event if prefunding check is successful or a {TradeTerminated} event if prefunding check fails
+     * @notice Called from outside to rebalance. Terminate the trade if rebalancing fails.
+     * @dev emits a {ProcessRebalance} event if prefunding check is successful or a {TradeTerminated} event if rebalancing check fails
      */
-    function initiatePrefunding() external;
+    function rebalance() external;
 
     /// Settlement Cycle: Settlement
 
@@ -170,7 +165,7 @@ interface ISDC {
      * @param settlementAmount the settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
      * @param settlementData. the tripple (product, previousSettlementData, settlementData) determines the settlementAmount.
      */
-    function performSettlement(int256 settlementAmount, string memory settlementData) external;
+    function settlement(int256 settlementAmount, string memory settlementData) external;
 
     /// Trade termination
 
@@ -188,4 +183,3 @@ interface ISDC {
      */
     function confirmTradeTermination(string memory tradeId) external;
 }
-

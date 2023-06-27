@@ -1,0 +1,38 @@
+{
+  "name": "soliditiy",
+  "version": "1.0.0",
+  "description": "Contract repository for the smart-derivative-contract project",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@finmath.net/sdc": "^0.2.3",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.4",
+    "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "ethereumjs-wallet": "^1.0.2",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.12.1",
+    "hardhat-contract-sizer": "^2.6.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "solidity-coverage": "^0.8.2"
+  },
+  "bugs": {
+    "url": "https://github.com/finmath/finmath-smart-derivative-contract/issues"
+  },
+  "homepage": "https://github.com/finmath/finmath-smart-derivative-contract#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/finmath/sdc-contracts.git"
+  }
+}
