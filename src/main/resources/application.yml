@@ -35,10 +35,14 @@ spring:
   thymeleaf:
     prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
 
-serviceUrl: 'http://34.159.3.234:4200'
+serviceUrl: 'http://localhost:4200'
 
 #hostname: localhost:8080
 
 storage:
-  basedir: '/usr/serverstorage'
+  basedir: 'C:\Users\xn85719\GitHub\finmath-smart-derivative-contract\serverstorage'
+  importdir: 'C:\Users\Public'
+  internals:
+    refinitivConnectionPropertiesFile: 'Q:\refinitiv_connect.properties'
+    databaseConnectionPropertiesFile: 'Q:\database_connect.properties'
 

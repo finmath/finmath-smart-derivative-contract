@@ -8,9 +8,12 @@ import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
+import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.model.MarginResult;
+import net.finmath.smartcontract.model.MarketDataTransferMessage;
+import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
@@ -23,8 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
 /**
@@ -86,6 +88,37 @@ public class MarginCalculator {
 		List<CalibrationDataset> marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
 		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
 
+		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+
+		LocalDateTime endDate = marketDataSets.get(0).getDate();
+		double value = calculateMargin(marketDataSets, null, endDate, productDescriptor, underlying);
+
+		String currency = "EUR";
+		LocalDateTime valuationDate = LocalDateTime.now();
+
+		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+	}
+
+	public ValueResult getValue(MarketDataTransferMessage marketData, String productData) throws Exception {
+		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+
+		Set<CalibrationDataItem> calibrationDataItems = new HashSet<>();
+
+		List<CalibrationDataItem.Spec> marketdataItemList = productDescriptor.getMarketdataItemList();
+		List<MarketDataTransferMessageValuesInner> marketDataValues = marketData.getValues();
+		marketdataItemList.forEach(marketDataItemSpec -> marketDataValues
+				.stream()
+				.filter(
+						marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey())
+				)
+				.map(
+						mdv -> new CalibrationDataItem(marketDataItemSpec, mdv.getValue(), mdv.getDataTimestamp().toLocalDateTime())
+				)
+				.forEach(calibrationDataItems::add));
+
+		List<CalibrationDataset> marketDataSets = new ArrayList<>();
+		marketDataSets.add(new CalibrationDataset(calibrationDataItems,marketData.getRequestTimestamp().toLocalDateTime()));
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 

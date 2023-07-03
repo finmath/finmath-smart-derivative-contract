@@ -1,0 +1,82 @@
+<h1 mat-dialog-title>Select market data source:</h1>
+<div mat-dialog-content>
+  <p></p>
+  <div class="chooseOrSaveArea">
+    <div class="filterArea">
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input
+          matInput
+          (keyup)="applyFilter($event)"
+          placeholder="Dataset name..."
+          #input
+        />
+      </mat-form-field>
+    </div>
+    <div class="orArea"></div>
+    <div class="saveAsArea" [formGroup]="radioGroup">
+      <mat-radio-group [value]="combinedData.isUsingLiveFeed.toString()" formControlName="useLiveFeed">
+        <mat-radio-button value="true"> Use live feed</mat-radio-button>
+        <mat-radio-button value="false"> Use user data</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div class="uploadButtonArea" [formGroup]="radioGroup">
+      <button mat-raised-button color="primary" type="button" (click)="$event.stopPropagation(); fileInput.click()">
+        Upload
+      </button>
+      <input
+          #fileInput
+          type="file"
+          (change)="relayUpload($event)"
+          style="display: none"
+        />
+    </div>
+  </div>
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <mat-radio-button
+            [disabled]="(radioGroup.get('useLiveFeed')!.value == 'true') || isForbiddenString(row)"
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)"
+          >
+          </mat-radio-button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let dataset">
+          {{ dataset=="active_dataset.json"? "Hidden - this file is reserved for internal use with the live feed." : dataset }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        (click)="selection.toggle(row)"
+      ></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          No data matching the filter "{{ input.value }}"
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Select page of datasets"
+    ></mat-paginator>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button type="button" (click)="onClose()">Select and close</button>
+  </div>
+</div>

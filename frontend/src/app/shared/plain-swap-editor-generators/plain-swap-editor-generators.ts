@@ -17,7 +17,7 @@ export interface PlainSwapEditorGenerator {
 export const plainSwapEditorGenerators: PlainSwapEditorGenerator[] = [
   {
     name: "EUR-EURIBOR Y/S",
-    fileName: "generators/eur_euribor_y_s.xml",
+    fileName: "generators/eur_euribor_y_s_with_fixings.xml",
     indexName: "EURIBOR 6M",
     fixedPaymentFrequency: {
       period: "Y",
@@ -45,8 +45,14 @@ export const plainSwapEditorGenerators: PlainSwapEditorGenerator[] = [
       {
         symbol: "EUROSTR=",
         curve: "ESTR",
-        itemType: "Deposit",
+        itemType: "Fixing",
         tenor: "1D",
+      },
+      {
+        symbol: "EURIBOR6MD=",
+        curve: "Euribor6M",
+        itemType: "Fixing",
+        tenor: "6M",
       },
       {
         symbol: "EUR6MD=",
@@ -469,5 +475,5 @@ export const plainSwapEditorGenerators: PlainSwapEditorGenerator[] = [
         tenor: "30Y",
       },
     ],
-  },
+  }
 ];

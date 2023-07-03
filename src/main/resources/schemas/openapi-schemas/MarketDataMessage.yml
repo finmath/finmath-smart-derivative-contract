@@ -1,0 +1,26 @@
+type: object
+required:
+  - Key
+  - Fields
+properties:
+  Key:
+    type: object
+    properties:
+      Service:
+        type: string
+      Name:
+        type: string
+  Fields:
+    type: object
+    properties:
+      BID:
+        type: number
+        format: double
+      ASK:
+        type: number
+        format: double
+      VALUE_DT1:
+        type: string
+        format: date
+      VALUE_TS1:
+        type: string
