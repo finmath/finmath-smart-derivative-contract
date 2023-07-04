@@ -12,7 +12,11 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.model.*;
+import net.finmath.smartcontract.model.MarketDataMessage;
+import net.finmath.smartcontract.model.MarketDataMessageFields;
+import net.finmath.smartcontract.model.MarketDataMessageKey;
+import net.finmath.smartcontract.model.MarketDataTransferMessage;
+import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +27,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalDouble;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**

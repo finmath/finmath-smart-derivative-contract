@@ -10,7 +10,11 @@ import net.finmath.smartcontract.api.PlainSwapEditorApi;
 import net.finmath.smartcontract.marketdata.adapters.ReactiveMarketDataUpdater;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.model.*;
+import net.finmath.smartcontract.model.CashflowPeriod;
+import net.finmath.smartcontract.model.MarketDataTransferMessage;
+import net.finmath.smartcontract.model.PlainSwapOperationRequest;
+import net.finmath.smartcontract.model.SaveContractRequest;
+import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.PlainSwapEditorHandler;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
@@ -44,7 +48,12 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.function.DoubleUnaryOperator;
 
 @RestController
