@@ -4,6 +4,7 @@ package net.finmath.smartcontract.service;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import java.util.TimeZone;
@@ -14,6 +15,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EnableWebSocket
 @Import(BasicAuthWebSecurityConfiguration.class)
+@ComponentScan(basePackages={"net.finmath.smartcontract.marketdata.database","net.finmath.smartcontract.service"})
 public class Application {
 
 	/**
