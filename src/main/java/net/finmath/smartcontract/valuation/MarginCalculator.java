@@ -130,9 +130,8 @@ public class MarginCalculator {
 		double value = calculateMargin(marketDataSets, null, endDate, productDescriptor, underlying);
 
 		String currency = "EUR";
-		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(marketData.getRequestTimestamp().toLocalDateTime().toString());
 	}
 
 	/**

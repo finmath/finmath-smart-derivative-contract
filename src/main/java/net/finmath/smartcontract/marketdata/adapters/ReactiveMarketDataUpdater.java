@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  *
  * @author Luca Bressan
  */
-public class ReactiveMarketDataUpdater extends WebSocketAdapter {
+public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransferMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactiveMarketDataUpdater.class);
     private final JsonNode authJson;
@@ -69,11 +69,11 @@ public class ReactiveMarketDataUpdater extends WebSocketAdapter {
     }
 
 
-    public boolean allQuotesRetrieved() {
+    private boolean allQuotesRetrieved() {
         return this.marketDataTransferMessage.getValues().size() >= this.calibrationSpecs.size();
     }
 
-    public void reset() {
+    private void reset() {
         this.marketDataTransferMessage = new MarketDataTransferMessage();
     }
 
@@ -155,7 +155,7 @@ public class ReactiveMarketDataUpdater extends WebSocketAdapter {
      *
      * @param websocket Websocket to send the message on
      */
-    public void sendRICRequest(WebSocket websocket) {
+    private void sendRICRequest(WebSocket websocket) {
         String requestJsonString;
         String keyString1 = ricsToString(); //;+ ",\"Service\":\""; //  + "\"}}"; //
         requestJsonString = "{\"ID\":2," + keyString1 + ",\"View\":[\"MID\",\"BID\",\"ASK\",\"VALUE_DT1\",\"VALUE_TS1\"]}";

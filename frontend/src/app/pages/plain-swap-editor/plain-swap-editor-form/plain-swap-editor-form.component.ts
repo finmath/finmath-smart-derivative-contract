@@ -468,7 +468,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
             valueResponse.value.toFixed(2) + //@TODO use the number of decimals specified in the currency object
             this.currencyPrefix;
           this.lastValuationRefresh =
-            moment().utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
+            valueResponse.valuationDate.replace("T"," ")+" UTC";
         },
         error: (error) => {
           this.npvlabel = "Current NPV: last valuation failed!";
