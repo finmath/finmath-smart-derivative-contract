@@ -1,4 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" >
   <mat-sidenav
     #drawer
     class="sidenav"
@@ -7,7 +7,7 @@
     [mode]="(isHandset$ | async) ? 'over' : 'over'"
     [opened]="(isHandset$ | async) === false"
   >
-    <mat-toolbar
+    <mat-toolbar *ngIf="isStandalone"
       >
       <button
         type="button"
@@ -19,7 +19,7 @@
       </button>
       <span>Menu</span>
     </mat-toolbar>
-    <mat-nav-list>
+    <mat-nav-list *ngIf="isStandalone">
       <a [routerLinkActive]="['active']" [routerLink]="['./trade-wizard']">
         <mat-list-item>
           <mat-icon matListItemIcon>swap_horiz</mat-icon>
@@ -30,7 +30,7 @@
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
+    <mat-toolbar color="primary" *ngIf="isStandalone">
       <button
         type="button"
         aria-label="Toggle sidenav"

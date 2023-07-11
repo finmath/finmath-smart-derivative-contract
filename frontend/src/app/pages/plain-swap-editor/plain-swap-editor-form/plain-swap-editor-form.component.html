@@ -2,77 +2,64 @@
   <div class="commandInfoArea">
     <div class="generateXmlButtonArea">
       <button
-        type="button"
-        class="wizard-end-buttons"
+        mat-raised-button
         [disabled]="!isAllControlsValid()"
         color="primary"
-        mat-mini-fab
         matTooltip="Generate XML."
         (click)="pushXMLGenerationRequest()"
       >
         <mat-icon aria-hidden="false" aria-label="Generate XML">code</mat-icon>
+        <span>Generate XML</span>
       </button>
     </div>
     <div class="loadTemplateButtonArea">
       <button
-        type="button"
-        class="wizard-end-buttons"
+        mat-raised-button
         [disabled]="false"
-        color="accent"
-        mat-mini-fab
+        color="primary"
         matTooltip="Load template."
         (click)="openGeneratorSelection()"
       >
-        <mat-icon aria-hidden="false" aria-label="Load Template"
-          >create</mat-icon
-        >
+        <mat-icon aria-hidden="false" aria-label="Load Template">create</mat-icon>
+        <span>Load template</span>
       </button>
     </div>
 
     <div class="saveLoadContractButtonArea">
       <button
-        type="button"
-        class="wizard-end-buttons"
+        mat-raised-button
         [disabled]="false"
-        color="accent"
-        mat-mini-fab
+        color="primary"
         matTooltip="Save/Load contract."
         (click)="openSaveLoadDialog()"
       >
-        <mat-icon aria-hidden="false" aria-label="Save/Load Contract"
-          >save</mat-icon
-        >
+        <mat-icon aria-hidden="false" aria-label="Save/Load Contract">save</mat-icon>
+        <span>Save/Load contract</span>
       </button>
     </div>
 
     <div class="saveInChainButtonArea">
       <button
-        type="button"
-        class="wizard-end-buttons"
+        mat-raised-button
         [disabled]="!isAllControlsValid()"
         color="warn"
-        mat-mini-fab
         matTooltip="Save trade on chain."
         (click)="pushTradeInceptionRequest()"
       >
-        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
-          >cloud_upload</mat-icon
-        >
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain">cloud_upload</mat-icon>
+        <span>Save trade on chain</span>
       </button>
     </div>
     <div class="selectSymbolsArea">
       <button
-        type="button"
-        class="wizard-end-buttons"
+        mat-raised-button
         [disabled]="false"
         color="primary"
-        mat-mini-fab
         matTooltip="Select valuation symbols."
         (click)="openSymbolSelection()"
       >
-        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain"
-          >list</mat-icon
-        >
+        <mat-icon aria-hidden="false" aria-label="Store Trade on Chain">list</mat-icon>
+        <span>Select valuation symbols</span>
       </button>
     </div>
     <div class="currentNpvLabelArea">
@@ -100,13 +87,13 @@
       >
     </div>
   </div>
-  <div class="basicDefinitionArea">
+  <div class="basicDefinitionArea form-section">
     <div class="basicDefinitionTitleArea">
       <label>Basic definition</label>
       <mat-divider></mat-divider>
     </div>
     <div class="firstCounterpartySelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Operating on behalf of:</mat-label>
         <mat-select
           formControlName="firstCounterparty"
@@ -127,7 +114,7 @@
       </mat-form-field>
     </div>
     <div class="secondCounterpartySelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Other party:</mat-label>
         <mat-select
           formControlName="secondCounterparty"
@@ -148,7 +135,7 @@
       </mat-form-field>
     </div>
     <div class="marginBufferInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Margin buffer amount:</mat-label>
         <input
           matInput
@@ -164,7 +151,7 @@
       </mat-form-field>
     </div>
     <div class="penaltyFeeInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Termination fee amount:</mat-label>
         <input
           matInput
@@ -180,13 +167,13 @@
       </mat-form-field>
     </div>
   </div>
-  <div class="financialDefinitionArea">
+  <div class="financialDefinitionArea form-section">
     <div class="financialDefinitionTitleArea">
       <label>Financial definition</label>
       <mat-divider></mat-divider>
     </div>
     <div class="currencySelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Currency:</mat-label>
         <mat-select
           formControlName="currency"
@@ -203,7 +190,7 @@
       </mat-form-field>
     </div>
     <div class="notionalAmountInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Notional amount:</mat-label>
         <input
           matInput
@@ -219,7 +206,7 @@
       </mat-form-field>
     </div>
     <div class="tradeDateInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Trade date:</mat-label>
         <input
           matInput
@@ -237,7 +224,7 @@
       </mat-form-field>
     </div>
     <div class="quickTradeDateSelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Quick command: </mat-label>
         <input
           matInput
@@ -254,7 +241,7 @@
       </mat-form-field>
     </div>
     <div class="effectiveDateInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Effective date:</mat-label>
         <input
           matInput
@@ -272,7 +259,7 @@
       </mat-form-field>
     </div>
     <div class="quickEffectiveDateSelectionAea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>QC/Start offset: </mat-label>
         <input
           matInput
@@ -292,7 +279,7 @@
     </div>
 
     <div class="terminationDateInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Termination date:</mat-label>
         <input
           matInput
@@ -310,7 +297,7 @@
       </mat-form-field>
     </div>
     <div class="quickMaturitySelectionAea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>QC/Maturity: </mat-label>
         <input
           matInput
@@ -328,9 +315,9 @@
       </mat-form-field>
     </div>
   </div>
-  <div class="floatingLegArea">
+  <div class="floatingLegArea form-section">
     <div class="floatingLegPayerPartySelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Paying party:</mat-label>
         <mat-select
           formControlName="floatingPayingParty"
@@ -355,7 +342,7 @@
       </mat-form-field>
     </div>
     <div class="floatingIndexSelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Floating rate index:</mat-label>
         <input
           matInput
@@ -367,7 +354,7 @@
       </mat-form-field>
     </div>
     <div class="floatingDayCountFractionSelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Day count fraction:</mat-label>
         <mat-select
           formControlName="floatingDayCountFraction"
@@ -384,7 +371,7 @@
       </mat-form-field>
     </div>
     <div class="fixingOffsetSelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Fixing day offset:</mat-label>
         <mat-select
           formControlName="floatingFixingDayOffset"
@@ -401,7 +388,7 @@
       </mat-form-field>
     </div>
     <div class="floatingPaymentFrequencyArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Payment frequency:</mat-label>
         <mat-select
           formControlName="floatingPaymentFrequency"
@@ -418,8 +405,7 @@
       </mat-form-field>
     </div>
     <div class="floatingLegDefinitionTitleArea">
-      <label
-        >Floating leg definition
+      <label>Floating leg definition
         <a
           class="dummyclass"
           [class.disabled]="!isAllControlsValid()"
@@ -432,10 +418,9 @@
       <mat-divider></mat-divider>
     </div>
   </div>
-  <div class="fixedLegArea">
+  <div class="fixedLegArea form-section">
     <div class="fixedLegDefinitionTitleArea">
-      <label
-        >Fixed leg definition
+      <label>Fixed leg definition
         <a
           class="dummyclass"
           [class.disabled]="!isAllControlsValid()"
@@ -446,7 +431,7 @@
       <mat-divider></mat-divider>
     </div>
     <div class="fixedLegPayerPartySelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Paying party:</mat-label>
         <mat-select
           formControlName="fixedPayingParty"
@@ -471,7 +456,7 @@
       </mat-form-field>
     </div>
     <div class="fixedLegDayCountFractionSelectionArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Day count fraction:</mat-label>
         <mat-select
           formControlName="fixedDayCountFraction"
@@ -488,7 +473,7 @@
       </mat-form-field>
     </div>
     <div class="fixedRateInputArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Fixed rate:</mat-label>
         <input
           matInput
@@ -507,7 +492,7 @@
       </mat-form-field>
     </div>
     <div class="fixedPaymentFrequencyArea">
-      <mat-form-field>
+      <mat-form-field appearance="fill">
         <mat-label>Payment frequency:</mat-label>
         <mat-select
           formControlName="fixedPaymentFrequency"
