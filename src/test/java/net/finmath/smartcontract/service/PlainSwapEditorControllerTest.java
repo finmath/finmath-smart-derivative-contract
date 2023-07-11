@@ -66,7 +66,7 @@ public class PlainSwapEditorControllerTest {
                 "net.finmath.smartcontract.client" + File.separator + "md_testset_newformat_1.json").getContentAsString(
                 StandardCharsets.UTF_8);
         final String product = new ClassPathResource(
-                "references" + File.separator + "smartderivativecontract-sample-swap.xml").getContentAsString(StandardCharsets.UTF_8);
+                "net.finmath.smartcontract.client" + File.separator + "smartderivativecontract-sample-swap.xml").getContentAsString(StandardCharsets.UTF_8);
         final String fullSymbolListFromTemplate = new ClassPathResource(
                 "references" + File.separator + "template2_symbolslist.json").getContentAsString(
                 StandardCharsets.UTF_8);
