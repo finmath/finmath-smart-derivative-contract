@@ -1,22 +1,32 @@
 package net.finmath.smartcontract.marketdata.adapters;
 
+import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class MarketDataRandomFeedAdapter {
+public class MarketDataRandomFeedAdapter extends LiveFeedAdapter<CalibrationDataset>{
 
     LocalDateTime endTime;
     CalibrationDataset referenceSet;
+
+    private static final Logger logger = LoggerFactory.getLogger(MarketDataRandomFeedAdapter.class);
 
     int simulationFrequencySec;
     public MarketDataRandomFeedAdapter(Period processingPeriod, String referenceMarketDataJson) throws Exception{
@@ -26,12 +36,11 @@ public class MarketDataRandomFeedAdapter {
     }
 
 
-    Observable<String> asObservable(){
-        ObservableOnSubscribe<String> observable = emitter ->{
+    public Observable<CalibrationDataset> asObservable(){
+        ObservableOnSubscribe<CalibrationDataset> observable = emitter ->{
             while (LocalDateTime.now().isBefore(endTime)) {
                 CalibrationDataset shiftedScenario = getShiftedReferenceSet();
-                String json = "";//CalibrationItemParser.serializeToJsonDatPoints(shiftedScenario.getDataPoints());
-                emitter.onNext(json);
+                emitter.onNext(shiftedScenario);
             }
             emitter.onComplete();
         };
@@ -53,6 +62,17 @@ public class MarketDataRandomFeedAdapter {
             Thread.sleep(simulationFrequencySec);
         }
     }*/
+
+    public void writeDataset(String importDir, CalibrationDataset s, boolean isOvernightFixing) throws IOException {
+        String json = s.serializeToJson();
+        String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        logger.info("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
+        Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
+        Files.write(path, json.getBytes());
+    }
+    public void closeStreamsAndLogoff(WebSocket webSocket) {
+        logger.info("Virtual CLOSE sent.");
+    }
 
     private CalibrationDataset getShiftedReferenceSet(){
         double randomShiftBp = ThreadLocalRandom.current().nextDouble(-1,1) / 10000;

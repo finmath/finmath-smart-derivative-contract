@@ -2,7 +2,7 @@
 
 ## What needs to be done before deployment?
 
-- Go to `api.yml` and set the namespace that the frontend app will use for backend requests. Currently, it is set
+- Go to `api.yml` and set the namespace that the frontend app will use for backend requests (`servers.url`). Currently, it is set
 to `localhost:8080`.
 - Also, make sure that `api.yml` is accessible with all the schemas (which you can find
 in `src/main/resources/schemas/openapi-schemas`) and update the API generation script in `package.json`. To only
@@ -42,6 +42,8 @@ No. There are many issues that need attention:
   hours). This does not affect valuation, only some UI elements might give misleading information.
 - there is a complex system of page routes to load the main part of the app. This seemed a good idea in the beginning,
   but may need changing.
+- dataset switching is not very stable, sometimes it crashes without a clear reason. Refresh the page to restart the app and
+  wait a couple of seconds after you load a contract.
 
 All of these issues have a TODO associated with them in the code. Do a project wide search (actually, just
 the `frontend/src/**`

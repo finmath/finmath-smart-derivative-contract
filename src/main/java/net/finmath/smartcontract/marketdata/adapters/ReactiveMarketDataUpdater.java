@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  *
  * @author Luca Bressan
  */
-public class ReactiveMarketDataUpdater extends WebSocketAdapter {
+public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransferMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactiveMarketDataUpdater.class);
     private final JsonNode authJson;
@@ -69,11 +69,11 @@ public class ReactiveMarketDataUpdater extends WebSocketAdapter {
     }
 
 
-    public boolean allQuotesRetrieved() {
+    private boolean allQuotesRetrieved() {
         return this.marketDataTransferMessage.getValues().size() >= this.calibrationSpecs.size();
     }
 
-    public void reset() {
+    private void reset() {
         this.marketDataTransferMessage = new MarketDataTransferMessage();
     }
 
@@ -155,7 +155,7 @@ public class ReactiveMarketDataUpdater extends WebSocketAdapter {
      *
      * @param websocket Websocket to send the message on
      */
-    public void sendRICRequest(WebSocket websocket) {
+    private void sendRICRequest(WebSocket websocket) {
         String requestJsonString;
         String keyString1 = ricsToString(); //;+ ",\"Service\":\""; //  + "\"}}"; //
         requestJsonString = "{\"ID\":2," + keyString1 + ",\"View\":[\"MID\",\"BID\",\"ASK\",\"VALUE_DT1\",\"VALUE_TS1\"]}";
@@ -185,15 +185,14 @@ public class ReactiveMarketDataUpdater extends WebSocketAdapter {
 
     /**
      * Writes the formatted output from the Refinitiv stream to an import candidates file.
-     * @param importDir location of the import candidates file
+     * @param importFile location of the import candidates file
      * @param transferMessage the transfer message to be written
      * @param isOvernightFixing true when the correction for overnight rates time must be applied
      * @throws IOException if the writing operation fails
      */
-    public void writeDataset(String importDir, MarketDataTransferMessage transferMessage, boolean isOvernightFixing) throws IOException {
+    public void writeDataset(String importFile, MarketDataTransferMessage transferMessage, boolean isOvernightFixing) throws IOException {
         transferMessage.values(transferMessage.getValues().stream().map(x -> this.overnightFixingPostProcessing(x, isOvernightFixing)).toList());
-        File baseFolder = new File(Objects.requireNonNull(importDir));
-        File targetFile = new File(baseFolder, "import_candidate.json");
+        File targetFile = new File(importFile);
         mapper.writerFor(MarketDataTransferMessage.class).writeValue(targetFile, transferMessage);
     }
 
