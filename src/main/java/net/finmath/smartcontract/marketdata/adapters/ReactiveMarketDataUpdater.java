@@ -185,15 +185,14 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
 
     /**
      * Writes the formatted output from the Refinitiv stream to an import candidates file.
-     * @param importDir location of the import candidates file
+     * @param importFile location of the import candidates file
      * @param transferMessage the transfer message to be written
      * @param isOvernightFixing true when the correction for overnight rates time must be applied
      * @throws IOException if the writing operation fails
      */
-    public void writeDataset(String importDir, MarketDataTransferMessage transferMessage, boolean isOvernightFixing) throws IOException {
+    public void writeDataset(String importFile, MarketDataTransferMessage transferMessage, boolean isOvernightFixing) throws IOException {
         transferMessage.values(transferMessage.getValues().stream().map(x -> this.overnightFixingPostProcessing(x, isOvernightFixing)).toList());
-        File baseFolder = new File(Objects.requireNonNull(importDir));
-        File targetFile = new File(baseFolder, "import_candidate.json");
+        File targetFile = new File(importFile);
         mapper.writerFor(MarketDataTransferMessage.class).writeValue(targetFile, transferMessage);
     }
 

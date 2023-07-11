@@ -16,18 +16,19 @@ import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.PlainSwapEditorHandler;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.service.utils.ResourceGovernor;
 import net.finmath.smartcontract.valuation.MarginCalculator;
 import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,12 +38,13 @@ import org.xml.sax.SAXException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.URI;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -72,24 +74,15 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     @Autowired
     private DatabaseConnector databaseConnector;
 
+    @Autowired
+    private ResourceGovernor resourceGovernor;
+
     @Value("${hostname:localhost:8080}")
     private String hostname;
 
-    @Value("${storage.internals.refinitivConnectionPropertiesFile}")
-    private String refinitivConnectionPropertiesFile;
-
-    @Value("${storage.basedir}")
-    private String storageBaseDir;
-
-
-    @Autowired
-    private ResourcePatternResolver resourcePatternResolver;
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private Environment env;
 
 
     /**
@@ -100,6 +93,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<String> generatePlainSwapSdcml(PlainSwapOperationRequest plainSwapOperationRequest) {
+
         try {
             return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
                                                                 plainSwapOperationRequest.getCurrentGenerator(),
@@ -129,6 +123,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<ValueResult> evaluateFromPlainSwapEditor(PlainSwapOperationRequest plainSwapOperationRequest) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
+
         String sdcmlBody;
         try {
             sdcmlBody = new PlainSwapEditorHandler(plainSwapOperationRequest,
@@ -145,9 +142,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         MarketDataTransferMessage marketData;
         try {
 
-            marketDataString = resourcePatternResolver.getResource("file:///" + Objects.requireNonNull(
-                                                              env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")
-                                                      .getContentAsString(StandardCharsets.UTF_8);
+            marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
+                                               .getContentAsString(StandardCharsets.UTF_8);
             marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -176,12 +172,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<List<CashflowPeriod>> getFixedSchedule(PlainSwapOperationRequest plainSwapOperationRequest) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         String marketDataString;
         MarketDataTransferMessage marketData;
         try {
-            marketDataString = resourcePatternResolver.getResource("file:///" + Objects.requireNonNull(
-                                                              env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")
-                                                      .getContentAsString(StandardCharsets.UTF_8);
+            marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
+                                               .getContentAsString(StandardCharsets.UTF_8);
             marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -219,12 +216,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<List<CashflowPeriod>> getFloatingSchedule(PlainSwapOperationRequest plainSwapOperationRequest) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         String marketDataString;
         MarketDataTransferMessage marketData;
         try {
-            marketDataString = resourcePatternResolver.getResource("file:///" + Objects.requireNonNull(
-                                                              env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")
-                                                      .getContentAsString(StandardCharsets.UTF_8);
+            marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
+                                               .getContentAsString(StandardCharsets.UTF_8);
             marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -262,10 +260,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     @Override
     public ResponseEntity<MarketDataTransferMessage> grabMarketData() {
         String marketDataString;
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         try {
-            marketDataString = resourcePatternResolver.getResource("file:///" + Objects.requireNonNull(
-                                                              env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")
-                                                      .getContentAsString(StandardCharsets.UTF_8);
+            marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
+                                               .getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -294,6 +293,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<ValueResult> refreshMarketData(PlainSwapOperationRequest plainSwapOperationRequest) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         SmartDerivativeContractDescriptor sdc;
         try {
             sdc = SDCXMLParser.parse(new PlainSwapEditorHandler(plainSwapOperationRequest,
@@ -317,7 +318,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         /* Load connection properties*/
         Properties refinitivConnectionProperties = new Properties();
         try {
-            refinitivConnectionProperties.load(new FileInputStream(refinitivConnectionPropertiesFile));
+            refinitivConnectionProperties.load(new StringReader(
+                    resourceGovernor.getRefinitivPropertiesAsResourceInReadMode()
+                                    .getContentAsString(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -361,7 +364,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             /* TODO: maybe there's a way to avoid writing everything to a file before Postgre imports the JSON file.
                      Possibly using PSQL client side facilities?
              */
-            emitter.writeDataset(Objects.requireNonNull(env.getProperty("storage.importdir")),
+            emitter.writeDataset(resourceGovernor.getImportCandidateAsResourceInReadMode().getFile().getAbsolutePath(),
                                  emitter.asObservable().blockingFirst(), isOvernightFixing);
         } catch (Exception e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -372,16 +375,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         }
 
         try {
-            File importBaseFolder = new File(Objects.requireNonNull(env.getProperty("storage.importdir")));
-            File importTargetFile = new File(importBaseFolder, "import_candidate.json");
-            databaseConnector.updateDatabase(importTargetFile.getAbsolutePath());
+            databaseConnector.updateDatabase();
             List<String> fixingSymbols = new ArrayList<>();
             for (CalibrationDataItem.Spec calibrationDataItemSpec : calibrationDataItemSpecs) {
                 if (calibrationDataItemSpec.getProductName().equals("Fixing"))
                     fixingSymbols.add(calibrationDataItemSpec.getKey());
             }
-            databaseConnector.fetchFromDatabase(Objects.requireNonNull(env.getProperty("storage.basedir")),
-                                                fixingSymbols);
+            databaseConnector.fetchFromDatabase(fixingSymbols, currentUserName);
             logger.info("Refresh complete.");
             emitter.closeStreamsAndLogoff(webSocket); // very very very important, do not forget this!
         } catch (SQLException e) {
@@ -414,13 +414,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<Double> getParRate(PlainSwapOperationRequest plainSwapOperationRequest) {
-
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         String marketDataString;
         MarketDataTransferMessage marketData;
         try {
-            marketDataString = resourcePatternResolver.getResource("file:///" + Objects.requireNonNull(
-                                                              env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")
-                                                      .getContentAsString(StandardCharsets.UTF_8);
+            marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
+                                               .getContentAsString(StandardCharsets.UTF_8);
             marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -473,11 +473,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<List<String>> getSavedContracts() {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         List<String> savedContractsFilenames = new ArrayList<>();
         Resource[] savedContracts;
         try {
-            savedContracts = resourcePatternResolver.getResources("file:///" + Objects.requireNonNull(
-                    env.getProperty("storage.basedir")) + "/user1.savedcontracts/*");
+            savedContracts = resourceGovernor.listContentsOfUserFolder(currentUserName,
+                                                                       ResourceGovernor.RoleFolders.SAVED_CONTRACTS_FOLDER);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -499,17 +501,18 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<String> changeDataset(String fileName) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         if (fileName.equals("USELIVE")) {
             return ResponseEntity.ok("idle ok");
         }
 
-        try (FileInputStream sourceInputStream = new FileInputStream(
-                Objects.requireNonNull(env.getProperty("storage.basedir")) + "/user1.marketdata/" + fileName);
-             FileOutputStream destinationInputStream = new FileOutputStream(Objects.requireNonNull(
-                     env.getProperty("storage.basedir")) + "/user1.marketdata/active_dataset.json")) {
-            FileChannel source = sourceInputStream.getChannel();
-            FileChannel destination = destinationInputStream.getChannel();
-            destination.transferFrom(source, 0, source.size());
+        try {
+            File sourceFile = resourceGovernor.getReadableResource(currentUserName,
+                                                                   ResourceGovernor.RoleFolders.MARKET_DATA_FOLDER,
+                                                                   fileName).getFile();
+            File destinationFile = resourceGovernor.getActiveDatasetAsResourceInWriteMode(currentUserName).getFile();
+            Files.copy(sourceFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -530,11 +533,13 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<List<String>> getSavedMarketData() {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         List<String> savedContractsFilenames = new ArrayList<>();
         Resource[] savedContracts;
         try {
-            savedContracts = resourcePatternResolver.getResources(
-                    "file:///" + Objects.requireNonNull(env.getProperty("storage.basedir")) + "/user1.marketdata/*");
+            savedContracts = resourceGovernor.listContentsOfUserFolder(currentUserName,
+                                                                       ResourceGovernor.RoleFolders.MARKET_DATA_FOLDER);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -556,10 +561,12 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<PlainSwapOperationRequest> loadContract(String requestedFilename) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         Resource[] savedContracts;
         try {
-            savedContracts = resourcePatternResolver.getResources("file:///" + Objects.requireNonNull(
-                    env.getProperty("storage.basedir")) + "/user1.savedcontracts/*");
+            savedContracts = resourceGovernor.listContentsOfUserFolder(currentUserName,
+                                                                       ResourceGovernor.RoleFolders.SAVED_CONTRACTS_FOLDER);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -596,27 +603,22 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<String> saveContract(SaveContractRequest saveContractRequest) {
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
         String regex = "^[A-za-z0-9]{1,255}$"; // only alphanumerical characters allowed!
         LocalDate date = LocalDate.now();
         if (saveContractRequest.getName().matches(regex)) {
-            File baseFolder = new File(
-                    Objects.requireNonNull(env.getProperty("storage.basedir")) + "/user1.savedcontracts/");
-            File targetFile = new File(baseFolder, date + saveContractRequest.getName() + ".json");
             try {
+                File targetFile = resourceGovernor.getWritableResource(currentUserName,
+                                                                       ResourceGovernor.RoleFolders.SAVED_CONTRACTS_FOLDER,
+                                                                       date + saveContractRequest.getName() + ".json")
+                                                  .getFile();
                 boolean creationResult = targetFile.createNewFile();
                 if (creationResult)
                     logger.info("New file created at " + targetFile.getAbsolutePath());
                 else
                     logger.info("Attempting overwrite of file " + targetFile.getAbsolutePath());
 
-            } catch (IOException e) {
-                ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
-                                                                    ErrorDetails.STORAGE_ERROR_DETAIL);
-                pd.setType(URI.create(hostname + ErrorTypeURI.STORAGE_ERROR_URI));
-                pd.setTitle(ErrorDetails.STORAGE_ERROR_DETAIL);
-                throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
-            }
-            try {
                 objectMapper.writeValue(targetFile, saveContractRequest.getPlainSwapOperationRequest());
             } catch (IOException e) {
                 ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -639,21 +641,17 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      */
     @Override
     public ResponseEntity<String> uploadMarketData(MultipartFile marketData) {
-        File importBaseFolder = new File(Objects.requireNonNull(env.getProperty("storage.importdir")));
-        File importTargetFile = new File(importBaseFolder, "import_candidate.json");
-        File storageBaseFolder = new File(
-                Objects.requireNonNull(env.getProperty("storage.basedir")) + "/user1.marketdata/");
-        File storageTargetFile = new File(storageBaseFolder, Objects.requireNonNull(marketData.getOriginalFilename()));
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(importTargetFile);
-            fileOutputStream.write(marketData.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            fileOutputStream = new FileOutputStream(storageTargetFile);
-            fileOutputStream.write(marketData.getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            databaseConnector.updateDatabase(importTargetFile.getAbsolutePath());
+        String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                                                                     .getPrincipal()).getUsername();
+        try (OutputStream importOutputStream = resourceGovernor.getImportCandidateAsResourceInWriteMode()
+                                                               .getOutputStream();
+             OutputStream userOutputStream = resourceGovernor.getWritableResource(currentUserName,
+                                                                                  ResourceGovernor.RoleFolders.MARKET_DATA_FOLDER,
+                                                                                  marketData.getOriginalFilename())
+                                                             .getOutputStream()) {
+            importOutputStream.write(marketData.getBytes());
+            userOutputStream.write(marketData.getBytes());
+            databaseConnector.updateDatabase();
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
