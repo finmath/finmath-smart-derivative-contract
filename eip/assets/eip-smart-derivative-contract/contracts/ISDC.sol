@@ -94,12 +94,12 @@ interface ISDC {
     /**
      * @dev Emitted when funding phase is initiated
      */
-    event ProcessAwaitingRebalancing();
+    event ProcessSettlementPhase();
 
     /**
      * @dev Emitted when margin balance was updated and sufficient funding is provided
      */
-    event ProcessRebalanced();
+    event ProcessSettled();
 
     /**
      * @dev Emitted when a valuation and settlement is requested
@@ -121,6 +121,8 @@ interface ISDC {
      * @param tradeId the trade identifier which is supposed to be terminated
      */
     event TradeTerminationConfirmed(address cpAddress, string tradeId);
+
+    event ProcessHalted(string message);
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 
@@ -149,7 +151,7 @@ interface ISDC {
      * @notice Called from outside to rebalance. Terminate the trade if rebalancing fails.
      * @dev emits a {ProcessRebalance} event if prefunding check is successful or a {TradeTerminated} event if rebalancing check fails
      */
-    function rebalance() external;
+    function afterSettlement(bool success) external;
 
     /// Settlement Cycle: Settlement
 
@@ -165,7 +167,7 @@ interface ISDC {
      * @param settlementAmount the settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
      * @param settlementData. the tripple (product, previousSettlementData, settlementData) determines the settlementAmount.
      */
-    function settlement(int256 settlementAmount, string memory settlementData) external;
+    function performSettlement(int256 settlementAmount, string memory settlementData) external;
 
     /// Trade termination
 
@@ -174,12 +176,12 @@ interface ISDC {
      * @dev emits a {TradeTerminationRequest}
      * @param tradeId the trade identifier which is supposed to be terminated
      */
-    function requestTradeTermination(string memory tradeId) external;
+    function requestTradeTermination(string memory tradeId, int256 _terminationPayment) external;
 
     /**
      * @notice Called from a counterparty to confirm a termination, which will triggers a final settlement before trade gets inactive
      * @dev emits a {TradeTerminationConfirmed}
      * @param tradeId the trade identifier of the trade which is supposed to be terminated
      */
-    function confirmTradeTermination(string memory tradeId) external;
+    function confirmTradeTermination(string memory tradeId, int256 _terminationPayment) external;
 }
