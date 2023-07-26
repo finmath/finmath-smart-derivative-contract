@@ -112,6 +112,18 @@ abstract contract SDC is ISDC {
     TradeState internal tradeState;
     ProcessState internal processState;
 
+    modifier onlyCounterparty() {
+        require(msg.sender == party1 || msg.sender == party2, "You are not a counterparty."); _;
+    }
+
+    address internal party1;
+    address internal party2;
+    address internal receivingParty; // Determine the receiver: Positive values are consider to be received by receivingPartyAddress. Negative values are received by the other counterparty.
+
+    string internal tradeID;
+    string internal tradeData;
+
+
     /*
      * liquidityToken holds:
      * - funding account of party1
@@ -157,5 +169,34 @@ abstract contract SDC is ISDC {
     function getProcessState() public view returns (ProcessState) {
         return processState;
     }
+
+    /**
+     * Other party
+     */
+    function otherParty(address party) internal view returns (address) {
+        return (party == party1 ? party2 : party1);
+    }
+
+    /*
+     * Setters/Getters
+     * TODO: Check modifiers!
+     */
+
+    function getReceivingParty() public view onlyCounterparty returns (address) {
+        return receivingParty;
+    }
+
+    function getTradeID() public view returns (string memory) {
+        return tradeID;
+    }
+
+    function setTradeId(string memory _tradeID) public {
+        tradeID= _tradeID;
+    }
+
+    function getTradeData() public view returns (string memory) {
+        return tradeData;
+    }
+
 
 }

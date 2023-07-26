@@ -27,16 +27,7 @@ contract SDCOwnBalance is SDC {
         int256 terminationFee;
     }
 
-    modifier onlyCounterparty() {
-        require(msg.sender == party1 || msg.sender == party2, "You are not a counterparty."); _;
-    }
 
-    address public party1;
-    address public party2;
-    address private immutable receivingPartyAddress; // Determine the receiver: Positive values are consider to be received by receivingPartyAddress. Negative values are received by the other counterparty.
-
-    string private tradeID;
-    string private tradeData;
     string private lastSettlementData;
 
     mapping(address => MarginRequirement) private marginRequirements; // Storage of M and P per counterparty address
@@ -50,14 +41,14 @@ contract SDCOwnBalance is SDC {
     constructor(
         address counterparty1,
         address counterparty2,
-        address receivingParty,
+        address _receivingParty,
         address tokenAddress,
         uint256 initialMarginRequirement,
         uint256 initalTerminationFee
     ) {
         party1 = counterparty1;
         party2 = counterparty2;
-        receivingPartyAddress = receivingParty;
+        receivingParty = _receivingParty;
         settlementToken = IERC20(tokenAddress);
         tradeState = TradeState.Inactive;
         processState = ProcessState.Idle;
@@ -222,18 +213,18 @@ contract SDCOwnBalance is SDC {
     function performSettlement(int256 settlementAmount, string memory settlementData) onlyWhenValuation external override
     {
         lastSettlementData = settlementData;
-        address receivingParty  = settlementAmount > 0 ? receivingPartyAddress : other(receivingPartyAddress);
-        address payingParty     = other(receivingParty);
+        address receiver  = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
+        address payer     = otherParty(receiver);
 
-        bool noTermination = abs(settlementAmount) <= marginRequirements[payingParty].buffer;
-        int256 transferAmount = (noTermination == true) ? abs(settlementAmount) : marginRequirements[payingParty].buffer + marginRequirements[payingParty].terminationFee; // Override with Buffer and Termination Fee: Max Transfer
+        bool noTermination = abs(settlementAmount) <= marginRequirements[payer].buffer;
+        int256 transferAmount = (noTermination == true) ? abs(settlementAmount) : marginRequirements[payer].buffer + marginRequirements[payer].terminationFee; // Override with Buffer and Termination Fee: Max Transfer
 
-        if(receivingParty == party1)  // Adjust internal Balances, only debit is booked on sdc balance as receiving party obtains transfer amount directly from sdc
+        if(receiver == party1)  // Adjust internal Balances, only debit is booked on sdc balance as receiving party obtains transfer amount directly from sdc
             adjustSDCBalances(0, -transferAmount);
         else
             adjustSDCBalances(-transferAmount, 0);
 
-        settlementToken.transfer(receivingParty, uint256(transferAmount)); // SDC contract performs transfer to receiving party
+        settlementToken.transfer(receiver, uint256(transferAmount)); // SDC contract performs transfer to receiving party
 
         if (noTermination) {   // Regular Settlement
             emit ProcessSettlementPhase();
@@ -293,12 +284,6 @@ contract SDCOwnBalance is SDC {
     }
 
 
-    /**
-     * Other party
-     */
-    function other(address party) private view returns (address) {
-        return (party == party1 ? party2 : party1);
-    }
 
     function getOwnSdcBalance() public view returns (int256) {
         return sdcBalances[msg.sender];
