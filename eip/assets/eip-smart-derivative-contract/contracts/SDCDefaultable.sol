@@ -4,66 +4,16 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./SDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./SettlementToken.sol";
 
+contract SDCDefaultable is SDC {
 
-/**
- * @title Reference Implementation of ERC6123 - Smart Derivative Contract
- * @notice This reference implementation is based on a finite state machine with predefined trade and process states (see enums below)
- * Some comments on the implementation:
- * - trade and process states are used in modifiers to check which function is able to be called at which state
- * - trade data are stored in the contract
- * - trade data matching is done in incept and confirm routine (comparing the hash of the provided data)
- * - ERC-20 token is used for three participants: counterparty1 and counterparty2 and sdc
- * - when prefunding is done sdc contract will hold agreed amounts and perform settlement on those
- * - sdc also keeps track on internal balances for each counterparty
- * - during prefunding sdc will transfer required amounts to its own balance - therefore sufficient approval is needed
- * - upon termination all remaining 'locked' amounts will be transferred back to the counterparties
- *------------------------------------*
-     * Setup with SDC holding tokens
-     *
-     *  Settlement:
-     *  _bookSettlement
-     *      Update internal balances
-     *      Message
-     *  _transferSettlement
-     *      Book SDC -> Party1:   X
-     *      Book SDC -> Party2:   0
-     *  Rebalance (was: Perform Funding)
-     *      Book Party2 -> SDC:   X
-     *      Rebalance Check
-     *          Failed
-     *              Terminate
-     *
-     * Setup with Pledge Account
-     *
-     *  Settlement:
-     *  _bookSettlement
-     *      Update internal balances
-     *      Message
-     *  Rebalance:
-     *      Book Party2 -> Party1:   X
-     *      Rebalance Check
-     *          Failed
-     *              Book SDC -> Party1:   X
-     *              Terminate
-
-*/
-
-contract SDCPledgedBalance is SDC {
-
-    struct MarginRequirement {
-        int256 buffer;
-        int256 terminationFee;
-    }
-
+    event FailureToPayEvent();
 
     int256[] private settlementAmounts;
     string[] private settlementData;
     int256 upfrontPayment;
     int256 terminationPayment;
 
-    mapping(address => MarginRequirement) private marginRequirements; // Storage of M and P per counterparty address
     mapping(uint256 => address) private pendingRequests;               // Stores open request hashes for several requests: initiation, update and termination
 
     bool private mutuallyTerminated = false;
@@ -72,9 +22,7 @@ contract SDCPledgedBalance is SDC {
         address _party1,
         address _party2,
         address _receivingParty,
-        address _settlementToken,
-        uint256 _initialBuffer, // m
-        uint256 _initalTerminationFee // p
+        address _settlementToken
     ) {
         party1 = _party1;
         party2 = _party2;
@@ -83,9 +31,7 @@ contract SDCPledgedBalance is SDC {
         settlementToken = IERC20(_settlementToken); // TODO: Check if contract at given address supports interface
         tradeState = TradeState.Inactive;
         processState = ProcessState.Idle;
-        marginRequirements[party1] = MarginRequirement(int256(_initialBuffer), int256(_initalTerminationFee));
-        marginRequirements[party2] = MarginRequirement(int256(_initialBuffer), int256(_initalTerminationFee));
-    }
+     }
 
     /*
      * generates a hash from tradeData and generates a map entry in openRequests
@@ -116,13 +62,7 @@ contract SDCPledgedBalance is SDC {
         delete pendingRequests[_hash]; // Delete Pending Request
         tradeState = TradeState.Confirmed;
         address upfrontPayer = upfrontPayment>0 ? otherParty(receivingParty) : receivingParty;
-        uint256 marginRequirementParty1 = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee + (upfrontPayer==party1 ? abs(_upfrontPayment) : int256(0)));
-        uint256 marginRequirementParty2 = uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee + (upfrontPayer==party2 ? abs(_upfrontPayment) : int256(0)));
-        bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= marginRequirementParty1) && (settlementToken.allowance(party1, address(this)) >= marginRequirementParty1);
-        bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= marginRequirementParty2) && (settlementToken.allowance(party2, address(this)) >= marginRequirementParty2);
-        if (isAvailableParty1 && isAvailableParty2){       // Pre-Conditions: M + P needs to be locked (i.e. pledged)
-            settlementToken.transferFrom(party1, address(this), marginRequirementParty1);        // transfer marginRequirementParty1 to sdc
-            settlementToken.transferFrom(party2, address(this), marginRequirementParty2);        // transfer marginRequirementParty2 to sdc
+        if (settlementToken.balanceOf(upfrontPayer)>uint(abs(_upfrontPayment))){
             settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),uint256(abs(_upfrontPayment))); // transfer upfrontPayment
             processState = ProcessState.SettlementPhase;
             emit TradeConfirmed(msg.sender, tradeID);
@@ -176,39 +116,34 @@ contract SDCPledgedBalance is SDC {
      */
 
     function performSettlement(int256 settlementAmount, string memory _settlementData) onlyWhenValuation external override {
-        settlementData.push(_settlementData);
-        settlementAmounts.push(settlementAmount);
-
-        address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
-        address settlementPayer = otherParty(settlementReceiver);
-
         if (mutuallyTerminated){
             settlementAmount = settlementAmount+terminationPayment;
         }
+        if (settlementAmount!=0){
+            settlementData.push(_settlementData);
+            settlementAmounts.push(settlementAmount);
+            address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
+            address settlementPayer = otherParty(settlementReceiver);
 
-        uint256 transferAmount;
-        if (settlementAmount > 0)
+            uint256 transferAmount = uint(settlementAmount);
+/*        if (settlementAmount > 0)
             transferAmount = uint(min( settlementAmount, int(marginRequirements[settlementPayer].buffer)));
         else
-            transferAmount = uint(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer)));
+            transferAmount = uint(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer)));*/
 
-        if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
-            settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
-            settlementToken.transferFrom(settlementPayer, settlementReceiver, transferAmount);
-            emit ProcessSettlementPhase();
-            processState = ProcessState.SettlementPhase;
-            if ( mutuallyTerminated){
-                tradeState = TradeState.Terminated;
-                emit TradeTerminated("Trade Terminated");
+            if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
+                settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
+                settlementToken.transferFrom(settlementPayer, settlementReceiver, transferAmount);
+                emit ProcessSettlementPhase();
+                processState = ProcessState.SettlementPhase;
+                if ( mutuallyTerminated){
+                    tradeState = TradeState.Terminated;
+                    emit TradeTerminated("Trade Terminated");
+                }
             }
         }
-        else { // Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
-            settlementToken.transfer( settlementReceiver, uint256(transferAmount));
-            settlementToken.transfer( settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
-            settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - int(transferAmount)));
-            settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer));
-            tradeState = TradeState.Terminated;
-            emit TradeTerminated("Trade Terminated");
+        else {
+            emit FailureToPayEvent();
         }
     }
 
@@ -253,33 +188,8 @@ contract SDCPledgedBalance is SDC {
         emit ProcessSettlementRequest(tradeData, settlementData[latest]);
     }
 
-    
 
-    
 
-    function getBufferAmount(address cpAddress)
-    public
-    view
-    returns (uint256)
-    {
-        require(
-            cpAddress == party1 || cpAddress == party2,
-            "Counterparty address not known"
-        );
-        return uint256(marginRequirements[cpAddress].buffer);
-    }
-
-    function getTerminationFeeAmount(address cpAddress)
-    public
-    view
-    returns (uint256)
-    {
-        require(
-            cpAddress == party1 || cpAddress == party2,
-            "Counterparty address not known"
-        );
-        return uint256(marginRequirements[cpAddress].terminationFee);
-    }
 
     function getBulkSettlementHistory() public view onlyCounterparty returns (int256[] memory, string[] memory) {
         return (settlementAmounts, settlementData);
