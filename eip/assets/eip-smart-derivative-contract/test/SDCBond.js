@@ -60,15 +60,15 @@ describe("Livecycle Unit-Tests for Smart Bond Contract", () => {
     });
 
    it("Subscriber subscribes to buy 1000 lots with price of 999 each", async () => {
-        const incept_call = await sdc_bond.connect(subscriber).inceptTrade(issuer.address,bondData,1000,999);
+        const incept_call = await sdc_bond.connect(subscriber).inceptTrade(issuer.address,bondData,1,1000,999);
         await expect(incept_call).to.emit(sdc_bond, "TradeIncepted");
    });
    it("Issuer confirms to sell 1000 lots to subscriber with price of 999 each", async () => {
-        const confirm_call = await sdc_bond.connect(issuer).confirmTrade(subscriber.address,bondData,-1000,999);
+        const confirm_call = await sdc_bond.connect(issuer).confirmTrade(subscriber.address,bondData,-1,1000,999);
         await expect(confirm_call).to.emit(sdc_bond, "TradeConfirmed");
         let balanceIssuer = await token.connect(issuer).balanceOf(issuer.address);
         let balanceSubscriber = await token.connect(subscriber).balanceOf(subscriber.address);
-        await expect(balanceIssuer).equal(initialLiquidityBalance + 999);
+        await expect(balanceIssuer).equal(initialLiquidityBalance + 1000*999);
    });
 
 

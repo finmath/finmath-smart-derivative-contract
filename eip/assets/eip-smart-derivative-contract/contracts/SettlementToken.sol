@@ -48,7 +48,43 @@ contract SettlementToken is ERC20{
         address owner = _msgSender();
     }
 
-    function checkedBatchTransferAndCallSender(address[] memory from, address[] memory to, uint256[] memory values ) public{
+    function checkedBatchTransferAndCallSender(address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+        require (to.length == values.length, "Array Length mismatch");
+        require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
+        uint256 requiredBalance = 0;
+        for(uint256 i = 0; i < values.length; i++)
+            requiredBalance += values[i];
+        if (balanceOf(msg.sender) < requiredBalance)
+            SDCBond(sdcAddress).afterSettlement(transactionID, false);
+        for(uint256 i = 0; i < to.length; i++){
+            transfer(to[i],values[i]);
+        }
+        SDCBond(sdcAddress).afterSettlement(transactionID, true);
+    }
+
+
+    function checkedBatchTransferFromAndCallSender(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+        require (from.length == to.length, "Array Length mismatch");
+        require (to.length == values.length, "Array Length mismatch");
+        require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
+        uint256[] memory requiredBalances;
+        for(uint256 i = 0; i < from.length; i++){
+            address fromAddress = from[i];
+            uint256 totalRequiredBalance = 0;
+            for(uint256 j = 0; j < from.length; j++){
+                if (from[j] == fromAddress)
+                    totalRequiredBalance += values[j];
+            }
+            if (balanceOf(fromAddress) <  totalRequiredBalance){
+                SDCBond(sdcAddress).afterSettlement(transactionID, false);
+                break;
+            }
+
+        }
+        for(uint256 i = 0; i < to.length; i++){
+            transferFrom(from[i],to[i],values[i]);
+        }
+        SDCBond(sdcAddress).afterSettlement(transactionID, true);
     }
 
 }
