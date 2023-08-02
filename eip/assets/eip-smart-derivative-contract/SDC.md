@@ -34,6 +34,22 @@ Abstract Contract: abstract contract SDC is ISDC
 - Holds IERC20 settlementToken
 - Defines utility functions (abs, min, max, otherParty)
 
+### SettlementToken
+
+Hold the balance of
+- SDC
+- Party 1
+- Party 2
+
+Two different versions:
+
+- SDCOwnBalance.sol
+  - In every settlement cycle the SDC is locking the settlement amount from the SettlementToken: 
+  - tranfer between SDC and SettlementToken in every Settlement Cycle.
+- SDCPldegedBalance.sol
+  - During settlement transfer between adresses on the SettlementToken
+  - If that fails, transfer from SDC to Parties
+
 ## SDCOwnBalance.sol
 
 - Defines MargiRequirement
@@ -119,4 +135,14 @@ Implementation
 
 - settlementAmounts not pushed in inceptTrade
 - performSettlement with try-catch?
+
+- Why is SDCBond not an SDC
+- 
+# SDCDefaultable
+
+Wie SDCPledge nur ohne Pledge
+
+
+# SDCBond
+
 

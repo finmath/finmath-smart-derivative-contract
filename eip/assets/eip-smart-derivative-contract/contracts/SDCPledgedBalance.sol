@@ -138,6 +138,24 @@ contract SDCPledgedBalance is SDC {
      * Balance Check
      */
     function afterSettlement(bool success) external override onlyWhenSettlementPhase {
+
+        int265 settlementAmount = settlementAmounts[settlementAmounts.length-1];
+        if (settlementAmount > 0)
+            transferAmount = uint(min( settlementAmount, int(marginRequirements[settlementPayer].buffer)));
+        else
+            transferAmount = uint(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer)));
+
+        address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
+        address settlementPayer = otherParty(settlementReceiver);
+
+        // Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
+        settlementToken.transfer( settlementReceiver, uint256(transferAmount));
+        settlementToken.transfer( settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
+        settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - int(transferAmount)));
+        settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer));
+        tradeState = TradeState.Terminated;
+        emit TradeTerminated("Trade Terminated");
+
         /*uint256 expectedSDCBalance = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee) + uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee);
         if (settlementToken.balanceOf(this) < expectedSDCBalance){
             emit ProcessHalted("SDC Balance does not match pledged amounts");
@@ -176,21 +194,21 @@ contract SDCPledgedBalance is SDC {
      */
 
     function performSettlement(int256 settlementAmount, string memory _settlementData) onlyWhenValuation external override {
-        settlementData.push(_settlementData);
-        settlementAmounts.push(settlementAmount);
-
-        address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
-        address settlementPayer = otherParty(settlementReceiver);
 
         if (mutuallyTerminated){
             settlementAmount = settlementAmount+terminationPayment;
         }
 
-        uint256 transferAmount;
+        settlementData.push(_settlementData);
+        settlementAmounts.push(settlementAmount);
+
         if (settlementAmount > 0)
             transferAmount = uint(min( settlementAmount, int(marginRequirements[settlementPayer].buffer)));
         else
             transferAmount = uint(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer)));
+
+        address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
+        address settlementPayer = otherParty(settlementReceiver);
 
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
@@ -202,13 +220,8 @@ contract SDCPledgedBalance is SDC {
                 emit TradeTerminated("Trade Terminated");
             }
         }
-        else { // Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
-            settlementToken.transfer( settlementReceiver, uint256(transferAmount));
-            settlementToken.transfer( settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
-            settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - int(transferAmount)));
-            settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer));
-            tradeState = TradeState.Terminated;
-            emit TradeTerminated("Trade Terminated");
+        else {
+            afterSettlement(false);
         }
     }
 
