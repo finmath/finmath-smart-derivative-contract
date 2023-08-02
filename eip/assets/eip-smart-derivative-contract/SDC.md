@@ -63,3 +63,60 @@ Implementation
   - adjust internal balance
   - terminate if required
 
+## SDCPledgedBalance
+
+contract SDCPledgedBalance is SDC
+
+Past and current settlement
+
+- Holds int256[] private settlementAmounts;
+- Holds string[] private settlementData;
+
+Implementation
+
+- afterSettlement(bool success) external override onlyWhenSettlementPhase
+  - Change trade states
+- initiateSettlement()
+  - emit message
+- performSettlement(int256 settlementAmount, string memory _settlementData) onlyWhenValuation external override
+  - push settlement data
+  - try to transfer from settlementToken
+    - if fail initiate pledge case
+
+
+**Is this the current version?**
+
+
+    * Setup with SDC holding tokens
+     *
+     *  Settlement:
+     *  _bookSettlement
+     *      Update internal balances
+     *      Message
+     *  _transferSettlement
+     *      Book SDC -> Party1:   X
+     *      Book SDC -> Party2:   0
+     *  Rebalance (was: Perform Funding)
+     *      Book Party2 -> SDC:   X
+     *      Rebalance Check
+     *          Failed
+     *              Terminate
+     *
+     * Setup with Pledge Account
+     *
+     *  Settlement:
+     *  _bookSettlement
+     *      Update internal balances
+     *      Message
+     *  Rebalance:
+     *      Book Party2 -> Party1:   X
+     *      Rebalance Check
+     *          Failed
+     *              Book SDC -> Party1:   X
+     *              Terminate
+
+# Questions
+
+- settlementAmounts not pushed in inceptTrade
+- performSettlement with try-catch?
+
