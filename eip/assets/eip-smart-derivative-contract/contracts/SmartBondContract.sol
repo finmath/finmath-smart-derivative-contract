@@ -1,70 +1,57 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./SDC.sol";
+import "./ISDC.sol";
 import "./SettlementToken.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SDCBond is IERC165  {
-
-
-    event TradeIncepted(address initiator, string tradeId, string tradeData);
-
-    event TradeConfirmed(address confirmer, string tradeId);
-
-    event TradeActivated(string tradeId);
-
-    event TradeTerminated(string cause);
-
-    event ProcessSettlementPhase();
-
-    event ProcessSettled();
-
-    event ProcessSettlementRequest(string tradeData, string lastSettlementData);
-
-    event TradeTerminationRequest(address cpAddress, string tradeId);
-
-    event TradeTerminationConfirmed(address cpAddress, string tradeId);
-
-    event ProcessHalted(string message);
-
-    modifier onlyIssuer() {
-        require(msg.sender == issuerAddress , "You are not issuer"); _;
-    }
-
-
+contract SmartBondContract is ISDC  {
     /*
-     * Trade States
-     */
+        * Trade States
+        */
     enum TradeState {
+
+        /*
+         * State before the trade is incepted.
+         */
+        Inactive,
+
         /*
          * Incepted: Trade data submitted by one party. Market data for initial valuation is set.
          */
         Incepted,
+
         /*
          * Confirmed: Trade data accepted by other party.
          */
         Confirmed,
+
         /*
-         * Trade is settled
-         */
-        Settled,
-        /*
-         * @dev The Valuation Phase
+         * Valuation Phase
          */
         Valuation,
+
         /*
-         * @dev The settlement phase is initiated.
+         * A Token-based Transfer is in Progress
          */
-        inTransfer,
+        InTransfer,
+
+        /*
+         * Settlement is Completed
+         */
+        Settled,
+
         /*
          * Terminated.
          */
         Terminated
     }
 
+    modifier onlyIssuer() {
+        require(msg.sender == issuerAddress , "You are not issuer"); _;
+    }
 
     struct TransactionSpec {
         address buyer;
@@ -80,7 +67,7 @@ contract SDCBond is IERC165  {
     mapping(uint256 => TradeState) tradeStates;
     mapping(uint256 => TransactionSpec) transactionSpecs;
     mapping(address => uint256) bondHolderBalances;
-    uint bondIssuerBalance;
+    uint256 bondIssuerBalance;
 
     string private securityData;
     string private securityID;
@@ -113,12 +100,12 @@ contract SDCBond is IERC165  {
      * emits a TradeIncepted
      * can be called only when TradeState = Incepted
      */
-    function inceptTrade(address withParty, string memory tradeData, int position, uint256 lotNumber, uint256 paymentAmountPerLot) external   {
-        // @TODO require(msg.sender != withParty,)
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external  override {
+        require(msg.sender != _withParty, "Calling party cannot be the same as Trade Party");
         // @TODO Check eligiblity of the msg.sender
-        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,withParty,tradeData, position, lotNumber, paymentAmountPerLot)));
-        require(keccak256(abi.encode(tradeData)) == keccak256(abi.encode(securityData)), "Trade Inception request does not meet contract's underlying security specification");
-        require(pendingInceptions[transactionHash] != msg.sender, "Same inception request cannot be openend twice");
+        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData, _position, _units, _paymentAmountPerUnit)));
+        require(keccak256(abi.encode(_tradeData)) == keccak256(abi.encode(_tradeData)), "Trade Inception request does not meet contract's underlying security specification");
+        require(pendingInceptions[transactionHash] != msg.sender, "There exists already an identical pending inception for this trade");
         pendingInceptions[transactionHash] = msg.sender;
         tradeStates[transactionHash] = TradeState.Incepted;
         emit TradeIncepted(msg.sender, Strings.toString(transactionHash), "");
@@ -130,27 +117,26 @@ contract SDCBond is IERC165  {
      * emits a TradeConfirmed
      * can be called only when TradeState = Incepted
      */
-    function confirmTrade(address withParty, string memory tradeData, int position, uint256 lotNumber, uint256 paymentAmountPerLot) external  {
-        //require(msg.sender != withParty,)
-        // @TODO Check eligiblity of the msg.sender
-        uint256 transactionHash = uint256(keccak256(abi.encode(withParty,msg.sender,tradeData,-position, lotNumber, paymentAmountPerLot)));
-        require(pendingInceptions[transactionHash] == withParty, "No open request available to be confirmed");
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override{
+        require(msg.sender != _withParty, "Calling party cannot be the same as Trade Party");
+        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, _units, _paymentAmountPerUnit)));
+        require(pendingInceptions[transactionHash] == _withParty, "No pending inception available to be confirmed for this trade specification");
         delete pendingInceptions[transactionHash];
-        address buyer = position > 0 ? msg.sender : withParty;  // payer buys the bonds and pays cash
-        address seller = position > 0 ? withParty : msg.sender; // seller sells the bonds and receives cash
-        require(bondHolderBalances[seller] >= lotNumber, "Lot balance of selling party not sufficient");
-        uint256 paymentAmount = uint256(paymentAmountPerLot) * lotNumber;
-        transactionSpecs[transactionHash] = TransactionSpec(buyer,seller,lotNumber,paymentAmount,block.timestamp);
+        address buyer = _position > 0 ? msg.sender : _withParty;  // payer buys the bonds and pays cash
+        address seller = _position > 0 ? _withParty : msg.sender; // seller sells the bonds and receives cash
+        require(bondHolderBalances[seller] >= _units, "Lot balance of selling party not sufficient");
+        uint256 paymentAmount = uint256(_paymentAmountPerUnit) * _units;
+        transactionSpecs[transactionHash] = TransactionSpec(buyer,seller,_units,_paymentAmountPerUnit*_units,block.timestamp);
         /*Transfer Bond to internal balance and trigger transfer of the paymentAmount*/
-        bondHolderBalances[seller]         -= lotNumber;
-        bondHolderBalances[address(this)]  += lotNumber;
+        bondHolderBalances[seller]         -= _units;
+        bondHolderBalances[address(this)]  += _units;
+        tradeStates[transactionHash] = TradeState.InTransfer;
+        settlementToken.checkedTransferFromAndCallSender(buyer,seller,_paymentAmountPerUnit*_units,transactionHash); // trigger transfer upfrontPayment
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
-        tradeStates[transactionHash] = TradeState.inTransfer;
-        settlementToken.checkedTransferFromAndCallSender(buyer,seller,paymentAmount,transactionHash); // trigger transfer upfrontPayment
     }
 
-    function afterSettlement(uint256 transactionHash, bool success) external   {
-        require(tradeStates[transactionHash] == TradeState.inTransfer, "No existing Transfer phase for Transaction Hash");
+    function afterTransfer(uint256 transactionHash, bool success) external   {
+        require(tradeStates[transactionHash] == TradeState.InTransfer, "No existing Transfer phase for Transaction Hash");
         if (success == true){ /* Transfer units to buyer */
             address addressBuyer = transactionSpecs[transactionHash].buyer;
             bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].lotNumber;

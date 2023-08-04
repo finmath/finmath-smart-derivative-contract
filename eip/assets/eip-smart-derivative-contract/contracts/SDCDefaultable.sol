@@ -14,87 +14,37 @@ contract SDCDefaultable is SDC {
     int256 upfrontPayment;
     int256 terminationPayment;
 
-    mapping(uint256 => address) private pendingRequests;               // Stores open request hashes for several requests: initiation, update and termination
-
     bool private mutuallyTerminated = false;
 
     constructor(
         address _party1,
         address _party2,
-        address _receivingParty,
-        address _settlementToken
-    ) {
-        party1 = _party1;
-        party2 = _party2;
-        require(_receivingParty == _party1 || _receivingParty == _party2, "Receiver's address is not a counterparty address!");
-        receivingParty = _receivingParty;
-        settlementToken = IERC20(_settlementToken); // TODO: Check if contract at given address supports interface
-        tradeState = TradeState.Inactive;
-        processState = ProcessState.Idle;
+        address _settlementToken)
+        SDC(_party1,_party2,_settlementToken) {
      }
 
-    /*
-     * generates a hash from tradeData and generates a map entry in openRequests
-     * emits a TradeIncepted
-     * can be called only when TradeState = Incepted
-     */
-    function inceptTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external override onlyCounterparty onlyWhenTradeInactive {
-        processState = ProcessState.Initiation;
-        tradeState = TradeState.Incepted; // Set TradeState to Incepted
-        uint256 _hash = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData, _upfrontPayment)));
-        pendingRequests[_hash] = msg.sender;
-        tradeID = Strings.toString(_hash); // TODO: TradeId must be generated on-chain in order to be unique (manage via registry)
-        tradeData = _tradeData; // Set Trade Data to enable querying already in inception state
-        settlementData.push(_initialSettlementData); // Store settlement data to make them available for confirming party
-        emit TradeIncepted(msg.sender, tradeID, _tradeData);
+    function processTradeAfterConfirmation(uint256 upfrontPayment) override internal{
+        //@Todo: Process Upfront
     }
-
-    /*
-     * generates a hash from tradeData and checks whether an open request can be found by the opposite party
-     * if so, data are stored and open request is deleted
-     * emits a TradeConfirmed
-     * can be called only when TradeState = Incepted
-     */
-    function confirmTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external override onlyCounterparty onlyWhenTradeIncepted {
-        address pendingRequestParty = otherParty(msg.sender);
-        uint256 _hash = uint256(keccak256(abi.encode(_tradeData, _initialSettlementData, _upfrontPayment)));
-        require(pendingRequests[_hash] == pendingRequestParty, "Confirmation fails due to inconsistent trade data or wrong party address");
-        delete pendingRequests[_hash]; // Delete Pending Request
-        tradeState = TradeState.Confirmed;
-        address upfrontPayer = upfrontPayment>0 ? otherParty(receivingParty) : receivingParty;
-        if (settlementToken.balanceOf(upfrontPayer)>uint(abs(_upfrontPayment))){
-            settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),uint256(abs(_upfrontPayment))); // transfer upfrontPayment
-            processState = ProcessState.SettlementPhase;
-            emit TradeConfirmed(msg.sender, tradeID);
-        }
-        else {
-            tradeState == TradeState.Inactive;
-            processState = ProcessState.Idle;
-            emit TradeTerminated("Insufficient Balance or Allowance");
-        }
-    }
-
     /*
      * Balance Check
      */
-    function afterSettlement(bool success) external override onlyWhenSettlementPhase {
+    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
         /*uint256 expectedSDCBalance = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee) + uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee);
         if (settlementToken.balanceOf(this) < expectedSDCBalance){
             emit ProcessHalted("SDC Balance does not match pledged amounts");
             return;
         }*/
         if (tradeState == TradeState.Confirmed){
-            tradeState = TradeState.Active;
-            processState = ProcessState.Settled;
-            emit ProcessSettled();
+            tradeState = TradeState.Settled;
+            emit TradeSettled();
         }
-        if (tradeState == TradeState.Active){
-            processState = ProcessState.Settled;
-            emit ProcessSettled();
+        if (tradeState == TradeState.InTransfer){
+            tradeState = TradeState.Settled;
+            emit TradeSettled();
         }
         if (tradeState == TradeState.Terminated){
             tradeState = TradeState.Inactive;
-            processState = ProcessState.Idle;
             emit ProcessHalted("Trade Terminated");
         }
     }
@@ -134,8 +84,8 @@ contract SDCDefaultable is SDC {
             if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
                 settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
                 settlementToken.transferFrom(settlementPayer, settlementReceiver, transferAmount);
-                emit ProcessSettlementPhase();
-                processState = ProcessState.SettlementPhase;
+                emit TradeSettlementPhase();
+                tradeState = TradeState.InTransfer;
                 if ( mutuallyTerminated){
                     tradeState = TradeState.Terminated;
                     emit TradeTerminated("Trade Terminated");
@@ -183,9 +133,9 @@ contract SDCDefaultable is SDC {
     }
 
     function _emitSettlementRequest() internal {
-        processState = ProcessState.Valuation;
+        tradeState = TradeState.Valuation;
         uint256 latest = settlementData.length - 1;
-        emit ProcessSettlementRequest(tradeData, settlementData[latest]);
+        emit TradeSettlementRequest(tradeData, settlementData[latest]);
     }
 
 

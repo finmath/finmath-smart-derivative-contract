@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./SDC.sol";
-import "./SDCBond.sol";
+import "./SmartBondContract.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
@@ -31,20 +31,20 @@ contract SettlementToken is ERC20{
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
 
         if ( transfer(to,value) )
-            SDCBond(sdcAddress).afterSettlement(transactionID, true);
+            SDC(sdcAddress).afterTransfer(transactionID, true);
         else
-            SDCBond(sdcAddress).afterSettlement(transactionID, false);
+            SDC(sdcAddress).afterTransfer(transactionID, false);
         address owner = _msgSender();
     }
 
     function checkedTransferFromAndCallSender(address from, address to, uint256 value, uint256 transactionID) external {
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
         if (balanceOf(from)< value || allowance(from,address(msg.sender)) < value )
-            SDCBond(sdcAddress).afterSettlement(transactionID, false);
+            SDC(sdcAddress).afterTransfer(transactionID, false);
         if ( transferFrom(from, to,value) )
-            SDCBond(sdcAddress).afterSettlement(transactionID, true);
+            SDC(sdcAddress).afterTransfer(transactionID, true);
         else
-            SDCBond(sdcAddress).afterSettlement(transactionID, false);
+            SDC(sdcAddress).afterTransfer(transactionID, false);
         address owner = _msgSender();
     }
 
@@ -55,11 +55,11 @@ contract SettlementToken is ERC20{
         for(uint256 i = 0; i < values.length; i++)
             requiredBalance += values[i];
         if (balanceOf(msg.sender) < requiredBalance)
-            SDCBond(sdcAddress).afterSettlement(transactionID, false);
+            SDC(sdcAddress).afterTransfer(transactionID, false);
         for(uint256 i = 0; i < to.length; i++){
             transfer(to[i],values[i]);
         }
-        SDCBond(sdcAddress).afterSettlement(transactionID, true);
+        SDC(sdcAddress).afterTransfer(transactionID, true);
     }
 
 
@@ -76,7 +76,7 @@ contract SettlementToken is ERC20{
                     totalRequiredBalance += values[j];
             }
             if (balanceOf(fromAddress) <  totalRequiredBalance){
-                SDCBond(sdcAddress).afterSettlement(transactionID, false);
+                SDC(sdcAddress).afterTransfer(transactionID, false);
                 break;
             }
 
@@ -84,7 +84,7 @@ contract SettlementToken is ERC20{
         for(uint256 i = 0; i < to.length; i++){
             transferFrom(from[i],to[i],values[i]);
         }
-        SDCBond(sdcAddress).afterSettlement(transactionID, true);
+        SDC(sdcAddress).afterTransfer(transactionID, true);
     }
 
 }
