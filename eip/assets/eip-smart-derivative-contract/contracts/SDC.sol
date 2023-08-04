@@ -3,6 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./ISDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./SettlementToken.sol";
 
 
 
@@ -42,51 +43,25 @@ abstract contract SDC is ISDC {
         Confirmed,
 
         /*
-         * Active (Confirmend + Prefunded Termination Fees). Will cycle through process states.
+         * Valuation Phase
          */
-        Active,
+        Valuation,
+
+        /*
+         * A Token-based Transfer is in Progress
+         */
+        InTransfer,
+
+        /*
+         * Settlement is Completed
+         */
+        Settled,
 
         /*
          * Terminated.
          */
         Terminated
     }
-
-    /*
-     * Process States. t < T* (vor incept). The process runs in cycles. Let i = 0,1,2,... denote the index of the cycle. Within each cycle there are times
-     * T_{i,0}, T_{i,1}, T_{i,2}, T_{i,3} with T_{i,1} = pre-funding of the Smart Contract, T_{i,2} = request valuation from oracle, T_{i,3} = perform settlement on given valuation, T_{i+1,0} = T_{i,3}.
-     * Given this time discretization the states are assigned to time points and time intervalls:
-     * Idle: Before incept or after terminate
-     * Initiation: T* < t < T_{0}, where T* is time of incept and T_{0} = T_{0,0}
-     * AwaitingFunding: T_{i,0} < t < T_{i,1}
-     * Funding: t = T_{i,1}
-     * AwaitingSettlement: T_{i,1} < t < T_{i,2}
-     * ValuationAndSettlement: T_{i,2} < t < T_{i,3}
-     * Settled: t = T_{i,3}
-     */
-    enum ProcessState {
-        /**
-         * @dev The process has not yet started or is terminated
-         */
-        Idle,
-        /*
-         * @dev The process is initiated (incepted, but not yet completed confimation). Next: Initiation
-         */
-        Initiation,
-        /*
-         * @dev Process State Settled
-         */
-        Settled,
-        /*
-         * @dev The Valuation Phase
-         */
-        Valuation,
-        /*
-         * @dev The settlement phase is initiated.
-         */
-        SettlementPhase
-    }
-
 
     /*
     * Modifiers serve as guards whether at a specific process state a specific function can be called
@@ -100,17 +75,16 @@ abstract contract SDC is ISDC {
         require(tradeState == TradeState.Incepted, "Trade state is not 'Incepted'."); _;
     }
     modifier onlyWhenSettled() {
-        require(processState == ProcessState.Settled, "Process state is not 'Settled'."); _;
+        require(tradeState == TradeState.Settled, "Trade state is not 'Settled'."); _;
     }
     modifier onlyWhenValuation() {
-        require(processState == ProcessState.Valuation, "Process state is not 'Valuation'."); _;
+        require(tradeState == TradeState.Valuation, "Trade state is not 'Valuation'."); _;
     }
     modifier onlyWhenSettlementPhase() {
-        require(processState == ProcessState.SettlementPhase, "Process state is not 'SettlementPhase'."); _;
+        require(tradeState == TradeState.InTransfer, "Trade state is not 'InTransfer'."); _;
     }
 
     TradeState internal tradeState;
-    ProcessState internal processState;
 
     modifier onlyCounterparty() {
         require(msg.sender == party1 || msg.sender == party2, "You are not a counterparty."); _;
@@ -118,19 +92,72 @@ abstract contract SDC is ISDC {
 
     address internal party1;
     address internal party2;
-    address internal receivingParty; // Determine the receiver: Positive values are consider to be received by receivingPartyAddress. Negative values are received by the other counterparty.
+    address internal receivingParty;
 
     string internal tradeID;
     string internal tradeData;
-
+    mapping(uint256 => address) internal pendingRequests; // Stores open request hashes for several requests: initiation, update and termination
+    string internal lastSettlementData;
 
     /*
-     * liquidityToken holds:
-     * - funding account of party1
-     * - funding account of party2
-     * - account for SDC (sum - this is split among parties by sdcBalances)
+     * SettlementToken holds:
+     * - balance of party1
+     * - balance of party2
+     * - balance for SDC
      */
-    IERC20 internal settlementToken;
+    SettlementToken internal settlementToken;
+
+
+    constructor(
+        address _party1,
+        address _party2,
+        address _settlementToken
+    ) {
+        party1 = _party1;
+        party2 = _party2;
+        settlementToken = SettlementToken(_settlementToken); // TODO: Check if contract at given address supports interface
+        tradeState = TradeState.Inactive;
+    }
+    /*
+         * generates a hash from tradeData and generates a map entry in openRequests
+         * emits a TradeIncepted
+         * can be called only when TradeState = Incepted
+         */
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeInactive {
+        require(msg.sender != _withParty, "Calling party cannot be the same as withParty");
+        require(_position == 1 || _position == -1, "Position can only be +1 or -1");
+        require(_units == 1, "Current Implementation only allows units=1");
+        tradeState = TradeState.Incepted; // Set TradeState to Incepted
+        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData,_position, _units, _paymentAmountPerUnit)));
+        pendingRequests[transactionHash] = msg.sender;
+        receivingParty = _position == 1 ? msg.sender : _withParty;
+        tradeID = Strings.toString(transactionHash);
+        tradeData = _tradeData; // Set trade data to enable querying already in inception state
+        lastSettlementData = _initialSettlementData; // Store settlement data to make them available for confirming party
+        emit TradeIncepted(msg.sender, tradeID, _tradeData);
+    }
+
+    /*
+     * generates a hash from tradeData and checks whether an open request can be found by the opposite party
+     * if so, data are stored and open request is deleted
+     * emits a TradeConfirmed
+     * can be called only when TradeState = Incepted
+     */
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeIncepted
+    {
+        address inceptingParty = msg.sender == party1 ? party2 : party1;
+        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, _units, _paymentAmountPerUnit)));
+        require(pendingRequests[transactionHash] == inceptingParty, "Confirmation fails due to inconsistent trade data or wrong party address");
+        delete pendingRequests[transactionHash]; // Delete Pending Request
+        tradeState = TradeState.Confirmed;
+        emit TradeConfirmed(msg.sender, tradeID);
+        uint256 upfront = _units * _paymentAmountPerUnit;
+        processTradeAfterConfirmation(upfront);
+    }
+
+
+
+    function processTradeAfterConfirmation(uint256 upfrontPayment) virtual internal;
 
     /*
      * Utilities
@@ -166,10 +193,6 @@ abstract contract SDC is ISDC {
         return tradeState;
     }
 
-    function getProcessState() public view returns (ProcessState) {
-        return processState;
-    }
-
     /**
      * Other party
      */
@@ -177,14 +200,6 @@ abstract contract SDC is ISDC {
         return (party == party1 ? party2 : party1);
     }
 
-    /*
-     * Setters/Getters
-     * TODO: Check modifiers!
-     */
-
-    function getReceivingParty() public view onlyCounterparty returns (address) {
-        return receivingParty;
-    }
 
     function getTradeID() public view returns (string memory) {
         return tradeID;
