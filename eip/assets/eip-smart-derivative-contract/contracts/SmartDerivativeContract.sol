@@ -3,7 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./ISDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./SettlementToken.sol";
+import "./SDCSettlementToken.sol";
 
 
 
@@ -21,7 +21,7 @@ import "./SettlementToken.sol";
  * - upon termination all remaining 'locked' amounts will be transferred back to the counterparties
 */
 
-abstract contract SDC is ISDC {
+abstract contract SmartDerivativeContract is ISDC {
     /*
      * Trade States
      */
@@ -97,7 +97,8 @@ abstract contract SDC is ISDC {
     string internal tradeID;
     string internal tradeData;
     mapping(uint256 => address) internal pendingRequests; // Stores open request hashes for several requests: initiation, update and termination
-    string internal lastSettlementData;
+    bool internal mutuallyTerminated = false;
+    int256 terminationPayment;
 
     /*
      * SettlementToken holds:
@@ -105,7 +106,7 @@ abstract contract SDC is ISDC {
      * - balance of party2
      * - balance for SDC
      */
-    SettlementToken internal settlementToken;
+    SDCSettlementToken internal settlementToken;
 
 
     constructor(
@@ -115,7 +116,7 @@ abstract contract SDC is ISDC {
     ) {
         party1 = _party1;
         party2 = _party2;
-        settlementToken = SettlementToken(_settlementToken); // TODO: Check if contract at given address supports interface
+        settlementToken = SDCSettlementToken(_settlementToken); // TODO: Check if contract at given address supports interface
         tradeState = TradeState.Inactive;
     }
     /*
@@ -133,7 +134,6 @@ abstract contract SDC is ISDC {
         receivingParty = _position == 1 ? msg.sender : _withParty;
         tradeID = Strings.toString(transactionHash);
         tradeData = _tradeData; // Set trade data to enable querying already in inception state
-        lastSettlementData = _initialSettlementData; // Store settlement data to make them available for confirming party
         emit TradeIncepted(msg.sender, tradeID, _tradeData);
     }
 
@@ -156,8 +156,41 @@ abstract contract SDC is ISDC {
     }
 
 
+    /*
+    * Can be called by a party for mutual termination
+    * Hash is generated an entry is put into pendingRequests
+    * TerminationRequest is emitted
+    * can be called only when ProcessState = Funded and TradeState = Active
+    */
+    function requestTradeTermination(string memory _tradeId, int256 _terminationPayment) external override onlyCounterparty onlyWhenSettled {
+        require(keccak256(abi.encodePacked(tradeID)) == keccak256(abi.encodePacked(_tradeId)), "Trade ID mismatch");
+        uint256 hash = uint256(keccak256(abi.encode(_tradeId, "terminate", _terminationPayment)));
+        pendingRequests[hash] = msg.sender;
+        emit TradeTerminationRequest(msg.sender, _tradeId);
+    }
+
+    /*
+
+     * Same pattern as for initiation
+     * confirming party generates same hash, looks into pendingRequests, if entry is found with correct address, tradeState is put to terminated
+     * can be called only when ProcessState = Funded and TradeState = Active
+     */
+    function confirmTradeTermination(string memory _tradeId, int256 _terminationPayment) external override onlyCounterparty onlyWhenSettled {
+        address pendingRequestParty = msg.sender == party1 ? party2 : party1;
+        uint256 hashConfirm = uint256(keccak256(abi.encode(_tradeId, "terminate", _terminationPayment)));
+        require(pendingRequests[hashConfirm] == pendingRequestParty, "Confirmation of termination failed due to wrong party or missing request");
+        delete pendingRequests[hashConfirm];
+        mutuallyTerminated = true;
+        terminationPayment = _terminationPayment;
+        emit TradeTerminationConfirmed(msg.sender, _tradeId);
+        processTradeAfterMutualTermination(); // to be overridden by implementing contracts
+    }
+
+
 
     function processTradeAfterConfirmation(uint256 upfrontPayment) virtual internal;
+
+    function processTradeAfterMutualTermination() virtual internal;
 
     /*
      * Utilities
