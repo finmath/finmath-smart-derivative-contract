@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./ISDC.sol";
-import "./SettlementToken.sol";
+import "./SDCSettlementToken.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -62,7 +62,7 @@ contract SmartBondContract is ISDC  {
     }
 
     address issuerAddress;
-    SettlementToken internal settlementToken;
+    SDCSettlementToken internal settlementToken;
 
     mapping(uint256 => TradeState) tradeStates;
     mapping(uint256 => TransactionSpec) transactionSpecs;
@@ -88,7 +88,7 @@ contract SmartBondContract is ISDC  {
         securityID = _securityID;
         bondHolderBalances[issuerAddress] = _initialLotBalance;
         lotSize = _lotSize;
-        settlementToken = SettlementToken(_settlementToken);
+        settlementToken = SDCSettlementToken(_settlementToken);
      }
 
     function supportsInterface(bytes4 interfaceId) external view returns (bool){
@@ -135,7 +135,7 @@ contract SmartBondContract is ISDC  {
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
     }
 
-    function afterTransfer(uint256 transactionHash, bool success) external   {
+    function afterSettlement(uint256 transactionHash, bool success) external   {
         require(tradeStates[transactionHash] == TradeState.InTransfer, "No existing Transfer phase for Transaction Hash");
         if (success == true){ /* Transfer units to buyer */
             address addressBuyer = transactionSpecs[transactionHash].buyer;
