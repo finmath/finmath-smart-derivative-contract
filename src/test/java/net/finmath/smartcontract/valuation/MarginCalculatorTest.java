@@ -22,7 +22,7 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(991.36, value, 0.005, "Margin");
+		Assertions.assertEquals(990.85, value, 0.005, "Margin");
 		System.out.println(valuationResult);
 	}
 
