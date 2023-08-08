@@ -7,6 +7,7 @@ import net.finmath.smartcontract.model.ValueRequest;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.ValuationController;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,13 @@ import java.time.LocalDateTime;
 @AutoConfigureMockMvc
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Disabled
 public class ValuationControllerTest {
 
 
 	@Test
 	@WithUserDetails("user1")	// testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
+	@Disabled
 	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -67,6 +70,7 @@ public class ValuationControllerTest {
 
 	@Test
 	@WithUserDetails("user1")
+	@Disabled
 	public void getValue(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);

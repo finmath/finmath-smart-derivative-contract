@@ -1,360 +1,106 @@
-{
-  "requestTimestamp": "2023-01-31T14:35:23+00:00",
-  "values": [
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR12X18F=",
-      "value": 0.03323
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR1X7F=",
-      "value":  0.03202
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR2X8F=",
-      "value": 0.03359
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR3X9F=",
-      "value": 0.03458
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR4X10F=",
-      "value": 0.03538
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR6MD=",
-      "value": 0.03
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR6X12F=",
-      "value": 0.03565
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUR9X15F=",
-      "value": 0.03471
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E10Y=",
-      "value": 0.028674999999999996
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E11Y=",
-      "value":  0.02872
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E12Y=",
-      "value": 0.028739999999999998
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E13Y=",
-      "value": 0.02872
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E14Y=",
-      "value": 0.028419999999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E15Y=",
-      "value": 0.02849
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E16Y=",
-      "value": 0.028259999999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E17Y=",
-      "value": 0.027960000000000002
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E18Y=",
-      "value": 0.027610000000000003
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E19Y=",
-      "value": 0.02724
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E20Y=",
-      "value": 0.026855000000000004
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E21Y=",
-      "value": 0.026549999999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E22Y=",
-      "value": 0.02618
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E23Y=",
-      "value": 0.0258
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E24Y=",
-      "value": 0.02535
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E25Y=",
-      "value": 0.025004999999999996
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E26Y=",
-      "value": 0.024700000000000003
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E27Y=",
-      "value": 0.02435
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E28Y=",
-      "value": 0.02403
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E29Y=",
-      "value": 0.02373
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E2Y=",
-      "value": 0.03281
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E30Y=",
-      "value": 0.023405
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E3Y=",
-      "value": 0.03109
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E40Y=",
-      "value": 0.02093
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E4Y=",
-      "value": 0.029930000000000002
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E50Y=",
-      "value": 0.01899
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E5Y=",
-      "value": 0.029299999999999996
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E6Y=",
-      "value": 0.028920000000000005
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E7Y=",
-      "value": 0.0287
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E8Y=",
-      "value": 0.028609999999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURAB6E9Y=",
-      "value": 0.032869999999999996
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST10Y=",
-      "value": 0.02609
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST11Y=",
-      "value": 0.02624
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST12Y=",
-      "value": 0.026325
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST15M=",
-      "value": 0.031799999999999995
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST15Y=",
-      "value": 0.026365
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST18M=",
-      "value": 0.031470000000000005
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST1M=",
-      "value": 0.023009500000000002
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST1Y=",
-      "value": 0.03175
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST20Y=",
-      "value": 0.02535
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST21M=",
-      "value": 0.030990000000000004
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST25Y=",
-      "value": 0.023905000000000003
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST2M=",
-      "value": 0.024499
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST2W=",
-      "value": 0.021920000000000002
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST2Y=",
-      "value": 0.03049
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST30Y=",
-      "value":0.022664999999999998
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST3M=",
-      "value": 0.025866499999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST3W=",
-      "value": 0.022648
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST3Y=",
-      "value": 0.02852
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST4M=",
-      "value": 0.0271695
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST4Y=",
-      "value": 0.02732
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST5M=",
-      "value":  0.028263999999999997
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST5Y=",
-      "value": 0.026605
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST6M=",
-      "value": 0.0291575
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST6Y=",
-      "value": 0.026165000000000004
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST7M=",
-      "value": 0.03
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST7Y=",
-      "value": 0.025925000000000004
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST8M=",
-      "value": 0.030505
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST8Y=",
-      "value": 0.025854999999999996
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST9M=",
-      "value": 0.0309715
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUREST9Y=",
-      "value": 0.025905
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EURESTSW=",
-      "value":  0.019761
-    },
-    {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
-      "symbol": "EUROSTR=",
-      "value": 0.01904
-    }
-  ]
-}
+{"requestTimestamp" : "2023-08-07T11:05:50+00:00", "values" : [{"dataTimestamp":"2023-08-07T11:05:18+00:00","symbol":"EUR12X18F=","value":0.03509}, 
+ {"dataTimestamp":"2023-08-07T11:05:43+00:00","symbol":"EUR1X7F=","value":0.03986}, 
+ {"dataTimestamp":"2023-08-07T11:05:43+00:00","symbol":"EUR2X8F=","value":0.039979999999999995}, 
+ {"dataTimestamp":"2023-08-07T11:05:43+00:00","symbol":"EUR3X9F=","value":0.03991}, 
+ {"dataTimestamp":"2023-08-07T11:05:43+00:00","symbol":"EUR4X10F=","value":0.03968}, 
+ {"dataTimestamp":"2023-08-07T11:03:30+00:00","symbol":"EUR6MD=","value":0.040350000000000004}, 
+ {"dataTimestamp":"2023-08-07T11:05:43+00:00","symbol":"EUR6X12F=","value":0.038900000000000004}, 
+ {"dataTimestamp":"2023-08-07T11:05:48+00:00","symbol":"EUR9X15F=","value":0.03713}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E10Y=","value":0.032119999999999996}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E11Y=","value":0.03219}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E12Y=","value":0.03228}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E13Y=","value":0.0323}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E14Y=","value":0.03229}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E15Y=","value":0.03223}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E16Y=","value":0.032080000000000004}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E17Y=","value":0.03189}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E18Y=","value":0.031549999999999995}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E19Y=","value":0.03138}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E20Y=","value":0.031079999999999997}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E21Y=","value":0.0308}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E22Y=","value":0.030510000000000002}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E23Y=","value":0.030219999999999997}, 
+ {"dataTimestamp":"2023-08-07T11:05:19+00:00","symbol":"EURAB6E24Y=","value":0.029939999999999998}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E25Y=","value":0.02965}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E26Y=","value":0.029380000000000003}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E27Y=","value":0.02911}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E28Y=","value":0.02886}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E29Y=","value":0.028609999999999997}, 
+ {"dataTimestamp":"2023-08-07T11:05:03+00:00","symbol":"EURAB6E2Y=","value":0.03726}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E30Y=","value":0.028380000000000002}, 
+ {"dataTimestamp":"2023-08-07T11:04:55+00:00","symbol":"EURAB6E3Y=","value":0.035085}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E40Y=","value":0.02643}, 
+ {"dataTimestamp":"2023-08-07T11:05:19+00:00","symbol":"EURAB6E4Y=","value":0.03373}, 
+ {"dataTimestamp":"2023-08-07T11:05:21+00:00","symbol":"EURAB6E50Y=","value":0.02489}, 
+ {"dataTimestamp":"2023-08-07T11:05:20+00:00","symbol":"EURAB6E5Y=","value":0.033010000000000005}, 
+ {"dataTimestamp":"2023-08-07T11:05:19+00:00","symbol":"EURAB6E6Y=","value":0.032569999999999995}, 
+ {"dataTimestamp":"2023-08-07T11:05:19+00:00","symbol":"EURAB6E7Y=","value":0.03229}, 
+ {"dataTimestamp":"2023-08-07T11:05:16+00:00","symbol":"EURAB6E8Y=","value":0.03214}, 
+ {"dataTimestamp":"2023-08-07T11:05:15+00:00","symbol":"EURAB6E9Y=","value":0.0321}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST10Y=","value":0.03004}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST11Y=","value":0.03021}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST12Y=","value":0.0304}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST15M=","value":0.03702}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST15Y=","value":0.03068}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST18M=","value":0.03621}, 
+ {"dataTimestamp":"2023-08-07T11:05:12+00:00","symbol":"EUREST1M=","value":0.0365195}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST1Y=","value":0.0378575}, 
+ {"dataTimestamp":"2023-08-07T11:05:23+00:00","symbol":"EUREST20Y=","value":0.030019999999999998}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST21M=","value":0.0354535}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST25Y=","value":0.02886}, 
+ {"dataTimestamp":"2023-08-07T11:05:16+00:00","symbol":"EUREST2M=","value":0.03692}, 
+ {"dataTimestamp":"2023-08-07T11:04:58+00:00","symbol":"EUREST2W=","value":0.036490999999999996}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST2Y=","value":0.03474}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST30Y=","value":0.02783}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST3M=","value":0.037268499999999996}, 
+ {"dataTimestamp":"2023-08-07T11:05:01+00:00","symbol":"EUREST3W=","value":0.036498499999999996}, 
+ {"dataTimestamp":"2023-08-07T11:04:58+00:00","symbol":"EUREST3Y=","value":0.032535}, 
+ {"dataTimestamp":"2023-08-07T11:05:00+00:00","symbol":"EUREST4M=","value":0.0375695}, 
+ {"dataTimestamp":"2023-08-07T11:05:18+00:00","symbol":"EUREST4Y=","value":0.031204999999999997}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST5M=","value":0.0377825}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST5Y=","value":0.030515}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST6M=","value":0.037972}, 
+ {"dataTimestamp":"2023-08-07T11:05:17+00:00","symbol":"EUREST6Y=","value":0.03013}, 
+ {"dataTimestamp":"2023-08-07T11:05:13+00:00","symbol":"EUREST7M=","value":0.038099}, 
+ {"dataTimestamp":"2023-08-07T11:05:17+00:00","symbol":"EUREST7Y=","value":0.02992}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST8M=","value":0.038145}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST8Y=","value":0.029865000000000003}, 
+ {"dataTimestamp":"2023-08-07T11:05:11+00:00","symbol":"EUREST9M=","value":0.038127}, 
+ {"dataTimestamp":"2023-08-07T11:05:22+00:00","symbol":"EUREST9Y=","value":0.029905}, 
+ {"dataTimestamp":"2023-08-07T11:05:01+00:00","symbol":"EURESTSW=","value":0.036465}, 
+ {"dataTimestamp":"2023-07-04T13:00:58+00:00","symbol":"EURIBOR6MD=","value":0.03888}, 
+ {"dataTimestamp":"2023-06-27T09:00:58+00:00","symbol":"EURIBOR6MD=","value":0.03915}, 
+ {"dataTimestamp":"2023-07-11T09:00:49+00:00","symbol":"EURIBOR6MD=","value":0.0394}, 
+ {"dataTimestamp":"2023-06-28T13:00:59+00:00","symbol":"EURIBOR6MD=","value":0.0393}, 
+ {"dataTimestamp":"2023-01-30T09:00:23+00:00","symbol":"EURIBOR6MD=","value":0.00029}, 
+ {"dataTimestamp":"2023-06-26T13:00:58+00:00","symbol":"EURIBOR6MD=","value":0.03908}, 
+ {"dataTimestamp":"2023-06-21T13:00:59+00:00","symbol":"EURIBOR6MD=","value":0.03886}, 
+ {"dataTimestamp":"2023-07-03T09:00:47+00:00","symbol":"EURIBOR6MD=","value":0.03913}, 
+ {"dataTimestamp":"2023-06-26T09:00:48+00:00","symbol":"EURIBOR6MD=","value":0.03908}, 
+ {"dataTimestamp":"2023-06-27T13:00:58+00:00","symbol":"EURIBOR6MD=","value":0.03915}, 
+ {"dataTimestamp":"2023-06-20T13:00:57+00:00","symbol":"EURIBOR6MD=","value":0.038919999999999996}, 
+ {"dataTimestamp":"2023-08-02T13:00:57+00:00","symbol":"EURIBOR6MD=","value":0.03944}, 
+ {"dataTimestamp":"2023-07-10T09:00:52+00:00","symbol":"EURIBOR6MD=","value":0.03931}, 
+ {"dataTimestamp":"2023-08-07T09:00:47+00:00","symbol":"EURIBOR6MD=","value":0.03949}, 
+ {"dataTimestamp":"2023-07-05T13:00:58+00:00","symbol":"EURIBOR6MD=","value":0.03895}, 
+ {"dataTimestamp":"2023-06-21T09:00:49+00:00","symbol":"EURIBOR6MD=","value":0.03886}, 
+ {"dataTimestamp":"2023-01-31T09:00:23+00:00","symbol":"EURIBOR6MD=","value":0.00029499999999999996}, 
+ {"dataTimestamp":"2023-01-31T14:35:23+00:00","symbol":"EUROSTR=","value":0.00019040000000000002}, 
+ {"dataTimestamp":"2023-06-23T06:00:11+00:00","symbol":"EUROSTR=","value":0.034}, 
+ {"dataTimestamp":"2023-07-04T06:00:04+00:00","symbol":"EUROSTR=","value":0.03399}, 
+ {"dataTimestamp":"2023-07-03T06:00:04+00:00","symbol":"EUROSTR=","value":0.034}, 
+ {"dataTimestamp":"2023-01-30T06:00:23+00:00","symbol":"EUROSTR=","value":0.000189}, 
+ {"dataTimestamp":"2023-08-02T06:00:04+00:00","symbol":"EUROSTR=","value":0.03404}, 
+ {"dataTimestamp":"2023-01-29T06:00:23+00:00","symbol":"EUROSTR=","value":0.0001778}, 
+ {"dataTimestamp":"2023-07-10T06:00:03+00:00","symbol":"EUROSTR=","value":0.03406}, 
+ {"dataTimestamp":"2023-06-20T06:00:05+00:00","symbol":"EUROSTR=","value":0.03144}, 
+ {"dataTimestamp":"2023-06-21T06:00:04+00:00","symbol":"EUROSTR=","value":0.03144}, 
+ {"dataTimestamp":"2023-01-31T06:00:23+00:00","symbol":"EUROSTR=","value":0.00019040000000000002}, 
+ {"dataTimestamp":"2023-06-26T06:00:11+00:00","symbol":"EUROSTR=","value":0.034}, 
+ {"dataTimestamp":"2023-06-28T06:00:05+00:00","symbol":"EUROSTR=","value":0.03397}, 
+ {"dataTimestamp":"2023-08-07T06:00:04+00:00","symbol":"EUROSTR=","value":0.03653}, 
+ {"dataTimestamp":"2023-06-19T06:00:05+00:00","symbol":"EUROSTR=","value":0.03144}, 
+ {"dataTimestamp":"2023-06-16T06:00:05+00:00","symbol":"EUROSTR=","value":0.03144}, 
+ {"dataTimestamp":"2023-07-05T06:00:03+00:00","symbol":"EUROSTR=","value":0.03401}, 
+ {"dataTimestamp":"2023-07-11T06:00:05+00:00","symbol":"EUROSTR=","value":0.03402}, 
+ {"dataTimestamp":"2023-06-27T06:00:08+00:00","symbol":"EUROSTR=","value":0.034}]}
