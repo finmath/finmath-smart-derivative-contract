@@ -85,21 +85,19 @@ public class Calibrator {
                         //see https://quant.stackexchange.com/questions/73522/how-does-bloomberg-calculate-the-discount-rate-from-eur-estr-curve
                     }
                 });
-        var dfLast = 1.0;
-        var timeLast = 0.0;
         fixingValuesList.add(0, 0.0);
         fixingTimesList.add(0, FloatingpointDate.getFloatingPointDateFromDate( // no intraday discounting!
                 referenceDate.atStartOfDay(),
                 referenceDate.atTime(17,0,0)));
         fixingValuesList.add(1, 0.0);
-        fixingTimesList.add(1, timeLast);
-
-        dfTimesList.add(FloatingpointDate.getFloatingPointDateFromDate( // no intraday discounting!
+        fixingTimesList.add(1, 0.0);
+        dfTimesList.add(FloatingpointDate.getFloatingPointDateFromDate(
                 referenceDate.atStartOfDay(),
                         referenceDate.atTime(17,0,0)));
         dfList.add(1.0);
         dfTimesList.add(0.0);
         dfList.add(1.0);
+        var dfLast = 1.0;
         for (var i = 2; i < fixingTimesList.size(); i++) {
             dfList.add(
                     dfLast * Math.exp(fixingValuesList.get(i) * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
