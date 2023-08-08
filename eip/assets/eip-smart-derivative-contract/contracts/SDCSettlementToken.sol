@@ -28,22 +28,24 @@ contract SDCSettlementToken is ERC20{
 
     function checkedTransferAndCallSender(address to, uint256 value, uint256 transactionID) public{
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
-
-        if ( transfer(to,value) )
-            ISDC(sdcAddress).afterSettlement(transactionID, true);
-        else
+        try this.transfer(to,value) returns (bool transferSuccessFlag) {
+            ISDC(sdcAddress).afterSettlement(transactionID, transferSuccessFlag);
+        }
+        catch{
             ISDC(sdcAddress).afterSettlement(transactionID, false);
-        address owner = _msgSender();
+        }
     }
 
     function checkedTransferFromAndCallSender(address from, address to, uint256 value, uint256 transactionID) external {
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
-        if (balanceOf(from)< value || allowance(from,address(msg.sender)) < value )
+        if (this.balanceOf(from)< value || this.allowance(from,address(msg.sender)) < value )
             ISDC(sdcAddress).afterSettlement(transactionID, false);
-        if ( transferFrom(from, to,value) )
-            ISDC(sdcAddress).afterSettlement(transactionID, true);
-        else
+        try this.transfer(to,value) returns (bool transferSuccessFlag) {
+            ISDC(sdcAddress).afterSettlement(transactionID, transferSuccessFlag);
+        }
+        catch{
             ISDC(sdcAddress).afterSettlement(transactionID, false);
+        }
         address owner = _msgSender();
     }
 
@@ -53,12 +55,16 @@ contract SDCSettlementToken is ERC20{
         uint256 requiredBalance = 0;
         for(uint256 i = 0; i < values.length; i++)
             requiredBalance += values[i];
-        if (balanceOf(msg.sender) < requiredBalance)
+        if (balanceOf(msg.sender) < requiredBalance){
             ISDC(sdcAddress).afterSettlement(transactionID, false);
-        for(uint256 i = 0; i < to.length; i++){
-            transfer(to[i],values[i]);
+            return;
         }
-        ISDC(sdcAddress).afterSettlement(transactionID, true);
+        else{
+            for(uint256 i = 0; i < to.length; i++){
+                transfer(to[i],values[i]);
+            }
+            ISDC(sdcAddress).afterSettlement(transactionID, true);
+        }
     }
 
 

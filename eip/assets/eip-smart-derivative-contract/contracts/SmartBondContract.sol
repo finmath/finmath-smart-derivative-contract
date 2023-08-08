@@ -56,7 +56,7 @@ contract SmartBondContract is ISDC  {
     struct TransactionSpec {
         address buyer;
         address seller;
-        uint lotNumber;
+        uint notional;
         uint paymentAmount;
         uint timestamp;
     }
@@ -79,15 +79,13 @@ contract SmartBondContract is ISDC  {
         address         _issuerAddress,
         string memory   _securityData,
         string memory   _securityID,
-        uint            _initialLotBalance,
-        uint            _lotSize,
+        uint            _initialBalance,
         address         _settlementToken
     ) {
         issuerAddress = _issuerAddress;
         securityData = _securityData;
         securityID = _securityID;
-        bondHolderBalances[issuerAddress] = _initialLotBalance;
-        lotSize = _lotSize;
+        bondHolderBalances[issuerAddress] = _initialBalance;
         settlementToken = SDCSettlementToken(_settlementToken);
      }
 
@@ -100,10 +98,10 @@ contract SmartBondContract is ISDC  {
      * emits a TradeIncepted
      * can be called only when TradeState = Incepted
      */
-    function inceptTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external  override {
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external  override {
         require(msg.sender != _withParty, "Calling party cannot be the same as Trade Party");
-        // @TODO Check eligiblity of the msg.sender
-        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData, _position, _units, _paymentAmountPerUnit)));
+        require(_position * _paymentAmount < 0, "Positive Position expects negative payment amount and vice versa");
+        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData, _position, _paymentAmount)));
         require(keccak256(abi.encode(_tradeData)) == keccak256(abi.encode(_tradeData)), "Trade Inception request does not meet contract's underlying security specification");
         require(pendingInceptions[transactionHash] != msg.sender, "There exists already an identical pending inception for this trade");
         pendingInceptions[transactionHash] = msg.sender;
@@ -117,21 +115,28 @@ contract SmartBondContract is ISDC  {
      * emits a TradeConfirmed
      * can be called only when TradeState = Incepted
      */
-    function confirmTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override{
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override{
         require(msg.sender != _withParty, "Calling party cannot be the same as Trade Party");
-        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, _units, _paymentAmountPerUnit)));
+        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, _paymentAmount)));
         require(pendingInceptions[transactionHash] == _withParty, "No pending inception available to be confirmed for this trade specification");
         delete pendingInceptions[transactionHash];
-        address buyer = _position > 0 ? msg.sender : _withParty;  // payer buys the bonds and pays cash
+        address buyer = _position > 0 ? msg.sender : _withParty;  // buyer receives the bond + coupons and pays cash
         address seller = _position > 0 ? _withParty : msg.sender; // seller sells the bonds and receives cash
-        require(bondHolderBalances[seller] >= _units, "Lot balance of selling party not sufficient");
-        uint256 paymentAmount = uint256(_paymentAmountPerUnit) * _units;
-        transactionSpecs[transactionHash] = TransactionSpec(buyer,seller,_units,_paymentAmountPerUnit*_units,block.timestamp);
-        /*Transfer Bond to internal balance and trigger transfer of the paymentAmount*/
-        bondHolderBalances[seller]         -= _units;
-        bondHolderBalances[address(this)]  += _units;
+        uint absPosition = uint256(_position);
+        uint256 transferAmount = uint256(_paymentAmount);
+        require(bondHolderBalances[seller] >= absPosition, "Balance of selling party not sufficient");
+
+        transactionSpecs[transactionHash] = TransactionSpec(buyer,seller,absPosition,transferAmount,block.timestamp);
+        /*Lock Bond to internal balance and trigger transfer of the paymentAmount*/
+        bondHolderBalances[seller]         -= absPosition;
+        bondHolderBalances[address(this)]  += absPosition;
         tradeStates[transactionHash] = TradeState.InTransfer;
-        settlementToken.checkedTransferFromAndCallSender(buyer,seller,_paymentAmountPerUnit*_units,transactionHash); // trigger transfer upfrontPayment
+
+        if ( _paymentAmount < 0 )
+            settlementToken.checkedTransferFromAndCallSender(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
+        else
+            settlementToken.checkedTransferFromAndCallSender(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
+
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
     }
 
@@ -139,17 +144,17 @@ contract SmartBondContract is ISDC  {
         require(tradeStates[transactionHash] == TradeState.InTransfer, "No existing Transfer phase for Transaction Hash");
         if (success == true){ /* Transfer units to buyer */
             address addressBuyer = transactionSpecs[transactionHash].buyer;
-            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].lotNumber;
-            bondHolderBalances[addressBuyer]   += transactionSpecs[transactionHash].lotNumber;
+            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
+            bondHolderBalances[addressBuyer]   += transactionSpecs[transactionHash].notional;
             if (transactionSpecs[transactionHash].seller == issuerAddress)  // if Seller is Issuer than update issuer balance
-                bondIssuerBalance += transactionSpecs[transactionHash].lotNumber;
+                bondIssuerBalance += transactionSpecs[transactionHash].notional;
             tradeStates[transactionHash] = TradeState.Settled;
         }
         else{
             tradeStates[transactionHash] == TradeState.Terminated;
             address adressSeller         = transactionSpecs[transactionHash].seller;
-            bondHolderBalances[adressSeller]   += transactionSpecs[transactionHash].lotNumber; /* transfer back the units */
-            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].lotNumber;
+            bondHolderBalances[adressSeller]   += transactionSpecs[transactionHash].notional; /* transfer back the units */
+            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
             delete transactionSpecs[transactionHash];
             emit TradeTerminated("Settlement Transfer failed - Trade ist terminated");
         }

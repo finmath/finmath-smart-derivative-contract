@@ -20,21 +20,6 @@ import "./SDCSettlementToken.sol";
  * - during prefunding sdc will transfer required amounts to its own balance - therefore sufficient approval is needed
  * - upon termination all remaining 'locked' amounts will be transferred back to the counterparties
  *------------------------------------*
-     * Setup with SDC holding tokens
-     *
-     *  Settlement:
-     *  _bookSettlement
-     *      Update internal balances
-     *      Message
-     *  _transferSettlement
-     *      Book SDC -> Party1:   X
-     *      Book SDC -> Party2:   0
-     *  Rebalance (was: Perform Funding)
-     *      Book Party2 -> SDC:   X
-     *      Rebalance Check
-     *          Failed
-     *              Terminate
-     *
      * Setup with Pledge Account
      *
      *  Settlement:
@@ -47,7 +32,7 @@ import "./SDCSettlementToken.sol";
      *          Failed
      *              Book SDC -> Party1:   X
      *              Terminate
-
+ *-------------------------------------*
 */
 
 contract SDCPledgedBalance is SmartDerivativeContract {
@@ -74,8 +59,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
     }
 
 
-    function processTradeAfterConfirmation(uint256 upfrontPayment) override internal{
-        address upfrontPayer = upfrontPayment>0 ? otherParty(receivingParty) : receivingParty;
+    function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) override internal{
         uint256 marginRequirementParty1 = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee + (upfrontPayer==party1 ? upfrontPayment : uint256(0)));
         uint256 marginRequirementParty2 = uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee + (upfrontPayer==party2 ? upfrontPayment : uint256(0)));
         bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= marginRequirementParty1) && (settlementToken.allowance(party1, address(this)) >= marginRequirementParty1);
@@ -106,7 +90,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
             emit TradeSettled();
         }
         else{
-            if(settlementAmounts.length>0){  // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
+            if(settlementAmounts.length>1){  // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
                 int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
                 uint256 transferAmount;
                 address settlementPayer;
@@ -119,7 +103,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
                 tradeState = TradeState.Terminated;
                 emit TradeTerminated("Trade Terminated");
            }
-            else{
+            else{  // Case after confirmTrade where Transfer of upfront has failed
                 tradeState = TradeState.Inactive;
                 emit TradeTerminated("Initial Transfer fails - Trade cannot be activated");
             }
