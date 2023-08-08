@@ -87,11 +87,20 @@ public class Calibrator {
                 });
         var dfLast = 1.0;
         var timeLast = 0.0;
-        fixingValuesList.add(0, dfLast);
-        fixingTimesList.add(0, timeLast);
+        fixingValuesList.add(0, 0.0);
+        fixingTimesList.add(0, FloatingpointDate.getFloatingPointDateFromDate( // no intraday discounting!
+                referenceDate.atStartOfDay(),
+                referenceDate.atTime(17,0,0)));
+        fixingValuesList.add(1, 0.0);
+        fixingTimesList.add(1, timeLast);
+
+        dfTimesList.add(FloatingpointDate.getFloatingPointDateFromDate( // no intraday discounting!
+                referenceDate.atStartOfDay(),
+                        referenceDate.atTime(17,0,0)));
         dfList.add(1.0);
         dfTimesList.add(0.0);
-        for (var i = 1; i < fixingTimesList.size(); i++) {
+        dfList.add(1.0);
+        for (var i = 2; i < fixingTimesList.size(); i++) {
             dfList.add(
                     dfLast * Math.exp(fixingValuesList.get(i) * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
             );
@@ -99,23 +108,6 @@ public class Calibrator {
             dfLast = dfList.get(i);
             dfTimesList.add(fixingTimesList.get(i));
         }
-        fixings.stream().filter(x -> x.getCurveName().equals("ESTR"))
-                .sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
-                .forEach(x -> {
-                    var time = FloatingpointDate.getFloatingPointDateFromDate(
-                            referenceDate.atStartOfDay(),
-                            x.dateTime);
-
-
-                    var quote = x.getQuote();
-
-                    if (time > 0) {
-                        dfTimesList.add(0, time);
-                        var convertedQuote = 365.0 * Math.log(1 + quote / 360.0);
-                        dfList.add(0, Math.exp(-convertedQuote * time));
-                    }
-
-                });
 
         var isParameters = ArrayUtils.toPrimitive(
                 IntStream.range(0, dfTimesList.size()).boxed().map(x -> false).toList().toArray(Boolean[]::new));
