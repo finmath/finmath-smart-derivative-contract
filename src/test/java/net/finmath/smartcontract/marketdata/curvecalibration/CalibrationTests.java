@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
-import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.marketdata.MarketDataImportTest;
@@ -13,9 +11,6 @@ import net.finmath.smartcontract.model.MarketDataTransferMessage;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.time.FloatingpointDate;
-import net.finmath.time.ScheduleGenerator;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.junit.jupiter.api.*;
 import org.xml.sax.SAXException;
 
@@ -24,10 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import net.finmath.time.daycount.DayCountConvention_ACT_365;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * Tests concerning the bootstrap procedure. Test relies on a valuation framework that can handle intraday data updates
@@ -66,8 +61,7 @@ public class CalibrationTests {
             product = SDCXMLParser.parse(sdcmlFileContents);
         }
 
-        final var referenceDate = marketData.getRequestTimestamp().toLocalDate().atStartOfDay()
-                .toLocalDate(); // strip time info from request, model time 0.0 is at midnight, dataset day
+        final var referenceDate = marketData.getRequestTimestamp().toLocalDate(); // strip time info from request, model time 0.0 is at midnight, dataset day
         referenceDateTime = marketData.getRequestTimestamp()
                 .toLocalDateTime(); // upgrade variable type for decimal time calculations
         final var marketdataItemSpecList = product.getMarketdataItemList();
@@ -200,17 +194,16 @@ public class CalibrationTests {
     void testEstrFixingsRetrieval_whenCurveDoesNotMatchDataFails() {
         calibrationDataItems.stream().sorted(Comparator.comparing(CalibrationDataItem::getDate))
                 .filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("ESTR"))
-                .filter(i->i.getDate().compareTo(calibrationContext.getReferenceDate())<0.0)
+                .filter(i -> i.getDate().isBefore(calibrationContext.getReferenceDate()))
                 .forEach(
                         f -> Assertions.assertEquals(
                                 f.getQuote(),
                                 calibratedModel.getForwardCurve("forward-EUR-OIS")
                                         .getForward(calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
-                                        calibrationContext.getReferenceDate().atStartOfDay(),
-                                        f.getDate().atTime(6, 0, 0))),
+                                                calibrationContext.getReferenceDate().atStartOfDay(),
+                                                f.getDate().atTime(6, 0, 0))),
                                 // €STR is fixed at 06:00 UTC (08:00 CET), this test does not account for refixings
                                 1E-5,
-                                // a tenth of a bps should be fine, given that there are some approximations and interpolations being made
                                 "Error exceeded tolerance for fixing " + f.getDate() + "."));
 
     }

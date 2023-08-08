@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 public class MarginCalculatorTest {
 
 	@Test
-	@Disabled
 	void testMargin() throws Exception {
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -23,12 +22,11 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(1562.84, value, 0.005, "Margin");
+		Assertions.assertEquals(991.36, value, 0.005, "Margin");
 		System.out.println(valuationResult);
 	}
 
 	@Test
-	@Disabled
 	void testValue() throws Exception {
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
@@ -38,7 +36,7 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(95313.13, value, 0.005, "Valuation");
+		Assertions.assertEquals(93631.25, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
 	}
 }

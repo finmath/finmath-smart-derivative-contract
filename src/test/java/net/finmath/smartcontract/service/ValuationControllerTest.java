@@ -46,7 +46,6 @@ public class ValuationControllerTest {
 
 	@Test
 	@WithUserDetails("user1")	// testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
-	@Disabled
 	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
@@ -70,7 +69,6 @@ public class ValuationControllerTest {
 
 	@Test
 	@WithUserDetails("user1")
-	@Disabled
 	public void getValue(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);

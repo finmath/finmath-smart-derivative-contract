@@ -7,7 +7,6 @@ import net.finmath.optimizer.SolverException;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import net.finmath.time.daycount.*;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.time.LocalDate;
@@ -81,7 +80,7 @@ public class Calibrator {
 
                     if (time < 0) {
                         fixingTimesList.add(time);
-                        fixingValuesList.add(365.0*Math.log(1+quote/360.0));
+                        fixingValuesList.add(365.0 * Math.log(1 + quote / 360.0));
                         //conversion from 1-day ESTR (ACT/360) to zero-rate (ACT/ACT)
                         //see https://quant.stackexchange.com/questions/73522/how-does-bloomberg-calculate-the-discount-rate-from-eur-estr-curve
                     }
@@ -112,8 +111,8 @@ public class Calibrator {
 
                     if (time > 0) {
                         dfTimesList.add(0, time);
-                        var convertedQuote = 365.0*Math.log(1+quote/360.0);
-                        dfList.add(0, Math.exp(-convertedQuote*time));
+                        var convertedQuote = 365.0 * Math.log(1 + quote / 360.0);
+                        dfList.add(0, Math.exp(-convertedQuote * time));
                     }
 
                 });
@@ -136,14 +135,14 @@ public class Calibrator {
                 "1D",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
                 BusinessdayCalendar.DateRollConvention.FOLLOWING,
-                365.0/360.0, 0.0); // includes ACT/360 to ACT/ACT conversion factor
+                365.0 / 360.0, 0.0); // includes ACT/360 to ACT/ACT conversion factor
     }
 
     private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {
         var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
-        if(fixingTimes.length==0){
+        if (fixingTimes.length == 0) { //if there are no fixings return empty curve
             return new ForwardCurveInterpolation("forward-EUR-3M",
                     ctx.getReferenceDate(),
                     "3M",
@@ -179,7 +178,7 @@ public class Calibrator {
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS);
         // this is a dirty-ish fix: if the extrema of the fixed part lay exactly on the time specified by the data point,
-        // some weird jumpiness occurs... TODO: you're welcome to find a smarter solution
+        // some weird jumpiness occurs... TODO: maybe there's a smarter solution
         return new ForwardCurveWithFixings(forwardPart, fixedPart,
                 Arrays.stream(fixingTimes).min().orElseThrow() - 1.0 / 365.0,
                 Arrays.stream(fixingTimes).max().orElseThrow() + 1.0 / 365.0);
@@ -189,7 +188,7 @@ public class Calibrator {
         var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
-        if(fixingTimes.length==0){
+        if (fixingTimes.length == 0) { //if there are no fixings return empty curve
             return new ForwardCurveInterpolation("forward-EUR-6M",
                     ctx.getReferenceDate(),
                     "6M",
@@ -225,7 +224,7 @@ public class Calibrator {
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS);
         // this is a dirty-ish fix: if the extrema of the fixed part lay exactly on the time specified by the data point,
-        // some weird jumpiness occurs... TODO: you're welcome to find a smarter solution
+        // some weird jumpiness occurs... TODO: mayb there's a smarter solution
         return new ForwardCurveWithFixings(forwardPart, fixedPart,
                 Arrays.stream(fixingTimes).min().orElseThrow() - 1.0 / 365.0,
                 Arrays.stream(fixingTimes).max().orElseThrow() + 1.0 / 365.0);
@@ -235,7 +234,7 @@ public class Calibrator {
         var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
-        if(fixingTimes.length==0){
+        if (fixingTimes.length == 0) { //if there are no fixings return empty curve
             return new ForwardCurveInterpolation("forward-EUR-1M",
                     ctx.getReferenceDate(),
                     "1M",
@@ -271,7 +270,7 @@ public class Calibrator {
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS);
         // this is a dirty-ish fix: if the extrema of the fixed part lay exactly on the time specified by the data point,
-        // some weird jumpiness occurs... TODO: you're welcome to find a smarter solution
+        // some weird jumpiness occurs... TODO: mayb there's a smarter solution
         return new ForwardCurveWithFixings(forwardPart, fixedPart,
                 Arrays.stream(fixingTimes).min().orElseThrow() - 1.0 / 365.0,
                 Arrays.stream(fixingTimes).max().orElseThrow() + 1.0 / 365.0);
