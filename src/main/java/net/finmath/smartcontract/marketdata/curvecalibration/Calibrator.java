@@ -7,6 +7,7 @@ import net.finmath.optimizer.SolverException;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import net.finmath.time.daycount.*;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.time.LocalDate;
@@ -80,7 +81,9 @@ public class Calibrator {
 
                     if (time < 0) {
                         fixingTimesList.add(time);
-                        fixingValuesList.add(quote);
+                        fixingValuesList.add(365.0*Math.log(1+quote/360.0));
+                        //conversion from 1-day ESTR (ACT/360) to zero-rate (ACT/ACT)
+                        //see https://quant.stackexchange.com/questions/73522/how-does-bloomberg-calculate-the-discount-rate-from-eur-estr-curve
                     }
                 });
         var dfLast = 1.0;
@@ -91,7 +94,7 @@ public class Calibrator {
         dfTimesList.add(0.0);
         for (var i = 1; i < fixingTimesList.size(); i++) {
             dfList.add(
-                    dfLast * Math.pow(1 + fixingValuesList.get(i) / 360.0, 360.0 * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
+                    dfLast * Math.exp(fixingValuesList.get(i) * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
             );
 
             dfLast = dfList.get(i);
@@ -104,11 +107,13 @@ public class Calibrator {
                             referenceDate.atStartOfDay(),
                             x.dateTime);
 
+
                     var quote = x.getQuote();
 
                     if (time > 0) {
                         dfTimesList.add(0, time);
-                        dfList.add(0, Math.pow(1 + quote / 360.0, - 360.0 * time)); // there is only one ESTR fixing with positive time, the one relative to the last night. TODO: eventually adjust this to account for the proper day count conventions
+                        var convertedQuote = 365.0*Math.log(1+quote/360.0);
+                        dfList.add(0, Math.exp(-convertedQuote*time));
                     }
 
                 });
@@ -124,7 +129,14 @@ public class Calibrator {
     }
 
     private ForwardCurve getOisForwardCurve(final CalibrationContext ctx) {
-        return new ForwardCurveFromDiscountCurve("forward-EUR-OIS", DISCOUNT_EUR_OIS, ctx.getReferenceDate(), "3M");
+        return new ForwardCurveFromDiscountCurve("forward-EUR-OIS",
+                DISCOUNT_EUR_OIS,
+                DISCOUNT_EUR_OIS,
+                ctx.getReferenceDate(),
+                "1D",
+                new BusinessdayCalendarExcludingTARGETHolidays(),
+                BusinessdayCalendar.DateRollConvention.FOLLOWING,
+                365.0/360.0, 0.0); // includes ACT/360 to ACT/ACT conversion factor
     }
 
     private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {

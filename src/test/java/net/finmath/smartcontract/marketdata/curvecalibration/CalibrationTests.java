@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
+import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
 import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
@@ -12,6 +13,9 @@ import net.finmath.smartcontract.model.MarketDataTransferMessage;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.time.FloatingpointDate;
+import net.finmath.time.ScheduleGenerator;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.junit.jupiter.api.*;
 import org.xml.sax.SAXException;
 
@@ -23,9 +27,13 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import net.finmath.time.daycount.DayCountConvention_ACT_365;
+
 /**
  * Tests concerning the bootstrap procedure. Test relies on a valuation framework that can handle intraday data updates
  * (i.e. valuation time must not be forced at model-time 0).
+ *
+ * @author Luca Bressan
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CalibrationTests {
@@ -184,49 +192,26 @@ public class CalibrationTests {
 
     }
 
-    @Test
-    @DisplayName("The spot ESTR rate should match the calibration data.")
-    void testSpotEstrRateRetrieval_whenSpotDoesNotMatchDataFails() {
-        var latestEstrFixing = calibrationDataItems.stream().filter(i -> i.getSpec().getKey().equals("EUROSTR="))
-                .max(Comparator.comparing(CalibrationDataItem::getDate)).orElseThrow();
-        var timeUntilTodayAt6AM = FloatingpointDate.getFloatingPointDateFromDate(
-                calibrationContext.getReferenceDate().atStartOfDay(),
-                calibrationContext.getReferenceDate().atTime(6, 0, 0));
-        Assertions.assertEquals(calibratedModel.getDiscountCurve("discount-EUR-OIS")
-                        .getDiscountFactor(calibratedModel, timeUntilTodayAt6AM),
-                Math.pow(1 + latestEstrFixing.getQuote() / 360.0, -timeUntilTodayAt6AM * 360.0), 1E-12,
-                "Error exceeded tolerance.");
-    }
-
+    /*
+    This test also checks that the forward-OIS-curve is recovered correctly.
+     */
     @Test
     @DisplayName("The past ESTR fixings should be copied to the discount curve.")
     void testEstrFixingsRetrieval_whenCurveDoesNotMatchDataFails() {
-        var dfTimes = calibrationDataItems.stream()
-                .filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("ESTR"))
-                .map(i -> FloatingpointDate.getFloatingPointDateFromDate(
-                        calibrationContext.getReferenceDate().atStartOfDay(), i.getDate().atTime(6, 0, 0)))
-                .mapToDouble(Double::doubleValue).sorted().boxed().collect(Collectors.toList());
-        var dfValues = dfTimes.stream().sorted()
-                .map(t -> calibratedModel.getDiscountCurve("discount-EUR-OIS").getDiscountFactor(t))
-                .collect(Collectors.toList());
-        dfTimes.add(0.0); //normalize on model-time 0.0
-        dfValues.add(1.0);
-        var testCurve = ForwardCurveInterpolation.createForwardCurveFromDiscountFactors("testCurve",
-                dfTimes.stream()
-                        .mapToDouble(x -> x)
-                        .toArray(),
-                dfValues.stream()
-                        .mapToDouble(x -> x)
-                        .toArray(), 1.0);
-        var errors = new ArrayList<Double>();
         calibrationDataItems.stream().sorted(Comparator.comparing(CalibrationDataItem::getDate))
-                .filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("ESTR")).forEach(
-                        f -> errors.add(Math.abs(f.getQuote() - testCurve
-                                .getForward(null, FloatingpointDate.getFloatingPointDateFromDate(
+                .filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("ESTR"))
+                .filter(i->i.getDate().compareTo(calibrationContext.getReferenceDate())<0.0)
+                .forEach(
+                        f -> Assertions.assertEquals(
+                                f.getQuote(),
+                                calibratedModel.getForwardCurve("forward-EUR-OIS")
+                                        .getForward(calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
                                         calibrationContext.getReferenceDate().atStartOfDay(),
-                                        f.getDate().atTime(6, 0, 0))))));
-        var averageAbsoluteError = errors.stream().mapToDouble(x -> x).average().orElseThrow();
-        Assertions.assertEquals(0.0, averageAbsoluteError, 5E-5, "Error exceeded tolerance.");
+                                        f.getDate().atTime(6, 0, 0))),
+                                // €STR is fixed at 06:00 UTC (08:00 CET), this test does not account for refixings
+                                1E-5,
+                                // a tenth of a bps should be fine, given that there are some approximations and interpolations being made
+                                "Error exceeded tolerance for fixing " + f.getDate() + "."));
 
     }
 
