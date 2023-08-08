@@ -124,12 +124,11 @@ abstract contract SmartDerivativeContract is ISDC {
          * emits a TradeIncepted
          * can be called only when TradeState = Incepted
          */
-    function inceptTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeInactive {
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeInactive {
         require(msg.sender != _withParty, "Calling party cannot be the same as withParty");
         require(_position == 1 || _position == -1, "Position can only be +1 or -1");
-        require(_units == 1, "Current Implementation only allows units=1");
         tradeState = TradeState.Incepted; // Set TradeState to Incepted
-        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData,_position, _units, _paymentAmountPerUnit)));
+        uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData,_position, _paymentAmount,_initialSettlementData)));
         pendingRequests[transactionHash] = msg.sender;
         receivingParty = _position == 1 ? msg.sender : _withParty;
         tradeID = Strings.toString(transactionHash);
@@ -143,16 +142,15 @@ abstract contract SmartDerivativeContract is ISDC {
      * emits a TradeConfirmed
      * can be called only when TradeState = Incepted
      */
-    function confirmTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeIncepted
-    {
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeIncepted {
         address inceptingParty = msg.sender == party1 ? party2 : party1;
-        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, _units, _paymentAmountPerUnit)));
+        uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, -_paymentAmount,_initialSettlementData)));
         require(pendingRequests[transactionHash] == inceptingParty, "Confirmation fails due to inconsistent trade data or wrong party address");
         delete pendingRequests[transactionHash]; // Delete Pending Request
         tradeState = TradeState.Confirmed;
         emit TradeConfirmed(msg.sender, tradeID);
-        uint256 upfront = _units * _paymentAmountPerUnit;
-        processTradeAfterConfirmation(upfront);
+        address upfrontPayer = _paymentAmount < 0 ? receivingParty : otherParty(receivingParty);
+        processTradeAfterConfirmation(upfrontPayer, uint256(_paymentAmount));
     }
 
 
@@ -188,7 +186,7 @@ abstract contract SmartDerivativeContract is ISDC {
 
 
 
-    function processTradeAfterConfirmation(uint256 upfrontPayment) virtual internal;
+    function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) virtual internal;
 
     function processTradeAfterMutualTermination() virtual internal;
 

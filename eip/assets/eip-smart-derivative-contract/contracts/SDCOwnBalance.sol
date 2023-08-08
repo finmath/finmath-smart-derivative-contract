@@ -18,6 +18,22 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * - sdc also keeps track on internal balances for each counterparty
  * - during prefunding sdc will transfer required amounts to its own balance - therefore sufficient approval is needed
  * - upon termination all remaining 'locked' amounts will be transferred back to the counterparties
+ *----------------------------
+   * Setup with SDC holding tokens (own balances)
+     *
+     *  Settlement:
+     *  _bookSettlement
+     *      Update internal balances
+     *      Message
+     *  _transferSettlement
+     *      Book SDC -> Party1:   X
+     *      Book SDC -> Party2:   0
+     *  Rebalance (was: Perform Funding)
+     *      Book Party2 -> SDC:   X
+     *      Rebalance Check
+     *          Failed
+     *              Terminate
+     *-------------------------------------*
 */
 
 contract SDCOwnBalance is SmartDerivativeContract {
@@ -50,8 +66,7 @@ contract SDCOwnBalance is SmartDerivativeContract {
     /**
      * Check sufficient balances and lock Termination Fees otherwise trade does not get activated
      */
-    function processTradeAfterConfirmation(uint256 upfrontPayment) override internal{
-        address upfrontPayer = upfrontPayment>0 ? otherParty(receivingParty) : receivingParty;
+    function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) override internal{
         bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= marginRequirements[party1].terminationFee) && (settlementToken.allowance(party1,address(this)) >= marginRequirements[party1].terminationFee);
         bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= marginRequirements[party2].terminationFee) && (settlementToken.allowance(party2,address(this)) >= marginRequirements[party2].terminationFee);
         if (isAvailableParty1 && isAvailableParty2){

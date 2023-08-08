@@ -20,24 +20,35 @@ contract SDCDefaultable is SmartDerivativeContract {
         SmartDerivativeContract(_party1,_party2,_settlementToken) {
      }
 
-    function processTradeAfterConfirmation(uint256 upfrontPayment) override internal{
-        //@Todo: Process Upfront
+    function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) override internal{
+        settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);  // transfer upfrontPayment
     }
     /*
      * Balance Check
      */
     function afterSettlement(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
-        if (tradeState == TradeState.Confirmed){
+        if(success){
             tradeState = TradeState.Settled;
             emit TradeSettled();
         }
-        if (tradeState == TradeState.InTransfer){
-            tradeState = TradeState.Settled;
-            emit TradeSettled();
-        }
-        if (tradeState == TradeState.Terminated){
-            tradeState = TradeState.Inactive;
-            emit ProcessHalted("Trade Terminated");
+        else{
+            if(settlementAmounts.length>0){  // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
+                /**int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
+                uint256 transferAmount;
+                address settlementPayer;
+                (settlementPayer, transferAmount)  = getPayerAddressAndTransferAmount(settlementAmounts[settlementAmounts.length-1]);
+                address settlementReceiver = otherParty(settlementPayer);
+                settlementToken.transfer(settlementReceiver, uint256(transferAmount));
+                settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
+                settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - transferAmount)); // Release Buffers
+                settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer)); // Release Buffers
+                tradeState = TradeState.Terminated;
+                emit TradeTerminated("Trade Terminated");**/
+            }
+            else{
+                tradeState = TradeState.Inactive;
+                emit TradeTerminated("Initial Transfer fails - Trade cannot be activated");
+            }
         }
     }
 

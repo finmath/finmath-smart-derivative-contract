@@ -133,24 +133,24 @@ interface ISDC {
      * @dev emits a {TradeIncepted} event
      * @param _withParty is the party the inceptor wants to trade with
      * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
-     * @param _position is the position the inceptor has in that trade (can be -1 or +1)
-     * @param _units the inceptor wants to trade
-     * @param _paymentAmountPerUnit paymentAmount for each unit
+     * @param _position is the position the inceptor has in that trade
+     * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-    function inceptTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external;
+
+    //@Todo: merge _position and _units into one int
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
     /**
      * @notice Performs a matching of provided trade data and settlement data
      * @dev emits a {TradeConfirmed} event if trade data match
      * @param _withParty is the party the confirmer wants to trade with
      * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
-     * @param _position is the position the confirmer has in that trade (can be -1 or +1)
-     * @param _units the confirmer confirms to trade
-     * @param _paymentAmountPerUnit paymentAmount for each unit
+     * @param _position is the position the inceptor has in that trade
+     * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-    function confirmTrade(address _withParty, string memory _tradeData, int _position, uint256 _units, uint256 _paymentAmountPerUnit, string memory _initialSettlementData) external;
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
 
     /**
