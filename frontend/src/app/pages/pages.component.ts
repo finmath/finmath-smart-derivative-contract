@@ -22,6 +22,13 @@ export class PagesComponent {
     );
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    singleSpaPropsSubject.subscribe((props: any) => this.isStandalone = props.standalone);
+    singleSpaPropsSubject.subscribe((props: any) => {
+      this.isStandalone = props.standalone;
+      window.addEventListener('isSignedIn',(event: any) => {
+        if(event.detail === false) {
+            window.location.href = '/';
+        }
+      });
+    });
   }
 }
