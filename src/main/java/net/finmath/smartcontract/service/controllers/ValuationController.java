@@ -40,7 +40,7 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
+	public ResponseEntity<MarginResult> legacyMargin(LegacyMarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
@@ -65,7 +65,7 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
-	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
+	public ResponseEntity<ValueResult> legacyValue(LegacyValueRequest valueRequest) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "value");
@@ -83,6 +83,44 @@ public class ValuationController implements ValuationApi {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "margin");
+
+		MarginResult margin = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
+			logger.info(margin.toString());
+			return ResponseEntity.ok(margin);
+		} catch (Exception e) {
+			logger.error("Failed to calculate margin.");
+			logger.info(marginRequest.toString());
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "value");
+		ValueResult value = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			value = marginCalculator.getValue(valueRequest.getMarketData(), valueRequest.getTradeData());
+			logger.info(value.toString());
+			return ResponseEntity.ok(value);
+		} catch (Exception e) {
+			logger.error("Failed to calculate value.");
+			logger.info(value.toString());
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
 
 	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {
 		HttpHeaders responseHeaders = new HttpHeaders();

@@ -57,7 +57,6 @@ public class PlainSwapEditorControllerTest {
 
     @Test
     @WithUserDetails("user1")
-        //@Disabled("Test disabled because the test would depend on an absolute path.")
     void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
 
         final String fullSymbolListFromTemplate = new ClassPathResource(
