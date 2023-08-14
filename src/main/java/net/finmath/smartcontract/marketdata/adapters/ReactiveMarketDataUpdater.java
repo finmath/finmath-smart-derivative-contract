@@ -118,7 +118,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
                         throw new IllegalStateException("Failed to get average");
 
                     boolean hasSymbol = false;
-                    for (var i : marketDataTransferMessage.getValues())
+                    for (MarketDataTransferMessageValuesInner i : marketDataTransferMessage.getValues())
                         hasSymbol |= i.getSymbol().equals(marketDataMessageKey.getName());
 
                     if (!hasSymbol) {

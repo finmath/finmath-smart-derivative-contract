@@ -65,18 +65,18 @@ public class Calibrator {
     }
 
     private DiscountCurveInterpolation getOisDiscountCurve(final CalibrationContext ctx) {
-        var fixingValuesList = new ArrayList<Double>();
-        var fixingTimesList = new ArrayList<Double>();
-        var dfList = new ArrayList<Double>();
-        var dfTimesList = new ArrayList<Double>();
+        ArrayList<Double> fixingValuesList = new ArrayList<>();
+        ArrayList<Double> fixingTimesList = new ArrayList<>();
+        ArrayList<Double> dfList = new ArrayList<>();
+        ArrayList<Double> dfTimesList = new ArrayList<>();
         fixings.stream().filter(x -> x.getCurveName().equals("ESTR"))
                 .sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
                 .forEach(x -> {
-                    var time = FloatingpointDate.getFloatingPointDateFromDate(
+                    double time = FloatingpointDate.getFloatingPointDateFromDate(
                             referenceDate.atStartOfDay(),
                             x.dateTime);
 
-                    var quote = x.getQuote();
+                    Double quote = x.getQuote();
 
                     if (time < 0) {
                         fixingTimesList.add(time);
@@ -97,8 +97,8 @@ public class Calibrator {
         dfList.add(1.0);
         dfTimesList.add(0.0);
         dfList.add(1.0);
-        var dfLast = 1.0;
-        for (var i = 2; i < fixingTimesList.size(); i++) {
+        double dfLast = 1.0;
+        for (int i = 2; i < fixingTimesList.size(); i++) {
             dfList.add(
                     dfLast * Math.exp(fixingValuesList.get(i) * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
             );
@@ -107,10 +107,10 @@ public class Calibrator {
             dfTimesList.add(fixingTimesList.get(i));
         }
 
-        var isParameters = ArrayUtils.toPrimitive(
+        boolean[] isParameters = ArrayUtils.toPrimitive(
                 IntStream.range(0, dfTimesList.size()).boxed().map(x -> false).toList().toArray(Boolean[]::new));
-        var dfTimes = dfTimesList.stream().mapToDouble(Double::doubleValue).toArray();
-        var dfValues = dfList.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] dfTimes = dfTimesList.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] dfValues = dfList.stream().mapToDouble(Double::doubleValue).toArray();
         return DiscountCurveInterpolation.createDiscountCurveFromDiscountFactors(DISCOUNT_EUR_OIS,
                 ctx.getReferenceDate(), dfTimes, dfValues, isParameters, CurveInterpolation.InterpolationMethod.LINEAR,
                 CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.LOG_OF_VALUE);
@@ -129,7 +129,7 @@ public class Calibrator {
     }
 
     private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {
-        var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M")).map(x -> x.dateTime)
+        double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
         if (fixingTimes.length == 0) { //if there are no fixings return empty curve
@@ -144,10 +144,10 @@ public class Calibrator {
                     ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                     DISCOUNT_EUR_OIS);
         }
-        var fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M"))
+        double[] fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M"))
                 .sorted(Comparator.comparing(CalibrationDataItem::getDate)).map(CalibrationDataItem::getQuote)
                 .mapToDouble(Double::doubleValue).toArray();
-        var fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-3M",
+        ForwardCurve fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-3M",
                 ctx.getReferenceDate(),
                 "3M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -157,7 +157,7 @@ public class Calibrator {
                 CurveInterpolation.InterpolationEntity.VALUE,
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS, null, fixingTimes, fixingValues);
-        var forwardPart = new ForwardCurveInterpolation("forward-EUR-3M",
+        ForwardCurve forwardPart = new ForwardCurveInterpolation("forward-EUR-3M",
                 ctx.getReferenceDate(),
                 "3M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -175,7 +175,7 @@ public class Calibrator {
     }
 
     private ForwardCurve get6MForwardCurve(final CalibrationContext ctx) {
-        var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.dateTime)
+        double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
         if (fixingTimes.length == 0) { //if there are no fixings return empty curve
@@ -190,10 +190,10 @@ public class Calibrator {
                     ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                     DISCOUNT_EUR_OIS);
         }
-        var fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M"))
+        double[] fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M"))
                 .sorted(Comparator.comparing(CalibrationDataItem::getDate)).map(CalibrationDataItem::getQuote)
                 .mapToDouble(Double::doubleValue).toArray();
-        var fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-6M",
+        ForwardCurve fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-6M",
                 ctx.getReferenceDate(),
                 "6M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -203,7 +203,7 @@ public class Calibrator {
                 CurveInterpolation.InterpolationEntity.VALUE,
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS, null, fixingTimes, fixingValues);
-        var forwardPart = new ForwardCurveInterpolation("forward-EUR-6M",
+        ForwardCurve forwardPart = new ForwardCurveInterpolation("forward-EUR-6M",
                 ctx.getReferenceDate(),
                 "6M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -221,7 +221,7 @@ public class Calibrator {
     }
 
     private ForwardCurve get1MForwardCurve(final CalibrationContext ctx) {
-        var fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M")).map(x -> x.dateTime)
+        double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M")).map(x -> x.dateTime)
                 .map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
                 .mapToDouble(Double::doubleValue).sorted().toArray();
         if (fixingTimes.length == 0) { //if there are no fixings return empty curve
@@ -236,10 +236,10 @@ public class Calibrator {
                     ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                     DISCOUNT_EUR_OIS);
         }
-        var fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M"))
+        double[] fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M"))
                 .sorted(Comparator.comparing(CalibrationDataItem::getDate)).map(CalibrationDataItem::getQuote)
                 .mapToDouble(Double::doubleValue).toArray();
-        var fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-1M",
+        ForwardCurve fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards("fixed-EUR-1M",
                 ctx.getReferenceDate(),
                 "1M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -249,7 +249,7 @@ public class Calibrator {
                 CurveInterpolation.InterpolationEntity.VALUE,
                 ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
                 DISCOUNT_EUR_OIS, null, fixingTimes, fixingValues);
-        var forwardPart = new ForwardCurveInterpolation("forward-EUR-1M",
+        ForwardCurve forwardPart = new ForwardCurveInterpolation("forward-EUR-1M",
                 ctx.getReferenceDate(),
                 "1M",
                 new BusinessdayCalendarExcludingTARGETHolidays(),

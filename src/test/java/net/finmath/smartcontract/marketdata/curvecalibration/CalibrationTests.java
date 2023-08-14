@@ -8,6 +8,7 @@ import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.marketdata.MarketDataImportTest;
 import net.finmath.smartcontract.model.MarketDataTransferMessage;
+import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.time.FloatingpointDate;
@@ -18,11 +19,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Tests concerning the bootstrap procedure. Test relies on a valuation framework that can handle intraday data updates
@@ -51,32 +51,32 @@ public class CalibrationTests {
                         .getResourceAsStream(
                                 "net.finmath.smartcontract.product.xml/sdc2.xml") // standard plain swap template
         ) {
-            final var marketDataMessageContents = new String(
+            final String marketDataMessageContents = new String(
                     Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);
             marketData = new ObjectMapper().registerModule(new JavaTimeModule())
                     .readValue(marketDataMessageContents, MarketDataTransferMessage.class);
-            final var sdcmlFileContents = new String(
+            final String sdcmlFileContents = new String(
                     Objects.requireNonNull(sdcmlStream).readAllBytes(),
                     StandardCharsets.UTF_8);
             product = SDCXMLParser.parse(sdcmlFileContents);
         }
 
-        final var referenceDate = marketData.getRequestTimestamp().toLocalDate(); // strip time info from request, model time 0.0 is at midnight, dataset day
+        final LocalDate referenceDate = marketData.getRequestTimestamp().toLocalDate(); // strip time info from request, model time 0.0 is at midnight, dataset day
         referenceDateTime = marketData.getRequestTimestamp()
                 .toLocalDateTime(); // upgrade variable type for decimal time calculations
-        final var marketdataItemSpecList = product.getMarketdataItemList();
-        final var marketDataValues = marketData.getValues();
+        final List<CalibrationDataItem.Spec> marketdataItemSpecList = product.getMarketdataItemList();
+        final List<MarketDataTransferMessageValuesInner> marketDataValues = marketData.getValues();
         calibrationDataItems = new HashSet<>();
         marketdataItemSpecList.forEach(marketDataItemSpec -> marketDataValues.stream()
                 .filter(marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey()))
                 .map(marketDataValue -> new CalibrationDataItem(marketDataItemSpec, marketDataValue.getValue(),
                         marketDataValue.getDataTimestamp().toLocalDateTime()))
                 .forEach(calibrationDataItems::add));
-        final var calibrationDataset = new CalibrationDataset(calibrationDataItems, referenceDateTime);
+        final CalibrationDataset calibrationDataset = new CalibrationDataset(calibrationDataItems, referenceDateTime);
         calibrationContext = new CalibrationContextImpl(referenceDate, 1E-9);
 
         /* Recover calibration products spec */
-        var calibrationSpecsDataPointStream =
+        Stream<CalibrationSpecProvider> calibrationSpecsDataPointStream =
                 calibrationDataset.getDataAsCalibrationDataPointStream(
                         new CalibrationParserDataItems());
         calibrationSpecs = calibrationSpecsDataPointStream.map(c -> c.getCalibrationSpec(calibrationContext))
@@ -86,12 +86,12 @@ public class CalibrationTests {
         /* Actual calibration to be tested. These instructions are the ones used throughout the rest of the library*/
         calibrationSpecsDataPointStream =
                 calibrationDataset.getDataAsCalibrationDataPointStream(new CalibrationParserDataItems());
-        var fixings = calibrationDataItems.stream()
+        List<CalibrationDataItem> fixings = calibrationDataItems.stream()
                 .filter(cdi -> cdi.getSpec().getProductName().equals("Fixing") ||
                         cdi.getSpec().getProductName().equals("Deposit")
                 )
                 .toList();
-        var calibrator = new Calibrator(fixings, calibrationContext);
+        Calibrator calibrator = new Calibrator(fixings, calibrationContext);
         calibratedModel = calibrator.calibrateModel(
                         calibrationSpecsDataPointStream,
                         calibrationContext)
@@ -151,7 +151,7 @@ public class CalibrationTests {
     @DisplayName("The spot EURIBOR rate should match the calibration data.")
     void testSpotEuriborRateRetrieval_whenSpotDoesNotMatchDataFails() {
 
-        var spotRate = calibrationDataItems.stream().filter(i -> i.getSpec().getKey().equals("EUR6MD="))
+        Double spotRate = calibrationDataItems.stream().filter(i -> i.getSpec().getKey().equals("EUR6MD="))
                 .findFirst() //in the test dataset EUR6MD is more recent than EURIBOR6MD (as it is usually the case)
                 .orElseThrow().getQuote();
         Assertions.assertEquals(spotRate, calibratedModel.getForwardCurve("forward-EUR-6M").getForward(

@@ -690,10 +690,10 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         Set<CalibrationDataItem> cdi = new HashSet<>();
 
 
-        var mdReferences = productDescriptor.getMarketdataItemList();
-        var mdValues = marketData.getValues();
-        for( var mdr : mdReferences){
-            for ( var mdv: mdValues){
+        List<CalibrationDataItem.Spec> mdReferences = productDescriptor.getMarketdataItemList();
+        List<MarketDataTransferMessageValuesInner> mdValues = marketData.getValues();
+        for(CalibrationDataItem.Spec mdr : mdReferences){
+            for (MarketDataTransferMessageValuesInner mdv: mdValues){
                 if(mdv.getSymbol().equals(mdr.getKey())){
                     cdi.add(
                             new CalibrationDataItem(mdr,mdv.getValue(),mdv.getDataTimestamp().toLocalDateTime())
