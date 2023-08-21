@@ -39,7 +39,12 @@ import {
 import { PlainSwapEditorSymbolSelectorComponent } from "./plain-swap-editor-symbol-selector/plain-swap-editor-symbol-selector.component";
 import { PlainSwapEditorGeneratorSelectorComponent } from "./plain-swap-editor-generator-selector/plain-swap-editor-generator-selector.component";
 import { PlainSwapEditorGenerator } from "src/app/shared/plain-swap-editor-generators/plain-swap-editor-generators";
-
+import { Index, indexes } from "src/app/shared/form-data/indexes";
+import { marketDataItems } from "src/app/shared/form-data/market-data-items";
+import {
+  MarketDataInteractionData,
+  PlainSwapEditorMarketDataManager,
+} from "./plain-swap-editor-market-data-manager/plain-swap-editor-market-data-manager.component";
 /**
  * Interface that represents the data that is passed to a pure text dialog box
  */
@@ -73,7 +78,10 @@ const httpOptions = {
 export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   protected serverStatusMsg: string = "Server status is UNKNOWN.";
   protected npvlabel: string = "Current NPV: waiting for data...";
-
+  protected indexes: Index[] = indexes;
+  protected isLoading: boolean = false;
+  protected lastValuationRefresh: string = "";
+  protected isUsingLiveFeed: boolean = true;
   /**
    * Main form control group, excludes the quick command bars.
    */
@@ -139,7 +147,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   /**
    * List of currently selected valuation symbols.
    */
-  protected selectedSymbols: JsonMarketDataItem[] | undefined;
+  protected selectedSymbols: JsonMarketDataItem[] | undefined = marketDataItems;
 
   /**
    * String that contains the effective-maturity timespan length.
@@ -390,9 +398,11 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
    * Scans the main form to ask the backend service for the par rate.
    */
   pushParRateRequest(): void {
+    this.isLoading = true;
     this.npvlabel = "Current NPV: calculating par rate..."; // @TODO this is not a reliable way to interact with the NPV element. Maybe use references?
     this.plainSwapEditorService.getParRate(this.mapRequest()).subscribe({
       next: (parRate) => {
+        this.isLoading = false;
         this.swapForm.get("fixedRate")!.setValue(parRate.toFixed(6));
         this.swapForm.get("fixedRate")!.updateValueAndValidity();
         this._snackBar.open("Par rate set!", "OK", {
@@ -402,6 +412,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         });
       },
       error: (error) => {
+        this.isLoading = false;
         this._snackBar.open(
           "Something went wrong. A developer might want to know about the contents of the console log.",
           "OK",
@@ -456,9 +467,13 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
             "Current NPV: " +
             valueResponse.value.toFixed(2) + //@TODO use the number of decimals specified in the currency object
             this.currencyPrefix;
+          this.lastValuationRefresh =
+            valueResponse.valuationDate.replace("T"," ")+" UTC";
         },
         error: (error) => {
           this.npvlabel = "Current NPV: last valuation failed!";
+          this.lastValuationRefresh =
+            moment().utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
           this._snackBar.open(
             "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
@@ -473,10 +488,52 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Scans the main form to ask the backend service to refresh the market data on the DB.
+   */
+  refreshMarketData() {
+    this.isLoading = true;
+    this.plainSwapEditorService.refreshMarketData(this.mapRequest()).subscribe({
+      next: (valueResponse) => {
+        console.log(JSON.stringify(valueResponse));
+        this.npvlabel =
+          "Current NPV: " +
+          valueResponse.value.toFixed(2) + //@TODO use the number of decimals specified in the currency object
+          this.currencyPrefix;
+        this.lastValuationRefresh =
+          moment().utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
+        this.isLoading = false;
+        this._snackBar.open(
+          "New market data has been downloaded and NPV has been updated.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 4500,
+          }
+        );
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.npvlabel = "Current NPV: last valuation failed!";
+        this.lastValuationRefresh =
+          moment().utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
+        this._snackBar.open(
+          "Something went wrong. A developer might want to know about the contents of the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 15000,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
+    });
+  }
+
   pushTradeInceptionRequest() {
-    window.alert(
-      "Not yet implemented."
-    );
+    window.alert("Not yet implemented.");
   }
 
   /**
@@ -583,6 +640,16 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onIndexSelection() {
+    this.swapForm
+      .get("floatingPaymentFrequency")!
+      .setValue(
+        indexes.find(
+          (i) => i.name == this.swapForm.get("floatingRateIndex")!.value
+        )!.frequency.fullName
+      );
+  }
+
   /**
    * Checks internal state and opens a plain text dialog.
    */
@@ -618,21 +685,49 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
    * Opens the symbol selection dialog.
    */
   openSymbolSelection(): void {
-    const dialogRef = this.dialog.open(PlainSwapEditorSymbolSelectorComponent, {
-      data: this.selectedSymbols,
-      width: "80%",
-      height: "80%",
-    });
+    this.plainSwapEditorService.grabMarketData().subscribe({
+      next: (transferMessage) => {
+        const dialogRef = this.dialog.open(
+          PlainSwapEditorSymbolSelectorComponent,
+          {
+            data: [this.selectedSymbols, transferMessage],
+            width: "80%",
+            height: "80%",
+          }
+        );
 
-    dialogRef
-      .afterClosed()
-      .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
-        this.selectedSymbols = selectedSymbols;
-        if (this.isAllControlsValid()) {
-          this.npvlabel = "Current NPV: loading...";
-          this.pushPricingRequest();
-        }
-      });
+        dialogRef
+          .afterClosed()
+          .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
+            this.selectedSymbols = selectedSymbols;
+            if (this.isAllControlsValid()) {
+              this.npvlabel = "Current NPV: loading...";
+              this.pushPricingRequest();
+            }
+            this._snackBar.open(
+              "Market data set and NPV have been changed.",
+              "OK",
+              {
+                horizontalPosition: "right",
+                verticalPosition: "top",
+                duration: 4500,
+              }
+            );
+          });
+      },
+      error: (error) => {
+        this._snackBar.open(
+          "Something went wrong. A developer might want to know about the contents of the console log.",
+          "OK",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        console.log(JSON.stringify(error));
+      },
+    });
   }
 
   /**
@@ -994,13 +1089,14 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   private source = interval(1000);
 
   uploadMarketData(_event: Event): void {
+    this.isLoading = true;
     const event = _event.target as HTMLInputElement;
     const fileToUpload = event.files!.item(0);
     var fd = new FormData();
     fd.append("tradeData", fileToUpload as Blob);
     this.httpClient
       .post<string>(
-        "http://34.159.3.234:8080/plain-swap-editor/upload-market-data",
+        "http://localhost:8080/plain-swap-editor/upload-market-data",
         fd,
         {
           headers: new HttpHeaders({
@@ -1011,8 +1107,17 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         }
       )
       .subscribe({
-        next: (r) => this.isAllControlsValid() && this.pushPricingRequest(),
+        next: (r) => {
+          this.isLoading = false;
+          this._snackBar.open("Upload successful.", "OK", {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 3500,
+          });
+          return this.isAllControlsValid() && this.pushPricingRequest();
+        },
         error: (e) => {
+          this.isLoading = false;
           this._snackBar.open(
             "The server did not accept your market data. A developer might want to know about the contents of the console log.",
             "OK",
@@ -1025,5 +1130,62 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           console.log(JSON.stringify(e));
         },
       });
+  }
+
+  selectMarketData() {
+    this.plainSwapEditorService.getSavedMarketData().subscribe((response) => {
+      console.log(response);
+      const dialogRef = this.dialog.open(PlainSwapEditorMarketDataManager, {
+        data: {
+          serverStoredUserMarketData: response,
+          latestDataset: "",
+          isUsingLiveFeed: this.isUsingLiveFeed,
+        } as MarketDataInteractionData,
+        width: "80%",
+        height: "80%",
+      });
+      dialogRef.componentInstance.onUpload.subscribe((event: Event)=>{
+        let snackBarRef = this._snackBar.open(
+          "Upload requested. If you wish to use the new dataset now, please close and reopen this dialog.",
+          "Understood.",
+          {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 7500,
+          }
+        );
+        snackBarRef.afterDismissed().subscribe((e)=>{this.uploadMarketData(event); dialogRef.componentInstance.onClose();});
+        
+      });
+      dialogRef.afterClosed().subscribe({
+        next: (r: boolean) => {
+          this._snackBar.open(
+            "The new market data set has been loaded. ",
+            "OK",
+            {
+              horizontalPosition: "right",
+              verticalPosition: "top",
+              duration: 7500,
+            }
+          );
+          this.isUsingLiveFeed = r;
+          if (r) this.refreshMarketData();
+          this.pushPricingRequest();
+        },
+        error: (e) => {
+          this.isLoading = false;
+          this._snackBar.open(
+            "The server did not accept your market data. A developer might want to know about the contents of the console log.",
+            "OK",
+            {
+              horizontalPosition: "right",
+              verticalPosition: "top",
+              duration: 7500,
+            }
+          );
+          console.log(JSON.stringify(e));
+        },
+      });
+    });
   }
 }

@@ -1,6 +1,10 @@
 package net.finmath.smartcontract.product.xml;
 
-import jakarta.xml.bind.*;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.Unmarshaller;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
 import net.finmath.marketdata.model.curves.Curve;
@@ -8,10 +12,8 @@ import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
 import net.finmath.marketdata.model.curves.ForwardCurveWithFixings;
 import net.finmath.modelling.descriptor.ScheduleDescriptor;
 import net.finmath.smartcontract.marketdata.curvecalibration.*;
-import net.finmath.smartcontract.model.CashflowPeriod;
-import net.finmath.smartcontract.model.JsonMarketDataItem;
-import net.finmath.smartcontract.model.PlainSwapOperationRequest;
-import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.model.*;
+import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.Period;
 import net.finmath.time.Schedule;
@@ -29,6 +31,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -39,9 +42,23 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -495,6 +512,115 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
     }
 
+    /**
+     * Returns a list of cashflow periods representing the payment streams involved in the plain swap described.
+     *
+     * @param legSelector the leg for which the schedule should be calculated.
+     * @param marketData  the market data used for calibration of the model used for the payments' calculation.
+     * @return the payment schedule.
+     */
+    public List<CashflowPeriod> getSchedule(LegSelector legSelector, MarketDataTransferMessage marketData) throws IOException, CloneNotSupportedException {
+        InterestRateStream swapLeg;
+        switch (legSelector) {
+            case FIXED_LEG -> {
+                swapLeg = fixedLeg;
+                logger.info("Fixed leg detected.");
+            }
+            case FLOATING_LEG -> {
+                swapLeg = floatingLeg;
+                logger.info("Floating leg detected.");
+            }
+            default -> throw new IllegalArgumentException("Failed to detect leg type");
+        }
+        final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
+        logger.info("Start date detected: " + startDate.toString());
+        final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
+        logger.info("Maturity date detected: " + maturityDate.toString());
+        int fixingOffsetDays = 0;
+        try {
+            fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
+        } catch (NullPointerException npe) {
+            logger.warn("No fixing offset was detected, 0 implied.");
+
+        }
+        int paymentOffsetDays = 0;
+        try {
+            paymentOffsetDays = swapLeg.getPaymentDates().getPaymentDaysOffset().getPeriodMultiplier().intValue();
+        } catch (NullPointerException npe) {
+            logger.warn("No payment offset was detected, 0 implied.");
+
+        }
+
+
+        final BusinessdayCalendar.DateRollConvention dateRollConvention;
+        switch (swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention()) {
+            case PRECEDING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.PRECEDING;
+            case MODPRECEDING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_PRECEDING;
+            case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
+            case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
+            case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
+            default ->
+                    throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
+        }
+
+        logger.info("Date roll convention detected: " + dateRollConvention);
+
+        final ScheduleGenerator.DaycountConvention daycountConvention = ScheduleGenerator.DaycountConvention.getEnum(swapLeg.getCalculationPeriodAmount().getCalculation().getDayCountFraction().getValue());
+        ScheduleGenerator.Frequency frequency = null;
+        final int multiplier = swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue();
+
+        logger.info("Reading period symbol: " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod());
+        switch (swapLeg.getPaymentDates().getPaymentFrequency().getPeriod()) {
+            case "D" -> {
+                if (multiplier == 1) {
+                    frequency = ScheduleGenerator.Frequency.DAILY;
+                }
+            }
+            case "Y" -> {
+                if (multiplier == 1) {
+                    frequency = ScheduleGenerator.Frequency.ANNUAL;
+                }
+            }
+            case "M" -> frequency = switch (multiplier) {
+                case 1 -> ScheduleGenerator.Frequency.MONTHLY;
+                case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
+                case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
+                default ->
+                        throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
+            };
+            default ->
+                    throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
+        }
+
+        //build schedule
+        logger.info("Payment frequency detected: " + Objects.requireNonNull(frequency));
+        final ScheduleDescriptor scheduleDescriptor = new ScheduleDescriptor(startDate, maturityDate, frequency, daycountConvention, ScheduleGenerator.ShortPeriodConvention.LAST, dateRollConvention, new BusinessdayCalendarExcludingTARGETHolidays(), fixingOffsetDays, paymentOffsetDays);
+
+
+        List<CashflowPeriod> cashflowPeriods = new ArrayList<>();
+        Schedule schedule = scheduleDescriptor.getSchedule(this.smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(0).tradeHeader.tradeDate.value.toGregorianCalendar().toZonedDateTime().toLocalDate());
+        double notional = swapLeg.calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.initialValue.doubleValue();
+
+        /* Check the product */
+        String forwardCurveID = "forward-EUR-6M"; // TODO: ask Christian why these IDs are needed otherwise everything crashes
+        String discountCurveID = "discount-EUR-OIS";
+        AnalyticModel calibratedModel = getAnalyticModel(marketData, schedule, forwardCurveID, discountCurveID);
+
+        String currency = swapLeg.calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.currency.value;
+        int i = 0;
+        for (Period schedulePeriod : schedule) {
+            double rate = legSelector.equals(LegSelector.FIXED_LEG) ? swapLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue.doubleValue() : calibratedModel.getForwardCurve(forwardCurveID).getForward(calibratedModel, schedule.getFixing(i));
+            double homePartyIsPayerPartyFactor = ((Party) swapLeg.payerPartyReference.href).id.equals(this.smartDerivativeContract.receiverPartyID) ? 1.0 : -1.0;
+
+            cashflowPeriods.add(new CashflowPeriod().cashflow(new ValueResult().currency(currency).valuationDate(new Date().toString()).value(BigDecimal.valueOf(homePartyIsPayerPartyFactor * schedule.getPeriodLength(i) * notional * rate))).fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC)).paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC)).periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC)).periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)).rate(rate));
+
+            i++;
+        }
+
+        return cashflowPeriods;
+
+
+    }
     private AnalyticModel getAnalyticModel(String marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
         List<CalibrationDataset> marketDataSets;
         try {
@@ -544,6 +670,74 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         return calibratedModel;
     }
 
+    private AnalyticModel getAnalyticModel(MarketDataTransferMessage marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
+        SmartDerivativeContractDescriptor productDescriptor = null;
+        try {
+            productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+
+        Set<CalibrationDataItem> cdi = new HashSet<>();
+
+
+        var mdReferences = productDescriptor.getMarketdataItemList();
+        var mdValues = marketData.getValues();
+        for( var mdr : mdReferences){
+            for ( var mdv: mdValues){
+                if(mdv.getSymbol().equals(mdr.getKey())){
+                    cdi.add(
+                            new CalibrationDataItem(mdr,mdv.getValue(),mdv.getDataTimestamp().toLocalDateTime())
+                    );
+                }
+            }
+        }
+
+        List<CalibrationDataset> marketDataSets = new ArrayList<>();
+        marketDataSets.add(new CalibrationDataset(cdi,marketData.getRequestTimestamp().toLocalDateTime()));
+
+        LocalDateTime marketDataTime = marketDataSets.get(0).getDate();
+
+        final Optional<CalibrationDataset> optionalScenario = marketDataSets.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
+        final CalibrationDataset scenario;
+        if (optionalScenario.isPresent()) scenario = optionalScenario.get();
+        else throw new IllegalStateException("Failed to load calibration dataset.");
+
+        final LocalDate referenceDate = marketDataTime.toLocalDate();
+
+        final CalibrationParserDataItems parser = new CalibrationParserDataItems();
+        final Calibrator calibrator = new Calibrator();
+
+        final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
+
+
+        final Optional<CalibrationResult> optionalCalibrationResult;
+        try {
+            optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+        } catch (CloneNotSupportedException e) {
+            logger.error("Failed to calibrate model.");
+            throw e;
+        }
+        AnalyticModel calibratedModel;
+        if (optionalCalibrationResult.isPresent())
+            calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
+        else throw new IllegalStateException("Failed to calibrate model.");
+
+
+        Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
+
+        // @Todo what if we have no past fixing provided
+        // @Todo what when we are exactly on the fixing date but before 11:00 am.
+        ForwardCurveInterpolation fixedCurve = this.getCurvePastFixings("fixedCurve", referenceDate, calibratedModel, discountCurveID, pastFixings);//ForwardCurveInterpolation.createForwardCurveFromForwards("pastFixingCurve", pastFixingTimeArray, pastFixingArray, paymentOffset);
+        Curve forwardCurveWithFixings = new ForwardCurveWithFixings(calibratedModel.getForwardCurve(forwardCurveID), fixedCurve, schedule.getFixing(0), 0.0);
+        Curve[] finalCurves = {calibratedModel.getDiscountCurve(discountCurveID), calibratedModel.getForwardCurve(forwardCurveID), forwardCurveWithFixings};
+        calibratedModel = new AnalyticModelFromCurvesAndVols(referenceDate, finalCurves);
+        return calibratedModel;
+    }
     private ForwardCurveInterpolation getCurvePastFixings(final String curveID, LocalDate referenceDate, AnalyticModel model, String discountCurveName, final Set<CalibrationDataItem> pastFixings) {
         Map<Double, Double> fixingMap = new LinkedHashMap<>();
         pastFixings.forEach(item -> fixingMap.put(FloatingpointDate.getFloatingPointDateFromDate(referenceDate, item.getDate()), item.getQuote()));

@@ -12,8 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,13 +30,15 @@ import java.time.LocalDateTime;
 /**
  * Tests ValuationController / Valuation API Endpoint.
  */
-@ExtendWith(SpringExtension.class)	// these new annotations are needed to avoid conflict between WebFlux and SpringMVC configs, as now spring.webmvc needs to be explicitly on the classpath (because CORS)
+//@ExtendWith(SpringExtension.class)	// these new annotations are needed to avoid conflict between WebFlux and SpringMVC configs, as now spring.webmvc needs to be explicitly on the classpath (because CORS)
 @SpringBootTest(classes = {ValuationController.class, Application.class},
 				webEnvironment = SpringBootTest.WebEnvironment.MOCK, // explicitly enable Mockito
 				useMainMethod = SpringBootTest.UseMainMethod.ALWAYS) // use the same ApplicationContext as the regular (non test) server
 @ContextConfiguration(classes = {BasicAuthWebSecurityConfiguration.class, Application.class, MockUserAuthConfig.class})
+@ComponentScan("net.finmath.smartcontract.marketdata.database")
 @AutoConfigureMockMvc
 @WebAppConfiguration
+@ActiveProfiles("test")
 public class ValuationControllerTest {
 
 

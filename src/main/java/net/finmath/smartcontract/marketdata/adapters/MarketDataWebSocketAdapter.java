@@ -9,24 +9,32 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.model.MarketDataTransferMessage;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
-
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implements Callable<String> {
+public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDataset>   {// implements Callable<String> {
 
     private final BusinessdayCalendarExcludingTARGETHolidays bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
     private final JsonNode authJson;
+
+    private static final Logger logger = LoggerFactory.getLogger(MarketDataWebSocketAdapter.class);
     private final String position;
     private final Set<CalibrationDataItem.Spec> calibrationSpecs;
     private Set<CalibrationDataItem> calibrationDataSet;
@@ -78,7 +86,23 @@ public class MarketDataWebSocketAdapter extends WebSocketAdapter   {// implement
 
     public Flux<CalibrationDataset> asFlux() { return sink.asFlux(); }
 
+    /**
+     * Sends a close login stream message. Closing the login stream also closes and resets all data streams.
+     * @param webSocket the socket on which the message must be sent
+     */
+    public void closeStreamsAndLogoff(WebSocket webSocket) {
+        String request = "{\"ID\":1, \"Type\": \"Close\", \"Domain\":\"Login\"}";
+        webSocket.sendText(request);
+    }
 
+
+    public void writeDataset(String importDir, CalibrationDataset s, boolean isOvernightFixing) throws IOException {
+        String json = s.serializeToJson();
+        String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+        logger.info("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
+        Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
+        Files.write(path, json.getBytes());
+    }
 
     public void onTextMessage(WebSocket websocket, String message) throws Exception {
 

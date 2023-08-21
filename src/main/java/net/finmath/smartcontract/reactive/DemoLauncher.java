@@ -4,6 +4,8 @@ package net.finmath.smartcontract.reactive;
 import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.functions.Consumer;
+import net.finmath.smartcontract.marketdata.adapters.LiveFeedAdapter;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataRandomFeedAdapter;
 import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
 import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
@@ -21,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
@@ -48,7 +51,8 @@ public class DemoLauncher {
 		final WebSocket socket = connector.getWebSocket();
 
 		/* Market Data Adapter */
-		final MarketDataWebSocketAdapter emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
+		//final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
+		final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataRandomFeedAdapter(Period.ofDays(1),new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8));
 		socket.addListener(emitter);
 		socket.connect();
 
@@ -63,8 +67,8 @@ public class DemoLauncher {
 				Files.write(path, json.getBytes());
 			}
 		};
-		//emitter.asObservable().throttleLast(10,TimeUnit.SECONDS).subscribe(marketDataWriter);
-
+		emitter.asObservable().throttleLast(5,TimeUnit.SECONDS).subscribe(s->emitter.writeDataset("C:\\Temp\\marketdata\\",s,false));
+		//emitter.writeDataset("C:\\Temp\\marketdata\\",emitter.asObservable().blockingFirst(),false);
 		Path dir = Paths.get("C:\\Temp\\marketdata\\");  // specify your directory
 
 		Optional<Path> lastFilePath = Files.list(dir)    // here we get the stream with full directory listing
