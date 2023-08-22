@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.neovisionaries.ws.client.WebSocket;
-import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
@@ -50,7 +49,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
     private final Sinks.Many<MarketDataSet> sink;
     private final ObjectMapper mapper;
     boolean requestSent;
-    private MarketDataSet MarketDataSet;
+    private MarketDataSet marketDataSet;
 
     public ReactiveMarketDataUpdater(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
         this.mapper = new ObjectMapper(); // Spring's default object mapper has some settings which are incompatible with this data pipeline, create a new one
@@ -59,7 +58,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
                 .configure(SerializationFeature.INDENT_OUTPUT, true)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        this.MarketDataSet = new MarketDataSet();
+        this.marketDataSet = new MarketDataSet();
         this.calibrationSpecs = new LinkedHashSet<>(itemList);
         this.authJson = authJson;
         this.position = position;
@@ -70,11 +69,11 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 
 
     private boolean allQuotesRetrieved() {
-        return this.MarketDataSet.getValues().size() >= this.calibrationSpecs.size();
+        return this.marketDataSet.getValues().size() >= this.calibrationSpecs.size();
     }
 
     private void reset() {
-        this.MarketDataSet = new MarketDataSet();
+        this.marketDataSet = new MarketDataSet();
     }
 
     /**
@@ -103,26 +102,26 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
             List<RefinitivMarketData> marketDataValues;
             try {
                 marketDataValues = mapper.readerForListOf(RefinitivMarketData.class).readValue(message);
-                MarketDataSet.requestTimestamp(OffsetDateTime.now(ZoneId.of("GMT")).withNano(0));
+                marketDataSet.requestTimestamp(OffsetDateTime.now(ZoneId.of("GMT")).withNano(0));
                 for (RefinitivMarketData mdi : marketDataValues) {
 
-                    RefinitivMarketDataKey RefinitivMarketDataKey = Objects.requireNonNull(mdi.getKey());
-                    String symbol = RefinitivMarketDataKey.getName();
-                    RefinitivMarketDataFields RefinitivMarketDataFields = Objects.requireNonNull(mdi.getFields());
-                    OffsetDateTime dataTimestamp = OffsetDateTime.parse(RefinitivMarketDataFields.getVALUEDT1() + "T" + RefinitivMarketDataFields.getVALUETS1() + "Z");
+                    RefinitivMarketDataKey refinitivMarketDataKey = Objects.requireNonNull(mdi.getKey());
+                    String symbol = refinitivMarketDataKey.getName();
+                    RefinitivMarketDataFields refinitivMarketDataFields = Objects.requireNonNull(mdi.getFields());
+                    OffsetDateTime dataTimestamp = OffsetDateTime.parse(refinitivMarketDataFields.getVALUEDT1() + "T" + refinitivMarketDataFields.getVALUETS1() + "Z");
 
-                    OptionalDouble optValue = Stream.of(RefinitivMarketDataFields.getASK(), RefinitivMarketDataFields.getBID()).filter(Objects::nonNull)
+                    OptionalDouble optValue = Stream.of(refinitivMarketDataFields.getASK(), refinitivMarketDataFields.getBID()).filter(Objects::nonNull)
                             .mapToDouble(x -> x)
                             .average();
                     if (optValue.isEmpty())
                         throw new IllegalStateException("Failed to get average");
 
                     boolean hasSymbol = false;
-                    for (MarketDataSetValuesInner i : MarketDataSet.getValues())
-                        hasSymbol |= i.getSymbol().equals(RefinitivMarketDataKey.getName());
+                    for (MarketDataSetValuesInner i : marketDataSet.getValues())
+                        hasSymbol |= i.getSymbol().equals(refinitivMarketDataKey.getName());
 
                     if (!hasSymbol) {
-                        MarketDataSet.addValuesItem(new MarketDataSetValuesInner().value(optValue.getAsDouble()).dataTimestamp(dataTimestamp).symbol(symbol));
+                        marketDataSet.addValuesItem(new MarketDataSetValuesInner().value(optValue.getAsDouble()).dataTimestamp(dataTimestamp).symbol(symbol));
                     }
                 }
 
@@ -139,8 +138,8 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 
 
         if (this.allQuotesRetrieved()) {
-            this.publishSubject.onNext(this.MarketDataSet);
-            this.sink.tryEmitNext(this.MarketDataSet);
+            this.publishSubject.onNext(this.marketDataSet);
+            this.sink.tryEmitNext(this.marketDataSet);
             this.reset();
 
             requestSent = false;
