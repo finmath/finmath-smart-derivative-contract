@@ -285,7 +285,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         settlementHeader.marketdata = new Smartderivativecontract.Settlement.Marketdata();
         settlementHeader.marketdata.provider = "refinitiv";
         Smartderivativecontract.Settlement.Marketdata.Marketdataitems marketDataItems = new Smartderivativecontract.Settlement.Marketdata.Marketdataitems();
-        for (JsonMarketDataItem marketDataItem : plainSwapOperationRequest.getValuationSymbols()) {
+        for (FrontendItemSpec marketDataItem : plainSwapOperationRequest.getValuationSymbols()) {
             Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item newItem = new Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item();
             newItem.curve = new ArrayList<>();
             newItem.symbol = new ArrayList<>();
@@ -519,7 +519,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
      * @param marketData  the market data used for calibration of the model used for the payments' calculation.
      * @return the payment schedule.
      */
-    public List<CashflowPeriod> getSchedule(LegSelector legSelector, MarketDataTransferMessage marketData) throws IOException, CloneNotSupportedException {
+    public List<CashflowPeriod> getSchedule(LegSelector legSelector, MarketDataSet marketData) throws IOException, CloneNotSupportedException {
         InterestRateStream swapLeg;
         switch (legSelector) {
             case FIXED_LEG -> {
@@ -675,7 +675,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         return calibratedModel;
     }
 
-    private AnalyticModel getAnalyticModel(MarketDataTransferMessage marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
+    private AnalyticModel getAnalyticModel(MarketDataSet marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
         SmartDerivativeContractDescriptor productDescriptor = null;
         try {
             productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
@@ -691,9 +691,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 
         List<CalibrationDataItem.Spec> mdReferences = productDescriptor.getMarketdataItemList();
-        List<MarketDataTransferMessageValuesInner> mdValues = marketData.getValues();
+        List<MarketDataSetValuesInner> mdValues = marketData.getValues();
         for(CalibrationDataItem.Spec mdr : mdReferences){
-            for (MarketDataTransferMessageValuesInner mdv: mdValues){
+            for (MarketDataSetValuesInner mdv: mdValues){
                 if(mdv.getSymbol().equals(mdr.getKey())){
                     cdi.add(
                             new CalibrationDataItem(mdr,mdv.getValue(),mdv.getDataTimestamp().toLocalDateTime())

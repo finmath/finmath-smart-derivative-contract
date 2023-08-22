@@ -47,7 +47,7 @@ paths:
                 - valuationDate
               properties:
                 marketData:
-                  type: MarketDataTransferMessage
+                  type: MarketDataSet
                 tradeData:
                   type: string
                 valuationDate:
@@ -82,9 +82,9 @@ paths:
                 - valuationDate
               properties:
                 marketDataStart:
-                  type: MarketDataTransferMessage
+                  type: MarketDataSet
                 marketDataEnd:
-                  type: MarketDataTransferMessage
+                  type: MarketDataSet
                 tradeData:
                   type: string
                 valuationDate:
@@ -506,7 +506,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MarketDataTransferMessage"
+                $ref: "#/components/schemas/MarketDataSet"
         default:
           description: unexpected error
           content:
@@ -532,9 +532,9 @@ components:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
-    JsonMarketDataItem:
-      $ref: "schemas/openapi-schemas/JsonMarketDataItem.yml"
-    MarketDataMessage:
-      $ref: "schemas/openapi-schemas/MarketDataMessage.yml"
-    MarketDataTransferMessage:
-      $ref: "schemas/openapi-schemas/MarketDataTransferMessage.yml"
+    FrontendItemSpec:
+      $ref: "schemas/openapi-schemas/FrontendItemSpec.yml"
+    RefinitivMarketData:
+      $ref: "schemas/openapi-schemas/RefinitivMarketData.yml"
+    MarketDataSet:
+      $ref: "schemas/openapi-schemas/MarketDataSet.yml"

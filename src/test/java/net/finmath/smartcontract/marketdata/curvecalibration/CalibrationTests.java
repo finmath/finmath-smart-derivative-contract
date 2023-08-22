@@ -7,8 +7,8 @@ import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.marketdata.MarketDataImportTest;
-import net.finmath.smartcontract.model.MarketDataTransferMessage;
-import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
+import net.finmath.smartcontract.model.MarketDataSet;
+import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.time.FloatingpointDate;
@@ -41,7 +41,7 @@ public class CalibrationTests {
 
     @BeforeAll
     void initializeTests() throws IOException, ParserConfigurationException, SAXException, CloneNotSupportedException {
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         SmartDerivativeContractDescriptor product;
         try (
                 InputStream marketDataMessageStream = MarketDataImportTest.class.getClassLoader().getResourceAsStream(
@@ -54,7 +54,7 @@ public class CalibrationTests {
             final String marketDataMessageContents = new String(
                     Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);
             marketData = new ObjectMapper().registerModule(new JavaTimeModule())
-                    .readValue(marketDataMessageContents, MarketDataTransferMessage.class);
+                    .readValue(marketDataMessageContents, MarketDataSet.class);
             final String sdcmlFileContents = new String(
                     Objects.requireNonNull(sdcmlStream).readAllBytes(),
                     StandardCharsets.UTF_8);
@@ -65,7 +65,7 @@ public class CalibrationTests {
         referenceDateTime = marketData.getRequestTimestamp()
                 .toLocalDateTime(); // upgrade variable type for decimal time calculations
         final List<CalibrationDataItem.Spec> marketdataItemSpecList = product.getMarketdataItemList();
-        final List<MarketDataTransferMessageValuesInner> marketDataValues = marketData.getValues();
+        final List<MarketDataSetValuesInner> marketDataValues = marketData.getValues();
         calibrationDataItems = new HashSet<>();
         marketdataItemSpecList.forEach(marketDataItemSpec -> marketDataValues.stream()
                 .filter(marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey()))

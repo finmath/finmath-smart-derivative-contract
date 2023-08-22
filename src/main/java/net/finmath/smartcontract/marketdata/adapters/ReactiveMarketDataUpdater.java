@@ -12,11 +12,11 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.model.MarketDataMessage;
-import net.finmath.smartcontract.model.MarketDataMessageFields;
-import net.finmath.smartcontract.model.MarketDataMessageKey;
-import net.finmath.smartcontract.model.MarketDataTransferMessage;
-import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
+import net.finmath.smartcontract.model.RefinitivMarketData;
+import net.finmath.smartcontract.model.RefinitivMarketDataKey;
+import net.finmath.smartcontract.model.RefinitivMarketDataFields;
+import net.finmath.smartcontract.model.MarketDataSet;
+import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,17 +40,17 @@ import java.util.stream.Stream;
  *
  * @author Luca Bressan
  */
-public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransferMessage> {
+public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactiveMarketDataUpdater.class);
     private final JsonNode authJson;
     private final String position;
     private final Set<CalibrationDataItem.Spec> calibrationSpecs;
-    private final PublishSubject<MarketDataTransferMessage> publishSubject;
-    private final Sinks.Many<MarketDataTransferMessage> sink;
+    private final PublishSubject<MarketDataSet> publishSubject;
+    private final Sinks.Many<MarketDataSet> sink;
     private final ObjectMapper mapper;
     boolean requestSent;
-    private MarketDataTransferMessage marketDataTransferMessage;
+    private MarketDataSet MarketDataSet;
 
     public ReactiveMarketDataUpdater(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
         this.mapper = new ObjectMapper(); // Spring's default object mapper has some settings which are incompatible with this data pipeline, create a new one
@@ -59,7 +59,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
                 .configure(SerializationFeature.INDENT_OUTPUT, true)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        this.marketDataTransferMessage = new MarketDataTransferMessage();
+        this.MarketDataSet = new MarketDataSet();
         this.calibrationSpecs = new LinkedHashSet<>(itemList);
         this.authJson = authJson;
         this.position = position;
@@ -70,11 +70,11 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
 
 
     private boolean allQuotesRetrieved() {
-        return this.marketDataTransferMessage.getValues().size() >= this.calibrationSpecs.size();
+        return this.MarketDataSet.getValues().size() >= this.calibrationSpecs.size();
     }
 
     private void reset() {
-        this.marketDataTransferMessage = new MarketDataTransferMessage();
+        this.MarketDataSet = new MarketDataSet();
     }
 
     /**
@@ -91,7 +91,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
     }
 
 
-    public Observable<MarketDataTransferMessage> asObservable() {
+    public Observable<MarketDataSet> asObservable() {
         return this.publishSubject;
     }
 
@@ -100,29 +100,29 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
 
 
         if (!message.isEmpty()) {
-            List<MarketDataMessage> marketDataValues;
+            List<RefinitivMarketData> marketDataValues;
             try {
-                marketDataValues = mapper.readerForListOf(MarketDataMessage.class).readValue(message);
-                marketDataTransferMessage.requestTimestamp(OffsetDateTime.now(ZoneId.of("GMT")).withNano(0));
-                for (MarketDataMessage mdi : marketDataValues) {
+                marketDataValues = mapper.readerForListOf(RefinitivMarketData.class).readValue(message);
+                MarketDataSet.requestTimestamp(OffsetDateTime.now(ZoneId.of("GMT")).withNano(0));
+                for (RefinitivMarketData mdi : marketDataValues) {
 
-                    MarketDataMessageKey marketDataMessageKey = Objects.requireNonNull(mdi.getKey());
-                    String symbol = marketDataMessageKey.getName();
-                    MarketDataMessageFields marketDataMessageFields = Objects.requireNonNull(mdi.getFields());
-                    OffsetDateTime dataTimestamp = OffsetDateTime.parse(marketDataMessageFields.getVALUEDT1() + "T" + marketDataMessageFields.getVALUETS1() + "Z");
+                    RefinitivMarketDataKey RefinitivMarketDataKey = Objects.requireNonNull(mdi.getKey());
+                    String symbol = RefinitivMarketDataKey.getName();
+                    RefinitivMarketDataFields RefinitivMarketDataFields = Objects.requireNonNull(mdi.getFields());
+                    OffsetDateTime dataTimestamp = OffsetDateTime.parse(RefinitivMarketDataFields.getVALUEDT1() + "T" + RefinitivMarketDataFields.getVALUETS1() + "Z");
 
-                    OptionalDouble optValue = Stream.of(marketDataMessageFields.getASK(), marketDataMessageFields.getBID()).filter(Objects::nonNull)
+                    OptionalDouble optValue = Stream.of(RefinitivMarketDataFields.getASK(), RefinitivMarketDataFields.getBID()).filter(Objects::nonNull)
                             .mapToDouble(x -> x)
                             .average();
                     if (optValue.isEmpty())
                         throw new IllegalStateException("Failed to get average");
 
                     boolean hasSymbol = false;
-                    for (MarketDataTransferMessageValuesInner i : marketDataTransferMessage.getValues())
-                        hasSymbol |= i.getSymbol().equals(marketDataMessageKey.getName());
+                    for (MarketDataSetValuesInner i : MarketDataSet.getValues())
+                        hasSymbol |= i.getSymbol().equals(RefinitivMarketDataKey.getName());
 
                     if (!hasSymbol) {
-                        marketDataTransferMessage.addValuesItem(new MarketDataTransferMessageValuesInner().value(optValue.getAsDouble()).dataTimestamp(dataTimestamp).symbol(symbol));
+                        MarketDataSet.addValuesItem(new MarketDataSetValuesInner().value(optValue.getAsDouble()).dataTimestamp(dataTimestamp).symbol(symbol));
                     }
                 }
 
@@ -139,8 +139,8 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
 
 
         if (this.allQuotesRetrieved()) {
-            this.publishSubject.onNext(this.marketDataTransferMessage);
-            this.sink.tryEmitNext(this.marketDataTransferMessage);
+            this.publishSubject.onNext(this.MarketDataSet);
+            this.sink.tryEmitNext(this.MarketDataSet);
             this.reset();
 
             requestSent = false;
@@ -172,13 +172,13 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
         webSocket.sendText(request);
     }
 
-    private MarketDataTransferMessageValuesInner overnightFixingPostProcessing(MarketDataTransferMessageValuesInner datapoint, boolean isOvernightFixing) {
+    private MarketDataSetValuesInner overnightFixingPostProcessing(MarketDataSetValuesInner datapoint, boolean isOvernightFixing) {
         if (datapoint.getSymbol().equals("EUROSTR=") && isOvernightFixing) {
             BusinessdayCalendarExcludingTARGETHolidays bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
             LocalDateTime rolledDate = bdCalendar.getRolledDate(datapoint.getDataTimestamp().toLocalDate(), 1).atTime(datapoint.getDataTimestamp().toLocalTime());
             System.out.println(rolledDate);
             OffsetDateTime dataTimestamp = OffsetDateTime.parse(rolledDate + "Z");
-            return new MarketDataTransferMessageValuesInner().symbol("EUROSTR=").value(datapoint.getValue()).dataTimestamp(dataTimestamp);
+            return new MarketDataSetValuesInner().symbol("EUROSTR=").value(datapoint.getValue()).dataTimestamp(dataTimestamp);
         }
         return datapoint;
     }
@@ -190,10 +190,10 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataTransfe
      * @param isOvernightFixing true when the correction for overnight rates time must be applied
      * @throws IOException if the writing operation fails
      */
-    public void writeDataset(String importFile, MarketDataTransferMessage transferMessage, boolean isOvernightFixing) throws IOException {
+    public void writeDataset(String importFile, MarketDataSet transferMessage, boolean isOvernightFixing) throws IOException {
         transferMessage.values(transferMessage.getValues().stream().map(x -> this.overnightFixingPostProcessing(x, isOvernightFixing)).toList());
         File targetFile = new File(importFile);
-        mapper.writerFor(MarketDataTransferMessage.class).writeValue(targetFile, transferMessage);
+        mapper.writerFor(MarketDataSet.class).writeValue(targetFile, transferMessage);
     }
 
 

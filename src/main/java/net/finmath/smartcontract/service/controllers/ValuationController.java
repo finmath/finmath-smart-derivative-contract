@@ -40,6 +40,7 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
+	@Deprecated
 	public ResponseEntity<MarginResult> legacyMargin(LegacyMarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
@@ -65,6 +66,7 @@ public class ValuationController implements ValuationApi {
 	 * @return String Json representing the valuation.
 	 */
 	@Override
+	@Deprecated
 	public ResponseEntity<ValueResult> legacyValue(LegacyValueRequest valueRequest) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();

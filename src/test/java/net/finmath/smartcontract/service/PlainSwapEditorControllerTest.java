@@ -123,7 +123,7 @@ public class PlainSwapEditorControllerTest {
                         1000000.00)
                 .valuationSymbols(
                         objectMapper.readerForListOf(
-                                        JsonMarketDataItem.class)
+                                        FrontendItemSpec.class)
                                 .readValue(
                                         fullSymbolListFromTemplate))
                 .currentGenerator(

@@ -139,12 +139,12 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
         String marketDataString;
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         try {
 
             marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
                                                .getContentAsString(StandardCharsets.UTF_8);
-            marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
+            marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -175,11 +175,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
                                                                      .getPrincipal()).getUsername();
         String marketDataString;
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         try {
             marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
                                                .getContentAsString(StandardCharsets.UTF_8);
-            marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
+            marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -219,11 +219,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
                                                                      .getPrincipal()).getUsername();
         String marketDataString;
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         try {
             marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
                                                .getContentAsString(StandardCharsets.UTF_8);
-            marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
+            marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -258,7 +258,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
      * @return a market data transfer message that matches the contents of the active dataset
      */
     @Override
-    public ResponseEntity<MarketDataTransferMessage> grabMarketData() {
+    public ResponseEntity<MarketDataSet> grabMarketData() {
         String marketDataString;
         String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
                                                                      .getPrincipal()).getUsername();
@@ -272,9 +272,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             pd.setTitle(ErrorDetails.STORAGE_ERROR_DETAIL);
             throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
         }
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         try {
-            marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
+            marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
         } catch (JsonProcessingException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -344,7 +344,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         }
 
         /* Market Data Adapter*/
-        final LiveFeedAdapter<MarketDataTransferMessage> emitter = new ReactiveMarketDataUpdater(
+        final LiveFeedAdapter<MarketDataSet> emitter = new ReactiveMarketDataUpdater(
                 socketConnector.getAuthJson(), socketConnector.getPosition(), calibrationDataItemSpecs);
         webSocket.addListener(emitter);
         try {
@@ -417,11 +417,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
         String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
                                                                      .getPrincipal()).getUsername();
         String marketDataString;
-        MarketDataTransferMessage marketData;
+        MarketDataSet marketData;
         try {
             marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
                                                .getContentAsString(StandardCharsets.UTF_8);
-            marketData = objectMapper.readValue(marketDataString, MarketDataTransferMessage.class);
+            marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
         } catch (IOException e) {
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                                                                 ErrorDetails.MARKET_DATA_ERROR_DETAIL);

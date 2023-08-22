@@ -1,7 +1,7 @@
 import { Component, Inject, ViewChild } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
-import { MarketDataTransferMessageValuesInner } from "src/app/openapi";
+import { MarketDataSetValuesInner } from "src/app/openapi";
 
 
 @Component({
@@ -17,7 +17,7 @@ export class PlainSwapEditorHistoryViewerComponent {
 
   constructor(
     public dialogRef: MatDialogRef<PlainSwapEditorHistoryViewerComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: MarketDataTransferMessageValuesInner[]
+    @Inject(MAT_DIALOG_DATA) public data: MarketDataSetValuesInner[]
   ) {}
 
   onNoClick(): void {
