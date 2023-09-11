@@ -61,7 +61,7 @@ export interface TextDialogData {
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json",
-    Authorization: "Basic " + window.btoa("user1:password1"),
+    Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
   }),
 };
 
@@ -238,12 +238,12 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
 
     this.plainSwapEditorService.defaultHeaders = new HttpHeaders({
       "Content-Type": "application/json",
-      Authorization: "Basic " + window.btoa("user1:password1"),
+      Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
     });
 
     this.defaultService.defaultHeaders = new HttpHeaders({
       "Content-Type": "application/json",
-      Authorization: "Basic " + window.btoa("user1:password1"),
+      Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
     });
 
     this.swapForm = this._formBuilder.group({
@@ -1100,7 +1100,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         fd,
         {
           headers: new HttpHeaders({
-            Authorization: "Basic " + window.btoa("user1:password1"), // @TODO: this is a clear-text password. It was necessary during testing, but obsviously this is not a good soultion!
+            Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")), // @TODO: this is a clear-text password. It was necessary during testing, but obsviously this is not a good soultion!
             Accept: "text/plain",
           }),
           responseType: "text" as "json",
@@ -1188,4 +1188,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       });
     });
   }
+
+  
+    
 }
