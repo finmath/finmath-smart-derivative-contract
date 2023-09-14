@@ -271,6 +271,28 @@ paths:
               schema:
                 items:
                   type: string
+  /plain-swap-editor/get-saved-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request the list of saved market data.
+      operationId: get-saved-market-data
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
   /plain-swap-editor/load-contract:
     post:
       tags:
@@ -289,6 +311,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlainSwapOperationRequest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/change-dataset:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request a saved contract.
+      operationId: change-dataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            text/plain:
+              schema:
+                type: string
         default:
           description: unexpected error
           content:
@@ -354,6 +400,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /plain-swap-editor/refresh-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for valuation of the trade data coming from the editor.
+      operationId: refresh-market-data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/grab-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for transferring the active dataset to the client
+      operationId: grab-market-data
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketDataTransferMessage"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -375,3 +464,7 @@ components:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
     JsonMarketDataItem:
       $ref: "schemas/openapi-schemas/JsonMarketDataItem.yml"
+    MarketDataMessage:
+      $ref: "schemas/openapi-schemas/MarketDataMessage.yml"
+    MarketDataTransferMessage:
+      $ref: "schemas/openapi-schemas/MarketDataTransferMessage.yml"

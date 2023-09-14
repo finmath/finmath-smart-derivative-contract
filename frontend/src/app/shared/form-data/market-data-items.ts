@@ -7,8 +7,14 @@ export const marketDataItems: JsonMarketDataItem[] = [
   {
     symbol: "EUROSTR=",
     curve: "ESTR",
-    itemType: "Deposit",
+    itemType: "Fixing",
     tenor: "1D",
+  },
+  {
+    symbol: "EURIBOR6MD=",
+    curve: "Euribor6M",
+    itemType: "Fixing",
+    tenor: "6M",
   },
   {
     symbol: "EUR6MD=",

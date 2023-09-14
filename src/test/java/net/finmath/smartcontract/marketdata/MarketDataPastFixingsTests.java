@@ -25,6 +25,8 @@ import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.core.Local;
 
 import java.nio.charset.StandardCharsets;
@@ -36,6 +38,7 @@ import java.util.stream.Stream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MarketDataPastFixingsTests {
 
+    private static final Logger logger = LoggerFactory.getLogger(MarketDataPastFixingsTests.class);
     final  LocalDate referenceDate = LocalDate.of(2023,1,30);
     final CalibrationContext ctx = new CalibrationContextImpl(referenceDate, 1.0E-9);
     final LocalDate tradeDate = LocalDate.of(2022,12,15);
@@ -55,7 +58,7 @@ public class MarketDataPastFixingsTests {
     ForwardCurve fixedCurve;
     AnalyticModel modelWithPastFixings;
 
-    @BeforeAll
+    @BeforeEach
     void initCalibrationSpecs() throws Exception{
         /* Retrieve and transform into calibration items */
 //        Path path = Path.of("C:\\Temp\\finmath-smart-derivative-contract-MarketData\\src\\main\\resources\\net.finmath.smartcontract.client\\md_testset1.json");
@@ -70,7 +73,7 @@ public class MarketDataPastFixingsTests {
 
     }
 
-    @BeforeAll
+    @BeforeEach
     void initSwapProducts() throws Exception{
         scheduleFloat = ScheduleGenerator.createScheduleFromConventions(referenceDate,tradeDate,2, "0D",MaturityKey , "semiannual", "act/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
         final Schedule scheduleFix = ScheduleGenerator.createScheduleFromConventions(referenceDate,tradeDate, 2, "0D", MaturityKey, "annual", "E30/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
@@ -106,8 +109,8 @@ public class MarketDataPastFixingsTests {
 
     }
 
-    @Disabled("")
-    @BeforeAll
+    //@Disabled("")
+    @BeforeEach
     void initModelWithFixedPart() throws Exception{
         /*Define and calibrate OIS and 6M Curves*/
         Curve discountOISCurve =  DiscountCurveInterpolation.createDiscountCurveFromDiscountFactors(discountCurveKey, ctx.getReferenceDate(), new double[]{0.0}, new double[]{1.0}, new boolean[]{false}, CurveInterpolation.InterpolationMethod.LINEAR, CurveInterpolation.ExtrapolationMethod.CONSTANT, CurveInterpolation.InterpolationEntity.VALUE);
@@ -125,7 +128,7 @@ public class MarketDataPastFixingsTests {
         modelWithPastFixings = new AnalyticModelFromCurvesAndVols(referenceDate,finalCurves);
     }
 
-    @Disabled("")
+    //@Disabled("")
     @Test
     void testModelWithPastFixing()  throws Exception {
         ForwardCurve curve = modelWithPastFixings.getForwardCurve(this.forward6MCurveKey);
@@ -139,13 +142,13 @@ public class MarketDataPastFixingsTests {
     @Test
     void testSpotRate() {
         double EUIRBOR6M = modelWithPastFixings.getForwardCurve(forward6MCurveKey).getValue(0.0);
-        final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", "6M", "tenor", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
+        final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", "6M", "semiannual", "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
         Deposit deposit = new Deposit(scheduleInterfaceRec, 0.0, discountCurveKey);
         double rateDep = deposit.getRate(modelWithPastFixings);
         Assertions.assertEquals(EUIRBOR6M, rateDep);
     }
 
-    @Disabled("")
+    //@Disabled("")
     @Test
     void testCalibrationOnFRA() {
         ArrayList<Double> deviations =  new ArrayList<>();

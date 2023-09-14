@@ -1,3 +1,6 @@
+<div class="updateSpinner" *ngIf="isLoading">
+  <mat-spinner></mat-spinner>
+</div>
 <form [formGroup]="swapForm" class="swapBuildingForm">
   <div class="commandInfoArea">
     <div class="generateXmlButtonArea">
@@ -62,6 +65,36 @@
         <span>Select valuation symbols</span>
       </button>
     </div>
+    <div class="refreshDataArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="!this.isUsingLiveFeed"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Refresh market data."
+        (click)="refreshMarketData()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Refresh market data"
+          >refresh</mat-icon
+        >
+      </button>
+    </div>
+    <div class="selectDataArea">
+      <button
+        type="button"
+        class="wizard-end-buttons"
+        [disabled]="false"
+        color="primary"
+        mat-mini-fab
+        matTooltip="Select a manual feed or the live feed."
+        (click)="selectMarketData()"
+      >
+        <mat-icon aria-hidden="false" aria-label="Select a manual feed or the live feed"
+          >data_thresholding</mat-icon
+        >
+      </button>
+    </div>
     <div class="currentNpvLabelArea">
       <div
         class="dot"
@@ -83,8 +116,10 @@
         matTooltip="Double click to set fixed rate to par."
         (dblclick)="isAllControlsValid() && pushParRateRequest()"
         id="currentNpvLabel"
-        >{{this.npvlabel}}</a
+        >{{ this.npvlabel }}</a
       >
+      &nbsp;
+      {{this.lastValuationRefresh}}
     </div>
   </div>
   <div class="basicDefinitionArea form-section">
@@ -343,13 +378,19 @@
     </div>
     <div class="floatingIndexSelectionArea">
       <mat-form-field appearance="fill">
-        <mat-label>Floating rate index:</mat-label>
-        <input
-          matInput
-          type="text"
-          placeholder="eg. EONIA, ESTR..."
+        <mat-label>Index:</mat-label>
+        <mat-select
           formControlName="floatingRateIndex"
-        />
+          placeholder="Select index..."
+          (selectionChange)="onIndexSelection();"
+        >
+          <mat-option
+            *ngFor="let index of indexes"
+            [value]="index.name"
+          >
+            {{ index.name }}
+          </mat-option>
+        </mat-select>
         <mat-error>You must specify the reference index.</mat-error>
       </mat-form-field>
     </div>
