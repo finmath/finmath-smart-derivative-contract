@@ -32,6 +32,16 @@
       "value": 0.03
     },
     {
+      "dataTimestamp": "2023-01-31T09:00:23+00:00",
+      "symbol": "EURIBOR6MD=",
+      "value": 0.0295
+    },
+    {
+      "dataTimestamp": "2023-01-30T09:00:23+00:00",
+      "symbol": "EURIBOR6MD=",
+      "value": 0.029
+    },
+    {
       "dataTimestamp": "2023-01-31T14:35:23+00:00",
       "symbol": "EUR6X12F=",
       "value": 0.03565
@@ -352,9 +362,19 @@
       "value":  0.019761
     },
     {
-      "dataTimestamp": "2023-01-31T14:35:23+00:00",
+      "dataTimestamp": "2023-01-31T06:00:23+00:00",
       "symbol": "EUROSTR=",
-      "value": 1.904
+      "value": 0.01904
+    },
+    {
+      "dataTimestamp": "2023-01-30T06:00:23+00:00",
+      "symbol": "EUROSTR=",
+      "value": 0.01890
+    },
+    {
+      "dataTimestamp": "2023-01-29T06:00:23+00:00",
+      "symbol": "EUROSTR=",
+      "value": 0.01778
     }
   ]
 }

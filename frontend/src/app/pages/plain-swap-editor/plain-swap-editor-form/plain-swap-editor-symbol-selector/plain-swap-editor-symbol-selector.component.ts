@@ -1,7 +1,7 @@
 import { SelectionModel } from "@angular/cdk/collections";
 import { MatTableDataSource } from "@angular/material/table";
 import { marketDataItems } from "../../../../shared/form-data/market-data-items";
-import { JsonMarketDataItem, MarketDataTransferMessage } from "src/app/openapi";
+import { FrontendItemSpec, MarketDataSet } from "src/app/openapi";
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
@@ -25,10 +25,10 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
     "tenor",
     "itemType",
   ];
-  marketDataItems: JsonMarketDataItem[] = marketDataItems;
-  dataSource = new MatTableDataSource<JsonMarketDataItem>(this.marketDataItems);
-  values = this.data[1] as MarketDataTransferMessage;
-  selection: SelectionModel<JsonMarketDataItem>;
+  marketDataItems: FrontendItemSpec[] = marketDataItems;
+  dataSource = new MatTableDataSource<FrontendItemSpec>(this.marketDataItems);
+  values = this.data[1] as MarketDataSet;
+  selection: SelectionModel<FrontendItemSpec>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -50,7 +50,7 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: JsonMarketDataItem): string {
+  checkboxLabel(row?: FrontendItemSpec): string {
     if (!row) {
       return `${this.isAllSelected() ? "deselect" : "select"} all`;
     }
@@ -64,9 +64,9 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
     @Inject(MAT_DIALOG_DATA) public data: any[],
     public dialog: MatDialog
   ) {
-    this.selection = new SelectionModel<JsonMarketDataItem>(
+    this.selection = new SelectionModel<FrontendItemSpec>(
       true,
-      this.data[0] as JsonMarketDataItem[]
+      this.data[0] as FrontendItemSpec[]
     );
   }
 

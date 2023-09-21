@@ -32,7 +32,7 @@ import * as moment from "moment";
 import { PlainSwapEditorScheduleViewerComponent } from "./plain-swap-editor-schedule-viewer/plain-swap-editor-schedule-viewer.component";
 import {
   CashflowPeriod,
-  JsonMarketDataItem,
+  FrontendItemSpec,
   PlainSwapEditorService,
   PlainSwapOperationRequest,
 } from "src/app/openapi";
@@ -147,7 +147,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   /**
    * List of currently selected valuation symbols.
    */
-  protected selectedSymbols: JsonMarketDataItem[] | undefined = marketDataItems;
+  protected selectedSymbols: FrontendItemSpec[] | undefined = marketDataItems;
 
   /**
    * String that contains the effective-maturity timespan length.
@@ -698,7 +698,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
 
         dialogRef
           .afterClosed()
-          .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
+          .subscribe((selectedSymbols: FrontendItemSpec[]) => {
             this.selectedSymbols = selectedSymbols;
             if (this.isAllControlsValid()) {
               this.npvlabel = "Current NPV: loading...";

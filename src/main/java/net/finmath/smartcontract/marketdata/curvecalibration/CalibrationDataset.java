@@ -99,14 +99,14 @@ public class CalibrationDataset {
 
 	/**
 	 * Returns a Stream of CalibrationSpecs, curveData provided as calibration data points, will be converted to calibration specs
-	 * Currently Swap-Rates, FRAS and Deposit Specs are are used.
+	 * Currently Swap-Rates, FRAS and Deposit Specs are used.
 	 *
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.
 	 */
 	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataPointStream(final CalibrationParser parser) {
-		/* Return only calibraiton specs EXCEPT Past Fixings */
-		return parser.parse(calibrationDataItems.stream().filter(dataItem-> !dataItem.getProductName().equals("PastFixing")));
+		/* Return only calibraiton specs EXCEPT Past Fixings and spot data */
+		return parser.parse(calibrationDataItems.stream().filter(dataItem-> !dataItem.getProductName().equals("Fixing") && !dataItem.getProductName().equals("Deposit")));
 
 	}
 

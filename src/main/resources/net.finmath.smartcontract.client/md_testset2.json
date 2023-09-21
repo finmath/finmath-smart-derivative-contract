@@ -3,9 +3,7 @@
     "Quotes": {
       "Euribor6M": {
         "Deposit": {
-          "1D": 0.0072,
-          "6M": 0.01875,
-          "7D": 0.0075
+          "6M": 0.01875
         },
         "Forward-Rate-Agreement": {
           "9M": 0.02767,

@@ -4,6 +4,7 @@ import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -21,7 +22,7 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(1562.84, value, 0.005, "Margin");
+		Assertions.assertEquals(990.85, value, 0.005, "Margin");
 		System.out.println(valuationResult);
 	}
 
@@ -35,7 +36,7 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(95313.13, value, 0.005, "Valuation");
+		Assertions.assertEquals(93631.25, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
 	}
 }

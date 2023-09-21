@@ -1,11 +1,11 @@
-import { JsonMarketDataItem, PaymentFrequency } from "src/app/openapi";
+import { FrontendItemSpec, PaymentFrequency } from "src/app/openapi";
 import { DayCountFraction } from "../form-data/day-count-fractions";
 import { FixingDayOffset } from "../form-data/fixing-day-offsets";
 
 export interface PlainSwapEditorGenerator {
   name: string;
   fileName: string;
-  defaultSymbolsList: JsonMarketDataItem[];
+  defaultSymbolsList: FrontendItemSpec[];
   indexName: string;
   fixedPaymentFrequency: PaymentFrequency;
   floatingPaymentFrequency: PaymentFrequency;

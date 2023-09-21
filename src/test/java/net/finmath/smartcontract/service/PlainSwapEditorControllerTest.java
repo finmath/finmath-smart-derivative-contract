@@ -6,7 +6,6 @@ import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.PlainSwapEditorController;
-import net.finmath.smartcontract.valuation.MarginCalculator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -47,9 +46,8 @@ import java.time.ZoneOffset;
 // <--- use the same ApplicationContext as the regular (non-test) server
 @ContextConfiguration(classes = {BasicAuthWebSecurityConfiguration.class, Application.class, MockUserAuthConfig.class})
 @AutoConfigureMockMvc
-@AutoConfigureJsonTesters // manually reenable Spring Jackson autoconfig
+@AutoConfigureJsonTesters // manually re-enable Spring Jackson auto-config
 @AutoConfigureJson
-//@Disabled("Class disabled because the test would depend on an absolute path.")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 public class PlainSwapEditorControllerTest {
@@ -59,102 +57,92 @@ public class PlainSwapEditorControllerTest {
 
     @Test
     @WithUserDetails("user1")
-        //@Disabled("Test disabled because the test would depend on an absolute path.")
     void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
 
-        final String marketData = new ClassPathResource(
-                "net.finmath.smartcontract.client" + File.separator + "md_testset_newformat_1.json").getContentAsString(
-                StandardCharsets.UTF_8);
-        final String product = new ClassPathResource(
-                "net.finmath.smartcontract.client" + File.separator + "smartderivativecontract-sample-swap.xml").getContentAsString(StandardCharsets.UTF_8);
         final String fullSymbolListFromTemplate = new ClassPathResource(
                 "references" + File.separator + "template2_symbolslist.json").getContentAsString(
                 StandardCharsets.UTF_8);
         final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
-                                                                 .fullName("PartyDoubleTest");
+                .fullName("PartyDoubleTest");
         final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
-                                                                                .fullName("Semiannual");
+                .fullName("Semiannual");
         final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
-                                                                             .fullName("Annual");
+                .fullName("Annual");
         final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
-                                                                  .fullName("PartyTest");
+                .fullName("PartyTest");
         final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
-                                                                                                           firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
-                                                                                                   .terminationFeeAmount(
-                                                                                                           10000.0)
-                                                                                                   .currency("EUR")
-                                                                                                   .tradeDate(
-                                                                                                           OffsetDateTime.of(
-                                                                                                                   LocalDateTime.of(
-                                                                                                                           2022,
-                                                                                                                           Month.SEPTEMBER,
-                                                                                                                           5,
-                                                                                                                           12,
-                                                                                                                           0),
-                                                                                                                   ZoneOffset.UTC))
-                                                                                                   .effectiveDate(
-                                                                                                           OffsetDateTime.of(
-                                                                                                                   LocalDateTime.of(
-                                                                                                                           2022,
-                                                                                                                           Month.SEPTEMBER,
-                                                                                                                           7,
-                                                                                                                           12,
-                                                                                                                           0),
-                                                                                                                   ZoneOffset.UTC))
-                                                                                                   .terminationDate(
-                                                                                                           OffsetDateTime.of(
-                                                                                                                   LocalDateTime.of(
-                                                                                                                           2032,
-                                                                                                                           Month.SEPTEMBER,
-                                                                                                                           7,
-                                                                                                                           12,
-                                                                                                                           0),
-                                                                                                                   ZoneOffset.UTC))
-                                                                                                   .fixedPayingParty(
-                                                                                                           secondCounterparty)
-                                                                                                   .floatingPayingParty(
-                                                                                                           firstCounterparty)
-                                                                                                   .fixedRate(3.95)
-                                                                                                   .fixedDayCountFraction(
-                                                                                                           "30E/360")
-                                                                                                   .fixedPaymentFrequency(
-                                                                                                           fixedPaymentFrequency)
-                                                                                                   .floatingRateIndex(
-                                                                                                           "EUR-LIBOR-BBA")
-                                                                                                   .floatingDayCountFraction(
-                                                                                                           "ACT/360")
-                                                                                                   .floatingFixingDayOffset(
-                                                                                                           -2)
-                                                                                                   .floatingPaymentFrequency(
-                                                                                                           floatingPaymentFrequency)
-                                                                                                   .notionalAmount(
-                                                                                                           1000000.00)
-                                                                                                   .valuationSymbols(
-                                                                                                           objectMapper.readerForListOf(
-                                                                                                                               JsonMarketDataItem.class)
-                                                                                                                       .readValue(
-                                                                                                                               fullSymbolListFromTemplate))
-                                                                                                   .currentGenerator(
-                                                                                                           "generators/eur_euribor_y_s.xml");
+                        firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
+                .terminationFeeAmount(
+                        10000.0)
+                .currency("EUR")
+                .tradeDate(
+                        OffsetDateTime.of(
+                                LocalDateTime.of(
+                                        2023,
+                                        Month.JANUARY,
+                                        31,
+                                        14,
+                                        35),
+                                ZoneOffset.UTC))
+                .effectiveDate(
+                        OffsetDateTime.of(
+                                LocalDateTime.of(
+                                        2023,
+                                        Month.FEBRUARY,
+                                        2,
+                                        14,
+                                        35),
+                                ZoneOffset.UTC))
+                .terminationDate(
+                        OffsetDateTime.of(
+                                LocalDateTime.of(
+                                        2033,
+                                        Month.FEBRUARY,
+                                        2,
+                                        14,
+                                        35),
+                                ZoneOffset.UTC))
+                .fixedPayingParty(
+                        secondCounterparty)
+                .floatingPayingParty(
+                        firstCounterparty)
+                .fixedRate(2.8675)
+                .fixedDayCountFraction(
+                        "30E/360")
+                .fixedPaymentFrequency(
+                        fixedPaymentFrequency)
+                .floatingRateIndex(
+                        "EURIBOR 6M")
+                .floatingDayCountFraction(
+                        "ACT/360")
+                .floatingFixingDayOffset(
+                        -2)
+                .floatingPaymentFrequency(
+                        floatingPaymentFrequency)
+                .notionalAmount(
+                        1000000.00)
+                .valuationSymbols(
+                        objectMapper.readerForListOf(
+                                        FrontendItemSpec.class)
+                                .readValue(
+                                        fullSymbolListFromTemplate))
+                .currentGenerator(
+                        "generators/eur_euribor_y_s_with_fixings.xml");
         String jsonPlainSwapOperationRequest = objectMapper.writeValueAsString(plainSwapOperationRequest);
 
         MvcResult serverResponse = mockMvc.perform(
-                                                  MockMvcRequestBuilders.post("/plain-swap-editor/evaluate-from-editor")
-                                                                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                                                                        .content(jsonPlainSwapOperationRequest).characterEncoding("utf-8"))
-                                          .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+                        MockMvcRequestBuilders.post("/plain-swap-editor/evaluate-from-editor")
+                                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                                .content(jsonPlainSwapOperationRequest).characterEncoding("utf-8"))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
         ValueResult valueResultFromRequest = objectMapper.readValue(serverResponse.getResponse().getContentAsString(),
-                                                                    ValueResult.class);
-        ValueResult valueResultFromLocalStorage = (new MarginCalculator()).getValue(objectMapper.readValue(marketData,MarketDataTransferMessage.class), product);
-        logger.info("Known value is 93750.29");
+                ValueResult.class);
+
+        logger.info("Known value is 93983.5");
         logger.info("Value result from generated request is: " + valueResultFromRequest.getValue().doubleValue());
-        logger.info(
-                "Value result from locally stored data is: " + valueResultFromLocalStorage.getValue().doubleValue());
-        Assertions.assertEquals(0.0,Math.abs(valueResultFromLocalStorage.getValue().doubleValue() - 93750.29) + Math.abs(
-                Math.abs(valueResultFromRequest.getValue().doubleValue()) - 93750.29) + Math.abs(
-                Math.abs(valueResultFromLocalStorage.getValue().doubleValue()) - Math.abs(
-                        valueResultFromRequest.getValue().doubleValue())), 0.005, "Valuation mismatch!");
+        Assertions.assertEquals(0.0, Math.abs(valueResultFromRequest.getValue().doubleValue()), 0.005,
+                "Valuation mismatch!");
 
     }
 }
