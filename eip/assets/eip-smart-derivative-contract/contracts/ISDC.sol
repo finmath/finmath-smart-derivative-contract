@@ -94,19 +94,19 @@ interface ISDC {
     /**
      * @dev Emitted when funding phase is initiated
      */
-    event ProcessSettlementPhase();
+    event TradeSettlementPhase();
 
     /**
      * @dev Emitted when margin balance was updated and sufficient funding is provided
      */
-    event ProcessSettled();
+    event TradeSettled();
 
     /**
      * @dev Emitted when a valuation and settlement is requested
      * @param tradeData holding the stored trade data
      * @param lastSettlementData holding the settlementdata from previous settlement (next settlement will be the increment of next valuation compared to former valuation)
      */
-    event ProcessSettlementRequest(string tradeData, string lastSettlementData);
+    event TradeSettlementRequest(string tradeData, string lastSettlementData);
 
     /**
      * @dev Emitted when a counterparty proactively requests an early termination of the underlying trade
@@ -131,39 +131,46 @@ interface ISDC {
     /**
      * @notice Handles trade inception, stores trade data
      * @dev emits a {TradeIncepted} event
+     * @param _withParty is the party the inceptor wants to trade with
      * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
+     * @param _position is the position the inceptor has in that trade
+     * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
-     * @param _upfrontPayment provides an initial payment amount upfront
      */
-    function inceptTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external;
+
+    //@Todo: merge _position and _units into one int
+    function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
     /**
      * @notice Performs a matching of provided trade data and settlement data
      * @dev emits a {TradeConfirmed} event if trade data match
-     * @param _tradeData a description of the trade in sdc.xml, e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
+     * @param _withParty is the party the confirmer wants to trade with
+     * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
+     * @param _position is the position the inceptor has in that trade
+     * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-    function confirmTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external;
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
-    /// Settlement Cycle: Prefunding
 
     /**
-     * @notice Called from outside to rebalance. Terminate the trade if rebalancing fails.
-     * @dev emits a {ProcessRebalance} event if prefunding check is successful or a {TradeTerminated} event if rebalancing check fails
+     * @notice Called from outside to to finish a transfer (callback). Maybe the trade if success = false.
+     * @param success tells the protocol whether transfer was successful
+     * @dev may emit a {TradeSettled} event  or a {TradeTerminated} event
      */
-    function afterSettlement(bool success) external;
+    function afterSettlement(uint256 transactionHash, bool success) external;
 
     /// Settlement Cycle: Settlement
 
     /**
      * @notice Called to trigger a (maybe external) valuation of the underlying contract and afterwards the according settlement process
-     * @dev emits a {ProcessSettlementRequest}
+     * @dev emits a {TradeSettlementRequest}
      */
     function initiateSettlement() external;
 
     /**
      * @notice Called from outside to trigger according settlement on chain-balances callback for initiateSettlement() event handler
-     * @dev emits a {ProcessSettled} if settlement is successful or {TradeTerminated} if settlement fails
+     * @dev perform settlement checks, may initiate transfers and emits {TradeSettlementPhase}
      * @param settlementAmount the settlement amount. If settlementAmount > 0 then receivingParty receives this amount from other party. If settlementAmount < 0 then other party receives -settlementAmount from receivingParty.
      * @param settlementData. the tripple (product, previousSettlementData, settlementData) determines the settlementAmount.
      */
