@@ -42,8 +42,6 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         uint256 terminationFee;
     }
 
-    int256[] private settlementAmounts;
-    string[] private settlementData;
 
     mapping(address => MarginRequirement) private marginRequirements; // Storage of M and P per counterparty address
 
@@ -78,39 +76,6 @@ contract SDCPledgedBalance is SmartDerivativeContract {
     }
 
     /*
-     * Balance Check
-     */
-    function afterSettlement(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
-        _processAfterTransfer(success);
-    }
-
-    function _processAfterTransfer(bool success) internal{
-        if(success){
-            tradeState = TradeState.Settled;
-            emit TradeSettled();
-        }
-        else{
-            if(settlementAmounts.length>1){  // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
-                int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
-                uint256 transferAmount;
-                address settlementPayer;
-                (settlementPayer, transferAmount)  = getPayerAddressAndTransferAmount(settlementAmounts[settlementAmounts.length-1]);
-                address settlementReceiver = otherParty(settlementPayer);
-                settlementToken.transfer(settlementReceiver, uint256(transferAmount));
-                settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
-                settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - transferAmount)); // Release Buffers
-                settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer)); // Release Buffers
-                tradeState = TradeState.Terminated;
-                emit TradeTerminated("Trade Terminated");
-           }
-            else{  // Case after confirmTrade where Transfer of upfront has failed
-                tradeState = TradeState.Inactive;
-                emit TradeTerminated("Initial Transfer fails - Trade cannot be activated");
-            }
-        }
-    }
-
-    /*
      * Settlement can be initiated when margin accounts are locked, a valuation request event is emitted containing tradeData and valuationViewParty
      * Changes Process State to Valuation&Settlement
      * can be called only when ProcessState = Rebalanced and TradeState = Active
@@ -138,24 +103,20 @@ contract SDCPledgedBalance is SmartDerivativeContract {
 
         uint256 transferAmount;
         address settlementPayer;
-        (settlementPayer, transferAmount) = getPayerAddressAndTransferAmount(settlementAmount);
+        (settlementPayer, transferAmount) = determineTransferAmountAndPayerAddress(settlementAmount);
 
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
             settlementToken.transferFrom(settlementPayer, otherParty(settlementPayer), transferAmount);
             emit TradeSettlementPhase();
             tradeState = TradeState.InTransfer;
-            if ( mutuallyTerminated){
-                tradeState = TradeState.Terminated;
-                emit TradeTerminated("Trade Terminated");
-            }
         }
-        else {
+        else { /* Bad Case: Process termination by booking from own balance */
             _processAfterTransfer(false);
         }
     }
 
-    function getPayerAddressAndTransferAmount(int256 settlementAmount) internal returns(address, uint256)  {
+    function determineTransferAmountAndPayerAddress(int256 settlementAmount) internal returns(address, uint256)  {
         address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
         address settlementPayer = otherParty(settlementReceiver);
 
@@ -168,8 +129,41 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         return (settlementPayer,transferAmount);
     }
 
-    function processTradeAfterMutualTermination() virtual internal override{
-        tradeState = TradeState.Valuation;
-        emit TradeSettlementRequest(tradeData, settlementData[settlementData.length - 1]);
+
+    function afterSettlement(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
+        _processAfterTransfer(success);
     }
+
+    function _processAfterTransfer(bool success) internal{
+        if(success){
+            tradeState = TradeState.Settled;
+            emit TradeSettled();
+            if (mutuallyTerminated){
+                tradeState = TradeState.Terminated;
+                emit TradeTerminated("Trade terminated with mutual agreement");
+            }
+        }
+        else{ // TRANSFER HAS FAILED
+            if (settlementAmounts.length == 1){ // Case after confirmTrade where Transfer of upfront has failed
+                tradeState = TradeState.Inactive;
+                emit TradeTerminated("Initial Upfront Transfer fail - Trade Inactive");
+            }
+            else{
+                // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
+                int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
+                uint256 transferAmount;
+                address settlementPayer;
+                (settlementPayer, transferAmount)  = determineTransferAmountAndPayerAddress(settlementAmounts[settlementAmounts.length-1]);
+                address settlementReceiver = otherParty(settlementPayer);
+                settlementToken.transfer(settlementReceiver, uint256(transferAmount));
+                settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
+                settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - transferAmount)); // Release Buffers
+                settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer)); // Release Buffers
+                tradeState = TradeState.Terminated;
+                emit TradeTerminated("Trade terminated due to regular settlement failure");
+            }
+        }
+    }
+
+
 }
