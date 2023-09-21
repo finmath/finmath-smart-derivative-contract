@@ -139,6 +139,7 @@ interface ISDC {
      */
 
     //@Todo: merge _position and _units into one int
+    //OLD: function inceptTrade(string memory _tradeData, string memory _initialSettlementData) external;
     function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
     /**
@@ -150,15 +151,9 @@ interface ISDC {
      * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
+    //OLD: function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external;
     function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
-
-    /**
-     * @notice Called from outside to to finish a transfer (callback). Maybe the trade if success = false.
-     * @param success tells the protocol whether transfer was successful
-     * @dev may emit a {TradeSettled} event  or a {TradeTerminated} event
-     */
-    function afterSettlement(uint256 transactionHash, bool success) external;
 
     /// Settlement Cycle: Settlement
 
@@ -175,6 +170,15 @@ interface ISDC {
      * @param settlementData. the tripple (product, previousSettlementData, settlementData) determines the settlementAmount.
      */
     function performSettlement(int256 settlementAmount, string memory settlementData) external;
+
+
+    /**
+     * @notice Called from outside to to finish a transfer (callback). Maybe the trade if success = false.
+     * @param success tells the protocol whether transfer was successful
+     * @dev may emit a {TradeSettled} event  or a {TradeTerminated} event
+     */
+    function afterSettlement(uint256 transactionHash, bool success) external;
+
 
     /// Trade termination
 

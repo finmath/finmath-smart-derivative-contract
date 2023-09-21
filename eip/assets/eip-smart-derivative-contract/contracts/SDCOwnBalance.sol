@@ -43,8 +43,6 @@ contract SDCOwnBalance is SmartDerivativeContract {
         uint256 terminationFee;
     }
 
-    int256[] private settlementAmounts;
-    string[] private settlementData;
 
     mapping(address => MarginRequirement) private marginRequirements; // Storage of M and P per counterparty address
 
@@ -211,9 +209,5 @@ contract SDCOwnBalance is SmartDerivativeContract {
         return sdcBalances[msg.sender];
     }
 
-    function processTradeAfterMutualTermination() virtual internal override{
-        tradeState = TradeState.Valuation;
-        emit TradeSettlementRequest(tradeData, settlementData[settlementData.length - 1]);
-    }
 
 }

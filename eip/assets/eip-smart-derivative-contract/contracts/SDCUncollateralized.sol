@@ -9,9 +9,6 @@ contract SDCDefaultable is SmartDerivativeContract {
 
     event FailureToPayEvent();
 
-    int256[] private settlementAmounts;
-    string[] private settlementData;
-
 
     constructor(
         address _party1,
@@ -98,8 +95,4 @@ contract SDCDefaultable is SmartDerivativeContract {
     }
 
 
-    function processTradeAfterMutualTermination() virtual internal override{
-        tradeState = TradeState.Valuation;
-        emit TradeSettlementRequest(tradeData, "none");
-    }
 }

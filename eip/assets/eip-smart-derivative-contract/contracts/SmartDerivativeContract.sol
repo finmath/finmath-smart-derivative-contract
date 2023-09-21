@@ -100,6 +100,10 @@ abstract contract SmartDerivativeContract is ISDC {
     bool internal mutuallyTerminated = false;
     int256 terminationPayment;
 
+    int256[] internal settlementAmounts;
+    string[] internal settlementData;
+
+
     /*
      * SettlementToken holds:
      * - balance of party1
@@ -181,14 +185,13 @@ abstract contract SmartDerivativeContract is ISDC {
         mutuallyTerminated = true;
         terminationPayment = _terminationPayment;
         emit TradeTerminationConfirmed(msg.sender, _tradeId);
-        processTradeAfterMutualTermination(); // to be overridden by implementing contracts
+        /* Trigger final Settlement */
+        tradeState = TradeState.Valuation;
+        emit TradeSettlementRequest(tradeData, settlementData[settlementData.length - 1]);
     }
 
 
-
     function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) virtual internal;
-
-    function processTradeAfterMutualTermination() virtual internal;
 
     /*
      * Utilities
