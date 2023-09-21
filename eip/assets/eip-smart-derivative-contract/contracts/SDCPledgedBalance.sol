@@ -58,22 +58,32 @@ contract SDCPledgedBalance is SmartDerivativeContract {
 
 
     function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) override internal{
-        uint256 marginRequirementParty1 = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee + (upfrontPayer==party1 ? upfrontPayment : uint256(0)));
-        uint256 marginRequirementParty2 = uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee + (upfrontPayer==party2 ? upfrontPayment : uint256(0)));
-        bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= marginRequirementParty1) && (settlementToken.allowance(party1, address(this)) >= marginRequirementParty1);
-        bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= marginRequirementParty2) && (settlementToken.allowance(party2, address(this)) >= marginRequirementParty2);
+        uint256 marginRequirementParty1 = uint(marginRequirements[party1].buffer + marginRequirements[party1].terminationFee );
+        uint256 marginRequirementParty2 = uint(marginRequirements[party2].buffer + marginRequirements[party2].terminationFee );
+        uint256 requiredBalanceParty1 = marginRequirementParty1 + (upfrontPayer==party1 ? upfrontPayment : 0);
+        uint256 requiredBalanceParty2 = marginRequirementParty2 + (upfrontPayer==party2 ? upfrontPayment : 0);
+        bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= requiredBalanceParty1) && (settlementToken.allowance(party1, address(this)) >= requiredBalanceParty1);
+        bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= requiredBalanceParty1) && (settlementToken.allowance(party2, address(this)) >= requiredBalanceParty1);
         if (isAvailableParty1 && isAvailableParty2){       // Pre-Conditions: M + P needs to be locked (i.e. pledged)
-            settlementToken.transferFrom(party1, address(this), marginRequirementParty1);        // transfer marginRequirementParty1 to sdc
-            settlementToken.transferFrom(party2, address(this), marginRequirementParty2);        // transfer marginRequirementParty2 to sdc
-            settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);  // transfer upfrontPayment
+            address[] memory from = new address[](3);
+            address[] memory to = new address[](3);
+            uint256[] memory amounts = new uint256[](3);
+            from[0] = party1;       to[0] = address(this);              amounts[0] = marginRequirementParty1;
+            from[1] = party2;       to[1] = address(this);              amounts[1] = marginRequirementParty2;
+            from[2] = upfrontPayer; to[2] = otherParty(upfrontPayer);   amounts[2] = upfrontPayment;
+            uint256 transactionID = uint256(keccak256(abi.encodePacked(from,to,amounts)));
             tradeState = TradeState.InTransfer;
-            emit TradeConfirmed(msg.sender, tradeID);
+            settlementToken.checkedBatchTransferFromAndCall(from,to,amounts,transactionID);         // Atomic Transfer
+            //settlementToken.transferFrom(party1, address(this), marginRequirementParty1);         // transfer marginRequirementParty1 to sdc
+            //settlementToken.transferFrom(party2, address(this), marginRequirementParty2);           // transfer marginRequirementParty2 to sdc
+            //settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);     // transfer upfrontPayment
+
         }
         else {
             tradeState = TradeState.Inactive;
             emit TradeTerminated("Insufficient Balance or Allowance");
+            }
         }
-    }
 
     /*
      * Settlement can be initiated when margin accounts are locked, a valuation request event is emitted containing tradeData and valuationViewParty
@@ -107,7 +117,8 @@ contract SDCPledgedBalance is SmartDerivativeContract {
 
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
-            settlementToken.transferFrom(settlementPayer, otherParty(settlementPayer), transferAmount);
+            uint256 transactionID = uint256(keccak256(abi.encodePacked(settlementPayer,otherParty(settlementPayer), transferAmount)));
+            settlementToken.checkedTransferFromAndCall(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
             emit TradeSettlementPhase();
             tradeState = TradeState.InTransfer;
         }
@@ -122,9 +133,9 @@ contract SDCPledgedBalance is SmartDerivativeContract {
 
         uint256 transferAmount;
         if (settlementAmount > 0)
-            transferAmount = uint(min( settlementAmount, int(marginRequirements[settlementPayer].buffer)));
+            transferAmount = uint256(abs(min( settlementAmount, int(marginRequirements[settlementPayer].buffer))));
         else
-            transferAmount = uint(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer)));
+            transferAmount = uint256(abs(max( settlementAmount, -int(marginRequirements[settlementReceiver].buffer))));
 
         return (settlementPayer,transferAmount);
     }
@@ -138,9 +149,11 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         if(success){
             tradeState = TradeState.Settled;
             emit TradeSettled();
+            if (tradeState == TradeState.Terminated){
+                tradeState = TradeState.Inactive;
+            }
             if (mutuallyTerminated){
-                tradeState = TradeState.Terminated;
-                emit TradeTerminated("Trade terminated with mutual agreement");
+                tradeState = TradeState.Inactive;
             }
         }
         else{ // TRANSFER HAS FAILED
@@ -149,18 +162,31 @@ contract SDCPledgedBalance is SmartDerivativeContract {
                 emit TradeTerminated("Initial Upfront Transfer fail - Trade Inactive");
             }
             else{
-                // Settlement & Pledge Case: transferAmount is transfered from SDC balance (i.e. pledged balance).
+                // Settlement & Pledge Case: transferAmount is transferred from SDC balance (i.e. pledged balance).
                 int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
                 uint256 transferAmount;
                 address settlementPayer;
                 (settlementPayer, transferAmount)  = determineTransferAmountAndPayerAddress(settlementAmounts[settlementAmounts.length-1]);
                 address settlementReceiver = otherParty(settlementPayer);
-                settlementToken.transfer(settlementReceiver, uint256(transferAmount));
-                settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
                 settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - transferAmount)); // Release Buffers
                 settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer)); // Release Buffers
+
+                // Do Pledge Transfer from own balances including termination fee
                 tradeState = TradeState.Terminated;
                 emit TradeTerminated("Trade terminated due to regular settlement failure");
+
+                address[] memory to = new address[](3);
+                to[0] = settlementReceiver;
+                to[1] = settlementReceiver;
+                uint256[] memory amounts = new uint256[](3);
+                amounts[0] = uint256(transferAmount);
+                amounts[1] = uint256(marginRequirements[settlementPayer].terminationFee);
+                uint256 transactionID = uint256(keccak256(abi.encodePacked(to,amounts)));
+                uint256 transactionAmount = uint256(transferAmount) + uint256(marginRequirements[settlementPayer].terminationFee);
+
+                settlementToken.checkedTransferAndCall(settlementReceiver,transactionAmount,transactionID);
+                //settlementToken.transfer(settlementReceiver, uint256(transferAmount));
+                //settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
             }
         }
     }

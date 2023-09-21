@@ -26,7 +26,7 @@ contract SDCSettlementToken is ERC20{
         _mint(to, amount);
     }
 
-    function checkedTransferAndCallSender(address to, uint256 value, uint256 transactionID) public{
+    function checkedTransferAndCall(address to, uint256 value, uint256 transactionID) public{
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
             ISDC(sdcAddress).afterSettlement(transactionID, transferSuccessFlag);
@@ -36,7 +36,7 @@ contract SDCSettlementToken is ERC20{
         }
     }
 
-    function checkedTransferFromAndCallSender(address from, address to, uint256 value, uint256 transactionID) external {
+    function checkedTransferFromAndCall(address from, address to, uint256 value, uint256 transactionID) external {
         require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
         if (this.balanceOf(from)< value || this.allowance(from,address(msg.sender)) < value )
             ISDC(sdcAddress).afterSettlement(transactionID, false);
@@ -49,7 +49,7 @@ contract SDCSettlementToken is ERC20{
         address owner = _msgSender();
     }
 
-    function checkedBatchTransferAndCallSender(address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+    function checkedBatchTransferAndCall(address[] memory to, uint256[] memory values, uint256 transactionID ) public{
         require (to.length == values.length, "Array Length mismatch");
         require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
         uint256 requiredBalance = 0;
@@ -68,7 +68,7 @@ contract SDCSettlementToken is ERC20{
     }
 
 
-    function checkedBatchTransferFromAndCallSender(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+    function checkedBatchTransferFromAndCall(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public{
         require (from.length == to.length, "Array Length mismatch");
         require (to.length == values.length, "Array Length mismatch");
         require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
