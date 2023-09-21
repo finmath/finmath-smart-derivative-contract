@@ -102,7 +102,7 @@ contract SmartBondContract is ISDC  {
         require(msg.sender != _withParty, "Calling party cannot be the same as Trade Party");
         require(_position * _paymentAmount < 0, "Positive Position expects negative payment amount and vice versa");
         uint256 transactionHash = uint256(keccak256(abi.encode(msg.sender,_withParty,_tradeData, _position, _paymentAmount)));
-        require(keccak256(abi.encode(_tradeData)) == keccak256(abi.encode(_tradeData)), "Trade Inception request does not meet contract's underlying security specification");
+        require(keccak256(abi.encode(securityData)) == keccak256(abi.encode(_tradeData)), "Trade Inception request does not meet contract's underlying security specification");
         require(pendingInceptions[transactionHash] != msg.sender, "There exists already an identical pending inception for this trade");
         pendingInceptions[transactionHash] = msg.sender;
         tradeStates[transactionHash] = TradeState.Incepted;
@@ -133,9 +133,9 @@ contract SmartBondContract is ISDC  {
         tradeStates[transactionHash] = TradeState.InTransfer;
 
         if ( _paymentAmount < 0 )
-            settlementToken.checkedTransferFromAndCallSender(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.checkedTransferFromAndCall(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
         else
-            settlementToken.checkedTransferFromAndCallSender(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.checkedTransferFromAndCall(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
 
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
     }

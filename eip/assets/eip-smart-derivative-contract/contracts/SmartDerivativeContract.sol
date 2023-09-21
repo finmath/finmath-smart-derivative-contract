@@ -120,7 +120,8 @@ abstract contract SmartDerivativeContract is ISDC {
     ) {
         party1 = _party1;
         party2 = _party2;
-        settlementToken = SDCSettlementToken(_settlementToken); // TODO: Check if contract at given address supports interface
+        settlementToken = SDCSettlementToken(_settlementToken);
+        settlementToken.setSDCAddress(address(this));
         tradeState = TradeState.Inactive;
     }
     /*
@@ -146,7 +147,7 @@ abstract contract SmartDerivativeContract is ISDC {
      * emits a TradeConfirmed
      * can be called only when TradeState = Incepted
      */
-    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeIncepted {
+    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override  onlyCounterparty onlyWhenTradeIncepted {
         address inceptingParty = msg.sender == party1 ? party2 : party1;
         uint256 transactionHash = uint256(keccak256(abi.encode(_withParty,msg.sender,_tradeData,-_position, -_paymentAmount,_initialSettlementData)));
         require(pendingRequests[transactionHash] == inceptingParty, "Confirmation fails due to inconsistent trade data or wrong party address");
@@ -154,7 +155,8 @@ abstract contract SmartDerivativeContract is ISDC {
         tradeState = TradeState.Confirmed;
         emit TradeConfirmed(msg.sender, tradeID);
         address upfrontPayer = _paymentAmount < 0 ? receivingParty : otherParty(receivingParty);
-        processTradeAfterConfirmation(upfrontPayer, uint256(_paymentAmount));
+        uint256 absPaymentAmount = uint256(abs(_paymentAmount));
+        processTradeAfterConfirmation(upfrontPayer, absPaymentAmount);
     }
 
 

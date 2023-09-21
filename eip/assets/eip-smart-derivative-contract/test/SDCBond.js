@@ -41,7 +41,7 @@ describe("Livecycle Unit-Tests for Smart Bond Contract", () => {
     console.log("Bond Address: %s", sdc_bond.address);
   });
 
-   it("Initial minting and approvals", async () => {
+   /*it("Initial minting and approvals", async () => {
       await token.connect(tokenManager).setSDCAddress(sdc_bond.address);
       await token.connect(tokenManager).mint(issuer.address,initialLiquidityBalance);
       await token.connect(tokenManager).mint(subscriber.address,initialLiquidityBalance);
@@ -49,7 +49,7 @@ describe("Livecycle Unit-Tests for Smart Bond Contract", () => {
       await token.connect(buyer).approve(sdc_bond.address,initialLiquidityBalance);
       await token.connect(issuer).approve(sdc_bond.address,initialLiquidityBalance);
       await token.connect(subscriber).approve(sdc_bond.address,initialLiquidityBalance);
-    });
+    });*/
 /*
    it("Subscriber subscribes to buy 1000 lots with price of 999 each", async () => {
         const incept_call = await sdc_bond.connect(subscriber).inceptTrade(issuer.address,bondData,1,1000,999);

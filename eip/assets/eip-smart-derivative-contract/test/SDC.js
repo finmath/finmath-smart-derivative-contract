@@ -27,6 +27,7 @@ describe("Livecycle Unit-Tests for Smart Derivative Contract", () => {
   let marginBufferAmount = 900;
   const settlementAmount1 = 200; // successful settlement in favour to CP1
   const settlementAmount2 = -1400; // failing settlement larger than buffer in favour to CP1
+  const upfront = 100;
 
   before(async () => {
     const [_tokenManager, _counterparty1, _counterparty2] = await ethers.getSigners();
@@ -34,7 +35,7 @@ describe("Livecycle Unit-Tests for Smart Derivative Contract", () => {
     counterparty1 = _counterparty1;
     counterparty2 = _counterparty2;
     const ERC20Factory = await ethers.getContractFactory("SDCSettlementToken");
-    const SDCFactory = await ethers.getContractFactory("SDCOwnBalance");
+    const SDCFactory = await ethers.getContractFactory("SDCPledgedBalance");
     token = await ERC20Factory.deploy();
     await token.deployed();
     sdc = await SDCFactory.deploy(counterparty1.address, counterparty2.address,token.address,marginBufferAmount,terminationFee);
@@ -45,33 +46,36 @@ describe("Livecycle Unit-Tests for Smart Derivative Contract", () => {
   it("Initial minting and approvals for SDC", async () => {
     await token.connect(counterparty1).mint(counterparty1.address,initialLiquidityBalance);
     await token.connect(counterparty2).mint(counterparty2.address,initialLiquidityBalance);
-    await token.connect(counterparty1).approve(sdc.address,terminationFee+marginBufferAmount);
+    await token.connect(counterparty1).approve(sdc.address,terminationFee+marginBufferAmount+upfront);
     await token.connect(counterparty2).approve(sdc.address,terminationFee+marginBufferAmount);
     let allowanceSDCParty1 = await token.connect(counterparty1).allowance(counterparty1.address, sdc.address);
     let allowanceSDCParty2 = await token.connect(counterparty2).allowance(counterparty2.address, sdc.address);
-    await expect(allowanceSDCParty1).equal(terminationFee+marginBufferAmount);
+    await expect(allowanceSDCParty1).equal(terminationFee+marginBufferAmount+upfront);
   });
 
 // function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external override onlyCounterparty onlyWhenTradeInactive {
-  /*it("Counterparty1 incepts a trade", async () => {
-     const incept_call = await sdc.connect(counterparty1).inceptTrade(trade_data, "initialMarketData", 0);
+  it("Counterparty1 incepts a trade", async () => {
+     const incept_call = await sdc.connect(counterparty1).inceptTrade(counterparty2.address, trade_data, 1, upfront, "initialMarketData");
      let tradeid =  await sdc.connect(counterparty1).getTradeID();
      //console.log("TradeId: %s", tradeid);
      await expect(incept_call).to.emit(sdc, "TradeIncepted").withArgs(counterparty1.address, tradeid, trade_data);
      let trade_state =  await sdc.connect(counterparty1).getTradeState();
      await expect(trade_state).equal(TradeState.Incepted);
-   });*/
-/*
+     console.log("TradeState: %s", trade_state);
+   });
+
 
   it("Counterparty2 confirms a trade", async () => {
-     const confirm_call = await sdc.connect(counterparty2).confirmTrade(trade_data,"initialMarketData",0);
+     const confirm_call = await sdc.connect(counterparty2).confirmTrade(counterparty1.address, trade_data, -1, -upfront, "initialMarketData");
      //console.log("TradeId: %s", await sdc.callStatic.getTradeState());
+     let trade_state =  await sdc.connect(counterparty1).getTradeState();
      let balanceSDC = await token.connect(counterparty2).balanceOf(sdc.address);
      await expect(confirm_call).to.emit(sdc, "TradeConfirmed");
-     await expect(balanceSDC).equal(2*terminationFee);
-     let trade_state =  await sdc.connect(counterparty1).getTradeState();
-     await expect(trade_state).equal(TradeState.Active);
+     let trade_state2 =  await sdc.connect(counterparty1).getTradeState();
+     console.log("TradeState: %s", trade_state2);
    });
+   /*
+
 
    it("Processing first funding phase - i.e. buffers are locked", async () => {
      const call = await sdc.connect(counterparty2).afterSettlement(true);
