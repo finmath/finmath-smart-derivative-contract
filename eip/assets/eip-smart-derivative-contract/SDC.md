@@ -19,30 +19,46 @@ Interface:
   - TradeTerminationConfirmed(address cpAddress, string tradeId);
   - ProcessHalted(string message);
 - Functions:
-  - inceptTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external;
-  - confirmTrade(string memory _tradeData, string memory _initialSettlementData, int256 _upfrontPayment) external;
-  - afterSettlement(bool success) external;
+  - inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
+  - confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
   - initiateSettlement() external;
   - performSettlement(int256 settlementAmount, string memory settlementData) external;
   - requestTradeTermination(string memory tradeId, int256 _terminationPayment) external;
   - confirmTradeTermination(string memory tradeId, int256 _terminationPayment) external;
+  - afterTransfer(uint256 transactionHash, bool success) external;
 
 ## SDC.sol
 
 Abstract Contract: abstract contract SDC is ISDC
-
-- Defines TradeState and ProcessStates
-- Holds adresses of party1 and party2
+- Defines Trade states: Inactive, Incepted, Confirmed, Valuation, InTransfer, Settled, Terminated
+- Holds internal tradeState variable
+- Holds addresses of party1 and party2 and receivingParty
 - Holds tradeID and tradeData
-- Holds IERC20 settlementToken
+- Holds arrays for settlement data and amounts
+- Holds IERC20Settlement settlementToken
 - Defines utility functions (abs, min, max, otherParty)
+- Defines modifiers
 
-### SettlementToken
+### IERC20Settlement.sol
+- Extension of the IERC20 token standard
+- additional functions check before doing (batch) transfers
 
-Hold the balance of
-- SDC
-- Party 1
-- Party 2
+### ERC20Settlement.sol
+- Implements IERC20Settlement Interface
+- Hold the balance of: SDC, Party 1, Party 2
+- ERC20 based transfers get checked and token transaction exceptions get catched
+- SDC gets called backed by calling the function afterTransfer with a successflag
+- Batch transfers are enabled also where balances get checked in advance - all or nothing
+
+### ERC20SettlementTrigger.sol
+- Implements IERC20Settlement Interface
+- Hold the balance of: SDC, Party 1, Party 2
+- implements the pattern of a payment booking to be executed off chain
+- all settlementTransfer functions just emit an event with the transfer information which can be catched by an off chain listener
+- a callback function performBalanceUpdateAfterTransfer updates the token balances and calls back SDC afterTransfer
+
+
+### Implementations of ISDC
 
 Two different versions:
 
