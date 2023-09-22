@@ -137,9 +137,6 @@ interface ISDC {
      * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-
-    //@Todo: merge _position and _units into one int
-    //OLD: function inceptTrade(string memory _tradeData, string memory _initialSettlementData) external;
     function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
     /**
@@ -151,8 +148,7 @@ interface ISDC {
      * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
      */
-    //OLD: function confirmTrade(string memory _tradeData, string memory _initialSettlementData) external;
-    function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
+     function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 
 
     /// Settlement Cycle: Settlement
