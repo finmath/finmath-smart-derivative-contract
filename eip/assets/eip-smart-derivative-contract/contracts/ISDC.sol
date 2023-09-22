@@ -177,7 +177,7 @@ interface ISDC {
      * @param success tells the protocol whether transfer was successful
      * @dev may emit a {TradeSettled} event  or a {TradeTerminated} event
      */
-    function afterSettlement(uint256 transactionHash, bool success) external;
+    function afterTransfer(uint256 transactionHash, bool success) external;
 
 
     /// Trade termination

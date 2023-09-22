@@ -4,7 +4,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./SmartDerivativeContract.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./SDCSettlementToken.sol";
+import "./ERC20Settlement.sol";
 
 
 /**
@@ -63,7 +63,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         uint256 requiredBalanceParty1 = marginRequirementParty1 + (upfrontPayer==party1 ? upfrontPayment : 0);
         uint256 requiredBalanceParty2 = marginRequirementParty2 + (upfrontPayer==party2 ? upfrontPayment : 0);
         bool isAvailableParty1 = (settlementToken.balanceOf(party1) >= requiredBalanceParty1) && (settlementToken.allowance(party1, address(this)) >= requiredBalanceParty1);
-        bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= requiredBalanceParty1) && (settlementToken.allowance(party2, address(this)) >= requiredBalanceParty1);
+        bool isAvailableParty2 = (settlementToken.balanceOf(party2) >= requiredBalanceParty2) && (settlementToken.allowance(party2, address(this)) >= requiredBalanceParty2);
         if (isAvailableParty1 && isAvailableParty2){       // Pre-Conditions: M + P needs to be locked (i.e. pledged)
             address[] memory from = new address[](3);
             address[] memory to = new address[](3);
@@ -73,7 +73,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
             from[2] = upfrontPayer; to[2] = otherParty(upfrontPayer);   amounts[2] = upfrontPayment;
             uint256 transactionID = uint256(keccak256(abi.encodePacked(from,to,amounts)));
             tradeState = TradeState.InTransfer;
-            settlementToken.checkedBatchTransferFromAndCall(from,to,amounts,transactionID);         // Atomic Transfer
+            settlementToken.settlementBatchTransferFrom(from,to,amounts,transactionID);             // Atomic Transfer
             //settlementToken.transferFrom(party1, address(this), marginRequirementParty1);         // transfer marginRequirementParty1 to sdc
             //settlementToken.transferFrom(party2, address(this), marginRequirementParty2);           // transfer marginRequirementParty2 to sdc
             //settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);     // transfer upfrontPayment
@@ -118,7 +118,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
             uint256 transactionID = uint256(keccak256(abi.encodePacked(settlementPayer,otherParty(settlementPayer), transferAmount)));
-            settlementToken.checkedTransferFromAndCall(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
+            settlementToken.settlementTransferFrom(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
             emit TradeSettlementPhase();
             tradeState = TradeState.InTransfer;
         }
@@ -141,7 +141,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
     }
 
 
-    function afterSettlement(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
+    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
         _processAfterTransfer(success);
     }
 
@@ -157,7 +157,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
             }
         }
         else{ // TRANSFER HAS FAILED
-            if (settlementAmounts.length == 1){ // Case after confirmTrade where Transfer of upfront has failed
+            if (settlementData.length == 1){ // Case after confirmTrade where Transfer of upfront has failed
                 tradeState = TradeState.Inactive;
                 emit TradeTerminated("Initial Upfront Transfer fail - Trade Inactive");
             }
@@ -184,7 +184,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
                 uint256 transactionID = uint256(keccak256(abi.encodePacked(to,amounts)));
                 uint256 transactionAmount = uint256(transferAmount) + uint256(marginRequirements[settlementPayer].terminationFee);
 
-                settlementToken.checkedTransferAndCall(settlementReceiver,transactionAmount,transactionID);
+                settlementToken.settlementTransfer(settlementReceiver,transactionAmount,transactionID);
                 //settlementToken.transfer(settlementReceiver, uint256(transferAmount));
                 //settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
             }

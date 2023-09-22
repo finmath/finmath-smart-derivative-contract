@@ -3,7 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./ISDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./SDCSettlementToken.sol";
+import "./ERC20Settlement.sol";
 
 
 
@@ -110,7 +110,7 @@ abstract contract SmartDerivativeContract is ISDC {
      * - balance of party2
      * - balance for SDC
      */
-    SDCSettlementToken internal settlementToken;
+    ERC20Settlement internal settlementToken;
 
 
     constructor(
@@ -120,7 +120,7 @@ abstract contract SmartDerivativeContract is ISDC {
     ) {
         party1 = _party1;
         party2 = _party2;
-        settlementToken = SDCSettlementToken(_settlementToken);
+        settlementToken = ERC20Settlement(_settlementToken);
         settlementToken.setSDCAddress(address(this));
         tradeState = TradeState.Inactive;
     }
@@ -154,7 +154,16 @@ abstract contract SmartDerivativeContract is ISDC {
         delete pendingRequests[transactionHash]; // Delete Pending Request
         tradeState = TradeState.Confirmed;
         emit TradeConfirmed(msg.sender, tradeID);
-        address upfrontPayer = _paymentAmount < 0 ? receivingParty : otherParty(receivingParty);
+        address upfrontPayer;
+        if (_position==1 && _paymentAmount < 0) // payment amount negative means from a long position : party has to pay
+            upfrontPayer = msg.sender;
+        else if (_position==1 && _paymentAmount > 0)
+            upfrontPayer = _withParty;
+        else if (_position==-1 && _paymentAmount < 0) // payment amount negative means from a short position : party has to pay
+            upfrontPayer = msg.sender;
+        else
+            upfrontPayer = _withParty;
+        settlementData.push(_initialSettlementData);
         uint256 absPaymentAmount = uint256(abs(_paymentAmount));
         processTradeAfterConfirmation(upfrontPayer, absPaymentAmount);
     }
