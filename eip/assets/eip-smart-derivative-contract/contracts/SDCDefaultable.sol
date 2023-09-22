@@ -23,7 +23,7 @@ contract SDCDefaultable is SmartDerivativeContract {
     /*
      * Balance Check
      */
-    function afterSettlement(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
+    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
         if(success){
             tradeState = TradeState.Settled;
             emit TradeSettled();

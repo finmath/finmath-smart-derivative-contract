@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: CC0-1.0
-
-pragma solidity ^0.8.0;
+pragma solidity >=0.7.0 <0.9.0;
 
 import "./ISDC.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "./IERC20Settlement.sol";
 
-contract SDCSettlementToken is ERC20{
+contract ERC20Settlement is ERC20, IERC20Settlement{
+
+    modifier onlySDC() {
+        require(msg.sender == sdcAddress, "Only allowed to be called from SDC Address"); _;
+    }
 
     using ERC165Checker for address;
 
@@ -26,52 +30,48 @@ contract SDCSettlementToken is ERC20{
         _mint(to, amount);
     }
 
-    function checkedTransferAndCall(address to, uint256 value, uint256 transactionID) public{
-        require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
+    function settlementTransfer(address to, uint256 value, uint256 transactionID) public onlySDC{
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
-            ISDC(sdcAddress).afterSettlement(transactionID, transferSuccessFlag);
+            ISDC(sdcAddress).afterTransfer(transactionID, transferSuccessFlag);
         }
         catch{
-            ISDC(sdcAddress).afterSettlement(transactionID, false);
+            ISDC(sdcAddress).afterTransfer(transactionID, false);
         }
     }
 
-    function checkedTransferFromAndCall(address from, address to, uint256 value, uint256 transactionID) external {
-        require(msg.sender == sdcAddress, "call not allowed from other than SDC Address");
+    function settlementTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
         if (this.balanceOf(from)< value || this.allowance(from,address(msg.sender)) < value )
-            ISDC(sdcAddress).afterSettlement(transactionID, false);
+            ISDC(sdcAddress).afterTransfer(transactionID, false);
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
-            ISDC(sdcAddress).afterSettlement(transactionID, transferSuccessFlag);
+            ISDC(sdcAddress).afterTransfer(transactionID, transferSuccessFlag);
         }
         catch{
-            ISDC(sdcAddress).afterSettlement(transactionID, false);
+            ISDC(sdcAddress).afterTransfer(transactionID, false);
         }
         address owner = _msgSender();
     }
 
-    function checkedBatchTransferAndCall(address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+    function settlementBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
         require (to.length == values.length, "Array Length mismatch");
-        require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
         uint256 requiredBalance = 0;
         for(uint256 i = 0; i < values.length; i++)
             requiredBalance += values[i];
         if (balanceOf(msg.sender) < requiredBalance){
-            ISDC(sdcAddress).afterSettlement(transactionID, false);
+            ISDC(sdcAddress).afterTransfer(transactionID, false);
             return;
         }
         else{
             for(uint256 i = 0; i < to.length; i++){
                 transfer(to[i],values[i]);
             }
-            ISDC(sdcAddress).afterSettlement(transactionID, true);
+            ISDC(sdcAddress).afterTransfer(transactionID, true);
         }
     }
 
 
-    function checkedBatchTransferFromAndCall(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public{
+    function settlementBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
         require (from.length == to.length, "Array Length mismatch");
         require (to.length == values.length, "Array Length mismatch");
-        require(msg.sender == sdcAddress, "Call not allowed from other than SDC Address");
         uint256[] memory requiredBalances;
         for(uint256 i = 0; i < from.length; i++){
             address fromAddress = from[i];
@@ -81,7 +81,7 @@ contract SDCSettlementToken is ERC20{
                     totalRequiredBalance += values[j];
             }
             if (balanceOf(fromAddress) <  totalRequiredBalance){
-                ISDC(sdcAddress).afterSettlement(transactionID, false);
+                ISDC(sdcAddress).afterTransfer(transactionID, false);
                 break;
             }
 
@@ -89,7 +89,7 @@ contract SDCSettlementToken is ERC20{
         for(uint256 i = 0; i < to.length; i++){
             transferFrom(from[i],to[i],values[i]);
         }
-        ISDC(sdcAddress).afterSettlement(transactionID, true);
+        ISDC(sdcAddress).afterTransfer(transactionID, true);
     }
 
 }

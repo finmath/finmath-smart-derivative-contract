@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./ISDC.sol";
-import "./SDCSettlementToken.sol";
+import "./ERC20Settlement.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -62,7 +62,7 @@ contract SmartBondContract is ISDC  {
     }
 
     address issuerAddress;
-    SDCSettlementToken internal settlementToken;
+    ERC20Settlement internal settlementToken;
 
     mapping(uint256 => TradeState) tradeStates;
     mapping(uint256 => TransactionSpec) transactionSpecs;
@@ -86,7 +86,7 @@ contract SmartBondContract is ISDC  {
         securityData = _securityData;
         securityID = _securityID;
         bondHolderBalances[issuerAddress] = _initialBalance;
-        settlementToken = SDCSettlementToken(_settlementToken);
+        settlementToken = ERC20Settlement(_settlementToken);
      }
 
     function supportsInterface(bytes4 interfaceId) external view returns (bool){
@@ -133,14 +133,14 @@ contract SmartBondContract is ISDC  {
         tradeStates[transactionHash] = TradeState.InTransfer;
 
         if ( _paymentAmount < 0 )
-            settlementToken.checkedTransferFromAndCall(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.settlementTransferFrom(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
         else
-            settlementToken.checkedTransferFromAndCall(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.settlementTransferFrom(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
 
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
     }
 
-    function afterSettlement(uint256 transactionHash, bool success) external   {
+    function afterTransfer(uint256 transactionHash, bool success) external   {
         require(tradeStates[transactionHash] == TradeState.InTransfer, "No existing Transfer phase for Transaction Hash");
         if (success == true){ /* Transfer units to buyer */
             address addressBuyer = transactionSpecs[transactionHash].buyer;
