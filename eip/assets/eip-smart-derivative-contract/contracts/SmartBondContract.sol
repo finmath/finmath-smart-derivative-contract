@@ -8,44 +8,40 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SmartBondContract is ISDC  {
+
+    /**
+     * @dev Emitted when margin balance was updated and sufficient funding is provided
+     */
+    event Defaulted();
+
+
+    enum BondState {
+        NotIssued,
+        IssuancePhase,
+        Live,
+        RedemptionPhase,
+        Defaulted,
+        Matured
+    }
+
+
     /*
-        * Trade States
-        */
-    enum TradeState {
-
-        /*
-         * State before the trade is incepted.
-         */
-        Inactive,
-
-        /*
-         * Incepted: Trade data submitted by one party. Market data for initial valuation is set.
-         */
+     * We have several Events in a security (bond) live cycle)
+     */
+    enum TransactionType {
+        IssuanceTransaction,
+        SecondaryMarketTransaction,
+        CouponPayment,
+        Redemption
+    }
+    /*
+     * Multiple Trade Transactions take place in a bond live cycle:
+     */
+    enum TransactionState {
         Incepted,
-
-        /*
-         * Confirmed: Trade data accepted by other party.
-         */
         Confirmed,
-
-        /*
-         * Valuation Phase
-         */
-        Valuation,
-
-        /*
-         * A Token-based Transfer is in Progress
-         */
         InTransfer,
-
-        /*
-         * Settlement is Completed
-         */
         Settled,
-
-        /*
-         * Terminated.
-         */
         Terminated
     }
 
@@ -54,6 +50,7 @@ contract SmartBondContract is ISDC  {
     }
 
     struct TransactionSpec {
+        TransactionType typ;
         address buyer;
         address seller;
         uint notional;
@@ -62,18 +59,26 @@ contract SmartBondContract is ISDC  {
     }
 
     address issuerAddress;
-    ERC20Settlement internal settlementToken;
+    IERC20Settlement internal settlementToken;
 
-    mapping(uint256 => TradeState) tradeStates;
+    mapping(uint256 => TransactionState) transactionStates;
     mapping(uint256 => TransactionSpec) transactionSpecs;
     mapping(address => uint256) bondHolderBalances;
+    address[] bondHolderAddresses;
     uint256 bondIssuerBalance;
 
     string private securityData;
     string private securityID;
-    uint lotSize;
 
     mapping(uint256 => address) private pendingInceptions;
+
+    uint256     couponPercent;
+    uint256[]   couponTimeStamps;
+    uint256     nextCouponIndex;
+    uint256     processIntervalSec;
+
+    BondState bondState;
+
 
     constructor(
         address         _issuerAddress,
@@ -87,11 +92,10 @@ contract SmartBondContract is ISDC  {
         securityID = _securityID;
         bondHolderBalances[issuerAddress] = _initialBalance;
         settlementToken = ERC20Settlement(_settlementToken);
+        bondState = BondState.NotIssued;
+        bondIssuerBalance = _initialBalance;
+        nextCouponIndex = 0;
      }
-
-    function supportsInterface(bytes4 interfaceId) external view returns (bool){
-        return interfaceId == bytes4(keccak256(bytes("ISDB")));
-    }
 
     /*
      * generates a hash from tradeData and generates a map entry in openRequests
@@ -105,7 +109,7 @@ contract SmartBondContract is ISDC  {
         require(keccak256(abi.encode(securityData)) == keccak256(abi.encode(_tradeData)), "Trade Inception request does not meet contract's underlying security specification");
         require(pendingInceptions[transactionHash] != msg.sender, "There exists already an identical pending inception for this trade");
         pendingInceptions[transactionHash] = msg.sender;
-        tradeStates[transactionHash] = TradeState.Incepted;
+        transactionStates[transactionHash] = TransactionState.Incepted;
         emit TradeIncepted(msg.sender, Strings.toString(transactionHash), "");
     }
 
@@ -125,68 +129,112 @@ contract SmartBondContract is ISDC  {
         uint absPosition = uint256(_position);
         uint256 transferAmount = uint256(_paymentAmount);
         require(bondHolderBalances[seller] >= absPosition, "Balance of selling party not sufficient");
-
-        transactionSpecs[transactionHash] = TransactionSpec(buyer,seller,absPosition,transferAmount,block.timestamp);
+        if ( bondState == BondState.IssuancePhase && seller == issuerAddress)
+            transactionSpecs[transactionHash] = TransactionSpec(TransactionType.IssuanceTransaction,buyer,seller,absPosition,transferAmount,block.timestamp);
+        else
+            transactionSpecs[transactionHash] = TransactionSpec(TransactionType.SecondaryMarketTransaction,buyer,seller,absPosition,transferAmount,block.timestamp);
         /*Lock Bond to internal balance and trigger transfer of the paymentAmount*/
         bondHolderBalances[seller]         -= absPosition;
         bondHolderBalances[address(this)]  += absPosition;
-        tradeStates[transactionHash] = TradeState.InTransfer;
+        transactionStates[transactionHash] = TransactionState.InTransfer;
 
         if ( _paymentAmount < 0 )
-            settlementToken.settlementTransferFrom(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.checkedTransferFrom(buyer,seller,transferAmount,transactionHash); // trigger transfer upfrontPayment
         else
-            settlementToken.settlementTransferFrom(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
+            settlementToken.checkedTransferFrom(seller,buyer,transferAmount,transactionHash); // trigger transfer upfrontPayment
 
         emit TradeConfirmed(msg.sender, Strings.toString(transactionHash));
     }
 
     function afterTransfer(uint256 transactionHash, bool success) external   {
-        require(tradeStates[transactionHash] == TradeState.InTransfer, "No existing Transfer phase for Transaction Hash");
-        if (success == true){ /* Transfer units to buyer */
-            address addressBuyer = transactionSpecs[transactionHash].buyer;
-            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
-            bondHolderBalances[addressBuyer]   += transactionSpecs[transactionHash].notional;
-            if (transactionSpecs[transactionHash].seller == issuerAddress)  // if Seller is Issuer than update issuer balance
-                bondIssuerBalance += transactionSpecs[transactionHash].notional;
-            tradeStates[transactionHash] = TradeState.Settled;
+        require(transactionStates[transactionHash] == TransactionState.InTransfer, "No existing Transfer phase for Transaction Hash");
+
+        if (transactionSpecs[transactionHash].typ == TransactionType.CouponPayment){
+            if (success == true){
+                transactionStates[transactionHash] = TransactionState.Settled;
+                nextCouponIndex++;
+            }
+            else{
+                bondState = BondState.Defaulted;
+                emit Defaulted();
+                revert("Failure to pay");
+            }
         }
-        else{
-            tradeStates[transactionHash] == TradeState.Terminated;
-            address adressSeller         = transactionSpecs[transactionHash].seller;
-            bondHolderBalances[adressSeller]   += transactionSpecs[transactionHash].notional; /* transfer back the units */
-            bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
-            delete transactionSpecs[transactionHash];
-            emit TradeTerminated("Settlement Transfer failed - Trade ist terminated");
+        else if (transactionSpecs[transactionHash].typ == TransactionType.Redemption){
+            if (success == true){
+                transactionStates[transactionHash] = TransactionState.Settled;
+                bondState = BondState.Matured;
+            }
+            else{
+                bondState = BondState.Defaulted;
+                emit Defaulted();
+                revert("Failure to pay");
+            }
+        }
+        else {
+            if (success == true){ /* Transfer units to buyer */
+                address addressBuyer = transactionSpecs[transactionHash].buyer;
+                bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
+                bondHolderBalances[addressBuyer]   += transactionSpecs[transactionHash].notional;
+                if (transactionSpecs[transactionHash].seller == issuerAddress)  // if Seller is Issuer than update issuer balance
+                    bondIssuerBalance += transactionSpecs[transactionHash].notional;
+                transactionStates[transactionHash] = TransactionState.Settled;
+                // TODO - transfer open Coupon Transactions
+            }
+            else{
+                transactionStates[transactionHash] = TransactionState.Terminated;
+                address adressSeller                = transactionSpecs[transactionHash].seller;
+                bondHolderBalances[adressSeller]   += transactionSpecs[transactionHash].notional; /* transfer back the units */
+                bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
+                delete transactionSpecs[transactionHash];
+                emit TradeTerminated("Settlement Transfer failed - Trade ist terminated");
+            }
         }
     }
 
     /*
-     * Settlement can be initiated when margin accounts are locked, a valuation request event is emitted containing tradeData and valuationViewParty
-     * Changes Process State to Valuation&Settlement
-     * can be called only when ProcessState = Rebalanced and TradeState = Active
+     * Settlement relates to coupon payments only allowed by the issuer and only allowed in a certain time window
      */
     function initiateSettlement() external onlyIssuer  {
-        uint hash = 0;
-        tradeStates[hash] = TradeState.Valuation;
+        uint256 nextCouponTimeStamp = couponTimeStamps[nextCouponIndex];
+        if (block.timestamp < nextCouponTimeStamp)
+            revert("Not able to process coupon at current time stamp - Coupon time stamp at a future time point");
+        else if (block.timestamp > nextCouponTimeStamp + processIntervalSec){
+            bondState = BondState.Defaulted;
+            emit Defaulted();
+            revert("Failure to pay");
+        }
+        else{
+            uint256 amountToPay = couponPercent * getBondHolderNotional() / 100;
+            uint256[] memory couponAmounts = new uint256[](bondHolderAddresses.length);
+            for (uint i = 0; i < bondHolderAddresses.length; i++){
+                couponAmounts[i] = couponPercent * bondHolderBalances[bondHolderAddresses[i]] / 100;
+            }
+            uint256 transactionID = uint256(keccak256(abi.encodePacked(bondHolderAddresses,couponAmounts,nextCouponTimeStamp)));
+            transactionSpecs[transactionID] = TransactionSpec(TransactionType.CouponPayment,address(0),address(0),1,amountToPay,block.timestamp);
+            transactionStates[transactionID] = TransactionState.InTransfer;
+            settlementToken.checkedBatchTransfer(bondHolderAddresses,couponAmounts,transactionID);
+
+
+            // TODO: Can we transfer coupons to bonds own address - refers to secondry market transactions which are in transfer?
+
+            /*split settlementAmount and transfer to all bond holders*/
+            /* Question: Keep in mind that balances might be locked at that point since a transfer might be running - who is getting the payment ? */
+            /* settlementAmount is defined in cents per mimimumLotSize - e.g. 1% of mimimumLotSize 1000 EUR => 10EUr = 1000 ct
+            So for each address pay = settlementAmount * lotBalances[address] */
+            /* Handle Case: Failure to pay if issuerAdress has less Balance then settlementAmount * sum (lotBalances) */
+        }
     }
 
     /*
-     * Performs a settelement only when processState is ValuationAndSettlement
+     * Performs a Coupon Payment
      * Puts process state to "inTransfer"
      * Checks Settlement amount according to valuationViewParty: If SettlementAmount is > 0, valuationViewParty receives
      * can be called only when ProcessState = ValuationAndSettlement
      */
 
-    function performSettlement(int256 settlementAmount, string memory _settlementData) onlyIssuer external  {
-        /*split settlementAmount and transfer to all bond holders*/
-
-        /* Question: Keep in mind that balances might be locked at that point since a transfer might be running - who is getting the payment ? */
-
-        /* settlementAmount is defined in cents per mimimumLotSize - e.g. 1% of mimimumLotSize 1000 EUR => 10EUr = 1000 ct
-        So for each address pay = settlementAmount * lotBalances[address] */
-
-        /* Handle Case: Failure to pay if issuerAdress has less Balance then settlementAmount * sum (lotBalances) */
-
+    function performSettlement(int256 settlementAmount, string memory _settlementData) onlyIssuer public  {
+        revert("Not implemented, Settlement is processed on chain");
     }
 
     /*
@@ -220,13 +268,19 @@ contract SmartBondContract is ISDC  {
     }
 
 
+    function getBondHolderNotional() internal returns (uint256) {
+        uint256 grossNotional = 0;
+        for (uint256 i=0;i<bondHolderAddresses.length;i++)
+            grossNotional += bondHolderBalances[ bondHolderAddresses[i] ];
+        return grossNotional;
+    }
 
-    function getTradeId() public view returns (string memory) {
+    function getSecurityID() public view returns (string memory) {
         return securityID;
     }
 
 
-    function getTradeData() public view returns (string memory) {
+    function getSecurityData() public view returns (string memory) {
         return securityData;
     }
 

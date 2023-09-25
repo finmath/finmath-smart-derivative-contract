@@ -73,7 +73,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
             from[2] = upfrontPayer; to[2] = otherParty(upfrontPayer);   amounts[2] = upfrontPayment;
             uint256 transactionID = uint256(keccak256(abi.encodePacked(from,to,amounts)));
             tradeState = TradeState.InTransfer;
-            settlementToken.settlementBatchTransferFrom(from,to,amounts,transactionID);             // Atomic Transfer
+            settlementToken.checkedBatchTransferFrom(from,to,amounts,transactionID);             // Atomic Transfer
             //settlementToken.transferFrom(party1, address(this), marginRequirementParty1);         // transfer marginRequirementParty1 to sdc
             //settlementToken.transferFrom(party2, address(this), marginRequirementParty2);           // transfer marginRequirementParty2 to sdc
             //settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);     // transfer upfrontPayment
@@ -118,7 +118,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
             uint256 transactionID = uint256(keccak256(abi.encodePacked(settlementPayer,otherParty(settlementPayer), transferAmount)));
-            settlementToken.settlementTransferFrom(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
+            settlementToken.checkedTransferFrom(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
             emit TradeSettlementPhase();
             tradeState = TradeState.InTransfer;
         }
@@ -184,7 +184,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
                 uint256 transactionID = uint256(keccak256(abi.encodePacked(to,amounts)));
                 uint256 transactionAmount = uint256(transferAmount) + uint256(marginRequirements[settlementPayer].terminationFee);
 
-                settlementToken.settlementTransfer(settlementReceiver,transactionAmount,transactionID);
+                settlementToken.checkedTransfer(settlementReceiver,transactionAmount,transactionID);
                 //settlementToken.transfer(settlementReceiver, uint256(transferAmount));
                 //settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
             }
