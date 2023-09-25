@@ -24,20 +24,20 @@ contract ERC20SettlementTrigger is ERC20, IERC20Settlement {
     //TODO how to translate bookings to SDCAdress
     // TODO what to do with tokens in transfer
 
-    function settlementTransfer(address to, uint256 value, uint256 transactionID) public onlySDC{
+    function checkedTransfer(address to, uint256 value, uint256 transactionID) public onlySDC{
 
     }
 
-    function settlementTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
+    function checkedTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
 
     }
 
-    function settlementBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
+    function checkedBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
 
     }
 
 
-    function settlementBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
+    function checkedBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
 
     }
 

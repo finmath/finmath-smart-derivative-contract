@@ -30,7 +30,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
         _mint(to, amount);
     }
 
-    function settlementTransfer(address to, uint256 value, uint256 transactionID) public onlySDC{
+    function checkedTransfer(address to, uint256 value, uint256 transactionID) public onlySDC{
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
             ISDC(sdcAddress).afterTransfer(transactionID, transferSuccessFlag);
         }
@@ -39,7 +39,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
         }
     }
 
-    function settlementTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
+    function checkedTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
         if (this.balanceOf(from)< value || this.allowance(from,address(msg.sender)) < value )
             ISDC(sdcAddress).afterTransfer(transactionID, false);
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
@@ -51,7 +51,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
         address owner = _msgSender();
     }
 
-    function settlementBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
+    function checkedBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
         require (to.length == values.length, "Array Length mismatch");
         uint256 requiredBalance = 0;
         for(uint256 i = 0; i < values.length; i++)
@@ -69,7 +69,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
     }
 
 
-    function settlementBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
+    function checkedBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
         require (from.length == to.length, "Array Length mismatch");
         require (to.length == values.length, "Array Length mismatch");
         uint256[] memory requiredBalances;

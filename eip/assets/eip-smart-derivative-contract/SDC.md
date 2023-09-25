@@ -163,5 +163,12 @@ Wie SDCPledge nur ohne Pledge
 
 
 # SDCBond
-
+- Interface should be used in the bond case for: issuing a bond, selling or buying a bond, paying a coupon and redeeming a bond
+- In comparision to an OTC derivative the contractual structure is different: 
+- We have: One issuer, N subscriber, and after issuance is finished whe have N:M buyers and sellers
+- The position of the issuer is unique. He is allowed to mint the inintial balance and control the issuance process, pay the coupons and redeem the bond
+- possible implementation and meaning of the interface functions
+  - incept and confirm:
+  - initiate and performSettlement:
+  - request and confirmTradeTermiantion;
 
