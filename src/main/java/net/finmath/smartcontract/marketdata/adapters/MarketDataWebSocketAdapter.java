@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
-import net.finmath.smartcontract.model.MarketDataTransferMessage;
+import net.finmath.smartcontract.model.MarketDataSet;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

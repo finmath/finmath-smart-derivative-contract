@@ -11,15 +11,15 @@ servers:
   - url: http://localhost:8080/
 
 paths:
-  /valuation/value:
+  /valuation/legacy/value:
     post:
       summary: Request mapping for the value
-      operationId: value
+      operationId: legacyValue
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ValueRequest"
+              $ref: "#/components/schemas/LegacyValueRequest"
       responses:
         "200":
           description: Value was calculated
@@ -33,16 +33,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /valuation/value:
+    post:
+      summary: Request mapping for the value
+      operationId: value
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - marketData
+                - tradeData
+                - valuationDate
+              properties:
+                marketData:
+                  type: MarketDataSet
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /valuation/margin:
     post:
-      summary: Request mapping for the margin
+      summary: Request mapping for the value
       operationId: margin
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MarginRequest"
+              type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
+              properties:
+                marketDataStart:
+                  type: MarketDataSet
+                marketDataEnd:
+                  type: MarketDataSet
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: date-time
       responses:
         "200":
           description: Margin was calculated
@@ -57,7 +105,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /valuation/test/product:
+  /valuation/legacy/margin:
+    post:
+      summary: Request mapping for the margin
+      operationId: legacyMargin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LegacyMarginRequest"
+      responses:
+        "200":
+          description: Margin was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/legacy/test/product:
     post:
       summary: Request mapping for the value of a product (using fixed market data)
       operationId: testProductValue
@@ -436,7 +507,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MarketDataTransferMessage"
+                $ref: "#/components/schemas/MarketDataSet"
         default:
           description: unexpected error
           content:
@@ -454,17 +525,17 @@ components:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
       $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
-    ValueRequest:
-      $ref: "schemas/openapi-schemas/ValueRequest.yml"
-    MarginRequest:
-      $ref: "schemas/openapi-schemas/MarginRequest.yml"
+    LegacyValueRequest:
+      $ref: "schemas/openapi-schemas/LegacyValueRequest.yml"
+    LegacyMarginRequest:
+      $ref: "schemas/openapi-schemas/LegacyMarginRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
-    JsonMarketDataItem:
-      $ref: "schemas/openapi-schemas/JsonMarketDataItem.yml"
-    MarketDataMessage:
-      $ref: "schemas/openapi-schemas/MarketDataMessage.yml"
-    MarketDataTransferMessage:
-      $ref: "schemas/openapi-schemas/MarketDataTransferMessage.yml"
+    FrontendItemSpec:
+      $ref: "schemas/openapi-schemas/FrontendItemSpec.yml"
+    RefinitivMarketData:
+      $ref: "schemas/openapi-schemas/RefinitivMarketData.yml"
+    MarketDataSet:
+      $ref: "schemas/openapi-schemas/MarketDataSet.yml"

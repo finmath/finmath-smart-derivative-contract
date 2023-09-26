@@ -32,7 +32,7 @@ import * as moment from "moment";
 import { PlainSwapEditorScheduleViewerComponent } from "./plain-swap-editor-schedule-viewer/plain-swap-editor-schedule-viewer.component";
 import {
   CashflowPeriod,
-  JsonMarketDataItem,
+  FrontendItemSpec,
   PlainSwapEditorService,
   PlainSwapOperationRequest,
 } from "src/app/openapi";
@@ -61,7 +61,7 @@ export interface TextDialogData {
 const httpOptions = {
   headers: new HttpHeaders({
     "Content-Type": "application/json",
-    Authorization: "Basic " + window.btoa("user1:password1"),
+    Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
   }),
 };
 
@@ -147,7 +147,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   /**
    * List of currently selected valuation symbols.
    */
-  protected selectedSymbols: JsonMarketDataItem[] | undefined = marketDataItems;
+  protected selectedSymbols: FrontendItemSpec[] | undefined = marketDataItems;
 
   /**
    * String that contains the effective-maturity timespan length.
@@ -238,12 +238,12 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
 
     this.plainSwapEditorService.defaultHeaders = new HttpHeaders({
       "Content-Type": "application/json",
-      Authorization: "Basic " + window.btoa("user1:password1"),
+      Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
     });
 
     this.defaultService.defaultHeaders = new HttpHeaders({
       "Content-Type": "application/json",
-      Authorization: "Basic " + window.btoa("user1:password1"),
+      Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")),
     });
 
     this.swapForm = this._formBuilder.group({
@@ -698,7 +698,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
 
         dialogRef
           .afterClosed()
-          .subscribe((selectedSymbols: JsonMarketDataItem[]) => {
+          .subscribe((selectedSymbols: FrontendItemSpec[]) => {
             this.selectedSymbols = selectedSymbols;
             if (this.isAllControlsValid()) {
               this.npvlabel = "Current NPV: loading...";
@@ -1101,7 +1101,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         fd,
         {
           headers: new HttpHeaders({
-            Authorization: "Basic " + window.btoa("user1:password1"), // @TODO: this is a clear-text password. It was necessary during testing, but obsviously this is not a good soultion!
+            Authorization: "Basic " + window.btoa(sessionStorage.getItem("username")+":"+sessionStorage.getItem("password")), // @TODO: this is a clear-text password. It was necessary during testing, but obsviously this is not a good soultion!
             Accept: "text/plain",
           }),
           responseType: "text" as "json",
@@ -1189,4 +1189,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
       });
     });
   }
+
+  
+    
 }

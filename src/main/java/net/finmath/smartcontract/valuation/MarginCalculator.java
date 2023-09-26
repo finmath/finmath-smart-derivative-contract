@@ -12,8 +12,8 @@ import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.model.MarginResult;
-import net.finmath.smartcontract.model.MarketDataTransferMessage;
-import net.finmath.smartcontract.model.MarketDataTransferMessageValuesInner;
+import net.finmath.smartcontract.model.MarketDataSet;
+import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.oracle.interestrates.ValuationOraclePlainSwap;
@@ -86,6 +86,53 @@ public class MarginCalculator {
 
 		return new MarginResult().value(BigDecimal.valueOf(rounding.applyAsDouble(value))).currency(currency).valuationDate(valuationDate.toString());
 	}
+
+	public MarginResult getValue(MarketDataSet marketDataStart, MarketDataSet marketDataEnd, String productData) throws Exception {
+		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+
+		List<CalibrationDataItem.Spec> marketdataItemList = productDescriptor.getMarketdataItemList();
+		Set<CalibrationDataItem> calibrationDataItemsStart = new HashSet<>();
+		List<MarketDataSetValuesInner> marketDataValuesStart = marketDataStart.getValues();
+		marketdataItemList.forEach(marketDataItemSpec -> marketDataValuesStart
+				.stream()
+				.filter(
+						marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey())
+				)
+				.map(
+						mdv -> new CalibrationDataItem(marketDataItemSpec, mdv.getValue(), mdv.getDataTimestamp().toLocalDateTime())
+				)
+				.forEach(calibrationDataItemsStart::add));
+
+		List<CalibrationDataset> marketDataSetsStart = new ArrayList<>();
+		marketDataSetsStart.add(new CalibrationDataset(calibrationDataItemsStart,marketDataStart.getRequestTimestamp().toLocalDateTime()));
+
+		Set<CalibrationDataItem> calibrationDataItemsEnd = new HashSet<>();
+		List<MarketDataSetValuesInner> marketDataValuesEnd = marketDataEnd.getValues();
+		marketdataItemList.forEach(marketDataItemSpec -> marketDataValuesEnd
+				.stream()
+				.filter(
+						marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey())
+				)
+				.map(
+						mdv -> new CalibrationDataItem(marketDataItemSpec, mdv.getValue(), mdv.getDataTimestamp().toLocalDateTime())
+				)
+				.forEach(calibrationDataItemsEnd::add));
+
+		List<CalibrationDataset> marketDataSetsEnd = new ArrayList<>();
+		marketDataSetsEnd.add(new CalibrationDataset(calibrationDataItemsEnd,marketDataEnd.getRequestTimestamp().toLocalDateTime()));
+
+		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor)new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+
+		LocalDateTime startDate = marketDataSetsStart.get(0).getDate();
+		LocalDateTime endDate = marketDataSetsEnd.get(0).getDate();
+		double value = calculateMargin(List.of(marketDataSetsStart.get(0), marketDataSetsEnd.get(0)), startDate, endDate, productDescriptor, underlying);
+
+		String currency = "EUR";
+		LocalDateTime valuationDate = LocalDateTime.now();
+
+		return new MarginResult().value(BigDecimal.valueOf(rounding.applyAsDouble(value))).currency(currency).valuationDate(valuationDate.toString());
+	}
 	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
@@ -104,13 +151,13 @@ public class MarginCalculator {
 		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
 
-	public ValueResult getValue(MarketDataTransferMessage marketData, String productData) throws Exception {
+	public ValueResult getValue(MarketDataSet marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		Set<CalibrationDataItem> calibrationDataItems = new HashSet<>();
 
 		List<CalibrationDataItem.Spec> marketdataItemList = productDescriptor.getMarketdataItemList();
-		List<MarketDataTransferMessageValuesInner> marketDataValues = marketData.getValues();
+		List<MarketDataSetValuesInner> marketDataValues = marketData.getValues();
 		marketdataItemList.forEach(marketDataItemSpec -> marketDataValues
 				.stream()
 				.filter(

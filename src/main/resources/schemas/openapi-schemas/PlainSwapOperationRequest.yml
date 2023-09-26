@@ -73,6 +73,6 @@ properties:
   valuationSymbols:
     type: array
     items:
-      $ref: "JsonMarketDataItem.yml"
+      $ref: "FrontendItemSpec.yml"
   currentGenerator:
     type: string

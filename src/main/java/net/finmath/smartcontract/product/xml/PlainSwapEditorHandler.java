@@ -285,7 +285,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         settlementHeader.marketdata = new Smartderivativecontract.Settlement.Marketdata();
         settlementHeader.marketdata.provider = "refinitiv";
         Smartderivativecontract.Settlement.Marketdata.Marketdataitems marketDataItems = new Smartderivativecontract.Settlement.Marketdata.Marketdataitems();
-        for (JsonMarketDataItem marketDataItem : plainSwapOperationRequest.getValuationSymbols()) {
+        for (FrontendItemSpec marketDataItem : plainSwapOperationRequest.getValuationSymbols()) {
             Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item newItem = new Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item();
             newItem.curve = new ArrayList<>();
             newItem.symbol = new ArrayList<>();
@@ -492,7 +492,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         double notional = swapLeg.calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.initialValue.doubleValue();
 
         /* Check the product */
-        String forwardCurveID = "forward-EUR-6M"; // TODO: ask Christian why these IDs are needed otherwise everything crashes
+        String forwardCurveID = "forward-EUR-6M";
         String discountCurveID = "discount-EUR-OIS";
         AnalyticModel calibratedModel = getAnalyticModel(marketData, schedule, forwardCurveID, discountCurveID);
 
@@ -519,7 +519,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
      * @param marketData  the market data used for calibration of the model used for the payments' calculation.
      * @return the payment schedule.
      */
-    public List<CashflowPeriod> getSchedule(LegSelector legSelector, MarketDataTransferMessage marketData) throws IOException, CloneNotSupportedException {
+    public List<CashflowPeriod> getSchedule(LegSelector legSelector, MarketDataSet marketData) throws IOException, CloneNotSupportedException {
         InterestRateStream swapLeg;
         switch (legSelector) {
             case FIXED_LEG -> {
@@ -599,17 +599,22 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
         List<CashflowPeriod> cashflowPeriods = new ArrayList<>();
         Schedule schedule = scheduleDescriptor.getSchedule(this.smartDerivativeContract.underlyings.underlying.dataDocument.trade.get(0).tradeHeader.tradeDate.value.toGregorianCalendar().toZonedDateTime().toLocalDate());
+
         double notional = swapLeg.calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.initialValue.doubleValue();
 
         /* Check the product */
-        String forwardCurveID = "forward-EUR-6M"; // TODO: ask Christian why these IDs are needed otherwise everything crashes
+        String forwardCurveID = "forward-EUR-6M";
         String discountCurveID = "discount-EUR-OIS";
         AnalyticModel calibratedModel = getAnalyticModel(marketData, schedule, forwardCurveID, discountCurveID);
 
         String currency = swapLeg.calculationPeriodAmount.calculation.notionalSchedule.notionalStepSchedule.currency.value;
+        double timeDiff = FloatingpointDate.getFloatingPointDateFromDate(
+                marketData.getRequestTimestamp().toLocalDate().atStartOfDay(),
+                marketData.getRequestTimestamp().toLocalDateTime());
         int i = 0;
         for (Period schedulePeriod : schedule) {
-            double rate = legSelector.equals(LegSelector.FIXED_LEG) ? swapLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue.doubleValue() : calibratedModel.getForwardCurve(forwardCurveID).getForward(calibratedModel, schedule.getFixing(i));
+            double rate = legSelector.equals(LegSelector.FIXED_LEG) ? swapLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue.doubleValue() : calibratedModel.getForwardCurve(forwardCurveID).getForward(calibratedModel, schedule.getFixing(i)+timeDiff);
+
             double homePartyIsPayerPartyFactor = ((Party) swapLeg.payerPartyReference.href).id.equals(this.smartDerivativeContract.receiverPartyID) ? 1.0 : -1.0;
 
             cashflowPeriods.add(new CashflowPeriod().cashflow(new ValueResult().currency(currency).valuationDate(new Date().toString()).value(BigDecimal.valueOf(homePartyIsPayerPartyFactor * schedule.getPeriodLength(i) * notional * rate))).fixingDate(OffsetDateTime.of(schedulePeriod.getFixing(), LocalTime.NOON, ZoneOffset.UTC)).paymentDate(OffsetDateTime.of(schedulePeriod.getPayment(), LocalTime.NOON, ZoneOffset.UTC)).periodStart(OffsetDateTime.of(schedulePeriod.getPeriodStart(), LocalTime.NOON, ZoneOffset.UTC)).periodEnd(OffsetDateTime.of(schedulePeriod.getPeriodEnd(), LocalTime.NOON, ZoneOffset.UTC)).rate(rate));
@@ -641,7 +646,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         final LocalDate referenceDate = marketDataTime.toLocalDate();
 
         final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-        final Calibrator calibrator = new Calibrator();
+        final Calibrator calibrator = /*new Calibrator();*/ null;
 
         final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
 
@@ -670,7 +675,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         return calibratedModel;
     }
 
-    private AnalyticModel getAnalyticModel(MarketDataTransferMessage marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
+    private AnalyticModel getAnalyticModel(MarketDataSet marketData, Schedule schedule, String forwardCurveID, String discountCurveID) throws IOException, CloneNotSupportedException {         // TODO: ask Christian or Peter to review this
         SmartDerivativeContractDescriptor productDescriptor = null;
         try {
             productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
@@ -685,10 +690,10 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         Set<CalibrationDataItem> cdi = new HashSet<>();
 
 
-        var mdReferences = productDescriptor.getMarketdataItemList();
-        var mdValues = marketData.getValues();
-        for( var mdr : mdReferences){
-            for ( var mdv: mdValues){
+        List<CalibrationDataItem.Spec> mdReferences = productDescriptor.getMarketdataItemList();
+        List<MarketDataSetValuesInner> mdValues = marketData.getValues();
+        for(CalibrationDataItem.Spec mdr : mdReferences){
+            for (MarketDataSetValuesInner mdv: mdValues){
                 if(mdv.getSymbol().equals(mdr.getKey())){
                     cdi.add(
                             new CalibrationDataItem(mdr,mdv.getValue(),mdv.getDataTimestamp().toLocalDateTime())
@@ -700,7 +705,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         List<CalibrationDataset> marketDataSets = new ArrayList<>();
         marketDataSets.add(new CalibrationDataset(cdi,marketData.getRequestTimestamp().toLocalDateTime()));
 
-        LocalDateTime marketDataTime = marketDataSets.get(0).getDate();
+        LocalDateTime marketDataTime = marketData.getRequestTimestamp().toLocalDateTime();
 
         final Optional<CalibrationDataset> optionalScenario = marketDataSets.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
         final CalibrationDataset scenario;
@@ -710,12 +715,15 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         final LocalDate referenceDate = marketDataTime.toLocalDate();
 
         final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-        final Calibrator calibrator = new Calibrator();
+
 
         final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
-
+        Calibrator calibrator = new Calibrator(scenario.getDataPoints().stream().filter(
+                ci -> ci.getSpec().getProductName().equals("Fixing") || ci.getSpec().getProductName().equals(
+                        "Deposit")).toList(),  new CalibrationContextImpl(referenceDate, 1E-9));
 
         final Optional<CalibrationResult> optionalCalibrationResult;
+
         try {
             optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
         } catch (CloneNotSupportedException e) {
@@ -726,16 +734,6 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
         if (optionalCalibrationResult.isPresent())
             calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
         else throw new IllegalStateException("Failed to calibrate model.");
-
-
-        Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
-
-        // @Todo what if we have no past fixing provided
-        // @Todo what when we are exactly on the fixing date but before 11:00 am.
-        ForwardCurveInterpolation fixedCurve = this.getCurvePastFixings("fixedCurve", referenceDate, calibratedModel, discountCurveID, pastFixings);//ForwardCurveInterpolation.createForwardCurveFromForwards("pastFixingCurve", pastFixingTimeArray, pastFixingArray, paymentOffset);
-        Curve forwardCurveWithFixings = new ForwardCurveWithFixings(calibratedModel.getForwardCurve(forwardCurveID), fixedCurve, schedule.getFixing(0), 0.0);
-        Curve[] finalCurves = {calibratedModel.getDiscountCurve(discountCurveID), calibratedModel.getForwardCurve(forwardCurveID), forwardCurveWithFixings};
-        calibratedModel = new AnalyticModelFromCurvesAndVols(referenceDate, finalCurves);
         return calibratedModel;
     }
     private ForwardCurveInterpolation getCurvePastFixings(final String curveID, LocalDate referenceDate, AnalyticModel model, String discountCurveName, final Set<CalibrationDataItem> pastFixings) {
