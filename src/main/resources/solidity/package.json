@@ -2,6 +2,6 @@
   "name": "soliditiy",
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
-    "solidity-coverage": "^0.8.2"
+    "solidity-coverage": "^0.8.5"
   }
 }
