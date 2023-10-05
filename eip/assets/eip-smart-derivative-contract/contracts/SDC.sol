@@ -80,7 +80,7 @@ abstract contract SmartDerivativeContract is ISDC {
     modifier onlyWhenValuation() {
         require(tradeState == TradeState.Valuation, "Trade state is not 'Valuation'."); _;
     }
-    modifier onlyWhenSettlementPhase() {
+    modifier onlyWhenInTransfer() {
         require(tradeState == TradeState.InTransfer, "Trade state is not 'InTransfer'."); _;
     }
 

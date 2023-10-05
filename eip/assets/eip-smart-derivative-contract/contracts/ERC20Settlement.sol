@@ -40,6 +40,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
     }
 
     function checkedTransferFrom(address from, address to, uint256 value, uint256 transactionID) external onlySDC {
+        // TODO: Bug - reason="Error: Transaction reverted: contract call run out of gas and made the transaction revert", method="estimateGas",
         if (this.balanceOf(from)< value || this.allowance(from,address(msg.sender)) < value )
             ISDC(sdcAddress).afterTransfer(transactionID, false);
         try this.transfer(to,value) returns (bool transferSuccessFlag) {
