@@ -74,10 +74,6 @@ contract SDCPledgedBalance is SmartDerivativeContract {
             uint256 transactionID = uint256(keccak256(abi.encodePacked(from,to,amounts)));
             tradeState = TradeState.InTransfer;
             settlementToken.checkedBatchTransferFrom(from,to,amounts,transactionID);             // Atomic Transfer
-            //settlementToken.transferFrom(party1, address(this), marginRequirementParty1);         // transfer marginRequirementParty1 to sdc
-            //settlementToken.transferFrom(party2, address(this), marginRequirementParty2);           // transfer marginRequirementParty2 to sdc
-            //settlementToken.transferFrom(upfrontPayer,otherParty(upfrontPayer),upfrontPayment);     // transfer upfrontPayment
-
         }
         else {
             tradeState = TradeState.Inactive;
@@ -118,11 +114,17 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         if (settlementToken.balanceOf(settlementPayer) >= transferAmount &&
             settlementToken.allowance(settlementPayer,address(this)) >= transferAmount) { /* Good case: Balances are sufficient and token has enough approval */
             uint256 transactionID = uint256(keccak256(abi.encodePacked(settlementPayer,otherParty(settlementPayer), transferAmount)));
-            settlementToken.checkedTransferFrom(settlementPayer, otherParty(settlementPayer), transferAmount,transactionID);
             emit TradeSettlementPhase();
             tradeState = TradeState.InTransfer;
+            address[] memory from = new address[](1);
+            address[] memory to = new address[](1);
+            uint256[] memory amounts = new uint256[](1);
+            from[0] = settlementPayer; to[0] = otherParty(settlementPayer); amounts[0] = transferAmount;
+            tradeState = TradeState.InTransfer;
+            settlementToken.checkedBatchTransferFrom(from,to,amounts,transactionID);
         }
         else { /* Bad Case: Process termination by booking from own balance */
+            tradeState = TradeState.InTransfer;
             _processAfterTransfer(false);
         }
     }
@@ -141,7 +143,8 @@ contract SDCPledgedBalance is SmartDerivativeContract {
     }
 
 
-    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
+    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenInTransfer  {
+        emit TradeSettled();
         _processAfterTransfer(success);
     }
 
@@ -174,19 +177,12 @@ contract SDCPledgedBalance is SmartDerivativeContract {
                 // Do Pledge Transfer from own balances including termination fee
                 tradeState = TradeState.Terminated;
                 emit TradeTerminated("Trade terminated due to regular settlement failure");
-
-                address[] memory to = new address[](3);
-                to[0] = settlementReceiver;
-                to[1] = settlementReceiver;
-                uint256[] memory amounts = new uint256[](3);
-                amounts[0] = uint256(transferAmount);
-                amounts[1] = uint256(marginRequirements[settlementPayer].terminationFee);
+                address[] memory to = new address[](2);
+                uint256[] memory amounts = new uint256[](2);
+                to[0] = settlementReceiver; amounts[0] = uint256(transferAmount);
+                to[1] = settlementReceiver; amounts[1] = uint256(marginRequirements[settlementPayer].terminationFee);
                 uint256 transactionID = uint256(keccak256(abi.encodePacked(to,amounts)));
-                uint256 transactionAmount = uint256(transferAmount) + uint256(marginRequirements[settlementPayer].terminationFee);
-
-                settlementToken.checkedTransfer(settlementReceiver,transactionAmount,transactionID);
-                //settlementToken.transfer(settlementReceiver, uint256(transferAmount));
-                //settlementToken.transfer(settlementReceiver, uint256(marginRequirements[settlementPayer].terminationFee));
+                settlementToken.checkedBatchTransfer(to,amounts,transactionID);
             }
         }
     }

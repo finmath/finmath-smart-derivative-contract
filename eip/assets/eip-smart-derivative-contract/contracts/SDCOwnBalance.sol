@@ -99,7 +99,7 @@ contract SDCOwnBalance is SmartDerivativeContract {
      * Puts Process state to Margin Account Check
      * can be called only when ProcessState = AwaitingFunding
      */
-    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenSettlementPhase {
+    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenInTransfer {
         uint256 balanceParty1 = settlementToken.balanceOf(party1);
         uint256 balanceParty2 = settlementToken.balanceOf(party2);
 

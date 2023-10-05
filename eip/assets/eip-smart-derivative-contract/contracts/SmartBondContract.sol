@@ -202,6 +202,7 @@ contract SmartBondContract is ISDC  {
             }
         }
         // 2. Coupon Payment
+        // TODO - do not transfer coupon to issuer (if issuer holds a bond balance)
         else if (transactionSpecs[transactionHash].typ == TransactionType.CouponPayment){
             if (success == true){
                 if (transactionSpecs[transactionHash].buyer != address(0)){
@@ -257,6 +258,7 @@ contract SmartBondContract is ISDC  {
                 bondHolderBalances[addressSeller]   += transactionSpecs[transactionHash].notional; /* transfer back the units */
                 bondHolderBalances[address(this)]  -= transactionSpecs[transactionHash].notional;
                 delete transactionSpecs[transactionHash];
+                // TODO: transfer open coupon amount back to seller
                 emit TradeTerminated("Settlement Transfer failed - Trade ist terminated");
             }
         }
