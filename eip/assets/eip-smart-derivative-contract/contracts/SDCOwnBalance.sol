@@ -36,7 +36,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
      *-------------------------------------*
 */
 
-contract SDCOwnBalance is SmartDerivativeContract {
+contract SDCOwnBalance is SDC {
 
     struct MarginRequirement {
         uint256 buffer;
@@ -54,7 +54,7 @@ contract SDCOwnBalance is SmartDerivativeContract {
         address _settlementToken,
         uint256 initialMarginRequirement,
         uint256 initalTerminationFee
-    ) SmartDerivativeContract(counterparty1,counterparty2,_settlementToken) {
+    ) SDC(counterparty1,counterparty2,_settlementToken) {
         marginRequirements[party1] = MarginRequirement(initialMarginRequirement, initalTerminationFee);
         marginRequirements[party2] = MarginRequirement(initialMarginRequirement, initalTerminationFee);
         sdcBalances[party1] = 0;

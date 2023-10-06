@@ -35,7 +35,7 @@ import "./ERC20Settlement.sol";
  *-------------------------------------*
 */
 
-contract SDCPledgedBalance is SmartDerivativeContract {
+contract SDCPledgedBalance is SDC {
 
     struct MarginRequirement {
         uint256 buffer;
@@ -51,7 +51,7 @@ contract SDCPledgedBalance is SmartDerivativeContract {
         address _settlementToken,
         uint256 _initialBuffer, // m
         uint256 _initalTerminationFee // p
-    ) SmartDerivativeContract(_party1,_party2,_settlementToken) {
+    ) SDC(_party1,_party2,_settlementToken) {
         marginRequirements[party1] = MarginRequirement(_initialBuffer, _initalTerminationFee);
         marginRequirements[party2] = MarginRequirement(_initialBuffer, _initalTerminationFee);
     }

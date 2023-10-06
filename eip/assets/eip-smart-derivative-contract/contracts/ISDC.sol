@@ -6,7 +6,6 @@ pragma solidity >=0.7.0 <0.9.0;
 /**
  * @title ERC6123 Smart Derivative Contract
  * @dev Interface specification for a Smart Derivative Contract, which specifies the post-trade live cycle of an OTC financial derivative in a completely deterministic way.
- * Counterparty Risk is removed by construction.
  *
  * A Smart Derivative Contract (SDC) is a deterministic settlement protocol which aims is to remove many inefficiencies in (collateralized) financial transactions and removes settlement and counterparty credit risk by construction.
  *

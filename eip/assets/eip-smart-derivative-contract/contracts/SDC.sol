@@ -8,20 +8,17 @@ import "./ERC20Settlement.sol";
 
 
 /**
- * @title Reference Implementation of ERC6123 - Smart Derivative Contract
+ * @title Reference Implementation of ERC6123 - Abstract Class
  * @notice This reference implementation is based on a finite state machine with predefined trade and process states (see enums below)
  * Some comments on the implementation:
  * - trade and process states are used in modifiers to check which function is able to be called at which state
  * - trade data are stored in the contract
  * - trade data matching is done in incept and confirm routine (comparing the hash of the provided data)
- * - ERC-20 token is used for three participants: counterparty1 and counterparty2 and sdc
- * - when prefunding is done sdc contract will hold agreed amounts and perform settlement on those
- * - sdc also keeps track on internal balances for each counterparty
- * - during prefunding sdc will transfer required amounts to its own balance - therefore sufficient approval is needed
+ * - A Settlement Token (based on ERC20) is used for settlement able to process batched transfers
  * - upon termination all remaining 'locked' amounts will be transferred back to the counterparties
 */
 
-abstract contract SmartDerivativeContract is ISDC {
+abstract contract SDC is ISDC {
     /*
      * Trade States
      */
