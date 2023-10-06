@@ -5,7 +5,7 @@ import "./SDC.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SDCDefaultable is SmartDerivativeContract {
+contract SDCDefaultable is SDC {
 
     event FailureToPayEvent();
 
@@ -14,7 +14,7 @@ contract SDCDefaultable is SmartDerivativeContract {
         address _party1,
         address _party2,
         address _settlementToken)
-        SmartDerivativeContract(_party1,_party2,_settlementToken) {
+        SDC(_party1,_party2,_settlementToken) {
      }
 
     function processTradeAfterConfirmation(address upfrontPayer, uint256 upfrontPayment) override internal{

@@ -8,6 +8,15 @@ import "./IERC20Settlement.sol";
 
 contract ERC20Settlement is ERC20, IERC20Settlement{
 
+    /**
+    * @title Reference (example) Implementation for Settlement Token Interface
+    * @dev This token performs transfers on-chain.
+    * Token is tied to one SDC address
+    * Only SDC can call checkedTransfers
+    * Settlement Token calls back the referenced SDC by calling "afterTransfer" with a success flag. Depending on this SDC perfoms next state change
+    */
+
+
     modifier onlySDC() {
         require(msg.sender == sdcAddress, "Only allowed to be called from SDC Address"); _;
     }
@@ -21,8 +30,6 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
     }
 
     function setSDCAddress(address _sdcAddress) public{
-//        bool supportsISDB = _sdcAddress.supportsInterface(bytes4(keccak256(bytes("ISDB"))));
-//        require ( supportsISDB == true , "not a valid SDC Address");
         sdcAddress = _sdcAddress;
     }
 
