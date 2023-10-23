@@ -28,7 +28,7 @@ public class MarginCalculatorTest {
 
 	@Test
 	void testValue() throws Exception {
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
@@ -36,7 +36,7 @@ public class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(936312.49, value, 0.005, "Valuation");
+		Assertions.assertEquals(582165.72, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
 	}
 }
