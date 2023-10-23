@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    == Schema for validation of SDC trade requests (SDCmL maybe? haha)
+    == Schema for validation of SDC trade requests
     == version alpha-1
     == There are redundant fields, a revision is advised to improve efficiency and clarity.
     == The schema is basically a wrapper for a FPmL trade confirmation. Trade confirmations must be FPmL 5.9 compliant.
@@ -19,6 +19,7 @@
     <xs:element name = "smartderivativecontract">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="uniqueTradeIdentifier" type="xs:string" />
                 <xs:element name = "valuation">
                     <xs:complexType>
                         <xs:sequence>

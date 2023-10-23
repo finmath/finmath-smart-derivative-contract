@@ -1,4 +1,7 @@
-<smartderivativecontract>
+<smartderivativecontract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xmlns="uri:sdc"
+                         xsi:schemaLocation="uri:sdc smartderivativecontract.xsd">
+    <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
@@ -48,8 +51,14 @@
                 <item>
                     <symbol>EUROSTR=</symbol>
                     <curve>ESTR</curve>
-                    <type>Deposit</type>
+                    <type>Fixing</type>
                     <tenor>1D</tenor>
+                </item>
+                <item>
+                    <symbol>EURIBOR6MD=</symbol>
+                    <curve>Euribor6M</curve>
+                    <type>Fixing</type>
+                    <tenor>6M</tenor>
                 </item>
                 <item>
                     <symbol>EUR6MD=</symbol>

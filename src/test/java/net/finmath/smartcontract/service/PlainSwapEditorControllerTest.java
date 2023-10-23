@@ -126,8 +126,7 @@ public class PlainSwapEditorControllerTest {
                                         FrontendItemSpec.class)
                                 .readValue(
                                         fullSymbolListFromTemplate))
-                .currentGenerator(
-                        "generators/eur_euribor_y_s_with_fixings.xml");
+                .currentGenerator("generators/eur_euribor_y_s_with_fixings.xml");
         String jsonPlainSwapOperationRequest = objectMapper.writeValueAsString(plainSwapOperationRequest);
 
         MvcResult serverResponse = mockMvc.perform(

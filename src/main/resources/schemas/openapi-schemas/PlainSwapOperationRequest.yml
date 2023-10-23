@@ -39,6 +39,8 @@ properties:
     minimum: 0.0
   currency:
     type: string
+  uniqueTradeIdentifier:
+    type: string
   tradeDate:
     type: string
     format: date-time
