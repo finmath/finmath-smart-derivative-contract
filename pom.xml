@@ -27,7 +27,7 @@
         <nv-websocket-client.version>2.14</nv-websocket-client.version>
         <moneta.version>1.4.2</moneta.version>
         <jcommon.version>1.0.24</jcommon.version>
-        <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <spring-boot-dependencies.version>3.0.5</spring-boot-dependencies.version>
@@ -276,7 +276,7 @@
         <!-- Spring Doc -->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
         </dependency>
 

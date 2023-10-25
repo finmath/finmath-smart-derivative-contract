@@ -16,16 +16,18 @@ derivative contracts.
 ### Visualization and Demonstration
 
 The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
-This is a Java FX application. Run `VisualiserSDC`.
+This is a Java FX application. Run `VisualiserSDC` or `scripts/start-demo-visualization.sh`.
 
 ### Valuation Service (ReST service)
 
-**You may run the valuation service through our Docker image (see below).**
+**You may run the valuation service through our Docker image.**
 
 ### State Machine Model for a Smart Derivative Contract
 
 The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
 contract.
+*This part may be somewhat outdated as we did not reflect recent changes to the Solidity implementation in the
+state machine, but it still contains the main ideas.*
 
 ## Financial Product Description
 

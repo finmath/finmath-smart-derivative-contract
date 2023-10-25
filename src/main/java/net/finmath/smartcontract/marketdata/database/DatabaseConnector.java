@@ -1,7 +1,6 @@
 package net.finmath.smartcontract.marketdata.database;
 
 import jakarta.annotation.PostConstruct;
-import jnr.ffi.annotations.Out;
 import net.finmath.smartcontract.service.utils.ResourceGovernor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 import static java.util.stream.Collectors.joining;
@@ -52,9 +52,10 @@ public class DatabaseConnector {
                                                      databaseConnectionProperties.getProperty("PASSWORD"));
             logger.info("Connected to the PostgreSQL server successfully.");
         } catch (SQLException | IOException e) {
-            throw new IllegalStateException("Failed to autowire the database connector.", e);
+            // Allow connection to be null - if we run without database
+            logger.warn("Could not establish a connection to a database. Running without.");
+//            throw new IllegalStateException("Failed to autowire the database connector.", e);
         }
-
     }
 
     /**

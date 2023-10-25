@@ -25,6 +25,12 @@ springdoc:
     path: '/swagger-ui.html'
     tryItOutEnabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
 #springdoc:
 #  api-docs:
 #    enabled: true
@@ -40,9 +46,9 @@ serviceUrl: 'http://34.159.234.113:4200'
 #hostname: localhost:8080
 
 storage:
-  basedir: '/usr/serverstorage'
-  importdir: '/usr/public'
+  basedir: '/storage'
+  importdir: '/public'
   internals:
-    refinitivConnectionPropertiesFile: '/usr/refinitiv_connect.properties'
-    databaseConnectionPropertiesFile: '/usr/database_connect.properties'
+    marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
+    databaseConnectionPropertiesFile: '/config/database_connect.properties'
 
