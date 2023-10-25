@@ -25,6 +25,12 @@ springdoc:
     path: '/swagger-ui.html'
     tryItOutEnabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
 #springdoc:
 #  api-docs:
 #    enabled: true
