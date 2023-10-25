@@ -45,7 +45,7 @@ public class ValuationHandler implements WebSocketHandler {
         else {
             throw new IllegalStateException("Unexpected WebSocket message type: " + message);
         }
-        String sdcXML = payload;//new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/sdc2.xml").readAllBytes(), StandardCharsets.UTF_8);
+        String sdcXML = payload;//new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract2.xml").readAllBytes(), StandardCharsets.UTF_8);
         SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
         List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 

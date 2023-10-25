@@ -2,6 +2,7 @@
 <smartderivativecontract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                          xmlns="uri:sdc"
                          xsi:schemaLocation="uri:sdc ../schemas/sdc-schemas/sdcml-contract.xsd">
+    <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
