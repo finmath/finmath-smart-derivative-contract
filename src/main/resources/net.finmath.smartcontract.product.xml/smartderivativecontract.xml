@@ -496,12 +496,12 @@
             <trade>
                 <tradeHeader>
                     <partyTradeIdentifier>
-                        <partyReference href="party1"/>
                         <tradeId tradeIdScheme="">CP1</tradeId>
+                        <partyReference href="party1"/>
                     </partyTradeIdentifier>
                     <partyTradeIdentifier>
-                        <partyReference href="party2"/>
                         <tradeId tradeIdScheme="">CP2</tradeId>
+                        <partyReference href="party2"/>
                     </partyTradeIdentifier>
                     <tradeDate>2022-09-05</tradeDate>
                 </tradeHeader>

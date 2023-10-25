@@ -60,6 +60,7 @@ public class JAXBTests {
 
 	}
 
+
 	@Test
 	void checkValuation() throws java.lang.Exception {
 
@@ -98,7 +99,6 @@ public class JAXBTests {
 	}
 
 
-	@IgnoreError
 	@Test
 	void jaxBTestWithValidation() {
 		try {
