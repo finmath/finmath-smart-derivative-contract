@@ -43,6 +43,6 @@ storage:
   basedir: '/storage'
   importdir: '/public'
   internals:
-    refinitivConnectionPropertiesFile: '/config/refinitiv_connect.properties'
+    marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
     databaseConnectionPropertiesFile: '/config/database_connect.properties'
 
