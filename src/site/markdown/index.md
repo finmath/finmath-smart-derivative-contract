@@ -23,7 +23,7 @@ For non-technical description see the [articles](articles) section.
 ### Visualization and Demonstration
 
 The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
-This is a Java FX application. Run `VisualiserSDC`.
+This is a Java FX application. Run `VisualiserSDC` or `scripts/start-demo-visualization.sh`.
 
 ### Valuation Service (ReST service)
 
