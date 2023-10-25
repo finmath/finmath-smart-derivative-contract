@@ -27,7 +27,7 @@ public class ResourceGovernor {
     private String storageBaseDir;
     @Value("${storage.importdir}")
     private String importDir;
-    @Value("${storage.internals.refinitivConnectionPropertiesFile}")
+    @Value("${storage.internals.marketDataProviderConnectionPropertiesFile}")
     private String refinitivConnectionPropertiesFile;
 
     @Value("${storage.internals.databaseConnectionPropertiesFile}")
