@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -72,7 +71,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
     };
     private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
     //may be changed to allow for different versions of the schema
-    @Autowired @Lazy
+    @Autowired
     private DatabaseConnector databaseConnector;
 
     @Autowired

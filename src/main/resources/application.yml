@@ -39,10 +39,10 @@ serviceUrl: 'http://localhost:4200'
 
 #hostname: localhost:8080
 
+# If these values are not set, the service will start without market database connection
 storage:
-  basedir: 'C:\Users\xn85719\GitHub\finmath-smart-derivative-contract\serverstorage'
-  importdir: 'C:\Users\Public'
+  basedir: "."
+  importdir: "."
   internals:
-    refinitivConnectionPropertiesFile: 'Q:\refinitiv_connect.properties'
-    databaseConnectionPropertiesFile: 'Q:\database_connect.properties'
-
+    refinitivConnectionPropertiesFile:
+    databaseConnectionPropertiesFile:
