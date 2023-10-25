@@ -40,7 +40,7 @@ serviceUrl: 'http://34.159.234.113:4200'
 #hostname: localhost:8080
 
 storage:
-  basedir: '/serverstorage'
+  basedir: '/storage'
   importdir: '/public'
   internals:
     refinitivConnectionPropertiesFile: '/config/refinitiv_connect.properties'
