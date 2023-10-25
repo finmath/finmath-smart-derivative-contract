@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    == Schema for validation of SDC trade requests (SDCmL maybe? haha)
-    == version alpha-1
-    == There are redundant fields, a revision is advised to improve efficiency and clarity.
-    == The schema is basically a wrapper for a FPmL trade confirmation. Trade confirmations must be FPmL 5.9 compliant.
-    == (note to the team: current FPmL revision is 5.12.7, should we update?)
-    == A local copy of FPmL confirmation schemas is required.
-    ==
-    == Author: Luca Bressan, 14 Mar. 2023
+This is an update of net.finmath.smartcontract.product.xml.smartderivativecontract.xsd
+
+NOTE: The XML format will change in verion 2 of the SDC
 -->
 <xs:schema elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
