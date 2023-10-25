@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.joining;
  * @author Luca Bressan
  */
 @Service
-@Profile("!test")
+@Profile("database")
 public class DatabaseConnector {
 
 
