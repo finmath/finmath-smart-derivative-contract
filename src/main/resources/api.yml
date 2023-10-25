@@ -7,7 +7,7 @@ info:
     name: Apache License 2.0
 
 servers:
-  - url: http://localhost:8080/
+  - url: http://34.159.234.113:8080/
 
 paths:
   /valuation/legacy/value:

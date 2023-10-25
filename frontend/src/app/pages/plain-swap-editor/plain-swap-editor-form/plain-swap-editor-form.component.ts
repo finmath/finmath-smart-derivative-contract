@@ -1094,9 +1094,10 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
     const fileToUpload = event.files!.item(0);
     var fd = new FormData();
     fd.append("tradeData", fileToUpload as Blob);
+    // TODO: Remove hard-coded URL and use env variable instead?
     this.httpClient
       .post<string>(
-        "http://localhost:8080/plain-swap-editor/upload-market-data",
+        "http://34.159.234.113:8080/plain-swap-editor/upload-market-data",
         fd,
         {
           headers: new HttpHeaders({
