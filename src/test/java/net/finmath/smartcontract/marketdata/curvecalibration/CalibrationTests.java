@@ -44,12 +44,12 @@ public class CalibrationTests {
         MarketDataSet marketData;
         SmartDerivativeContractDescriptor product;
         try (
-                InputStream marketDataMessageStream = MarketDataImportTest.class.getClassLoader().getResourceAsStream(
+				InputStream marketDataMessageStream = MarketDataImportTest.class.getClassLoader().getResourceAsStream(
                         "net.finmath.smartcontract.client/nf_md_20230711-123529.json");
-                // data obtained from the new livefeed implementation. Contains several fixings.
-                InputStream sdcmlStream = MarketDataImportTest.class.getClassLoader()
+				// data obtained from the new livefeed implementation. Contains several fixings.
+				InputStream sdcmlStream = MarketDataImportTest.class.getClassLoader()
                         .getResourceAsStream(
-                                "net.finmath.smartcontract.product.xml/sdc2.xml") // standard plain swap template
+								"net.finmath.smartcontract.product.xml/smartderivativecontract.xml") // standard plain swap template
         ) {
             final String marketDataMessageContents = new String(
                     Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);

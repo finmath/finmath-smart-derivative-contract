@@ -713,7 +713,7 @@
                     <packageName>net.finmath.smartcontract.product.xml</packageName>
                     <sources>
                         <source>
-                            src${file.separator}main${file.separator}resources${file.separator}schemas${file.separator}sdc-schemas${file.separator}sdcml-contract.xsd
+                            src${file.separator}main${file.separator}resources${file.separator}net.finmath.smartcontract.product.xml${file.separator}smartderivativecontract.xsd
                         </source>
                     </sources>
                 </configuration>
