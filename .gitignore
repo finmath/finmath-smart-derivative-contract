@@ -1,6 +1,14 @@
 
 # Created by https://www.gitignore.io/api/java,linux,macos,maven,windows,eclipse,intellij
 
+### Refintiv credentials ###
+
+refinitiv_connect.properties
+
+### DB properties and credentials ###
+
+src/main/resources/sql/database_connect.properties
+
 ### Eclipse ###
 
 .metadata
