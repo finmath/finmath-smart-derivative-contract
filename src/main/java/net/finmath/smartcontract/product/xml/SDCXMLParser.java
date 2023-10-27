@@ -30,6 +30,8 @@ public class SDCXMLParser {
 
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
+
+
 		LocalDateTime settlementDateInitial;
 
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
@@ -37,6 +39,8 @@ public class SDCXMLParser {
 
 		String tradeDateString = document.getElementsByTagName("settlementDateInitial").item(0).getTextContent();
 		settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());
+
+		String uniqueTradeIdentifier = document.getElementsByTagName("uniqueTradeIdentifier").item(0).getTextContent();
 
 		/*
 		Market Data
@@ -87,7 +91,7 @@ public class SDCXMLParser {
 
 		// TODO Support multiple underlyings
 		Node underlying = document.getElementsByTagName("underlying").item(0).getFirstChild().getNextSibling();
-		return new SmartDerivativeContractDescriptor(settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying,marketdataItems );
+		return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier,settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying,marketdataItems );
 	}
 
 	/*

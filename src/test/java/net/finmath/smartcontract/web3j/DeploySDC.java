@@ -17,7 +17,7 @@ public class DeploySDC {
             UserAccount.generateNew("xyz",new File("Q:\\"));
 
             /* GET fpml and descriptor*/
-            final String fpml = new String(DeploySDC.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
+            final String fpml = new String(DeploySDC.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
             SmartDerivativeContractDescriptor descriptor = SDCXMLParser.parse(fpml);
             String party1ID = descriptor.getCounterparties().get(0).getId();
             String party2ID = descriptor.getCounterparties().get(1).getId();

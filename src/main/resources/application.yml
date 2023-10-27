@@ -14,7 +14,7 @@ server:
 #    key-store: config/finmath.p12
 #    key-store-password: password
 #    key-store-type: pkcs12
-#  port: 8443
+#  port: 8080
   forward-headers-strategy: framework
   error:
     include-message: always
@@ -24,6 +24,12 @@ springdoc:
   swagger-ui:
     path: '/swagger-ui.html'
     tryItOutEnabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
 
 #springdoc:
 #  api-docs:
@@ -35,14 +41,14 @@ spring:
   thymeleaf:
     prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
 
-serviceUrl: 'http://localhost:4200'
+serviceUrl: 'http://34.159.234.113:4200'
 
 #hostname: localhost:8080
 
 storage:
-  basedir: 'C:\Users\xn85719\GitHub\finmath-smart-derivative-contract\serverstorage'
-  importdir: 'C:\Users\Public'
+  basedir: '/storage'
+  importdir: '/public'
   internals:
-    refinitivConnectionPropertiesFile: 'Q:\refinitiv_connect.properties'
-    databaseConnectionPropertiesFile: 'Q:\database_connect.properties'
+    marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
+    databaseConnectionPropertiesFile: '/config/database_connect.properties'
 

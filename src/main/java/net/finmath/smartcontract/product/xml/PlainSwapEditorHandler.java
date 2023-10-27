@@ -132,6 +132,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
         // create new SDCmL file as object
         smartDerivativeContract = new Smartderivativecontract();
+        smartDerivativeContract.setUniqueTradeIdentifier("test123");
         final Smartderivativecontract templateContract;
         try {
             ClassPathResource templateXmlResource = new ClassPathResource(templatePath);

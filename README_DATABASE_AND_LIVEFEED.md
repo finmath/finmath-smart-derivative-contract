@@ -7,7 +7,11 @@ Go to `application.yml` and set the following parameters:
 - `storage.internals.refinitivConnectionPropertiesFile` should point to the connection properties file for a Refinitiv
   ELEKTRON live feed.
 - `storage.internals.databaseConnectionPropertiesFile` should point to the connection properties file to the database.
-  You can find a sample in `src/main/resources/sql`.
+  File to be located in `src/main/resources/sql`.
+  Set properties:
+  `URL=jdbc:postgresql://<IP>/<DB_NAME>`
+  `USERNAME=<USERNAME>`
+  `PASSWORD=<PASSWORD>`
 - `storage.importdir` should point to a folder where the database user has `rw-` permissions (for POSIX servers), or to
   the public user folder (for Windows servers).
 

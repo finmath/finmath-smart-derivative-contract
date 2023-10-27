@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 @ActiveProfiles("test")
 public class ValuationControllerTest {
 
+	final String productXMLFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 
 	@Test
 	@WithUserDetails("user1")	// testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
@@ -51,7 +52,7 @@ public class ValuationControllerTest {
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
-		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
 		final LegacyMarginRequest marginRequest = new LegacyMarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
 
@@ -73,7 +74,7 @@ public class ValuationControllerTest {
 	public void getValue(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
-		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/smartderivativecontract-sample-swap.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
 		final LegacyValueRequest valueRequest = new LegacyValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());
 

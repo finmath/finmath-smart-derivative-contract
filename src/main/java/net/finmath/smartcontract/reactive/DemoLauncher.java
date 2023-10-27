@@ -1,23 +1,23 @@
 package net.finmath.smartcontract.reactive;
 
 
-import com.neovisionaries.ws.client.WebSocket;
-import io.reactivex.rxjava3.core.Observable;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
-import net.finmath.smartcontract.marketdata.adapters.LiveFeedAdapter;
-import net.finmath.smartcontract.marketdata.adapters.MarketDataRandomFeedAdapter;
-import net.finmath.smartcontract.marketdata.adapters.MarketDataWebSocketAdapter;
-import net.finmath.smartcontract.marketdata.adapters.WebSocketConnector;
+import net.finmath.smartcontract.marketdata.adapters.*;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParser;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
-import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.model.MarketDataSet;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import net.finmath.smartcontract.valuation.MarginCalculator;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,10 +25,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -37,7 +34,7 @@ public class DemoLauncher {
 
 	public static void main(String[] args) throws Exception {
 
-		String sdcXML = new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/sdc2.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String sdcXML = new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
@@ -45,16 +42,24 @@ public class DemoLauncher {
 		String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
+		InputStream marketDataMessageStream = DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/nf_md_20230711-123529.json");
+		final String marketDataMessageContents = new String(Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);
+		MarketDataSet marketData = new ObjectMapper().registerModule(new JavaTimeModule())
+				.readValue(marketDataMessageContents, MarketDataSet.class);
+
 
 		/* Init Websockect Connection*/
-		final WebSocketConnector connector = new WebSocketConnector(properties);
-		final WebSocket socket = connector.getWebSocket();
+		//final WebSocketConnector connector = new WebSocketConnector(properties);
+		//final WebSocket socket = connector.getWebSocket();
+
 
 		/* Market Data Adapter */
 		//final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
 		final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataRandomFeedAdapter(Period.ofDays(1),new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8));
-		socket.addListener(emitter);
-		socket.connect();
+		//final LiveFeedAdapter<MarketDataSet> emitter2 = new MarketDataRandomFeedAdapter2(LocalDateTime.now(),1,marketData);
+
+		//socket.addListener(emitter);
+		//socket.connect();
 
 		/* Write Market Data to File */
 		final Consumer<CalibrationDataset> marketDataWriter = new Consumer<CalibrationDataset>() {
@@ -67,7 +72,27 @@ public class DemoLauncher {
 				Files.write(path, json.getBytes());
 			}
 		};
-		emitter.asObservable().throttleLast(5,TimeUnit.SECONDS).subscribe(s->emitter.writeDataset("C:\\Temp\\marketdata\\",s,false));
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				.configure(SerializationFeature.INDENT_OUTPUT, true)
+				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		final Consumer<MarketDataSet> marketDataWriter2 = new Consumer<MarketDataSet>() {
+			@Override
+			public void accept(MarketDataSet s) throws Throwable {
+				//s.values(s.getValues().stream().map(x -> this.overnightFixingPostProcessing(x, isOvernightFixing)).toList());
+				File targetFile = new File("C:\\Temp\\marketdata\\x.json");
+				mapper.writerFor(MarketDataSet.class).writeValue(targetFile, s);
+
+				//Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
+				//Files.write(path, json.getBytes());
+			}
+		};
+
+
+		Disposable d = emitter.asObservable().throttleLast(5,TimeUnit.SECONDS).subscribe(marketDataWriter);//.subscribe(s->emitter.writeDataset("C:\\Temp\\marketdata\\",s,false));
+		d.dispose();
 		//emitter.writeDataset("C:\\Temp\\marketdata\\",emitter.asObservable().blockingFirst(),false);
 		Path dir = Paths.get("C:\\Temp\\marketdata\\");  // specify your directory
 
@@ -97,13 +122,13 @@ public class DemoLauncher {
 		//emitter.asObservable().throttleFirst(60,TimeUnit.MINUTES).subscribe(fixingHistoryCollector);
 
 		/* Print Market Values */
-		Consumer<ValueResult> printValues = (ValueResult s) -> System.out.println("Consumer ValuationPrint: " + s.getValue().doubleValue());
+		/*Consumer<ValueResult> printValues = (ValueResult s) -> System.out.println("Consumer ValuationPrint: " + s.getValue().doubleValue());
 
 		final Observable observableValuation = emitter.asObservable().throttleLast(5, TimeUnit.SECONDS).map(marketData -> {
 			MarginCalculator calculator = new MarginCalculator();
 			return calculator.getValue(marketData.serializeToJson(), sdcXML);
 		});
-		observableValuation.subscribe(printValues);
+		observableValuation.subscribe(printValues);*/
 
 		/* Conditional Settlements */
         /*BigDecimal settlementTriggerValue = BigDecimal.valueOf(100.);
