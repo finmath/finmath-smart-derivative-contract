@@ -3,8 +3,9 @@ package net.finmath.smartcontract.product.xml;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.xml.bind.*;
-import jnr.ffi.annotations.IgnoreError;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.MarginCalculator;
@@ -14,13 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.Assert;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.*;
-
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -115,9 +116,24 @@ public class JAXBTests {
 			Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
 
 			Assertions.assertNotNull(sdc);
+
+			Marshaller marshaller = jaxbContext.createMarshaller();
+
+			// If the patch is not applied and the marshaller has the scheme set, it will throw an exception
+			marshaller.setSchema(sdcSchema);
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			marshaller.marshal(sdc,outputStream);
+			String xmlString = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
+
+			System.out.println(xmlString);
+			FileWriter writer = (new FileWriter("C:\\Temp\\sdc.xml"));
+			writer.write(xmlString);
+			writer.close();
 		}
 		catch(java.lang.Exception e){
-			System.out.println(e);
+			Assertions.fail(e);
 		}
 	}
 
