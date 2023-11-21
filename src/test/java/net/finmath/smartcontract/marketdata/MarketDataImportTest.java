@@ -20,8 +20,6 @@ import java.util.List;
 
 public class MarketDataImportTest {
 
-
-
 	@Disabled("")
 	@Test
 	void testParseSymbols()  throws Exception{
