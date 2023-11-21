@@ -36,7 +36,6 @@ public class InfoController implements InfoApi {
 	private final Logger logger = LoggerFactory.getLogger(InfoController.class);
 
 	/**
-	 *
 	 * @return String Json representing the info on Git
 	 */
 	@Override
@@ -44,7 +43,7 @@ public class InfoController implements InfoApi {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "info git");
 
-		try(InputStream propertiesInputStream = InfoController.class.getResourceAsStream("/git.properties")) {
+		try (InputStream propertiesInputStream = InfoController.class.getResourceAsStream("/git.properties")) {
 			JavaPropsMapper mapper = new JavaPropsMapper();
 			ObjectNode node = mapper.readValue(propertiesInputStream, ObjectNode.class);
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -59,7 +58,6 @@ public class InfoController implements InfoApi {
 	}
 
 	/**
-	 *
 	 * @return String Json representing the info on the Library
 	 */
 	@Override
@@ -68,7 +66,7 @@ public class InfoController implements InfoApi {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "info finmath");
 
-		try(InputStream propertiesInputStream = Library.class.getResourceAsStream("/finmath-lib.properties")) {
+		try (InputStream propertiesInputStream = Library.class.getResourceAsStream("/finmath-lib.properties")) {
 			JavaPropsMapper mapper = new JavaPropsMapper();
 			ObjectNode node = mapper.readValue(propertiesInputStream, ObjectNode.class);
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

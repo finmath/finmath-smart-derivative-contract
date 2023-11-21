@@ -76,7 +76,7 @@ public class SmartDerivativeContractDescriptor {
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
 		this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
 		this.recervicePartyID = recervicePartyID;
-		this.marketdataItemList =marketdataItems;
+		this.marketdataItemList = marketdataItems;
 		this.underlying = underlying;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
@@ -129,5 +129,5 @@ public class SmartDerivativeContractDescriptor {
 		return recervicePartyID;
 	}
 
-	public List<CalibrationDataItem.Spec>  getMarketdataItemList() { return marketdataItemList; }
+	public List<CalibrationDataItem.Spec> getMarketdataItemList() {return marketdataItemList;}
 }

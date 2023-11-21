@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
-import net.finmath.smartcontract.marketdata.adapters.*;
+import net.finmath.smartcontract.marketdata.adapters.LiveFeedAdapter;
+import net.finmath.smartcontract.marketdata.adapters.MarketDataRandomFeedAdapter;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
@@ -22,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -55,7 +55,7 @@ public class DemoLauncher {
 
 		/* Market Data Adapter */
 		//final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
-		final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataRandomFeedAdapter(Period.ofDays(1),new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8));
+		final LiveFeedAdapter<CalibrationDataset> emitter = new MarketDataRandomFeedAdapter(Period.ofDays(1), new String(DemoLauncher.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8));
 		//final LiveFeedAdapter<MarketDataSet> emitter2 = new MarketDataRandomFeedAdapter2(LocalDateTime.now(),1,marketData);
 
 		//socket.addListener(emitter);
@@ -91,7 +91,7 @@ public class DemoLauncher {
 		};
 
 
-		Disposable d = emitter.asObservable().throttleLast(5,TimeUnit.SECONDS).subscribe(marketDataWriter);//.subscribe(s->emitter.writeDataset("C:\\Temp\\marketdata\\",s,false));
+		Disposable d = emitter.asObservable().throttleLast(5, TimeUnit.SECONDS).subscribe(marketDataWriter);//.subscribe(s->emitter.writeDataset("C:\\Temp\\marketdata\\",s,false));
 		d.dispose();
 		//emitter.writeDataset("C:\\Temp\\marketdata\\",emitter.asObservable().blockingFirst(),false);
 		Path dir = Paths.get("C:\\Temp\\marketdata\\");  // specify your directory

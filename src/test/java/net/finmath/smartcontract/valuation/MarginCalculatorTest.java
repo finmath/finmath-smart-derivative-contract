@@ -4,7 +4,6 @@ import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;

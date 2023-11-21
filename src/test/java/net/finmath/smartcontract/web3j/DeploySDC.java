@@ -11,32 +11,33 @@ import java.nio.charset.StandardCharsets;
 
 public class DeploySDC {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeploySDC.class);
-    public static void main(String[] args) throws Exception{
+	private static final Logger logger = LoggerFactory.getLogger(DeploySDC.class);
 
-            UserAccount.generateNew("xyz",new File("Q:\\"));
+	public static void main(String[] args) throws Exception {
 
-            /* GET fpml and descriptor*/
-            final String fpml = new String(DeploySDC.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
-            SmartDerivativeContractDescriptor descriptor = SDCXMLParser.parse(fpml);
-            String party1ID = descriptor.getCounterparties().get(0).getId();
-            String party2ID = descriptor.getCounterparties().get(1).getId();
+		UserAccount.generateNew("xyz", new File("Q:\\"));
 
-            /* READ blockchain specific stuff */
-            String pass = System.getProperty("password", "password");
-            String geth_url = System.getProperty("geth_url", "<put your node hier>");
+		/* GET fpml and descriptor*/
+		final String fpml = new String(DeploySDC.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		SmartDerivativeContractDescriptor descriptor = SDCXMLParser.parse(fpml);
+		String party1ID = descriptor.getCounterparties().get(0).getId();
+		String party2ID = descriptor.getCounterparties().get(1).getId();
 
-            /* Build Accounts and connections */
-            final UserAccount accountAlice = new UserAccount(null, pass);
-            final UserAccount accountBob = new UserAccount(null, pass);
-            accountAlice.getCredentials();
-            accountBob.getCredentials();
-            final Connector connector = new Connector(geth_url);
-            final Web3j connection = connector.getWeb3Connection();
-            System.out.println("Connected to Ethereum client version: " + connection.web3ClientVersion().send().getWeb3ClientVersion());
-           // Greeter token = Greeter.deploy(connection,accountBob.getCredentials(), connector.getStaticGasProvider()).send();
-           // String greeting = token.greet().send();
-           // System.out.println();
+		/* READ blockchain specific stuff */
+		String pass = System.getProperty("password", "password");
+		String geth_url = System.getProperty("geth_url", "<put your node hier>");
 
-    }
+		/* Build Accounts and connections */
+		final UserAccount accountAlice = new UserAccount(null, pass);
+		final UserAccount accountBob = new UserAccount(null, pass);
+		accountAlice.getCredentials();
+		accountBob.getCredentials();
+		final Connector connector = new Connector(geth_url);
+		final Web3j connection = connector.getWeb3Connection();
+		System.out.println("Connected to Ethereum client version: " + connection.web3ClientVersion().send().getWeb3ClientVersion());
+		// Greeter token = Greeter.deploy(connection,accountBob.getCredentials(), connector.getStaticGasProvider()).send();
+		// String greeting = token.greet().send();
+		// System.out.println();
+
+	}
 }

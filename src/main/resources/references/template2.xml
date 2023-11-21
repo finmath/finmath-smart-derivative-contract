@@ -566,7 +566,9 @@
                                     <notionalSchedule>
                                         <notionalStepSchedule>
                                             <initialValue>1000000.00</initialValue>
-                                            <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
+                                            <currency
+                                                    currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">
+                                                EUR
                                             </currency>
                                         </notionalStepSchedule>
                                     </notionalSchedule>
@@ -626,7 +628,9 @@
                                     <notionalSchedule>
                                         <notionalStepSchedule>
                                             <initialValue>1000000.00</initialValue>
-                                            <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
+                                            <currency
+                                                    currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">
+                                                EUR
                                             </currency>
                                         </notionalStepSchedule>
                                     </notionalSchedule>

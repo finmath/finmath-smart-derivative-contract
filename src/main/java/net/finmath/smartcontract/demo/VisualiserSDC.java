@@ -66,7 +66,7 @@ public class VisualiserSDC {
 		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate().minusDays(170);
 
 		final double fixRate = scenarioList.get(0).getDataPoints().stream()
-				.filter(datapoint->datapoint.getSpec().getCurveName().equals("Euribor6M") &&
+				.filter(datapoint -> datapoint.getSpec().getCurveName().equals("Euribor6M") &&
 						datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 						datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 

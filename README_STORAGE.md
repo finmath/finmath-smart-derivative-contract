@@ -7,7 +7,8 @@ considered experimental.
 
 ## How do I tell the server application where to save data?
 
-Edit `storage.basedir` in `src/main/resources/application.yml`. Spring handling of disk storage is defined by a complex API: when it comes to accessing the
+Edit `storage.basedir` in `src/main/resources/application.yml`. Spring handling of disk storage is defined by a complex
+API: when it comes to accessing the
 disk, an absolute path is needed.
 
 ## What does the folder structure used by the application mean?

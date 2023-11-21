@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -104,12 +103,11 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 *
 	 * @param fileName Name of the input file.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException                  Thrown if market data file is not found.
+	 * @throws IOException Thrown if market data file is not found.
 	 */
 	public static List<CalibrationDataset> getScenariosFromCSVFile(final String fileName) throws IOException {
 		throw new IOException("to be implemented");
 	}
-
 
 
 	/**
@@ -121,16 +119,16 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 */
 	private static final List<CalibrationDataset> getScenariosFromJsonContent(final String content) throws IOException {
 		final ObjectMapper mapper = new ObjectMapper();
-		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String,  Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
+		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String, Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
 
 		final List<CalibrationDataset> scenarioList = timeSeriesDatamap.entrySet().stream()
 				.map(
 						scenarioData -> {
 							final String timeStampStr = scenarioData.getKey();
 							final LocalDateTime dateTime = parseTimestampString(timeStampStr);
-							Set<CalibrationDataItem> quotes = scenarioData.getValue().get("Quotes").entrySet().stream().map(entry->getCalibrationDataItemSet(entry.getKey(),entry.getValue(),dateTime)).flatMap(Collection::stream).collect(Collectors.toCollection( LinkedHashSet::new ));
+							Set<CalibrationDataItem> quotes = scenarioData.getValue().get("Quotes").entrySet().stream().map(entry -> getCalibrationDataItemSet(entry.getKey(), entry.getValue(), dateTime)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
 							CalibrationDataset scenario = new CalibrationDataset(quotes, dateTime);
-							if (scenarioData.getValue().containsKey("Fixings") ) {
+							if (scenarioData.getValue().containsKey("Fixings")) {
 								Set<CalibrationDataItem> fixings = scenarioData.getValue().get("Fixings").entrySet().stream().map(entry -> getFixingDataItemSet(entry.getKey(), entry.getValue(), dateTime)).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
 								scenario = scenario.getClonedFixingsAdded(fixings);
 							}
@@ -148,10 +146,9 @@ public class CalibrationParserDataItems implements CalibrationParser {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
 		LocalDateTime localDateTime;
-		try{
+		try {
 			localDateTime = LocalDateTime.parse(timeStampString, dateTimeFormatter);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// Fall back to 17:00
 			final LocalDate date = LocalDate.parse(timeStampString, dateFormatter);
 			localDateTime = date.atTime(17, 0);
@@ -165,10 +162,10 @@ public class CalibrationParserDataItems implements CalibrationParser {
 		Set<CalibrationDataItem> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
 				curvePointEntry -> {
 					String specKey = curveKey + "_" + entry.getKey() + "_" + curvePointEntry.getKey();
-					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey,curveKey, entry.getKey(), curvePointEntry.getKey());
-					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(),timestamp);
+					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), curvePointEntry.getKey());
+					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(), timestamp);
 					return dataItem;
-				})).collect(Collectors.toCollection( LinkedHashSet::new ));
+				})).collect(Collectors.toCollection(LinkedHashSet::new));
 		return datapoints;
 	}
 
@@ -176,12 +173,12 @@ public class CalibrationParserDataItems implements CalibrationParser {
 
 		Set<CalibrationDataItem> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
 				curvePointEntry -> {
-					LocalDate fixingDate = LocalDate.parse(curvePointEntry.getKey(),DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+					LocalDate fixingDate = LocalDate.parse(curvePointEntry.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 					String specKey = curveKey + "_" + entry.getKey() + "_" + curvePointEntry.getKey();
-					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey,curveKey, entry.getKey(), "0D");
-					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(),fixingDate.atStartOfDay());
+					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), "0D");
+					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(), fixingDate.atStartOfDay());
 					return dataItem;
-				})).collect(Collectors.toCollection( LinkedHashSet::new ));
+				})).collect(Collectors.toCollection(LinkedHashSet::new));
 		return datapoints;
 	}
 

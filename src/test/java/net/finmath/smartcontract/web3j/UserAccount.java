@@ -15,25 +15,25 @@ public class UserAccount {
 	private Credentials credentials;
 
 
-	public static UserAccount generateNew(String password, File destinationDir) throws Exception{
-		final String fileName = WalletUtils.generateFullNewWalletFile(password,destinationDir);
+	public static UserAccount generateNew(String password, File destinationDir) throws Exception {
+		final String fileName = WalletUtils.generateFullNewWalletFile(password, destinationDir);
 		final File file = Path.of(fileName).toFile();
-		return new UserAccount(file,password);
+		return new UserAccount(file, password);
 	}
 
 
-	public UserAccount(File keyFile, String password){
+	public UserAccount(File keyFile, String password) {
 		keySource = keyFile;
 		this.password = password;
 	}
 
-	public Credentials getCredentials()  {
-		if(credentials != null) {
+	public Credentials getCredentials() {
+		if (credentials != null) {
 			return credentials;
 		}
 
 		try {
-			credentials = WalletUtils.loadCredentials(password,keySource);
+			credentials = WalletUtils.loadCredentials(password, keySource);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +43,6 @@ public class UserAccount {
 		}
 		return credentials;
 	}
-
 
 
 }

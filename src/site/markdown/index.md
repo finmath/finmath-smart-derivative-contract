@@ -29,14 +29,17 @@ This is a Java FX application. Run `VisualiserSDC` or `scripts/start-demo-visual
 
 **You may run the valuation service through our Docker image (see below).**
 
-If you like to run the the valuation service locally from this repository, running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
-ReST service providing a valuation oracle. 
+If you like to run the the valuation service locally from this repository, running `mvn spring-boot:run` or
+runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle.
 
 #### Enpoints
 
-The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
+The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market
+data.
 
-The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market data sets.
+The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market
+data sets.
 
 The market data has to be provided as a JSON.
 The product data as to be provided as an XML (containing a part being an FPML of the underlying product).
@@ -49,6 +52,7 @@ The endpoint value calculates the value of a financial product
 with given market data.
 
 The endpoint parameters are
+
 - product P
 - market data M
 - valuation time t (see note below)
@@ -56,6 +60,7 @@ The endpoint parameters are
 **Note**: The valuation time t is currently taken from the market data set M
 
 The result is the value
+
 - V(P,M,t)
 
 **Note**: The valuation time t is currently taken from the market data set M1
@@ -63,12 +68,14 @@ The result is the value
 #### Margin
 
 The enpoint parameters are
+
 - product P
 - market data M0 (market data at previous margin call or initial valuation)
 - market data M1 (market data for margin call)
 - valuation time t (see note below)
 
 The result is the value
+
 - M(P,M0,M1,t) = V(P,M1,t) - V(P,M0,t)
 
 **Note**: The valuation time t is currently taken from the market data set M1

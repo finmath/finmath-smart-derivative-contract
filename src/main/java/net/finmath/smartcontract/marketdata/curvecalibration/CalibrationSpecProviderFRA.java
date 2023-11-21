@@ -2,12 +2,9 @@ package net.finmath.smartcontract.marketdata.curvecalibration;
 
 
 import net.finmath.marketdata.calibration.CalibratedCurves;
-import net.finmath.time.Period;
 import net.finmath.time.Schedule;
-import net.finmath.time.ScheduleFromPeriods;
 import net.finmath.time.ScheduleGenerator;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import org.springframework.security.core.parameters.P;
 
 /**
  * A calibration spec provider for fras.
@@ -31,8 +28,8 @@ public class CalibrationSpecProviderFRA implements CalibrationSpecProvider {
 		this.tenorLabel = tenorLabel;
 		this.maturityLabel = maturityLabel;
 		this.fraRate = fraRate;
-		int nMonthTenor = Integer.parseInt(tenorLabel.replace("M",""));
-		int nMonthMaturity = Integer.parseInt(maturityLabel.replace("M",""));
+		int nMonthTenor = Integer.parseInt(tenorLabel.replace("M", ""));
+		int nMonthMaturity = Integer.parseInt(maturityLabel.replace("M", ""));
 		int nMonthOffset = nMonthMaturity - nMonthTenor;
 		this.startOffsetLabel = nMonthOffset + "M";
 	}

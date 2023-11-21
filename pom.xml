@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
@@ -321,7 +322,6 @@
         </dependency>
 
 
-
         <!-- WEB3J -->
         <dependency>
             <groupId>org.web3j</groupId>
@@ -346,9 +346,6 @@
             <version>2.0.7</version>
         </dependency>
     </dependencies>
-
-
-
 
 
     <profiles>
@@ -555,7 +552,8 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions-maven-plugin.version}</version>
                 <configuration>
-                    <dependencyManagementExcludes>org.springframework.boot:spring-boot-dependencies</dependencyManagementExcludes>
+                    <dependencyManagementExcludes>org.springframework.boot:spring-boot-dependencies
+                    </dependencyManagementExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -643,7 +641,10 @@
                 <configuration>
                     <forkCount>4C</forkCount>
                     <reuseForks>false</reuseForks>
-                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED</argLine>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens
+                        java.base/java.util=ALL-UNNAMED --add-opens
+                        net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
 
@@ -729,7 +730,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml</outputDirectory>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src${file.separator}patches</directory>
@@ -765,7 +768,6 @@
             </plugin>
 
 
-
             <!-- OpenApi Generator Plugin -->
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -777,7 +779,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml</inputSpec>
+                            <inputSpec>
+                                ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml
+                            </inputSpec>
                             <generatorName>spring</generatorName>
                             <library>spring-boot</library>
                             <configOptions>
@@ -835,7 +839,8 @@
                             <goal>stage</goal>
                         </goals>
                         <configuration>
-                            <skipDeploy>false</skipDeploy><!-- MSITE-652: configuration won't be necessary with m-site-p 3.2 -->
+                            <skipDeploy>false
+                            </skipDeploy><!-- MSITE-652: configuration won't be necessary with m-site-p 3.2 -->
                         </configuration>
                     </execution>
                 </executions>
@@ -907,7 +912,8 @@
                     <prefix>git</prefix>
                     <verbose>false</verbose>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
                     <format>java</format>
                     <gitDescribe>
                         <skip>false</skip>

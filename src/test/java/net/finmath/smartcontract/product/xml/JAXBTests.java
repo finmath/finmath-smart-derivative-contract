@@ -47,17 +47,17 @@ public class JAXBTests {
 		swap.getSwapStream().get(0).getCalculationPeriodAmount().getCalculation().getNotionalSchedule().getNotionalStepSchedule().setInitialValue(acutalNotional.multiply(BigDecimal.valueOf(10)));
 		swap.getSwapStream().get(1).getCalculationPeriodAmount().getCalculation().getNotionalSchedule().getNotionalStepSchedule().setInitialValue(acutalNotional.multiply(BigDecimal.valueOf(10)));
 
-		String marshalledXML = getMarshalledXMLfromObject(jaxbContext,sdc);
+		String marshalledXML = getMarshalledXMLfromObject(jaxbContext, sdc);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
 
-		ValueResult valuationResultOrig = marginCalculator.getValue(marketData,new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
+		ValueResult valuationResultOrig = marginCalculator.getValue(marketData, new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
 		ValueResult valuationResultMarshalled = marginCalculator.getValue(marketData, marshalledXML);
 		double origValue = valuationResultOrig.getValue().doubleValue();
 		double changedValue = valuationResultMarshalled.getValue().doubleValue();
-		double modificationMultiplier = -1*10;
-		Assertions.assertEquals(origValue*modificationMultiplier,changedValue,0.1);
+		double modificationMultiplier = -1 * 10;
+		Assertions.assertEquals(origValue * modificationMultiplier, changedValue, 0.1);
 
 	}
 
@@ -70,14 +70,14 @@ public class JAXBTests {
 
 		Smartderivativecontract sdc = getUnmarshalledObjectFromXML(jaxbContext, url);
 
-		String marshalledXML = getMarshalledXMLfromObject(jaxbContext,sdc);
+		String marshalledXML = getMarshalledXMLfromObject(jaxbContext, sdc);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
 
-		ValueResult valuationResultOrig = marginCalculator.getValue(marketData,new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
+		ValueResult valuationResultOrig = marginCalculator.getValue(marketData, new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
 		ValueResult valuationResultMarshalled = marginCalculator.getValue(marketData, marshalledXML);
-		Assertions.assertEquals(valuationResultOrig.getValue(),valuationResultMarshalled.getValue());
+		Assertions.assertEquals(valuationResultOrig.getValue(), valuationResultMarshalled.getValue());
 
 	}
 
@@ -94,7 +94,7 @@ public class JAXBTests {
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		marshaller.marshal(sdc,outputStream);
+		marshaller.marshal(sdc, outputStream);
 		String marshalledXML = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 		return marshalledXML;
 	}
@@ -124,21 +124,20 @@ public class JAXBTests {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			marshaller.marshal(sdc,outputStream);
+			marshaller.marshal(sdc, outputStream);
 			String xmlString = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
 			System.out.println(xmlString);
 			FileWriter writer = (new FileWriter("C:\\Temp\\sdc.xml"));
 			writer.write(xmlString);
 			writer.close();
-		}
-		catch(java.lang.Exception e){
+		} catch (java.lang.Exception e) {
 			Assertions.fail(e);
 		}
 	}
 
 	@Test
-	void jaxBPlainTest() throws java.lang.Exception{
+	void jaxBPlainTest() throws java.lang.Exception {
 
 
 		String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
@@ -155,7 +154,7 @@ public class JAXBTests {
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		marshaller.marshal(sdc,outputStream);
+		marshaller.marshal(sdc, outputStream);
 		String xmlString = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
 		FileWriter writer = (new FileWriter("C:\\Temp\\sdc.xml"));
@@ -175,7 +174,7 @@ public class JAXBTests {
 
 		PlainSwapOperationRequest request = generateRequest(generatorFile);
 
-		PlainSwapEditorHandler handler =new PlainSwapEditorHandler(request,request.getCurrentGenerator(),schemaPath);
+		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, request.getCurrentGenerator(), schemaPath);
 		FileWriter writer = (new FileWriter("C:\\Temp\\sdc2.xml"));
 		writer.write(handler.getContractAsXmlString());
 		writer.close();
@@ -191,7 +190,6 @@ public class JAXBTests {
 
 		Assertions.assertEquals(-549726.34, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
-
 
 
 	}
@@ -220,7 +218,7 @@ public class JAXBTests {
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
-				.tradeDate(		//2022-09-07
+				.tradeDate(        //2022-09-07
 						OffsetDateTime.of(
 								LocalDateTime.of(
 										2022,

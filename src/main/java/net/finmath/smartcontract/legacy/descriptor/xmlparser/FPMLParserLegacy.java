@@ -370,12 +370,12 @@ public class FPMLParserLegacy implements XMLParser {
 		InterestRateSwapLegProductDescriptor legPayer = null;
 
 		final NodeList legs = trade.getElementsByTagName("swapStream");
-		for(int legIndex = 0; legIndex < legs.getLength(); legIndex++) {
+		for (int legIndex = 0; legIndex < legs.getLength(); legIndex++) {
 			final Element leg = (Element) legs.item(legIndex);
 
 			final boolean isPayer = leg.getElementsByTagName("payerPartyReference").item(0).getAttributes().getNamedItem("href").getNodeValue().equals(homePartyId);
 
-			if(isPayer) {
+			if (isPayer) {
 				legPayer = getSwapLegProductDescriptor(leg);
 			} else {
 				legReceiver = getSwapLegProductDescriptor(leg);

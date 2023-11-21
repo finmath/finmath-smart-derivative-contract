@@ -4,7 +4,7 @@ import io.reactivex.rxjava3.core.Observable;
 
 public interface MarketDataStreamInterface<T> {
 
-    public  Observable<T> asObservable();
+	public Observable<T> asObservable();
 
-    public  void    closeStream();
+	public void closeStream();
 }

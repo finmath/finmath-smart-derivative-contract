@@ -1,7 +1,6 @@
 package net.finmath.smartcontract.client;
 
 import net.finmath.smartcontract.model.LegacyMarginRequest;
-import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.MarginResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,21 +29,19 @@ public class ValuationClient {
 		String url = "http://localhost:8080";
 		String authString = "user1:password1";
 
-		if(args.length != 2) {
+		if (args.length != 2) {
 			System.out.println("Usage: ValuationClient <url> <user>:<password>");
 		}
 
-		if(args.length == 2) {
+		if (args.length == 2) {
 			authString = args[1];
-		}
-		else {
+		} else {
 			System.out.println("Using default credentials " + authString);
 		}
 
-		if(args.length >= 1) {
+		if (args.length >= 1) {
 			url = args[0];
-		}
-		else {
+		} else {
 			System.out.println("Using default endpoint " + url);
 		}
 

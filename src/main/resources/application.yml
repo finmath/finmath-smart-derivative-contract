@@ -9,12 +9,12 @@ data:
         role: USER_TWO
 
 server:
-## example to setup SSL
-#  ssl:
-#    key-store: config/finmath.p12
-#    key-store-password: password
-#    key-store-type: pkcs12
-#  port: 8080
+  ## example to setup SSL
+  #  ssl:
+  #    key-store: config/finmath.p12
+  #    key-store-password: password
+  #    key-store-type: pkcs12
+  #  port: 8080
   forward-headers-strategy: framework
   error:
     include-message: always

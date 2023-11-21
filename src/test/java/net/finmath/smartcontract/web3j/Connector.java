@@ -13,12 +13,12 @@ public class Connector {
 
 	private StaticGasProvider staticGasProvider;
 
-	public Connector(String url){
+	public Connector(String url) {
 		this.url = url;
 	}
 
 	public Web3j getWeb3Connection() {
-		if(web3j != null) {
+		if (web3j != null) {
 			return web3j;
 		}
 
@@ -27,7 +27,7 @@ public class Connector {
 	}
 
 	public StaticGasProvider getStaticGasProvider() {
-		if( staticGasProvider != null ) {
+		if (staticGasProvider != null) {
 			return staticGasProvider;
 		}
 

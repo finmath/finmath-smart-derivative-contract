@@ -11,6 +11,6 @@ public class DemoTest {
 		// Try fail here to test the build in the integration server.
 		boolean isShouldFail = false;
 
-		if(isShouldFail) Assertions.fail();
+		if (isShouldFail) Assertions.fail();
 	}
 }

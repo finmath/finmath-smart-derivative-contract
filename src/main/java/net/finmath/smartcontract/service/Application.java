@@ -6,8 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
+
 import java.util.TimeZone;
 
 /**
@@ -16,7 +16,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EnableWebSocket
 @Import(BasicAuthWebSecurityConfiguration.class)
-@ComponentScan(basePackages={"net.finmath.smartcontract.marketdata.database","net.finmath.smartcontract.service"})
+@ComponentScan(basePackages = {"net.finmath.smartcontract.marketdata.database", "net.finmath.smartcontract.service"})
 public class Application {
 
 	/**
@@ -25,7 +25,7 @@ public class Application {
 	 * @param args Program arguments (not used).
 	 */
 	public static void main(String[] args) {
-		System.out.println("Setting the timezone: "+TimeZone.getTimeZone("UTC").getID());
+		System.out.println("Setting the timezone: " + TimeZone.getTimeZone("UTC").getID());
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(Application.class, args);
 	}

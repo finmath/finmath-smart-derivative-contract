@@ -28,7 +28,7 @@ class SDCXMLParserTest {
 		LocalDateTime date = sdc.getTradeDate();
 		System.out.println(date);
 
-		Assertions.assertEquals(sdc.getUniqueTradeIdentifier(),"UTI12345");
+		Assertions.assertEquals(sdc.getUniqueTradeIdentifier(), "UTI12345");
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();

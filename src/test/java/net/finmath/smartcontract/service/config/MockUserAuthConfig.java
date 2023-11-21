@@ -11,14 +11,14 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @TestConfiguration
 public class MockUserAuthConfig {
 
-    @Bean
-    @Primary
-    public UserDetailsService testUserDetailsService(){
-        UserDetails user = User.builder()
-                .username("user1")
-                .password("password1")
-                .authorities("ROLE_USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
+	@Bean
+	@Primary
+	public UserDetailsService testUserDetailsService() {
+		UserDetails user = User.builder()
+				.username("user1")
+				.password("password1")
+				.authorities("ROLE_USER")
+				.build();
+		return new InMemoryUserDetailsManager(user);
+	}
 }

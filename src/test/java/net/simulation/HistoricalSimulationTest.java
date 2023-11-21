@@ -23,7 +23,7 @@ public class HistoricalSimulationTest {
 			final LocalDate maturity = LocalDate.of(2012, 1, 3);
 			final String fileName = "timeseriesdatamap.json";
 			final List<CalibrationDataset> scenarioListRaw = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-			final List<CalibrationDataset> scenarioList = scenarioListRaw.stream().map(scenario->scenario.getScaled(100)).collect(Collectors.toList());
+			final List<CalibrationDataset> scenarioList = scenarioListRaw.stream().map(scenario -> scenario.getScaled(100)).collect(Collectors.toList());
 
 
 			/*Generate Sample Product */
@@ -34,7 +34,7 @@ public class HistoricalSimulationTest {
 			final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
 			/* Product starts at Par */
 			final double fixRate = scenarioList.get(0).getDataPoints().stream()
-					.filter(datapoint->datapoint.getSpec().getCurveName().equals("Euribor6M") &&
+					.filter(datapoint -> datapoint.getSpec().getCurveName().equals("Euribor6M") &&
 							datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 							datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 

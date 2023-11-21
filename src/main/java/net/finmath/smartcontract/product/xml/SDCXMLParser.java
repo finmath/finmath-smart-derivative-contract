@@ -31,7 +31,6 @@ public class SDCXMLParser {
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
 
-
 		LocalDateTime settlementDateInitial;
 
 		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
@@ -46,13 +45,13 @@ public class SDCXMLParser {
 		Market Data
 		 */
 		List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
-		List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0),"item");
+		List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0), "item");
 		for (Node itemNode : itemNodes) {
 			String symbol = nodeValueByName(itemNode, "symbol", String.class);
 			String curve = nodeValueByName(itemNode, "curve", String.class);
 			String type = nodeValueByName(itemNode, "type", String.class);
 			String tenor = nodeValueByName(itemNode, "tenor", String.class);
-			CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol,curve,type,tenor);
+			CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol, curve, type, tenor);
 			marketdataItems.add(spec);
 		}
 
@@ -82,8 +81,6 @@ public class SDCXMLParser {
 		}
 
 
-
-
 		// Receiver party ID
 		String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent().trim();
 
@@ -91,7 +88,7 @@ public class SDCXMLParser {
 
 		// TODO Support multiple underlyings
 		Node underlying = document.getElementsByTagName("underlying").item(0).getFirstChild().getNextSibling();
-		return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier,settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying,marketdataItems );
+		return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
 	}
 
 	/*

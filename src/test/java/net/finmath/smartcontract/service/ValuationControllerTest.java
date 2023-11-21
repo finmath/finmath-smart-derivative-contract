@@ -4,14 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.client.ValuationClient;
 import net.finmath.smartcontract.model.LegacyMarginRequest;
 import net.finmath.smartcontract.model.LegacyValueRequest;
-import net.finmath.smartcontract.model.MarginRequest;
-import net.finmath.smartcontract.model.ValueRequest;
 import net.finmath.smartcontract.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.service.controllers.ValuationController;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -35,8 +30,8 @@ import java.time.LocalDateTime;
  */
 //@ExtendWith(SpringExtension.class)	// these new annotations are needed to avoid conflict between WebFlux and SpringMVC configs, as now spring.webmvc needs to be explicitly on the classpath (because CORS)
 @SpringBootTest(classes = {ValuationController.class, Application.class},
-				webEnvironment = SpringBootTest.WebEnvironment.MOCK, // explicitly enable Mockito
-				useMainMethod = SpringBootTest.UseMainMethod.ALWAYS) // use the same ApplicationContext as the regular (non test) server
+		webEnvironment = SpringBootTest.WebEnvironment.MOCK, // explicitly enable Mockito
+		useMainMethod = SpringBootTest.UseMainMethod.ALWAYS) // use the same ApplicationContext as the regular (non test) server
 @ContextConfiguration(classes = {BasicAuthWebSecurityConfiguration.class, Application.class, MockUserAuthConfig.class})
 @ComponentScan("net.finmath.smartcontract.marketdata.database")
 @AutoConfigureMockMvc
@@ -47,7 +42,7 @@ public class ValuationControllerTest {
 	final String productXMLFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 
 	@Test
-	@WithUserDetails("user1")	// testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
+	@WithUserDetails("user1")    // testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
 	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
