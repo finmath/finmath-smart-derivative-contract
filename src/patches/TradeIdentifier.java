@@ -45,6 +45,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * </pre>
  *
  *
+ * This PATCH is required, because the JAXB maven pugin has an an issue with the propOder - see https://stackoverflow.com/questions/16189531/jaxb-property-order
+ * This is due to the definition of TradeIdentifier - https://www.fpml.org/spec/fpml-5-2-4-tr-1/html/confirmation/schemaDocumentation/schemas/fpml-doc-5-2_xsd/complexTypes/PartyTradeIdentifier.html
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TradeIdentifier", propOrder = {
