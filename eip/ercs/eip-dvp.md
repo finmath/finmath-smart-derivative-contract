@@ -14,12 +14,9 @@ created: 2023-12-05
 
 The interfaces model the functional transaction scheme to establish a secure delivery-versus-payment across two blockchains, where a) no intermediary is required and b) the operator of the payment chain/payment system has a small overhead and does not need to store state.
 The main idea comes with two requirements: First, the payment chain operator hosts a stateless decryption service that allows decrypting messages with his secret key. Second, a "Payment Contract" is deployed on the payment chain that implements a function
-%
-\begin{lstlisting}
-transferAndDecrypt(uint id, address from, address to,
-string keyEncryptedSuccess, string keyEncryptedFail)
-\end{lstlisting}
-%
+```solidity
+function transferAndDecrypt(uint id, address from, address to, keyEncryptedSuccess, string keyEncryptedFailure) external;
+```
 that processes the (trigger-based) payment and emits the decrypted key depending on the success or failure of the transaction. The respective key can then trigger an associated transaction, e.g. claiming delivery by the buyer or re-claiming the locked asset by the seller.
 
 ## Motivation
