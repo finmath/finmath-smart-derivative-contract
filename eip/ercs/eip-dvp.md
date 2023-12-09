@@ -1,6 +1,6 @@
 ---
 eip: dvp
-title: Delivery-Versus-Payment
+title: Conditional-upon-Tranfer-Decryption for Delivery-Versus-Payment
 description: A Proposal for a Lean and Functional Delivery versus Payment
 author: Christian Fries (@cfries), Peter Kohl-Landgraf (@pekola)
 discussions-to: https://ethereum-magicians.org/t/eip-6123-smart-derivative-contract-frictionless-processing-of-financial-derivatives/12134
@@ -29,11 +29,11 @@ interface IAssetContract {
     event Event();
 
     // functions
-    function inceptTransfer(uint id, int amount, address from, string keyEncryptedSeller)
+    function inceptTransfer(uint id, int amount, address from, string keyEncryptedSeller);
 
-    function confirmTransfer(uint id, int amount, address to, string keyEncryptedBuyer)
+    function confirmTransfer(uint id, int amount, address to, string keyEncryptedBuyer);
 
-    function transferWithKey(uint id, string key)
+    function transferWithKey(uint id, string key);
 }
 ```
 #### Smart Contract on the Payment Chain
@@ -45,17 +45,17 @@ interface IPaymentContract {
     event Event();
 
     // functions
-    function inceptTransfer(uint id, int amount, address from, string keyEncryptedBuyer, string keyEncryptedSeller)
+    function inceptTransfer(uint id, int amount, address from, string keyEncryptedBuyer, string keyEncryptedSeller);
 
-    function transferAndDecrypt(uint id, address from, address to, keyEncryptedBuyer, string keyEncryptedSeller)
+    function transferAndDecrypt(uint id, address from, address to, keyEncryptedBuyer, string keyEncryptedSeller);
 
-    function cancelAndDecrypt(uint id, address from, address to, keyEncryptedBuyer, string keyEncryptedSeller)
+    function cancelAndDecrypt(uint id, address from, address to, keyEncryptedBuyer, string keyEncryptedSeller);
 }
 ```
 
 ## Rationale
 
-The interface design and reference implementation are based on the following considerations:
+The interface design is based on the following considerations:
 
 -...
 
@@ -63,9 +63,10 @@ The interface design and reference implementation are based on the following con
 
 ### Sequence diagram of delivery versus payment
 
-![image info](../assets/eip-6123/doc/sdc_livecycle_sequence_diagram.png)
+![image info](../assets/eip-dvp/doc/DvP-Seq-Diag.png)
 
 ## Test Cases
+
 
 ## Reference Implementation
 
