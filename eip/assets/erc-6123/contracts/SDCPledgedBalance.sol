@@ -129,7 +129,7 @@ contract SDCPledgedBalance is SDC {
         }
     }
 
-    function determineTransferAmountAndPayerAddress(int256 settlementAmount) internal returns(address, uint256)  {
+    function determineTransferAmountAndPayerAddress(int256 settlementAmount) internal view returns(address, uint256)  {
         address settlementReceiver = settlementAmount > 0 ? receivingParty : otherParty(receivingParty);
         address settlementPayer = otherParty(settlementReceiver);
 
@@ -142,21 +142,20 @@ contract SDCPledgedBalance is SDC {
         return (settlementPayer,transferAmount);
     }
 
-
-    function afterTransfer(uint256 transactionHash, bool success) external override onlyWhenInTransfer  {
+    function afterTransfer(uint256 /* transactionHash */, bool success) external override onlyWhenInTransfer  {
+        // Note: parameter transactionHash currenty unused
         emit TradeSettled();
         _processAfterTransfer(success);
     }
 
     function _processAfterTransfer(bool success) internal{
         if(success){
-            tradeState = TradeState.Settled;
             emit TradeSettled();
-            if (tradeState == TradeState.Terminated){
+            if (tradeState == TradeState.Terminated || tradeState == mutuallyTerminated){
                 tradeState = TradeState.Inactive;
             }
-            if (mutuallyTerminated){
-                tradeState = TradeState.Inactive;
+            else{
+                tradeState = TradeState.Settled;
             }
         }
         else{ // TRANSFER HAS FAILED
@@ -169,7 +168,7 @@ contract SDCPledgedBalance is SDC {
                 int256 settlementAmount = settlementAmounts[settlementAmounts.length-1];
                 uint256 transferAmount;
                 address settlementPayer;
-                (settlementPayer, transferAmount)  = determineTransferAmountAndPayerAddress(settlementAmounts[settlementAmounts.length-1]);
+                (settlementPayer, transferAmount)  = determineTransferAmountAndPayerAddress(settlementAmount);
                 address settlementReceiver = otherParty(settlementPayer);
                 settlementToken.approve(settlementPayer,uint256(marginRequirements[settlementPayer].buffer - transferAmount)); // Release Buffers
                 settlementToken.approve(settlementReceiver,uint256(marginRequirements[settlementReceiver].buffer)); // Release Buffers
@@ -186,6 +185,4 @@ contract SDCPledgedBalance is SDC {
             }
         }
     }
-
-
 }
