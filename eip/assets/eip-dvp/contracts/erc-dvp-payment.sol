@@ -4,7 +4,7 @@ pragma solidity >=0.7.0;
 /*------------------------------------------- DESCRIPTION ---------------------------------------------------------------------------------------*/
 
 /**
- * @title ERC-DVP PAYMENT Locking of assets and conditional decryption of release keys upon payment to allow secure stateless delivery-versus-payment.
+ * @title ERC-DVP PAYMENT Conditional decryption of keys, conditional to payment transfer success.
  * @dev Interface specification for a smart contract that enables secure stateless delivery-versus-payment.
  *
  * The specification consists of two interface, one
@@ -39,7 +39,7 @@ interface IDvPPayment {
     event TransferKeyRequested(uint id, string encryptedKey);
 
     /**
-     * @dev Emitted when a the decrypted key has been obtained.
+     * @dev Emitted when the decrypted key has been obtained.
      * @param id the trade ID.
      * @param success a boolean indicating the status. True: success. False: failure.
      * @param key the descrypted key.
@@ -53,29 +53,29 @@ interface IDvPPayment {
      * @dev emits a {PaymentTransferIncepted}
      * @param id the trade identifier of the trade.
      * @param amount the amount to be transfered.
-     * @param from The address of the seller (the address of the buyer is message.sender).
+     * @param from The address of the sender of the payment (the receiver ('to') is message.sender).
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
     function inceptTransfer(uint id, int amount, address from, string keyEncryptedSuccess, string keyEncryptedFailure) external;
 
     /**
-     * @notice Called from the receiver of the payment to complete payment transfer.
-     * @dev emits a {PaymentTransferIncepted}
+     * @notice Called from the sender of the payment to initiate completion of the payment transfer.
+     * @dev emits a {TransferKeyRequested} and {TransferKeyReleased} with keys depending on completion success.
      * @param id the trade identifier of the trade.
-     * @param from The address of the seller (the address of the buyer is message.sender).
-     * @param to The address of the seller (the address of the buyer is message.sender).
+     * @param from The address of the sender of the payment.
+     * @param to The address of the receiver of the payment.
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
     function transferAndDecrypt(uint id, address from, address to, keyEncryptedSuccess, string keyEncryptedFailure) external;
 
     /**
-     * @notice Called from the payer of the payment to initiate payment transfer.
-     * @dev emits a {PaymentTransferIncepted}
+     * @notice Called from the payer of the payment to cancel payment transfer.
+     * @dev emits a {TransferKeyRequested} and {TransferKeyReleased}
      * @param id the trade identifier of the trade.
-     * @param amount the amount to be transfered.
-     * @param from The address of the seller (the address of the buyer is message.sender).
+     * @param from The address of the sender of the payment.
+     * @param to The address of the receiver of the payment.
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
