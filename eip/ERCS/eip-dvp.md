@@ -1,9 +1,7 @@
 ---
-eip: dvp
 title: Conditional-upon-Tranfer-Decryption for Delivery-Versus-Payment
 description: A Proposal for a Lean and Functional Delivery versus Payment
 author: Christian Fries (@cfries), Peter Kohl-Landgraf (@pekola)
-discussions-to: 
 status: Draft
 type: Standards Track
 category: ERC
