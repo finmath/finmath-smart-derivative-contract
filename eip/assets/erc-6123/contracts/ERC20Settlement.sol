@@ -8,13 +8,13 @@ import "./IERC20Settlement.sol";
 
 contract ERC20Settlement is ERC20, IERC20Settlement{
 
-    /**
-    * @title Reference (example) Implementation for Settlement Token Interface
-    * @dev This token performs transfers on-chain.
-    * Token is tied to one SDC address
-    * Only SDC can call checkedTransfers
-    * Settlement Token calls back the referenced SDC by calling "afterTransfer" with a success flag. Depending on this SDC perfoms next state change
-    */
+/*------------------------------------------- DESCRIPTION ---------------------------------------------------------------------------------------
+* @title Reference (example) Implementation for Settlement Token Interface
+* @dev This token performs transfers on-chain.
+* Token is tied to one SDC address
+* Only SDC can call checkedTransfers
+* Settlement Token calls back the referenced SDC by calling "afterTransfer" with a success flag. Depending on this SDC perfoms next state change
+*/
 
 
     modifier onlySDC() {
@@ -56,7 +56,7 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
         catch{
             ISDC(sdcAddress).afterTransfer(transactionID, false);
         }
-        address owner = _msgSender();
+        // address owner = _msgSender();    // currently not used
     }
 
     function checkedBatchTransfer(address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
@@ -80,7 +80,6 @@ contract ERC20Settlement is ERC20, IERC20Settlement{
     function checkedBatchTransferFrom(address[] memory from, address[] memory to, uint256[] memory values, uint256 transactionID ) public onlySDC{
         require (from.length == to.length, "Array Length mismatch");
         require (to.length == values.length, "Array Length mismatch");
-        uint256[] memory requiredBalances;
         for(uint256 i = 0; i < from.length; i++){
             address fromAddress = from[i];
             uint256 totalRequiredBalance = 0;
