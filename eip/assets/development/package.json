@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
+    "eth-crypto": "^2.6.0",
     "solidity-coverage": "^0.8.2"
   },
   "bugs": {
