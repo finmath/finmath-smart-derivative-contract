@@ -14,7 +14,7 @@ const abiCoder = new AbiCoder();
   let paymentContract;
   let buyer;
   let seller;
-  let id = 456754567;
+  let id;
   let assetAmount = 10000;
   let paymentAmount = 9000;
 
@@ -27,9 +27,9 @@ const abiCoder = new AbiCoder();
     buyer = _buyer;
     seller = _seller;
 
-    const deliveryContractFactory = await ethers.getContractFactory("DeliveryContract");
+    const deliveryContractFactory = await ethers.getContractFactory("AssetContract");
     const paymentContractFactory = await ethers.getContractFactory("PaymentContract");
-    deliveryContract = await deliveryContractFactory.deploy(buyer.address,seller.address);
+    deliveryContract = await deliveryContractFactory.deploy();
     paymentContract = await paymentContractFactory.deploy(buyer.address,seller.address);
     await deliveryContract.deployed();
     await paymentContract.deployed();
@@ -37,13 +37,32 @@ const abiCoder = new AbiCoder();
     console.log("PaymentContract Address: %s", paymentContract.address);
   });
 
-  it("Transfer Incept", async () => {
-     let keyRawSeller = "keySeller";
+  it("Incept Trade from Seller", async () => {
      let hashedKeySeller = ethers.utils.solidityKeccak256(["string"],["keySeller"]);
-     let keyEncryptedSeller = await EthCrypto.encryptWithPublicKey(dvpOracle.publicKey,hashedKeySeller);
-     let keyEncrypedAsString = await EthCrypto.cipher.stringify(keyEncryptedSeller);
+     console.log("KeyHashedSeller: %s",hashedKeySeller);
+     const call = await deliveryContract.connect(seller).inceptTrade(buyer.address, trade_data,-1000, 998, hashedKeySeller);
+     const res = await call.wait();
+
+     id = res.events[0].args[0];
+     console.log("TransactionHash:", id);
+     await expect(call).to.emit(deliveryContract, "TradeIncepted").withArgs(id,buyer.address);
+
+  });
+
+  it("Confirm Trade from Buyer", async () => {
+       let hashedKeyBuyer = ethers.utils.solidityKeccak256(["string"],["keyBuyer"]);
+       console.log("KeyHashedBuyer: %s",hashedKeyBuyer);
+       const call = await deliveryContract.connect(buyer).confirmTrade(seller.address, trade_data, 1000, 998, hashedKeyBuyer);
+
+       await expect(call).to.emit(deliveryContract, "TradeConfirmed");
+  });
+
+
+ it("Incept Transfer from Buyer", async () => {
+     let keyEncryptedBuyer = await EthCrypto.encryptWithPublicKey(dvpOracle.publicKey,"keyBuyer");
+     let keyEncrypedAsString = await EthCrypto.cipher.stringify(keyEncryptedBuyer);
      console.log("KeyEncryptedSeller: %s",keyEncrypedAsString);
-     const call = await deliveryContract.connect(buyer).inceptTransfer(id, assetAmount, seller.address, keyEncryptedSeller) ;
+     const call = await deliveryContract.connect(buyer).inceptTransfer(id, assetAmount, seller.address, keyEncrypedAsString) ;
      await expect(call).to.emit(deliveryContract, "AssetTransferIncepted");
   });
 
