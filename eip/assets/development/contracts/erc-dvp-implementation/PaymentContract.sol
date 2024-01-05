@@ -2,9 +2,9 @@
 pragma solidity >=0.7.0;
 
 
-import "./interface/IPaymentAndDecrypt.sol";
+import "./interface/IDecryptionContract.sol";
 
-contract PaymentContract is IPaymentAndDecrypt {
+contract PaymentContract is IDecryptionContract {
 
     address sellerAddress;
     address buyerAddress;

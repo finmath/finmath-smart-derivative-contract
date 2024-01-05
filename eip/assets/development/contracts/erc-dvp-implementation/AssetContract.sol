@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: CC0-1.0
 pragma solidity >=0.7.0;
 
-import "./interface/IDeliveryWithKey.sol";
+import "./interface/ILockingContract.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract AssetContract is IDeliveryWithKey {
+contract AssetContract is ILockingContract {
 
     //   DEFINED in INTERFACE
     //   event AssetTransferIncepted(address initiator, uint id);
