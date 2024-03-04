@@ -321,24 +321,6 @@
         </dependency>
 
 
-        <!-- WEB3J -->
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>abi</artifactId>
-            <version>4.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>4.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>crypto</artifactId>
-            <version>4.10.0</version>
-        </dependency>
-
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
