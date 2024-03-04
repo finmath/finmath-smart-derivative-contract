@@ -11,6 +11,8 @@
 The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
 derivative contracts.
 
+## Contents
+
 ### Literature
 
 For a technical/mathematical description of the concept of a smart derivative contract
@@ -93,6 +95,8 @@ settlement amount for a smart derivative contract. The package contains also an 
 
 The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
 contract.
+*This part may be somewhat outdated as we did not reflect recent changes to the Solidity implementation in the
+state machine, but it still contains the main ideas.*
 
 ## Financial Product Description
 
