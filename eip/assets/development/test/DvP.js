@@ -84,20 +84,40 @@ const abiCoder = new AbiCoder();
   });
 
 
- it("Incept Transfer from Buyer", async () => {
+ it("Incept Asset-Transfer from Buyer", async () => {
      await new Promise((resolve) => setTimeout(resolve, secWait));
      console.log("====================================================================================================");
-     console.log("3. Buyer incepts the DvP-Transfer against the Asset Contract by providing the encrypted key");
+     console.log("3. Buyer incepts the DvP-Transfer against the Asset Contract by providing the Seller's encrypted key");
      console.log("====================================================================================================");
      await new Promise((resolve) => setTimeout(resolve, secWait));
-     let keyEncryptedBuyer = await EthCrypto.encryptWithPublicKey(dvpOracle.publicKey,"keyBuyer");
-     let keyEncrypedAsString = await EthCrypto.cipher.stringify(keyEncryptedBuyer);
+     let keyEncryptedForSeller = await EthCrypto.encryptWithPublicKey(dvpOracle.publicKey,"keyForSeller");
+     let keyEncrypedAsString = await EthCrypto.cipher.stringify(keyEncryptedForSeller);
      console.log("- Buyer generates encrypted key for the seller by using public key of DvP Oracle: %s",keyEncrypedAsString);
      await new Promise((resolve) => setTimeout(resolve, secWait));
      console.log("- Buyer calls 'inceptTransfer' against AssetContract providing the encrypted key for Seller");
      const call = await deliveryContract.connect(buyer).inceptTransfer(id, assetAmount, seller.address, keyEncrypedAsString) ;
      await expect(call).to.emit(deliveryContract, "AssetTransferIncepted");
      await new Promise((resolve) => setTimeout(resolve, secWait));
+  });
+
+  it("Incept Payment-Transfer from Seller", async () => {
+      await new Promise((resolve) => setTimeout(resolve, secWait));
+      console.log("====================================================================================================");
+      console.log("3. Seller incepts the DvP-Transfer against the Payment Contract by providing the Buyer's and Seller's encrypted key");
+      console.log("====================================================================================================");
+      await new Promise((resolve) => setTimeout(resolve, secWait));
+      let keyEncryptedBuyer = await EthCrypto.encryptWithPublicKey(dvpOracle.publicKey,"keyFoBuyer");
+      let keyEncrypedBuyerAsString = await EthCrypto.cipher.stringify(keyEncryptedBuyer);
+      console.log("- Seller generates encrypted key for the Buyer by using public key of DvP Oracle: %s",keyEncrypedBuyerAsString);
+      await new Promise((resolve) => setTimeout(resolve, secWait));
+      console.log("- Seller retrieves its encrypted key stored in the Asset Contract:",0);
+      await new Promise((resolve) => setTimeout(resolve, secWait));
+      let keyEncrypedSellerAsString = "";
+      console.log("- Buyer calls 'inceptTransfer' against AssetContract providing the encrypted key for Seller");
+      // inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure)
+      const call = await paymentContract.connect(buyer).inceptTransfer(id, paymentAmount, buyer.address, keyEncrypedBuyerAsString, keyEncrypedSellerAsString) ;
+      await expect(call).to.emit(deliveryContract, "PaymentTransferIncepted");
+      await new Promise((resolve) => setTimeout(resolve, secWait));
   });
 
 
