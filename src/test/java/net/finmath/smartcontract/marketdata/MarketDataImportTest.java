@@ -1,7 +1,6 @@
 package net.finmath.smartcontract.marketdata;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationParserDataItems;
@@ -9,7 +8,6 @@ import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
