@@ -10,7 +10,9 @@ import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.matchers.Null;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -28,7 +30,7 @@ public class MarketDataImportTest {
 
 			Assertions.assertEquals(marketdataItems.size(), 72);
 		}
-		catch(IOException e){
+		catch(IOException | SAXException | ParserConfigurationException exception){
 			Assertions.assertFalse(false);
 		}
 	}
