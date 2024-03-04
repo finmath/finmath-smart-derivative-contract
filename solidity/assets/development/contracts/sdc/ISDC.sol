@@ -135,7 +135,7 @@ interface ISDC {
      * @notice Incepts a trade, stores trade data
      * @dev emits a {TradeIncepted} event
      * @param _withParty is the party the inceptor wants to trade with
-     * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
+     * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/solidity-6123/doc/sample-tradedata-filestructure.xml
      * @param _position is the position the inceptor has in that trade
      * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)
@@ -146,7 +146,7 @@ interface ISDC {
      * @notice Performs a matching of provided trade data and settlement data of a previous trade inception
      * @dev emits a {TradeConfirmed} event if trade data match
      * @param _withParty is the party the confirmer wants to trade with
-     * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/eip-6123/doc/sample-tradedata-filestructure.xml
+     * @param _tradeData a description of the trade specification e.g. in xml format, suggested structure - see assets/solidity-6123/doc/sample-tradedata-filestructure.xml
      * @param _position is the position the inceptor has in that trade
      * @param _paymentAmount is the paymentamount which can be positive or negative
      * @param _initialSettlementData the initial settlement data (e.g. initial market data at which trade was incepted)

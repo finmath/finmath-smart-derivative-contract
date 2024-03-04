@@ -125,12 +125,8 @@ public class JAXBTests {
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			marshaller.marshal(sdc, outputStream);
-			String xmlString = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
-			System.out.println(xmlString);
-			FileWriter writer = (new FileWriter("C:\\Temp\\sdc.xml"));
-			writer.write(xmlString);
-			writer.close();
+
 		} catch (java.lang.Exception e) {
 			Assertions.fail(e);
 		}
@@ -157,9 +153,6 @@ public class JAXBTests {
 		marshaller.marshal(sdc, outputStream);
 		String xmlString = outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
 
-		FileWriter writer = (new FileWriter("C:\\Temp\\sdc.xml"));
-		writer.write(xmlString);
-		writer.close();
 
 		Assertions.assertNotNull(xmlString);
 	}
@@ -175,9 +168,6 @@ public class JAXBTests {
 		PlainSwapOperationRequest request = generateRequest(generatorFile);
 
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, request.getCurrentGenerator(), schemaPath);
-		FileWriter writer = (new FileWriter("C:\\Temp\\sdc2.xml"));
-		writer.write(handler.getContractAsXmlString());
-		writer.close();
 
 //		String product = handler.getContractAsXmlString();
 
