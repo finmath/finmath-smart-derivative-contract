@@ -648,7 +648,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>net.finmath.smartcontract.service.Application</mainClass>
+                    <mainClass>net.finmath.smartcontract.valuation.service.Application</mainClass>
                     <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
@@ -716,7 +716,7 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src${file.separator}patches</directory>
+                                    <directory>src${file.separator}main${file.separator}resources${file.separator}patches</directory>
                                     <includes>
                                         <include>package-info.java</include>
                                         <include>TradeIdentifier.java</include>
@@ -798,7 +798,7 @@
                     </to>
                     <container>
                         <mainClass>
-                            net.finmath.smartcontract.service.Application
+                            net.finmath.smartcontract.valuation.service.Application
                         </mainClass>
                     </container>
                 </configuration>

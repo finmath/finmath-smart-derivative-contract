@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.product.xml;
 
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
+import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
