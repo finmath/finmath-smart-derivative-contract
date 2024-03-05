@@ -18,7 +18,15 @@ import java.util.Map;
  */
 public class Settlement {
 
+	public enum SettlementType {
+		INITIAL,
+		REGULAR,
+		TERMINAL
+	}
+
 	private String tradeId;
+
+	private SettlementType settlementType;
 
 	private String currency;
 
@@ -36,15 +44,15 @@ public class Settlement {
 
 	/// V(T1,M0)
 
-	private String marketDataPrevious;
-
 	private BigDecimal settlementValuePrevious;
 
-	/// V(T2,M1)
+	/// V(T2,M1) - indicative
 
 	private ZonedDateTime settlementTimeNext;
 
 	private BigDecimal settlementValueNext;
+
+	// Custom additional information (e.g. risk figures or szenario values)
 
 	private Map<String, String> info;
 
@@ -54,94 +62,6 @@ public class Settlement {
 
 	public void setTradeId(String tradeId) {
 		this.tradeId = tradeId;
-	}
-
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
-	public BigDecimal getMarginValue() {
-		return marginValue;
-	}
-
-	public void setMarginValue(BigDecimal marginValue) {
-		this.marginValue = marginValue;
-	}
-
-	public List<BigDecimal> getMarginLimits() {
-		return marginLimits;
-	}
-
-	public void setMarginLimits(List<BigDecimal> marginLimits) {
-		this.marginLimits = marginLimits;
-	}
-
-	public ZonedDateTime getSettlementTime() {
-		return settlementTime;
-	}
-
-	public void setSettlementTime(ZonedDateTime settlementTime) {
-		this.settlementTime = settlementTime;
-	}
-
-	public String getMarketData() {
-		return marketData;
-	}
-
-	public void setMarketData(String marketData) {
-		this.marketData = marketData;
-	}
-
-	public BigDecimal getSettlementValue() {
-		return settlementValue;
-	}
-
-	public void setSettlementValue(BigDecimal settlementValue) {
-		this.settlementValue = settlementValue;
-	}
-
-	public String getMarketDataPrevious() {
-		return marketDataPrevious;
-	}
-
-	public void setMarketDataPrevious(String marketDataPrevious) {
-		this.marketDataPrevious = marketDataPrevious;
-	}
-
-	public BigDecimal getSettlementValuePrevious() {
-		return settlementValuePrevious;
-	}
-
-	public void setSettlementValuePrevious(BigDecimal settlementValuePrevious) {
-		this.settlementValuePrevious = settlementValuePrevious;
-	}
-
-	public ZonedDateTime getSettlementTimeNext() {
-		return settlementTimeNext;
-	}
-
-	public void setSettlementTimeNext(ZonedDateTime settlementTimeNext) {
-		this.settlementTimeNext = settlementTimeNext;
-	}
-
-	public BigDecimal getSettlementValueNext() {
-		return settlementValueNext;
-	}
-
-	public void setSettlementValueNext(BigDecimal settlementValueNext) {
-		this.settlementValueNext = settlementValueNext;
-	}
-
-	public Map<String, String> getInfo() {
-		return info;
-	}
-
-	public void setInfo(Map<String, String> info) {
-		this.info = info;
 	}
 }
 
