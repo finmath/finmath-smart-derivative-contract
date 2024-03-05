@@ -3,6 +3,7 @@ package net.finmath.smartcontract.settlement;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Describes the result of a single settlement as reported by the valuation oracle.
@@ -44,6 +45,8 @@ public class Settlement {
 	private ZonedDateTime settlementTimeNext;
 
 	private BigDecimal settlementValueNext;
+
+	private Map<String, String> info;
 
 	public String getTradeId() {
 		return tradeId;
@@ -131,6 +134,14 @@ public class Settlement {
 
 	public void setSettlementValueNext(BigDecimal settlementValueNext) {
 		this.settlementValueNext = settlementValueNext;
+	}
+
+	public Map<String, String> getInfo() {
+		return info;
+	}
+
+	public void setInfo(Map<String, String> info) {
+		this.info = info;
 	}
 }
 
