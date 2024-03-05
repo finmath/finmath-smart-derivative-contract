@@ -280,3 +280,9 @@ $RECYCLE.BIN/
 /frontend/node_modules
 /frontend/src/app/openapi/**
 .vscode/**
+
+#solidity / hardhat
+
+solidity/node_modules
+solidity/cache
+solidity/artifacts

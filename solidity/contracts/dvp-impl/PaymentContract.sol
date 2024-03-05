@@ -10,12 +10,12 @@ contract PaymentContract is IDecryptionContract {
     struct TransactionSpec {
         address from;
         address to;
-        uint256 amount;
+        int amount;
         string  encryptedKeySuccess;
         string  encryptedKeyFailure;
     }
 
-    mapping(uint256 => TransactionData)     transactionMap;
+    mapping(uint256 => TransactionSpec)     transactionMap;
 
     address sellerAddress;
     address buyerAddress;
@@ -27,7 +27,7 @@ contract PaymentContract is IDecryptionContract {
 
 
     function inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override{
-        transactionMap[id] = TransactionSpec(from,msg.sender,amount,encryptedKeySuccess,encryptedKeyFailure);
+        transactionMap[id] = TransactionSpec(from,msg.sender,amount,keyEncryptedSuccess,keyEncryptedFailure);
         emit PaymentTransferIncepted(msg.sender, id, amount);
     }
 
