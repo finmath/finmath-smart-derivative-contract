@@ -60,7 +60,7 @@ The rationale is described in the following sequence diagram.
 
 ### Sequence diagram of delivery versus payment
 
-![image info](../assets/erc-dvp/doc/DvP-Seq-Diag.png)
+![image info](doc/DvP-Seq-Diag.png)
 
 ## Reference Implementation
 

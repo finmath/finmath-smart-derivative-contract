@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "build": "hardhat compile",
-    "test": "hardhat test"
+    "build": "assets/development/node_modules/.bin/hardhat compile",
+    "test": "assets/development/node_modules/.bin/hardhat ../../test"
   },
   "keywords": [],
   "author": "",
