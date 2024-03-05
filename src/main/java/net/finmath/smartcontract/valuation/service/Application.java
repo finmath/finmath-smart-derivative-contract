@@ -16,7 +16,7 @@ import java.util.TimeZone;
 @SpringBootApplication
 @EnableWebSocket
 @Import(BasicAuthWebSecurityConfiguration.class)
-@ComponentScan(basePackages = {"net.finmath.smartcontract.marketdata.database", "net.finmath.smartcontract.service"})
+@ComponentScan(basePackages = {"net.finmath.smartcontract.valuation.marketdata.database", "net.finmath.smartcontract.valuation.service"})
 public class Application {
 
 	/**
