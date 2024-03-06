@@ -719,6 +719,10 @@
                                     <directory>src${file.separator}main${file.separator}resources${file.separator}patches</directory>
                                     <includes>
                                         <include>package-info.java</include>
+                                        <!--
+                                        JAXB has a bug that conflicts with the way the TradeIdentifier is specified
+                                        It would be possible to go without this patch by using the versionedTradId
+                                        -->
                                         <include>TradeIdentifier.java</include>
                                     </includes>
                                 </resource>
