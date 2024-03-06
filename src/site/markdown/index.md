@@ -8,26 +8,24 @@
 
 ## Introduction
 
-The finmath smart-derivative-contract libraries provides (JVM) implementations of methodologies related to smart
-derivative contracts.
+The finmath smart-derivative-contract project provides open source implementations of methodologies related to *smart
+derivative contracts* in *Java* and *Solidity*.
 
-## Contents
+The projects contain multiple parts: documentation, schema definitions (XML), demo code, valuation oracle.
 
-### Literature
+## Literature
 
 For a technical/mathematical description of the concept of a smart derivative contract
 see https://ssrn.com/abstract=3163074
 
 For non-technical description see the [articles](articles) section.
 
-## Contents
-
-### Visualization and Demonstration
+## Visualization and Demonstration
 
 The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
 This is a Java FX application. Run `VisualiserSDC` or `scripts/start-demo-visualization.sh`.
 
-### Valuation Service (ReST service)
+## Valuation Service (ReST service)
 
 **You may run the valuation service through our Docker image (see below).**
 
@@ -35,7 +33,7 @@ If you like to run the the valuation service locally from this repository, runni
 runnning `net.finmath.smartcontract.service.Appplication` starts a
 ReST service providing a valuation oracle.
 
-#### Enpoints
+### Enpoints
 
 The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market
 data.
@@ -48,7 +46,7 @@ The product data as to be provided as an XML (containing a part being an FPML of
 
 See also `api.yml`.
 
-#### Value
+### Value
 
 The endpoint value calculates the value of a financial product
 with given market data.
@@ -67,7 +65,7 @@ The result is the value
 
 **Note**: The valuation time t is currently taken from the market data set M1
 
-#### Margin
+### Margin
 
 The enpoint parameters are
 
@@ -82,16 +80,16 @@ The result is the value
 
 **Note**: The valuation time t is currently taken from the market data set M1
 
-#### Valuation Library
+### Valuation Library
 
 The underlying valuation library is [finmath lib](https://finmath.net/finmath-lib).
 
-### Settlement Amount Oracle and Valuation Oracle
+## Settlement Amount Oracle and Valuation Oracle
 
 The package `net.finmath.smartcontract.oracle` contains the interface describing a so called oracle providing the
 settlement amount for a smart derivative contract. The package contains also an implementation for interest rate swaps.
 
-### State Machine Model for a Smart Derivative Contract
+## State Machine Model for a Smart Derivative Contract
 
 The package `net.finmath.smartcontract.statemachine` contains a simple state machine modeling a smart derivative
 contract.
