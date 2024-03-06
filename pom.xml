@@ -507,6 +507,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.html</include>
+                    <include>**/*.txt</include>
                     <include>**/*.xml</include>
                     <include>**/*.xsd</include>
                     <include>**/*.yml</include>
