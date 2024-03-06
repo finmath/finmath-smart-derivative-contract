@@ -58,6 +58,7 @@
         throw Error(response.statusText);
       }
     }
+
 </script>
 <script type="text/javascript">
 const app = new Vue({
@@ -122,7 +123,7 @@ const app = new Vue({
 
         // Trigger Promises
         Promise.all(readers).then((values) => {
-            fetch('/valuation/value', {
+            fetch('/valuation/legacy/value', {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',
@@ -145,6 +146,7 @@ const app = new Vue({
     }
   });
   app.$mount("#content");
+
 </script>
 </body>
 </html>

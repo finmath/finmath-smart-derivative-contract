@@ -39,6 +39,8 @@ properties:
     minimum: 0.0
   currency:
     type: string
+  uniqueTradeIdentifier:
+    type: string
   tradeDate:
     type: string
     format: date-time
@@ -73,6 +75,6 @@ properties:
   valuationSymbols:
     type: array
     items:
-      $ref: "JsonMarketDataItem.yml"
+      $ref: "FrontendItemSpec.yml"
   currentGenerator:
     type: string

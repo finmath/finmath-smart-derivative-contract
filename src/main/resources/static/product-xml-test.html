@@ -42,6 +42,7 @@
         throw Error(response.statusText);
       }
     }
+
 </script>
 <script type="text/babel">
 const app = new Vue({
@@ -75,7 +76,7 @@ const app = new Vue({
       submitFile() {
         const formData = new FormData();
         formData.append('tradeData', this.tradeDataFile);
-        fetch('/valuation/test/product', { method: 'POST', body: formData })
+        fetch('/valuation/legacy/test/product', { method: 'POST', body: formData })
         .then(toJson)
         .then(result => {
             this.valuationResult = result['value'] + " " + result['currency'];
@@ -86,6 +87,7 @@ const app = new Vue({
     }
   });
   app.$mount("#content");
+
 </script>
 </body>
 </html>

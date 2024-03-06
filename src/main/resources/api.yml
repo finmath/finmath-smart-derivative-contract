@@ -7,18 +7,18 @@ info:
     name: Apache License 2.0
 
 servers:
-  - url: http://34.159.3.234:8080/
+  - url: http://34.159.234.113:8080/
 
 paths:
-  /valuation/value:
+  /valuation/legacy/value:
     post:
       summary: Request mapping for the value
-      operationId: value
+      operationId: legacyValue
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ValueRequest"
+              $ref: "#/components/schemas/LegacyValueRequest"
       responses:
         "200":
           description: Value was calculated
@@ -32,16 +32,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /valuation/value:
+    post:
+      summary: Request mapping for the value
+      operationId: value
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - marketData
+                - tradeData
+                - valuationDate
+              properties:
+                marketData:
+                  type: MarketDataSet
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /valuation/margin:
     post:
-      summary: Request mapping for the margin
+      summary: Request mapping for the value
       operationId: margin
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MarginRequest"
+              type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
+              properties:
+                marketDataStart:
+                  type: MarketDataSet
+                marketDataEnd:
+                  type: MarketDataSet
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: date-time
       responses:
         "200":
           description: Margin was calculated
@@ -56,7 +104,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /valuation/test/product:
+  /valuation/legacy/margin:
+    post:
+      summary: Request mapping for the margin
+      operationId: legacyMargin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LegacyMarginRequest"
+      responses:
+        "200":
+          description: Margin was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/legacy/test/product:
     post:
       summary: Request mapping for the value of a product (using fixed market data)
       operationId: testProductValue
@@ -270,6 +341,28 @@ paths:
               schema:
                 items:
                   type: string
+  /plain-swap-editor/get-saved-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request the list of saved market data.
+      operationId: get-saved-market-data
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
   /plain-swap-editor/load-contract:
     post:
       tags:
@@ -288,6 +381,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlainSwapOperationRequest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/change-dataset:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request a saved contract.
+      operationId: change-dataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            text/plain:
+              schema:
+                type: string
         default:
           description: unexpected error
           content:
@@ -353,6 +470,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /plain-swap-editor/refresh-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for valuation of the trade data coming from the editor.
+      operationId: refresh-market-data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/grab-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for transferring the active dataset to the client
+      operationId: grab-market-data
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketDataSet"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -364,13 +524,17 @@ components:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
       $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
-    ValueRequest:
-      $ref: "schemas/openapi-schemas/ValueRequest.yml"
-    MarginRequest:
-      $ref: "schemas/openapi-schemas/MarginRequest.yml"
+    LegacyValueRequest:
+      $ref: "schemas/openapi-schemas/LegacyValueRequest.yml"
+    LegacyMarginRequest:
+      $ref: "schemas/openapi-schemas/LegacyMarginRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
       $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
-    JsonMarketDataItem:
-      $ref: "schemas/openapi-schemas/JsonMarketDataItem.yml"
+    FrontendItemSpec:
+      $ref: "schemas/openapi-schemas/FrontendItemSpec.yml"
+    RefinitivMarketData:
+      $ref: "schemas/openapi-schemas/RefinitivMarketData.yml"
+    MarketDataSet:
+      $ref: "schemas/openapi-schemas/MarketDataSet.yml"

@@ -1,6 +1,14 @@
 
 # Created by https://www.gitignore.io/api/java,linux,macos,maven,windows,eclipse,intellij
 
+### Refintiv credentials ###
+
+refinitiv_connect.properties
+
+### DB properties and credentials ###
+
+src/main/resources/sql/database_connect.properties
+
 ### Eclipse ###
 
 .metadata
@@ -272,3 +280,9 @@ $RECYCLE.BIN/
 /frontend/node_modules
 /frontend/src/app/openapi/**
 .vscode/**
+
+#solidity / hardhat
+
+solidity/node_modules
+solidity/cache
+solidity/artifacts

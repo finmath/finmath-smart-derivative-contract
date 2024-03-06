@@ -2,15 +2,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
-    <!--<parent>
+    <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-    </parent>-->
+    </parent>
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
@@ -27,7 +27,7 @@
         <nv-websocket-client.version>2.14</nv-websocket-client.version>
         <moneta.version>1.4.2</moneta.version>
         <jcommon.version>1.0.24</jcommon.version>
-        <springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <spring-boot-dependencies.version>3.0.5</spring-boot-dependencies.version>
@@ -35,7 +35,7 @@
         <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
         <!-- maven plugins -->
-        <maven.site-plugin.version>4.0.0-M6</maven.site-plugin.version>
+        <maven.site-plugin.version>4.0.0-M13</maven.site-plugin.version>
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
@@ -276,7 +276,7 @@
         <!-- Spring Doc -->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
         </dependency>
 
@@ -299,6 +299,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.reactivex.rxjava3</groupId>
             <artifactId>rxjava</artifactId>
         </dependency>
@@ -309,12 +314,10 @@
             <version>${commons-cli.version}</version>
         </dependency>
 
-
-        <!-- WEB3J -->
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>4.9.4</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
 
 
@@ -324,9 +327,6 @@
             <version>2.0.7</version>
         </dependency>
     </dependencies>
-
-
-
 
 
     <profiles>
@@ -507,6 +507,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.html</include>
+                    <include>**/*.txt</include>
                     <include>**/*.xml</include>
                     <include>**/*.xsd</include>
                     <include>**/*.yml</include>
@@ -533,7 +534,8 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions-maven-plugin.version}</version>
                 <configuration>
-                    <dependencyManagementExcludes>org.springframework.boot:spring-boot-dependencies</dependencyManagementExcludes>
+                    <dependencyManagementExcludes>org.springframework.boot:spring-boot-dependencies
+                    </dependencyManagementExcludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -621,7 +623,10 @@
                 <configuration>
                     <forkCount>4C</forkCount>
                     <reuseForks>false</reuseForks>
-                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED</argLine>
+                    <argLine>-mx6G --add-opens java.base/java.time=ALL-UNNAMED --add-opens
+                        java.base/java.util=ALL-UNNAMED --add-opens
+                        net.finmath.smartderivativecontract/net.finmath.smartcontract.model=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
 
@@ -644,7 +649,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>net.finmath.smartcontract.service.Application</mainClass>
+                    <mainClass>net.finmath.smartcontract.valuation.service.Application</mainClass>
                     <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
@@ -691,7 +696,7 @@
                     <packageName>net.finmath.smartcontract.product.xml</packageName>
                     <sources>
                         <source>
-                            src${file.separator}main${file.separator}resources${file.separator}schemas${file.separator}sdc-schemas${file.separator}sdcml-contract.xsd
+                            src${file.separator}main${file.separator}resources${file.separator}net.finmath.smartcontract.product.xml${file.separator}smartderivativecontract.xsd
                         </source>
                     </sources>
                 </configuration>
@@ -707,12 +712,18 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml</outputDirectory>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml
+                            </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src${file.separator}patches</directory>
+                                    <directory>src${file.separator}main${file.separator}resources${file.separator}patches</directory>
                                     <includes>
                                         <include>package-info.java</include>
+                                        <!--
+                                        JAXB has a bug that conflicts with the way the TradeIdentifier is specified
+                                        It would be possible to go without this patch by using the versionedTradId
+                                        -->
                                         <include>TradeIdentifier.java</include>
                                     </includes>
                                 </resource>
@@ -743,7 +754,6 @@
             </plugin>
 
 
-
             <!-- OpenApi Generator Plugin -->
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -755,7 +765,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml</inputSpec>
+                            <inputSpec>
+                                ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml
+                            </inputSpec>
                             <generatorName>spring</generatorName>
                             <library>spring-boot</library>
                             <configOptions>
@@ -791,7 +803,7 @@
                     </to>
                     <container>
                         <mainClass>
-                            net.finmath.smartcontract.service.Application
+                            net.finmath.smartcontract.valuation.service.Application
                         </mainClass>
                     </container>
                 </configuration>
@@ -813,7 +825,8 @@
                             <goal>stage</goal>
                         </goals>
                         <configuration>
-                            <skipDeploy>false</skipDeploy><!-- MSITE-652: configuration won't be necessary with m-site-p 3.2 -->
+                            <skipDeploy>false
+                            </skipDeploy><!-- MSITE-652: configuration won't be necessary with m-site-p 3.2 -->
                         </configuration>
                     </execution>
                 </executions>
@@ -885,7 +898,8 @@
                     <prefix>git</prefix>
                     <verbose>false</verbose>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
                     <format>java</format>
                     <gitDescribe>
                         <skip>false</skip>

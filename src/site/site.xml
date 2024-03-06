@@ -33,7 +33,8 @@
             <item name="Articles" href="articles/index.html" collapse="true">
                 <item name="Rethinking Finacial Derivatives (1)" href="articles/rethinking_part_1.html"/>
                 <item name="Rethinking Finacial Derivatives (2)" href="articles/rethinking_part_2.html"/>
-                <item name="Sketch of a Decentralised Post-Trade Infrastructure" href="articles/sketch_digital_landscape.html"/>
+                <item name="Sketch of a Decentralised Post-Trade Infrastructure"
+                      href="articles/sketch_digital_landscape.html"/>
             </item>
             <item name="Coding Conventions" href="coding/codingconventions.html"/>
             <item name="API Documentation" href="apidocs"/>

@@ -9,12 +9,12 @@ data:
         role: USER_TWO
 
 server:
-## example to setup SSL
-#  ssl:
-#    key-store: config/finmath.p12
-#    key-store-password: password
-#    key-store-type: pkcs12
-#  port: 8443
+  ## example to setup SSL
+  #  ssl:
+  #    key-store: config/finmath.p12
+  #    key-store-password: password
+  #    key-store-type: pkcs12
+  #  port: 8080
   forward-headers-strategy: framework
   error:
     include-message: always
@@ -24,6 +24,12 @@ springdoc:
   swagger-ui:
     path: '/swagger-ui.html'
     tryItOutEnabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
 
 #springdoc:
 #  api-docs:
@@ -35,10 +41,14 @@ spring:
   thymeleaf:
     prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
 
-serviceUrl: 'http://34.159.3.234:4200'
+serviceUrl: 'http://34.159.234.113:4200'
 
 #hostname: localhost:8080
 
 storage:
-  basedir: '/usr/serverstorage'
+  basedir: '/storage'
+  importdir: '/public'
+  internals:
+    marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
+    databaseConnectionPropertiesFile: '/config/database_connect.properties'
 

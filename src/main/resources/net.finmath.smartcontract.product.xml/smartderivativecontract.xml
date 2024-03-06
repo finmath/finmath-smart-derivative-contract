@@ -1,4 +1,7 @@
-<smartderivativecontract>
+<smartderivativecontract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xmlns="uri:sdc"
+                         xsi:schemaLocation="uri:sdc smartderivativecontract.xsd">
+    <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
@@ -48,8 +51,14 @@
                 <item>
                     <symbol>EUROSTR=</symbol>
                     <curve>ESTR</curve>
-                    <type>Deposit</type>
+                    <type>Fixing</type>
                     <tenor>1D</tenor>
+                </item>
+                <item>
+                    <symbol>EURIBOR6MD=</symbol>
+                    <curve>Euribor6M</curve>
+                    <type>Fixing</type>
+                    <tenor>6M</tenor>
                 </item>
                 <item>
                     <symbol>EUR6MD=</symbol>
@@ -482,163 +491,173 @@
             <dataDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xmlns="http://www.fpml.org/FpML-5/confirmation" fpmlVersion="5-9"
                           xsi:schemaLocation="http://www.fpml.org/FpML-5/confirmation ../../fpml-main-5-9.xsd http://www.w3.org/2000/09/xmldsig# ../../xmldsig-core-schema.xsd">
-            <trade>
-                <tradeHeader>
-                    <partyTradeIdentifier>
-                        <partyReference href="party1"/>
-                        <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">CP1</tradeId>
-                    </partyTradeIdentifier>
-                    <partyTradeIdentifier>
-                        <partyReference href="party2"/>
-                        <tradeId tradeIdScheme="http://www.partyB.com/swaps/trade-id">CP2</tradeId>
-                    </partyTradeIdentifier>
-                    <tradeDate>2022-09-05</tradeDate>
-                </tradeHeader>
-                <swap>
-                    <!-- party1 pays the floating rate every 6 months, based on 6M EUR-LIBOR-BBA,
-                                on an ACT/360 basis -->
-                    <swapStream>
-                        <payerPartyReference href="party1"/>
-                        <receiverPartyReference href="party2"/>
-                        <calculationPeriodDates id="floatingCalcPeriodDates">
-                            <effectiveDate>
-                                <unadjustedDate>2022-09-07</unadjustedDate>
-                                <dateAdjustments>
-                                    <businessDayConvention>NONE</businessDayConvention>
-                                </dateAdjustments>
-                            </effectiveDate>
-                            <terminationDate>
-                                <unadjustedDate>2032-09-07</unadjustedDate>
-                                <dateAdjustments>
+                <trade>
+                    <tradeHeader>
+                        <partyTradeIdentifier>
+                            <partyReference href="party1"/>
+                            <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">CP1</tradeId>
+                        </partyTradeIdentifier>
+                        <partyTradeIdentifier>
+                            <partyReference href="party2"/>
+                            <tradeId tradeIdScheme="http://www.partyA.com/swaps/trade-id">CP2</tradeId>
+                        </partyTradeIdentifier>
+                        <tradeDate>2022-09-05</tradeDate>
+                    </tradeHeader>
+                    <swap>
+                        <!-- party1 pays the floating rate every 6 months, based on 6M EUR-LIBOR-BBA,
+                                    on an ACT/360 basis -->
+                        <swapStream>
+                            <payerPartyReference href="party1"/>
+                            <receiverPartyReference href="party2"/>
+                            <calculationPeriodDates id="floatingCalcPeriodDates">
+                                <effectiveDate>
+                                    <unadjustedDate>2022-09-07</unadjustedDate>
+                                    <dateAdjustments>
+                                        <businessDayConvention>NONE</businessDayConvention>
+                                    </dateAdjustments>
+                                </effectiveDate>
+                                <terminationDate>
+                                    <unadjustedDate>2032-09-07</unadjustedDate>
+                                    <dateAdjustments>
+                                        <businessDayConvention>MODFOLLOWING</businessDayConvention>
+                                        <businessCenters id="primaryBusinessCenters">
+                                            <businessCenter>DEFR</businessCenter>
+                                        </businessCenters>
+                                    </dateAdjustments>
+                                </terminationDate>
+                                <calculationPeriodDatesAdjustments>
                                     <businessDayConvention>MODFOLLOWING</businessDayConvention>
-                                    <businessCenters id="primaryBusinessCenters">
-                                        <businessCenter>DEFR</businessCenter>
-                                    </businessCenters>
-                                </dateAdjustments>
-                            </terminationDate>
-                            <calculationPeriodDatesAdjustments>
-                                <businessDayConvention>MODFOLLOWING</businessDayConvention>
-                                <businessCentersReference href="primaryBusinessCenters"/>
-                            </calculationPeriodDatesAdjustments>
-                            <calculationPeriodFrequency>
-                                <periodMultiplier>6</periodMultiplier>
-                                <period>M</period>
-                                <rollConvention>14</rollConvention>
-                            </calculationPeriodFrequency>
-                        </calculationPeriodDates>
-                        <paymentDates>
-                            <calculationPeriodDatesReference href="floatingCalcPeriodDates"/>
-                            <paymentFrequency>
-                                <periodMultiplier>6</periodMultiplier>
-                                <period>M</period>
-                            </paymentFrequency>
-                            <payRelativeTo>CalculationPeriodEndDate</payRelativeTo>
-                            <paymentDatesAdjustments>
-                                <businessDayConvention>FOLLOWING</businessDayConvention>
-                                <businessCentersReference href="primaryBusinessCenters"/>
-                            </paymentDatesAdjustments>
-                        </paymentDates>
-                        <resetDates id="resetDates">
-                            <calculationPeriodDatesReference href="floatingCalcPeriodDates"/>
-                            <resetRelativeTo>CalculationPeriodStartDate</resetRelativeTo>
-                            <fixingDates>
-                                <periodMultiplier>-2</periodMultiplier>
-                                <period>D</period>
-                                <dayType>Business</dayType>
-                                <businessDayConvention>NONE</businessDayConvention>
-                                <businessCenters>
-                                    <businessCenter>GBLO</businessCenter>
-                                </businessCenters>
-                                <dateRelativeTo href="resetDates"/>
-                            </fixingDates>
-                            <resetFrequency>
-                                <periodMultiplier>6</periodMultiplier>
-                                <period>M</period>
-                            </resetFrequency>
-                            <resetDatesAdjustments>
-                                <businessDayConvention>FOLLOWING</businessDayConvention>
-                                <businessCentersReference href="primaryBusinessCenters"/>
-                            </resetDatesAdjustments>
-                        </resetDates>
-                        <calculationPeriodAmount>
-                            <calculation>
-                                <notionalSchedule>
-                                    <notionalStepSchedule>
-                                        <initialValue>10000000.00</initialValue>
-                                        <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
-                                        </currency>
-                                    </notionalStepSchedule>
-                                </notionalSchedule>
-                                <floatingRateCalculation>
-                                    <floatingRateIndex>EUR-LIBOR-BBA</floatingRateIndex>
-                                    <indexTenor>
-                                        <periodMultiplier>6</periodMultiplier>
-                                        <period>M</period>
-                                    </indexTenor>
-                                </floatingRateCalculation>
-                                <dayCountFraction>ACT/360</dayCountFraction>
-                            </calculation>
-                        </calculationPeriodAmount>
-                    </swapStream>
-                    <!-- party2 pays the 6% fixed rate every year on a 30E/360 basis -->
-                    <swapStream>
-                        <payerPartyReference href="party2"/>
-                        <receiverPartyReference href="party1"/>
-                        <calculationPeriodDates id="fixedCalcPeriodDates">
-                            <effectiveDate>
-                                <unadjustedDate>2022-09-07</unadjustedDate>
-                                <dateAdjustments>
-                                    <businessDayConvention>NONE</businessDayConvention>
-                                </dateAdjustments>
-                            </effectiveDate>
-                            <terminationDate>
-                                <unadjustedDate>2032-09-07</unadjustedDate>
-                                <dateAdjustments>
+                                    <businessCentersReference href="primaryBusinessCenters"/>
+                                </calculationPeriodDatesAdjustments>
+                                <calculationPeriodFrequency>
+                                    <periodMultiplier>6</periodMultiplier>
+                                    <period>M</period>
+                                    <rollConvention>14</rollConvention>
+                                </calculationPeriodFrequency>
+                            </calculationPeriodDates>
+                            <paymentDates>
+                                <calculationPeriodDatesReference href="floatingCalcPeriodDates"/>
+                                <paymentFrequency>
+                                    <periodMultiplier>6</periodMultiplier>
+                                    <period>M</period>
+                                </paymentFrequency>
+                                <payRelativeTo>CalculationPeriodEndDate</payRelativeTo>
+                                <paymentDatesAdjustments>
                                     <businessDayConvention>FOLLOWING</businessDayConvention>
                                     <businessCentersReference href="primaryBusinessCenters"/>
-                                </dateAdjustments>
-                            </terminationDate>
-                            <calculationPeriodDatesAdjustments>
-                                <businessDayConvention>FOLLOWING</businessDayConvention>
-                                <businessCentersReference href="primaryBusinessCenters"/>
-                            </calculationPeriodDatesAdjustments>
-                            <calculationPeriodFrequency>
-                                <periodMultiplier>1</periodMultiplier>
-                                <period>Y</period>
-                                <rollConvention>14</rollConvention>
-                            </calculationPeriodFrequency>
-                        </calculationPeriodDates>
-                        <paymentDates>
-                            <calculationPeriodDatesReference href="fixedCalcPeriodDates"/>
-                            <paymentFrequency>
-                                <periodMultiplier>1</periodMultiplier>
-                                <period>Y</period>
-                            </paymentFrequency>
-                            <payRelativeTo>CalculationPeriodEndDate</payRelativeTo>
-                            <paymentDatesAdjustments>
-                                <businessDayConvention>MODFOLLOWING</businessDayConvention>
-                                <businessCentersReference href="primaryBusinessCenters"/>
-                            </paymentDatesAdjustments>
-                        </paymentDates>
-                        <calculationPeriodAmount>
-                            <calculation>
-                                <notionalSchedule>
-                                    <notionalStepSchedule>
-                                        <initialValue>10000000.00</initialValue>
-                                        <currency currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">EUR
-                                        </currency>
-                                    </notionalStepSchedule>
-                                </notionalSchedule>
-                                <fixedRateSchedule>
-                                    <initialValue>0.0395</initialValue>
-                                </fixedRateSchedule>
-                                <dayCountFraction>30E/360</dayCountFraction>
-                            </calculation>
-                        </calculationPeriodAmount>
-                    </swapStream>
-                </swap>
-            </trade>
-        </dataDocument>
-    </underlying>
+                                </paymentDatesAdjustments>
+                            </paymentDates>
+                            <resetDates id="resetDates">
+                                <calculationPeriodDatesReference href="floatingCalcPeriodDates"/>
+                                <resetRelativeTo>CalculationPeriodStartDate</resetRelativeTo>
+                                <fixingDates>
+                                    <periodMultiplier>-2</periodMultiplier>
+                                    <period>D</period>
+                                    <dayType>Business</dayType>
+                                    <businessDayConvention>NONE</businessDayConvention>
+                                    <businessCenters>
+                                        <businessCenter>GBLO</businessCenter>
+                                    </businessCenters>
+                                    <dateRelativeTo href="resetDates"/>
+                                </fixingDates>
+                                <resetFrequency>
+                                    <periodMultiplier>6</periodMultiplier>
+                                    <period>M</period>
+                                </resetFrequency>
+                                <resetDatesAdjustments>
+                                    <businessDayConvention>FOLLOWING</businessDayConvention>
+                                    <businessCentersReference href="primaryBusinessCenters"/>
+                                </resetDatesAdjustments>
+                            </resetDates>
+                            <calculationPeriodAmount>
+                                <calculation>
+                                    <notionalSchedule>
+                                        <notionalStepSchedule>
+                                            <initialValue>10000000.00</initialValue>
+                                            <currency
+                                                    currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">
+                                                EUR
+                                            </currency>
+                                        </notionalStepSchedule>
+                                    </notionalSchedule>
+                                    <floatingRateCalculation>
+                                        <floatingRateIndex>EUR-LIBOR-BBA</floatingRateIndex>
+                                        <indexTenor>
+                                            <periodMultiplier>6</periodMultiplier>
+                                            <period>M</period>
+                                        </indexTenor>
+                                    </floatingRateCalculation>
+                                    <dayCountFraction>ACT/360</dayCountFraction>
+                                </calculation>
+                            </calculationPeriodAmount>
+                        </swapStream>
+                        <!-- party2 pays the 6% fixed rate every year on a 30E/360 basis -->
+                        <swapStream>
+                            <payerPartyReference href="party2"/>
+                            <receiverPartyReference href="party1"/>
+                            <calculationPeriodDates id="fixedCalcPeriodDates">
+                                <effectiveDate>
+                                    <unadjustedDate>2022-09-07</unadjustedDate>
+                                    <dateAdjustments>
+                                        <businessDayConvention>NONE</businessDayConvention>
+                                    </dateAdjustments>
+                                </effectiveDate>
+                                <terminationDate>
+                                    <unadjustedDate>2032-09-07</unadjustedDate>
+                                    <dateAdjustments>
+                                        <businessDayConvention>FOLLOWING</businessDayConvention>
+                                        <businessCentersReference href="primaryBusinessCenters"/>
+                                    </dateAdjustments>
+                                </terminationDate>
+                                <calculationPeriodDatesAdjustments>
+                                    <businessDayConvention>FOLLOWING</businessDayConvention>
+                                    <businessCentersReference href="primaryBusinessCenters"/>
+                                </calculationPeriodDatesAdjustments>
+                                <calculationPeriodFrequency>
+                                    <periodMultiplier>1</periodMultiplier>
+                                    <period>Y</period>
+                                    <rollConvention>14</rollConvention>
+                                </calculationPeriodFrequency>
+                            </calculationPeriodDates>
+                            <paymentDates>
+                                <calculationPeriodDatesReference href="fixedCalcPeriodDates"/>
+                                <paymentFrequency>
+                                    <periodMultiplier>1</periodMultiplier>
+                                    <period>Y</period>
+                                </paymentFrequency>
+                                <payRelativeTo>CalculationPeriodEndDate</payRelativeTo>
+                                <paymentDatesAdjustments>
+                                    <businessDayConvention>MODFOLLOWING</businessDayConvention>
+                                    <businessCentersReference href="primaryBusinessCenters"/>
+                                </paymentDatesAdjustments>
+                            </paymentDates>
+                            <calculationPeriodAmount>
+                                <calculation>
+                                    <notionalSchedule>
+                                        <notionalStepSchedule>
+                                            <initialValue>10000000.00</initialValue>
+                                            <currency
+                                                    currencyScheme="http://www.fpml.org/coding-scheme/external/iso4217">
+                                                EUR
+                                            </currency>
+                                        </notionalStepSchedule>
+                                    </notionalSchedule>
+                                    <fixedRateSchedule>
+                                        <initialValue>0.0395</initialValue>
+                                    </fixedRateSchedule>
+                                    <dayCountFraction>30E/360</dayCountFraction>
+                                </calculation>
+                            </calculationPeriodAmount>
+                        </swapStream>
+                    </swap>
+                </trade>
+                <party id="party1">
+                    <partyId>PARTXXXX</partyId>
+                </party>
+                <party id="party2">
+                    <partyId>P2RTXXXX</partyId>
+                </party>
+            </dataDocument>
+        </underlying>
     </underlyings>
 </smartderivativecontract>

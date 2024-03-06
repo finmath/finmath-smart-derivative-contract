@@ -1,7 +1,8 @@
 # Valuation Service (ReST service)
 
-If you like to run the valuation service locally from this repository, running `mvn spring-boot:run` or runnning `net.finmath.smartcontract.service.Appplication` starts a
-ReST service providing a valuation oracle. 
+If you like to run the valuation service locally from this repository, running `mvn spring-boot:run` or
+runnning `net.finmath.smartcontract.service.Appplication` starts a
+ReST service providing a valuation oracle.
 
 ## Docker: Running Valuation Service
 
@@ -15,6 +16,7 @@ To run Docker Container with the image from Docker Hub execute following command
 ```
 docker run -v /PATH/TO/YOUR/CONFIG:/workspace/config -p 8080:8080 finmath/finmath-smart-derivative-contract:1.0.1
 ```
+
 The service will be available at http://localhost:8080/index.html
 
 You can also then try the service out on its OpenAPI page:
@@ -25,6 +27,7 @@ https://localhost:8443/swagger-ui/index.html
 ### Config
 
 A sample `application.yml` is
+
 ```
 data:
   sdc:
@@ -40,15 +43,18 @@ data:
 ### Testing the Valuation Service
 
 Clone this repository, if not done yet:
+
 ```
 git clone https://github.com/finmath/finmath-smart-derivative-contract.git
 cd finmath-smart-derivative-contract
 ```
 
 Run
+
 ```
 ./scripts/test-margin-valuation-oracle.sh https://localhost:8080 user:password
 ```
+
 where `user` is a username configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`)
 and  `password` is the corresponding password configured in the `application.yml` (in `/PATH/TO/YOUR/CONFIG`) .
 
@@ -67,16 +73,19 @@ server:
   port: 8443
 ```
 
-Then place the keyfile (here `keyfile.p12` at the stated location (here `/config` (the folder mounted by our Docker commands).
+Then place the keyfile (here `keyfile.p12` at the stated location (here `/config` (the folder mounted by our Docker
+commands).
 
 #### Generating a certificate
 
 ```
 keytool -genkeypair -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore config/finmath.p12 -validity 365 -alias finmath -ext "SAN=IP:127.0.0.1" -dname "CN=127.0.0.1"
 ```
+
 *Note:* change the file (keystore), the validity, the alias, and the IP/domain name as required
 
-For choosing CN an SAN see https://stackoverflow.com/questions/5935369/how-do-common-names-cn-and-subject-alternative-names-san-work-together
+For choosing CN an SAN
+see https://stackoverflow.com/questions/5935369/how-do-common-names-cn-and-subject-alternative-names-san-work-together
 
 #### Get the corresponding .cer file
 
@@ -84,6 +93,7 @@ For choosing CN an SAN see https://stackoverflow.com/questions/5935369/how-do-co
 openssl pkcs12 -in config/finmath.p12 -clcerts -nokeys -out config/finmath.cer
 keytool -printcert -file config/finmath.cer
 ```
+
 *Note:* change the files as required
 
 #### Import a .cer file into the truststore (cacert)
@@ -91,6 +101,7 @@ keytool -printcert -file config/finmath.cer
 ```
 keytool -import -file config/finmath.cer -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias finmath
 ```
+
 *Note:* change the files and the alias as required
 
 #### Import a .pem file into the truststore (cacert)
@@ -113,9 +124,11 @@ keytool -delete -alias mykey -keystore $JAVA_HOME/lib/security/cacerts -storepas
 
 ## Enpoints
 
-The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market data.
+The enpoint `https://localhost:8080/valuation/value` allows the valuation of a financial product under given market
+data.
 
-The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market data sets.
+The enpoint `https://localhost:8080/valuation/margin` allows the calculation of the settlement amount between two market
+data sets.
 
 The market data has to be provided as a JSON.
 The product data as to be provided as an XML (containing a part being an FPML of the underlying product).
@@ -128,6 +141,7 @@ The endpoint value calculates the value of a financial product
 with given market data.
 
 The endpoint parameters are
+
 - product P
 - market data M
 - valuation time t (see note below)
@@ -135,6 +149,7 @@ The endpoint parameters are
 **Note**: The valuation time t is currently taken from the market data set M
 
 The result is the value
+
 - V(P,M,t)
 
 **Note**: The valuation time t is currently taken from the market data set M1
@@ -142,12 +157,14 @@ The result is the value
 ## Margin
 
 The enpoint parameters are
+
 - product P
 - market data M0 (market data at previous margin call or initial valuation)
 - market data M1 (market data for margin call)
 - valuation time t (see note below)
 
 The result is the value
+
 - M(P,M0,M1,t) = V(P,M1,t) - V(P,M0,t)
 
 **Note**: The valuation time t is currently taken from the market data set M1

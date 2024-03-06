@@ -44,6 +44,30 @@ form {
   }
 }
 
+.updateSpinner {
+  position: fixed;
+  z-index: 999;
+  height: 2em;
+  width: 2em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+/* Transparent Overlay */
+.updateSpinner:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+}
 //TODO: at some DPI settings the grid is no longer aligned, why?
 .swapBuildingForm {
   display: grid;
@@ -61,17 +85,25 @@ form {
 
 .commandInfoArea {
   display: grid;
-  grid-template-columns: 10% 10% 10% 10% 10% 1fr;
+  grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-auto-flow: row;
-  grid-template-areas: "loadTemplateButtonArea saveLoadContractButtonArea selectSymbolsArea generateXmlButtonArea saveInChainButtonArea currentNpvLabelArea";
+  grid-template-areas: "loadTemplateButtonArea saveLoadContractButtonArea selectSymbolsArea generateXmlButtonArea saveInChainButtonArea refreshDataArea selectDataArea currentNpvLabelArea";
   grid-area: commandInfoArea;
   justify-items: stretch;
 }
 
+.selectDataArea{
+  grid-area: selectDataArea;
+}
+
 .selectSymbolsArea {
   grid-area: selectSymbolsArea;
+}
+
+.refreshDataArea {
+  grid-area: refreshDataArea;
 }
 
 .saveLoadContractButtonArea {
@@ -265,3 +297,28 @@ a.disabled {
   cursor: not-allowed;
   text-decoration: underline;
 }
+.form-section {
+  background-color:#FFFFFF;border-radius:10px;margin:10px;padding:10px;box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  & > *:not(:first-child) {}
+  & > :nth-child(1) {}
+  mat-form-field {
+      .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field.mdc-text-field--filled {
+      background-color:#FFFFFF !important;
+    }
+  }
+  label {font-family:'Roboto',sans-serif;font-size:16px;color:#888888;text-transform:uppercase;padding:10px;}
+  mat-divider {display:none;}
+}
+.btns {
+  margin:0;padding:0;
+  & > * {
+    width:auto;
+    & > * {
+      display:flex;gap:5px;align-items:center;text-decoration:none;margin:10px;cursor:pointer;padding:7px;
+      mat-icon {margin:0;font-size:20px;width:20px;height:20px;}
+      span {text-transform:capitalize;font-size:12px;color:#333333;font-family:'Roboto', sans-serif;}
+    }
+    & > *.active {background-color:#E0E0E0;border-radius:5px;}
+  }
+}
+

@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.product;
 
-import net.finmath.smartcontract.marketdata.curvecalibration.CalibrationDataItem;
+import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Node;
 
@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class SmartDerivativeContractDescriptor {
 
+	private final String uniqueTradeIdentifier;
 	private final LocalDateTime tradeDate;
 	private final List<Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
@@ -68,19 +69,24 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
+	public SmartDerivativeContractDescriptor(String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
+		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
 		this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
 		this.recervicePartyID = recervicePartyID;
-		this.marketdataItemList =marketdataItems;
+		this.marketdataItemList = marketdataItems;
 		this.underlying = underlying;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
 		Validate.isTrue(penaltyFeeInitialByPartyID.size() == 2, "Number of penalty fee values must be 2.");
 		Validate.notNull(underlying, "Underlying must not be null.");
+	}
+
+	public String getUniqueTradeIdentifier() {
+		return uniqueTradeIdentifier;
 	}
 
 	public LocalDateTime getTradeDate() {
@@ -123,5 +129,5 @@ public class SmartDerivativeContractDescriptor {
 		return recervicePartyID;
 	}
 
-	public List<CalibrationDataItem.Spec>  getMarketdataItemList() { return marketdataItemList; }
+	public List<CalibrationDataItem.Spec> getMarketdataItemList() {return marketdataItemList;}
 }

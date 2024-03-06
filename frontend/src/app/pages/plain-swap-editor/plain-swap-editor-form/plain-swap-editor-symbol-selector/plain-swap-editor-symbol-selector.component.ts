@@ -1,11 +1,16 @@
 import { SelectionModel } from "@angular/cdk/collections";
 import { MatTableDataSource } from "@angular/material/table";
 import { marketDataItems } from "../../../../shared/form-data/market-data-items";
-import { JsonMarketDataItem } from "src/app/openapi";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { FrontendItemSpec, MarketDataSet } from "src/app/openapi";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialog,
+} from "@angular/material/dialog";
 import { Inject, AfterViewInit, Component, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
+import { PlainSwapEditorHistoryViewerComponent } from "./plain-swap-editor-history-viewer/plain-swap-editor-history-viewer.component";
 
 @Component({
   selector: "app-plain-swap-editor-symbol-selector",
@@ -20,9 +25,10 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
     "tenor",
     "itemType",
   ];
-  marketDataItems: JsonMarketDataItem[] = marketDataItems;
-  dataSource = new MatTableDataSource<JsonMarketDataItem>(this.marketDataItems);
-  selection: SelectionModel<JsonMarketDataItem>;
+  marketDataItems: FrontendItemSpec[] = marketDataItems;
+  dataSource = new MatTableDataSource<FrontendItemSpec>(this.marketDataItems);
+  values = this.data[1] as MarketDataSet;
+  selection: SelectionModel<FrontendItemSpec>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -44,7 +50,7 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: JsonMarketDataItem): string {
+  checkboxLabel(row?: FrontendItemSpec): string {
     if (!row) {
       return `${this.isAllSelected() ? "deselect" : "select"} all`;
     }
@@ -55,9 +61,13 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
 
   constructor(
     public dialogRef: MatDialogRef<PlainSwapEditorSymbolSelectorComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: JsonMarketDataItem[]
+    @Inject(MAT_DIALOG_DATA) public data: any[],
+    public dialog: MatDialog
   ) {
-    this.selection = new SelectionModel<JsonMarketDataItem>(true, this.data);
+    this.selection = new SelectionModel<FrontendItemSpec>(
+      true,
+      this.data[0] as FrontendItemSpec[]
+    );
   }
 
   onClose(): void {
@@ -76,5 +86,33 @@ export class PlainSwapEditorSymbolSelectorComponent implements AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  getLastQuote(symbol: string) {
+    let matches = this.values.values.filter((x) => x.symbol == symbol)
+    .sort((a,b)=>{ return new Date(a.dataTimestamp!) > new Date(b.dataTimestamp!)? -1: 1});
+    return (matches[0].value! * 100).toFixed(3);
+  }
+
+  getLastUpdate(symbol: string) {
+    let matches = this.values.values.filter((x) => x.symbol == symbol)
+    .sort((a,b)=>{ return new Date(a.dataTimestamp!) > new Date(b.dataTimestamp!)? -1: 1});
+    return matches[0].dataTimestamp;
+  }
+
+  getHistory(symbol: string) {
+    let matches = this.values.values.filter((x) => x.symbol == symbol)
+    .sort((a,b)=>{ return new Date(a.dataTimestamp!) > new Date(b.dataTimestamp!)? -1: 1});
+    this.openHistoryDialog(matches);
+  }
+
+  openHistoryDialog(data: any): void {
+    const dialogRef = this.dialog.open(PlainSwapEditorHistoryViewerComponent, {
+      data,
+      width: "80%",
+      height: "80%",
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {});
   }
 }

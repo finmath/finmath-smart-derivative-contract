@@ -1,14 +1,20 @@
-import { JsonMarketDataItem } from "src/app/openapi/model/jsonMarketDataItem";
+import { FrontendItemSpec } from "src/app/openapi/model/frontendItemSpec";
 
 /**
- * List of known maret data symbols.
+ * List of known market data symbols.
  */
-export const marketDataItems: JsonMarketDataItem[] = [
+export const marketDataItems: FrontendItemSpec[] = [
   {
     symbol: "EUROSTR=",
     curve: "ESTR",
-    itemType: "Deposit",
+    itemType: "Fixing",
     tenor: "1D",
+  },
+  {
+    symbol: "EURIBOR6MD=",
+    curve: "Euribor6M",
+    itemType: "Fixing",
+    tenor: "6M",
   },
   {
     symbol: "EUR6MD=",
