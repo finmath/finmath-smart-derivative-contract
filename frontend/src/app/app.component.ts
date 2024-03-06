@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { interval } from "rxjs";
+import { singleSpaPropsSubject } from "src/single-spa/single-spa-props";
 
 /**
  * Application root component
@@ -10,14 +11,14 @@ import { interval } from "rxjs";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
-  title = "sdc-frontend";
-  isAuthed = false;
+  public title = "sdc-frontend";
+  public isAuthed = false;
 
-  flipAuth(status: boolean){
+  public flipAuth(status: boolean){
     this.isAuthed = status;
   }
 
-  authTest(){
+  private authTest(){
     var timer = interval(5000);
     var credentials = prompt("Please enter your credentials: ","user:password");
     var splitCredentials = credentials?.split(":");
@@ -53,8 +54,42 @@ export class AppComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
-      this.authTest();
+  public ngOnInit(): void {
+    singleSpaPropsSubject.subscribe((props: any) => {
+      if(props.standalone) {
+        this.authTest();
+      } else {
+        //this auth comes from sdc-service
+        const basicAuthData = window.localStorage.getItem('basic-auth-data');
+        if(basicAuthData) {
+          this._setValuationServiceAuth();
+        } else {
+          this._unsetValuationServiceAuth();
+        }
+      }
+      window.addEventListener('isSignedIn',(event: any) => {
+        this.isAuthed = event.detail;
+        if(event.detail) {
+          this._setValuationServiceAuth();
+        } else {
+          this._unsetValuationServiceAuth();
+        }
+      });
+    }); 
+  }
+
+  //@todo: rewrite it after getting AccessToken
+  private _setValuationServiceAuth() {
+    this.isAuthed = true;
+    sessionStorage.setItem("username",'user1');
+    sessionStorage.setItem("password",'password1');
+  }
+
+  //@todo: rewrite it after getting AccessToken
+  private _unsetValuationServiceAuth() {
+    this.isAuthed = false;
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("password");
   }
 }
 
