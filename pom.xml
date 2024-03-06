@@ -35,7 +35,7 @@
         <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
         <!-- maven plugins -->
-        <maven.site-plugin.version>4.0.0-M6</maven.site-plugin.version>
+        <maven.site-plugin.version>4.0.0-M13</maven.site-plugin.version>
         <maven-scm-publish-plugin.version>3.2.1</maven-scm-publish-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
