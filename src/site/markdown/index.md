@@ -27,11 +27,21 @@ This is a Java FX application. Run `VisualiserSDC` or `scripts/start-demo-visual
 
 ## Valuation Service (ReST service)
 
-**You may run the valuation service through our Docker image (see below).**
+**You may also run the valuation service through our Docker image (see below).**
 
 If you like to run the the valuation service locally from this repository, running `mvn spring-boot:run` or
 runnning `net.finmath.smartcontract.service.Appplication` starts a
 ReST service providing a valuation oracle.
+
+Username and password are configured in the `application.yml`. Default values are `user1` and `password1`.
+
+### Swagger UI for the ReST Enpoints
+
+Once the service is running, a swappger UI is available under `http://localhost:8080/swagger-ui/index.html`.
+
+### Simple UI for the Endpoints
+
+A simple UI is provided under `https://localhost:8080`.
 
 ### Enpoints
 
