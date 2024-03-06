@@ -606,7 +606,6 @@
                     <additionalOptions>
                         <additionalOption>--allow-script-in-comments</additionalOption>
                     </additionalOptions>
-                    <excludePackageNames>net.finmath.smartcontract.product.xml</excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>
