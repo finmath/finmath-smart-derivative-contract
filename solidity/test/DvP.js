@@ -96,7 +96,7 @@ const abiCoder = new AbiCoder();
      await new Promise((resolve) => setTimeout(resolve, secWait));
      console.log("- Buyer calls 'inceptTransfer' against AssetContract providing the encrypted key for Seller");
      const call = await deliveryContract.connect(buyer).inceptTransfer(id, assetAmount, seller.address, keyEncrypedAsString) ;
-     await expect(call).to.emit(deliveryContract, "AssetTransferIncepted");
+     await expect(call).to.emit(deliveryContract, "TransferIncepted");
      await new Promise((resolve) => setTimeout(resolve, secWait));
   });
 
@@ -116,7 +116,7 @@ const abiCoder = new AbiCoder();
       console.log("- Buyer calls 'inceptTransfer' against AssetContract providing the encrypted key for Seller");
       // inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure)
       const call = await paymentContract.connect(buyer).inceptTransfer(id, paymentAmount, buyer.address, keyEncrypedBuyerAsString, keyEncrypedSellerAsString) ;
-      await expect(call).to.emit(paymentContract, "PaymentTransferIncepted");
+      await expect(call).to.emit(paymentContract, "TransferIncepted");
       await new Promise((resolve) => setTimeout(resolve, secWait));
   });
 

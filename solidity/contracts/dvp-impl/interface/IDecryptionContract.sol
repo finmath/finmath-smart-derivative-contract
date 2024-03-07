@@ -29,7 +29,7 @@ interface IDecryptionContract {
      * @param id the trade ID.
      * @param amount to be transfered.
      */
-    event PaymentTransferIncepted(address initiator, bytes32 id, int amount);
+    event TransferIncepted(address initiator, bytes32 id, int amount);
 
     /**
      * @dev Emitted when a the transfer has been performed with a success or failure.

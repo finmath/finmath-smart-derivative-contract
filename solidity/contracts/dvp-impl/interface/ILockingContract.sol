@@ -32,28 +32,28 @@ interface ILockingContract {
      * @param initiator is the address from which trade was incepted
      * @param id the trade ID
      */
-    event AssetTransferIncepted(address initiator, bytes32 id);
+    event TransferIncepted(address initiator, bytes32 id);
 
     /**
      * @dev Emitted  when the transfer for the asset is incepted
      * @param confirmer is the address from which trade was incepted
      * @param id the trade ID
      */
-    event AssetTransferConfirmed(address confirmer, bytes32 id);
+    event TransferConfirmed(address confirmer, bytes32 id);
 
     /**
      * @dev Emitted when a confirmed trade is set to active - e.g. when termination fee amounts are provided
      * @param id the trade ID
      * @param key the key that was used to claim the asset
      */
-    event AssetClaimed(bytes32 id, string  key);
+    event TokenClaimed(bytes32 id, string key);
 
     /**
      * @dev Emitted when an active trade is terminated
      * @param id the trade ID
      * @param key the key that was used to claim the asset
      */
-    event AssetReclaimed(bytes32 id, string key);
+    event TokenReclaimed(bytes32 id, string key);
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 

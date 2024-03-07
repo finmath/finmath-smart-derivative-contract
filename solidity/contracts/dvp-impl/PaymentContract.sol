@@ -28,7 +28,7 @@ contract PaymentContract is IDecryptionContract {
 
     function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
         transactionMap[id] = TransactionSpec(from, msg.sender, amount, keyEncryptedSuccess, keyEncryptedFailure);
-        emit PaymentTransferIncepted(msg.sender, id, amount);
+        emit TransferIncepted(msg.sender, id, amount);
     }
 
 
