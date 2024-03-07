@@ -87,7 +87,12 @@ public class SDCXMLParser {
 		// TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
 
 		// TODO Support multiple underlyings
-		Node underlying = document.getElementsByTagName("underlying").item(0).getFirstChild().getNextSibling();
+
+		Node underlying = document
+				.getElementsByTagName("underlying")
+				.item(0)
+				.getFirstChild()
+				.getNextSibling();
 		return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
 	}
 

@@ -44,8 +44,6 @@ public class SmartDerivativeContractSettlementOracle {
 
 		final double valuationChange = valueDerivativeCurrent - valueDerivativePrevious;
 
-		final double margin = valuationChange;
-
-		return margin;
+		return valuationChange;
 	}
 }
