@@ -403,14 +403,14 @@
                                 <goals>
                                     <goal>install-node-and-npm</goal>
                                 </goals>
-                                <phase>generate-resources</phase>
+                                <phase>generate-sources</phase>
                             </execution>
                             <execution>
                                 <id>install angular and other dependencies</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
-                                <phase>generate-resources</phase>
+                                <phase>generate-sources</phase>
                                 <configuration>
                                     <arguments>install</arguments>
                                 </configuration>
@@ -713,11 +713,11 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>${maven-exec-plugin.version}</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>npm-install</id>
-                        <phase>generate-resources</phase>
+                        <id>npm-install-2</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
