@@ -15,7 +15,7 @@ contract PaymentContract is IDecryptionContract {
         string  encryptedKeyFailure;
     }
 
-    mapping(uint256 => TransactionSpec)     transactionMap;
+    mapping(bytes32 => TransactionSpec)     transactionMap;
 
     address sellerAddress;
     address buyerAddress;
@@ -26,17 +26,17 @@ contract PaymentContract is IDecryptionContract {
     }
 
 
-    function inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override{
-        transactionMap[id] = TransactionSpec(from,msg.sender,amount,keyEncryptedSuccess,keyEncryptedFailure);
+    function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
+        transactionMap[id] = TransactionSpec(from, msg.sender, amount, keyEncryptedSuccess, keyEncryptedFailure);
         emit PaymentTransferIncepted(msg.sender, id, amount);
     }
 
 
-    function transferAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override{
+    function transferAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
 
     }
 
-    function cancelAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external{
+    function cancelAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external {
 
     }
 }

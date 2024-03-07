@@ -29,14 +29,14 @@ interface IDecryptionContract {
      * @param id the trade ID.
      * @param amount to be transfered.
      */
-    event PaymentTransferIncepted(address initiator, uint id, int amount);
+    event PaymentTransferIncepted(address initiator, bytes32 id, int amount);
 
     /**
      * @dev Emitted when a the transfer has been performed with a success or failure.
      * @param id the trade ID.
      * @param encryptedKey The encrypted key associated with the transaction status.
      */
-    event TransferKeyRequested(uint id, string encryptedKey);
+    event TransferKeyRequested(bytes32 id, string encryptedKey);
 
     /**
      * @dev Emitted when the decrypted key has been obtained.
@@ -44,7 +44,7 @@ interface IDecryptionContract {
      * @param success a boolean indicating the status. True: success. False: failure.
      * @param key the descrypted key.
      */
-    event TransferKeyReleased(uint id, bool success, string key);
+    event TransferKeyReleased(bytes32 id, bool success, string key);
 
     /*------------------------------------------- FUNCTIONALITY ---------------------------------------------------------------------------------------*/
 
@@ -57,7 +57,7 @@ interface IDecryptionContract {
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
-    function inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
+    function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
 
     /**
      * @notice Called from the sender of the payment to initiate completion of the payment transfer.
@@ -68,7 +68,7 @@ interface IDecryptionContract {
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
-    function transferAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
+    function transferAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
 
     /**
      * @notice Called from the payer of the payment to cancel payment transfer.
@@ -79,5 +79,5 @@ interface IDecryptionContract {
      * @param keyEncryptedSuccess Encryption of the key that is emitted upon success.
      * @param keyEncryptedFailure Encryption of the key that is emitted upon failure.
      */
-    function cancelAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
+    function cancelAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external;
 }
