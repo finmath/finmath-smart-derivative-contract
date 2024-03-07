@@ -716,7 +716,7 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>npm-install-2</id>
+                        <id>npm-install-solidity-dependencies</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -1004,7 +1004,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>net.finmath.smartcontract</packageName>
+                    <packageName>net.finmath.smartcontract.web3</packageName>
                     <sourceDestination>${project.build.directory}/generated-sources/web3j/solidity</sourceDestination>
                     <outputFormat>java</outputFormat>
                     <soliditySourceFiles>
@@ -1029,6 +1029,27 @@
                         </includes>
                     </abiSourceFiles>
                 </configuration>
+            </plugin>
+            <!--Build Helper Plugin to Copy Java-Contract-Files (Web3J) to Class-Folder -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/web3j</source>
+                                <targetPath>net.finmath.smartcontract.web3</targetPath>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
 
