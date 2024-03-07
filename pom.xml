@@ -43,6 +43,9 @@
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-exec-plugin.version>3.1.0</maven-exec-plugin.version>
+        <web3j-maven-plugin.version>4.10.3</web3j-maven-plugin.version>
         <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
         <spring-boot-maven-plugin.version>3.0.5</spring-boot-maven-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
@@ -56,6 +59,7 @@
         <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
         <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
+        <npm.skip>false</npm.skip>
     </properties>
 
     <developers>
@@ -320,13 +324,19 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.10.3</version>
+        </dependency>
     </dependencies>
+
 
 
     <profiles>
@@ -677,7 +687,6 @@
                     </rules>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
@@ -700,10 +709,87 @@
                     </sources>
                 </configuration>
             </plugin>
+            <!--maven exec plugin / NPM Package Manager for Solidity -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${maven-exec-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}/solidity</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                            <skip>${npm.skip}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven-resources-plugin.version}</version>
                 <executions>
+                    <execution>
+                        <id>copy-solidity-finmath-contracts</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}web3j${file.separator}solidity
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>solidity/contracts</directory>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-solidity-openzeppelin</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}web3j${file.separator}solidity${file.separator}@openzeppelin
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>solidity/node_modules/@openzeppelin</directory>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                    <!--<execution>
+                        <id>copy-solidity-finmath</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}web3j${file.separator}@finmath.net
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>solidity/node_modules/@finmath.net</directory>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>-->
                     <execution>
                         <id>apply-jaxb-patch</id>
                         <phase>generate-sources</phase>
@@ -903,6 +989,49 @@
                     </gitDescribe>
                 </configuration>
             </plugin>
+
+            <!-- Web3J Plugin -->
+            <plugin>
+                <groupId>org.web3j</groupId>
+                <artifactId>web3j-maven-plugin</artifactId>
+                <version>${web3j-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>generate-sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>net.finmath.smartcontract</packageName>
+                    <sourceDestination>${project.build.directory}/generated-sources/web3j/solidity</sourceDestination>
+                    <outputFormat>java</outputFormat>
+                    <soliditySourceFiles>
+                        <directory>${project.build.directory}/generated-sources/web3j/solidity</directory>
+                        <includes>
+                            <include>**/ISDC.sol</include>
+                            <include>**/SDC.sol</include>
+                        </includes>
+                    </soliditySourceFiles>
+                    <outputDirectory>
+                        <java>${project.build.directory}/generated-sources/web3j/java</java>
+                        <!--<bin>${project.build.directory}/generated-sources/web3j/bin</bin>-->
+                    </outputDirectory>
+                    <pathPrefixes>
+                        <pathPrefix>@openzeppelin=./@openzeppelin</pathPrefix>
+                        <!--<pathPrefix>@finmath.net=./@finmath.net</pathPrefix>-->
+                    </pathPrefixes>
+                    <abiSourceFiles>
+                        <directory>src/main/abi/resources</directory>
+                        <includes>
+                            <include>**/*.json</include>
+                        </includes>
+                    </abiSourceFiles>
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </build>
 

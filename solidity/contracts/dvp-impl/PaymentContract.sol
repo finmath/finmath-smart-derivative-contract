@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CC0-1.0
-pragma solidity >=0.7.0;
+pragma solidity 0.8.15;
 
 
 import "./interface/IDecryptionContract.sol";
