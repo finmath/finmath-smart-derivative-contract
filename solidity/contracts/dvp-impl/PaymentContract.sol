@@ -32,11 +32,23 @@ contract PaymentContract is IDecryptionContract {
     }
 
 
-    function transferAndDecrypt(bytes32 id, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
-
+    function transferAndDecrypt(bytes32 id, int amount, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
+        // verify transaction spec
+        TransactionSpec memory transactionSpec = TransactionSpec(msg.sender, to, amount, keyEncryptedSuccess, keyEncryptedFailure);
+        require(transactionSpec.amount == transactionMap[id].amount);
+        require(transactionSpec.from == transactionMap[id].from);
+        require(transactionSpec.to == transactionMap[id].to);
+        require(transactionSpec.encryptedKeySuccess == transactionMap[id].encryptedKeySuccess);
+        require(transactionSpec.encryptedKeyFailure == transactionMap[id].encryptedKeyFailure);
     }
 
     function cancelAndDecrypt(bytes32 id, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external {
-
+        // verify transaction spec
+        TransactionSpec memory transactionSpec = TransactionSpec(from, msg.sender, amount, keyEncryptedSuccess, keyEncryptedFailure);
+        require(transactionSpec.amount == transactionMap[id].amount);
+        require(transactionSpec.from == transactionMap[id].from);
+        require(transactionSpec.to == transactionMap[id].to);
+        require(transactionSpec.encryptedKeySuccess == transactionMap[id].encryptedKeySuccess);
+        require(transactionSpec.encryptedKeyFailure == transactionMap[id].encryptedKeyFailure);
     }
 }

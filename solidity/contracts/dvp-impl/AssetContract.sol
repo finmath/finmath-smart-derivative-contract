@@ -25,7 +25,6 @@ contract AssetContract is ILockingContract {
         TradeUnwind
     }
 
-
     struct TransactionSpec {
         address inceptor;
         address buyer;
@@ -47,7 +46,7 @@ contract AssetContract is ILockingContract {
     mapping(bytes32 => TransactionSpec)     transactionSpecs;
     mapping(bytes32 => TransactionKey)     transactionKeys;
 
-    constructor(){
+    constructor() {
     }
 
 
