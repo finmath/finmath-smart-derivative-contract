@@ -32,11 +32,11 @@ contract PaymentContract is IDecryptionContract {
     }
 
 
-    function transferAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
+    function transferAndDecrypt(bytes32 id, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
 
     }
 
-    function cancelAndDecrypt(bytes32 id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external {
+    function cancelAndDecrypt(bytes32 id, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external {
 
     }
 }
