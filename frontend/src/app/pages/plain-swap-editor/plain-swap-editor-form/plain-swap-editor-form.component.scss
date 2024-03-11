@@ -297,3 +297,28 @@ a.disabled {
   cursor: not-allowed;
   text-decoration: underline;
 }
+.form-section {
+  background-color:#FFFFFF;border-radius:10px;margin:10px;padding:10px;box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  & > *:not(:first-child) {}
+  & > :nth-child(1) {}
+  mat-form-field {
+      .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field.mdc-text-field--filled {
+      background-color:#FFFFFF !important;
+    }
+  }
+  label {font-family:'Roboto',sans-serif;font-size:16px;color:#888888;text-transform:uppercase;padding:10px;}
+  mat-divider {display:none;}
+}
+.btns {
+  margin:0;padding:0;
+  & > * {
+    width:auto;
+    & > * {
+      display:flex;gap:5px;align-items:center;text-decoration:none;margin:10px;cursor:pointer;padding:7px;
+      mat-icon {margin:0;font-size:20px;width:20px;height:20px;}
+      span {text-transform:capitalize;font-size:12px;color:#333333;font-family:'Roboto', sans-serif;}
+    }
+    & > *.active {background-color:#E0E0E0;border-radius:5px;}
+  }
+}
+

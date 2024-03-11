@@ -354,7 +354,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           this.dialogWindowTitle = "Your SDCmL document:";
           this.openTextDialog();
         },
-        error: (error) => {
+        error: (error: any) => {
           this._snackBar.open(
             "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
@@ -379,7 +379,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
         this.dialogWindowTitle = "Your SDCmL document:";
         this.openPaymentScheduleDialog(cashflowPeriods);
       },
-      error: (error) => {
+      error: (error: any) => {
         this._snackBar.open(
           "Something went wrong. A developer might want to know about the contents of the console log.",
           "OK",
@@ -411,7 +411,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           duration: 3500,
         });
       },
-      error: (error) => {
+      error: (error: any) => {
         this.isLoading = false;
         this._snackBar.open(
           "Something went wrong. A developer might want to know about the contents of the console log.",
@@ -439,7 +439,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           this.dialogWindowTitle = "Your SDCmL document:";
           this.openPaymentScheduleDialog(cashflowPeriods);
         },
-        error: (error) => {
+        error: (error: any) => {
           this._snackBar.open(
             "Something went wrong. A developer might want to know about the contents of the console log.",
             "OK",
@@ -461,7 +461,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
     this.plainSwapEditorService
       .evaluateFromPlainSwapEditor(this.mapRequest())
       .subscribe({
-        next: (valueResponse) => {
+        next: (valueResponse: any) => {
           console.log(JSON.stringify(valueResponse));
           this.npvlabel =
             "Current NPV: " +
@@ -470,7 +470,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           this.lastValuationRefresh =
             valueResponse.valuationDate.replace("T"," ")+" UTC";
         },
-        error: (error) => {
+        error: (error: any) => {
           this.npvlabel = "Current NPV: last valuation failed!";
           this.lastValuationRefresh =
             moment().utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
@@ -494,7 +494,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
   refreshMarketData() {
     this.isLoading = true;
     this.plainSwapEditorService.refreshMarketData(this.mapRequest()).subscribe({
-      next: (valueResponse) => {
+      next: (valueResponse: any) => {
         console.log(JSON.stringify(valueResponse));
         this.npvlabel =
           "Current NPV: " +
@@ -513,7 +513,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
           }
         );
       },
-      error: (error) => {
+      error: (error: any) => {
         this.isLoading = false;
         this.npvlabel = "Current NPV: last valuation failed!";
         this.lastValuationRefresh =
@@ -686,7 +686,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
    */
   openSymbolSelection(): void {
     this.plainSwapEditorService.grabMarketData().subscribe({
-      next: (transferMessage) => {
+      next: (transferMessage: any) => {
         const dialogRef = this.dialog.open(
           PlainSwapEditorSymbolSelectorComponent,
           {
@@ -715,7 +715,7 @@ export class PlainSwapEditorFormComponent implements OnInit, AfterViewInit {
             );
           });
       },
-      error: (error) => {
+      error: (error: any) => {
         this._snackBar.open(
           "Something went wrong. A developer might want to know about the contents of the console log.",
           "OK",

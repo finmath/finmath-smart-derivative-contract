@@ -6,11 +6,11 @@
 
 package net.finmath.smartcontract;
 
-import net.finmath.smartcontract.oracle.SmartDerivativeContractSettlementOracle;
-import net.finmath.smartcontract.oracle.StochasticValuationOracle;
-import net.finmath.smartcontract.oracle.ValuationOracle;
-import net.finmath.smartcontract.oracle.ValuationOracleSamplePath;
-import net.finmath.smartcontract.oracle.simulated.GeometricBrownianMotionOracle;
+import net.finmath.smartcontract.valuation.oracle.SmartDerivativeContractSettlementOracle;
+import net.finmath.smartcontract.valuation.oracle.StochasticValuationOracle;
+import net.finmath.smartcontract.valuation.oracle.ValuationOracle;
+import net.finmath.smartcontract.valuation.oracle.ValuationOracleSamplePath;
+import net.finmath.smartcontract.valuation.oracle.simulated.GeometricBrownianMotionOracle;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
