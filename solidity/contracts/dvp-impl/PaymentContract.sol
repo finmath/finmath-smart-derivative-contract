@@ -15,7 +15,7 @@ contract PaymentContract is IDecryptionContract {
         string  encryptedKeyFailure;
     }
 
-    mapping(uint256 => TransactionSpec)     transactionMap;
+    mapping(bytes32 => TransactionSpec)     transactionMap;
 
     address sellerAddress;
     address buyerAddress;
@@ -26,17 +26,26 @@ contract PaymentContract is IDecryptionContract {
     }
 
 
-    function inceptTransfer(uint id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override{
-        transactionMap[id] = TransactionSpec(from,msg.sender,amount,keyEncryptedSuccess,keyEncryptedFailure);
-        emit PaymentTransferIncepted(msg.sender, id, amount);
+    function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
+        transactionMap[id] = TransactionSpec(from, msg.sender, amount, keyEncryptedSuccess, keyEncryptedFailure);
+        emit TransferIncepted(msg.sender, id, amount);
     }
 
 
-    function transferAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override{
-
+    function transferAndDecrypt(bytes32 id, int amount, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
+        // verify transaction spec
+        require(amount == transactionMap[id].amount);
+        require(msg.sender == transactionMap[id].from);
+        require(to == transactionMap[id].to);
+        require(keccak256(abi.encodePacked(keyEncryptedSuccess)) == keccak256(abi.encodePacked(transactionMap[id].encryptedKeySuccess)));
+        require(keccak256(abi.encodePacked(keyEncryptedFailure)) == keccak256(abi.encodePacked(transactionMap[id].encryptedKeyFailure)));
     }
 
-    function cancelAndDecrypt(uint id, address from, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external{
-
+    function cancelAndDecrypt(bytes32 id, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external {
+        // verify transaction spec
+        require(from == transactionMap[id].from);
+        require(msg.sender == transactionMap[id].to);
+        require(keccak256(abi.encodePacked(keyEncryptedSuccess)) == keccak256(abi.encodePacked(transactionMap[id].encryptedKeySuccess)));
+        require(keccak256(abi.encodePacked(keyEncryptedFailure)) == keccak256(abi.encodePacked(transactionMap[id].encryptedKeyFailure)));
     }
 }

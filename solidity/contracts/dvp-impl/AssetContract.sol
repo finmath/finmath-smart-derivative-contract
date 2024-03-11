@@ -25,7 +25,6 @@ contract AssetContract is ILockingContract {
         TradeUnwind
     }
 
-
     struct TransactionSpec {
         address inceptor;
         address buyer;
@@ -47,7 +46,7 @@ contract AssetContract is ILockingContract {
     mapping(bytes32 => TransactionSpec)     transactionSpecs;
     mapping(bytes32 => TransactionKey)     transactionKeys;
 
-    constructor(){
+    constructor() {
     }
 
 
@@ -85,7 +84,7 @@ contract AssetContract is ILockingContract {
         require(transactionStates[id] == TransactionState.TradeConfirmed, "TransactionState State is not 'TradeConfirmed'");
         transactionStates[id] = TransactionState.TransferIncepted;
         transactionKeys[id].encryptedKeySeller = keyEncryptedSeller;
-        emit AssetTransferIncepted(transactionSpecs[id].buyer,id);
+        emit TransferIncepted(transactionSpecs[id].buyer, id);
     }
 
 
@@ -97,7 +96,7 @@ contract AssetContract is ILockingContract {
         TransactionSpec memory txSpec = transactionSpecs[id];
         bondHolderBalances[txSpec.seller]  -= txSpec.notional; // Decrement Notional from Seller Holder Balance
         bondHolderBalances[address(this)]  += txSpec.notional;  // Transfer Bond to INTERNAL Balance and trigger transfer of the paymentAmount
-        emit AssetTransferConfirmed(transactionSpecs[id].seller,id);
+        emit TransferConfirmed(transactionSpecs[id].seller, id);
     }
 
 
@@ -105,9 +104,9 @@ contract AssetContract is ILockingContract {
         require(msg.sender == transactionSpecs[id].seller || msg.sender == transactionSpecs[id].buyer, "You are not Seller or Buyer of the referenced Transaction.");
         uint256 hashedKey = uint256(keccak256(abi.encode(key)));
         if (msg.sender == transactionSpecs[id].seller)
-            emit AssetReclaimed(id,key);
+            emit TokenReclaimed(id, key);
         if (msg.sender == transactionSpecs[id].buyer)
-            emit AssetClaimed(id,key);
+            emit TokenClaimed(id, key);
     }
 
     function checkHashFunction( string memory key, uint256 hashOfKey ) external returns (bool) {
