@@ -7,7 +7,7 @@ const EthCrypto = require('eth-crypto')
 
 describe("Test of DvP Asset Contract", () => {
     const abiCoder = new AbiCoder();
-    const trade_data = "<xml>here are the trade specification</xml";
+    const trade_data = "<xml>here are the trade specification</xml>";
     const dvpOracle = EthCrypto.createIdentity();
 
     let sdc;
@@ -36,11 +36,14 @@ describe("Test of DvP Asset Contract", () => {
 
     it("should fail if trade spec are inconsistent", async () => {
         let hashedKeySeller = ethers.utils.solidityKeccak256(["string"],["keySeller"]);
-        const call = await deliveryContract.connect(seller).inceptTrade(buyer.address, trade_data,-1000, 998, hashedKeySeller);
+
+        const call = await deliveryContract.connect(seller).inceptTrade(buyer.address, trade_data, -1000, 998, hashedKeySeller);
         const res = await call.wait();
         id = res.events[0].args[0];
         await expect(call).to.emit(deliveryContract, "TradeIncepted").withArgs(id,buyer.address);
+
         let hashedKeyBuyer = ethers.utils.solidityKeccak256(["string"],["keyBuyer"]);
+
         const call2 = deliveryContract.connect(buyer).confirmTrade(seller.address, trade_data, 21000, 998, hashedKeyBuyer);
         await expect(call2).to.be.revertedWith("No pending inception available to be confirmed for this trade specification");
     });

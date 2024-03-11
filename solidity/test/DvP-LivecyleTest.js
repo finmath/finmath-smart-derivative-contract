@@ -7,7 +7,7 @@ const EthCrypto = require('eth-crypto')
 
 describe("Livecycle Unit-Tests for Delivery-vs-Payment", () => {
     const abiCoder = new AbiCoder();
-    const trade_data = "<xml>here are the trade specification</xml";
+    const trade_data = "<xml>here are the trade specification</xml>";
     const dvpOracle = EthCrypto.createIdentity();
 
     let sdc;
