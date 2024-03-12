@@ -1,14 +1,12 @@
-package net.finmath.smartcontract.valuation.marketdata.adapters;//|-----------------------------------------------------------------------------
+package net.finmath.smartcontract.valuation.marketdata.generators;//|-----------------------------------------------------------------------------
 //|            This source code is provided under the Apache 2.0 license      --
 //|  and is provided AS IS with no warranty or guarantee of fit for purpose.  --
 //|                See the project's LICENSE.md for details.                  --
 //|            Copyright (C) 2018-2021 Refinitiv. All rights reserved.        --
 //|-----------------------------------------------------------------------------
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neovisionaries.ws.client.*;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -21,6 +19,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
@@ -52,13 +51,7 @@ public class WebSocketConnector {
 
 
 	Properties connectionProperties;
-	/*public final String hostName;
-	public final String port;
-	public final String user;
-	public final String password;
-	public final String clientid; //also known as app_key
-	public final String authUrl;*/
-	public JsonNode authJson;
+	public JSONObject authJson;
 
 
 	public String position;
@@ -68,34 +61,31 @@ public class WebSocketConnector {
 
 
 	public WebSocketConnector(Properties connectionProperties) throws Exception {
-		//String path = Thread.currentThread().getContextClassLoader().getResource("refinitiv_connect.properties").getPath();
-		//connectionProperties = connectionProperties; //new Properties();
-		//connectionProperties.load(new FileInputStream(path));
 		this.connectionProperties = connectionProperties;
 		this.position = Inet4Address.getLocalHost().getHostAddress();
 
 
 	}
 
-	public WebSocket getWebSocket() throws Exception {
+	public WebSocket getWebSocket() throws Exception{
 		if (ws == null) {
 			return initAuthJson().initWebSocketConnection();
 		}
 		return ws;
 	}
 
-	public JsonNode getAuthJson() {
+	public JSONObject getAuthJson() {
 		return authJson;
 	}
 
-	public String getPosition() {
+	public String getPosition(){
 		return this.position;
 	}
 
 	public WebSocketConnector initAuthJson() {
 		try {
 
-			// Connect to Refinitiv Data Platform and authenticate (using our username and password)
+			// Connect to Live Market Data Platform and authenticate (using our username and password)
 			this.authJson = getAuthenticationInfo(null, connectionProperties.get("AUTHURL").toString());
 
 		} catch (Exception e) {
@@ -103,6 +93,7 @@ public class WebSocketConnector {
 		}
 		return this;
 	}
+
 
 
 	/**
@@ -117,9 +108,10 @@ public class WebSocketConnector {
 		params.setProtocols(new String[]{"TLSv1.2"});
 
 		ProxySettings settings = factory.getProxySettings();
-		settings.setHost(connectionProperties.get("PROXYHOST").toString()).setPort(Integer.parseInt(connectionProperties.get("PROXYPORT").toString()));
-		settings.setCredentials(connectionProperties.get("PROXYUSER").toString(), connectionProperties.get("PROXYPASS").toString());
-
+		if(connectionProperties.get("USEPROXY").equals("TRUE")) {
+			settings.setHost(connectionProperties.get("PROXYHOST").toString()).setPort(Integer.parseInt(connectionProperties.get("PROXYPORT").toString()));
+			settings.setCredentials(connectionProperties.get("PROXYUSER").toString(), connectionProperties.get("PROXYPASS").toString());
+		}
 		WebSocket webSocket = factory
 				.createSocket(server)
 				.addProtocol("tr_json2")
@@ -129,17 +121,19 @@ public class WebSocketConnector {
 	}
 
 
+
+
 	/**
 	 * Authenticate to Refinitiv Data Platform via an HTTP post request.
 	 * Initially authenticates using the specified password. If information from a previous authentication response is provided, it instead authenticates using
 	 * the refresh token from that response.
-	 *
 	 * @param previousAuthResponseJson Information from a previous authentication, if available
-	 * @param url                      The HTTP post url
+	 * @param url The HTTP post url
 	 * @return A JSONObject containing the authentication information from the response.
 	 */
-	public JsonNode getAuthenticationInfo(JsonNode previousAuthResponseJson, String url) {
-		try {
+	public JSONObject getAuthenticationInfo(JSONObject previousAuthResponseJson, String url) {
+		try
+		{
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(new SSLContextBuilder().build());
 
 			HttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
@@ -177,26 +171,25 @@ public class WebSocketConnector {
 
 			int statusCode = response.getStatusLine().getStatusCode();
 
-			switch (statusCode) {
+			switch ( statusCode ) {
 				case HttpStatus.SC_OK:                  // 200
 					// Authentication was successful. Deserialize the response and return it.
-					ObjectMapper mapper = new ObjectMapper();
-					String eUtils = EntityUtils.toString(response.getEntity());
-					JsonNode responseJson = mapper.readTree(eUtils);
-					//JSONObject responseJson = new JSONObject(eUtils);
-					System.out.println("Refinitiv Data Platform Authentication succeeded. RECEIVED:");
-					System.out.println(responseJson.toString());
+					JSONObject responseJson = new JSONObject(EntityUtils.toString(response.getEntity()));
+//                    System.out.println("Refinitiv Data Platform Authentication succeeded. RECEIVED:");
+//                    System.out.println(responseJson.toString(2));
 					return responseJson;
 				case HttpStatus.SC_MOVED_PERMANENTLY:              // 301
 				case HttpStatus.SC_MOVED_TEMPORARILY:              // 302
 				case HttpStatus.SC_TEMPORARY_REDIRECT:             // 307
 				case 308:                                          // 308 HttpStatus.SC_PERMANENT_REDIRECT
 					// Perform URL redirect
-					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+//                    System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
 					Header header = response.getFirstHeader("Location");
-					if (header != null) {
+					if( header != null )
+					{
 						String newHost = header.getValue();
-						if (newHost != null) {
+						if ( newHost != null )
+						{
 							System.out.println("Perform URL redirect to " + newHost);
 							return getAuthenticationInfo(previousAuthResponseJson, newHost);
 						}
@@ -225,7 +218,7 @@ public class WebSocketConnector {
 					Thread.sleep(5000);
 					// CAUTION: This is sample code with infinite retries.
 					System.out.println("Retry the request to Refinitiv Data Platform");
-					return getAuthenticationInfo(previousAuthResponseJson, connectionProperties.get("AUTHURL").toString());
+					return getAuthenticationInfo(previousAuthResponseJson,connectionProperties.get("AUTHURL").toString());
 			}
 		} catch (Exception e) {
 			System.out.println("Refinitiv Data Platform authentication failure:");

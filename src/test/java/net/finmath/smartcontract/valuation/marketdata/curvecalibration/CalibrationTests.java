@@ -6,7 +6,6 @@ import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.valuation.marketdata.MarketDataImportTest;
 import net.finmath.smartcontract.model.MarketDataSet;
 import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -44,10 +43,10 @@ public class CalibrationTests {
 		MarketDataSet marketData;
 		SmartDerivativeContractDescriptor product;
 		try (
-				InputStream marketDataMessageStream = MarketDataImportTest.class.getClassLoader().getResourceAsStream(
+				InputStream marketDataMessageStream = CalibrationTests.class.getClassLoader().getResourceAsStream(
 						"net/finmath/smartcontract/valuation/client/nf_md_20230711-123529.json");
 				// data obtained from the new livefeed implementation. Contains several fixings.
-				InputStream sdcmlStream = MarketDataImportTest.class.getClassLoader()
+				InputStream sdcmlStream = CalibrationTests.class.getClassLoader()
 						.getResourceAsStream(
 								"net.finmath.smartcontract.product.xml/smartderivativecontract.xml") // standard plain swap template
 		) {

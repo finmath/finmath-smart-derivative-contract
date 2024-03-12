@@ -1,8 +1,7 @@
-package net.finmath.smartcontract.valuation.marketdata.adapters;
+package net.finmath.smartcontract.valuation.marketdata.generators.legacy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,6 +12,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.model.*;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Sinks;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReactiveMarketDataUpdater.class);
-	private final JsonNode authJson;
+	private final JSONObject authJson;
 	private final String position;
 	private final Set<CalibrationDataItem.Spec> calibrationSpecs;
 	private final PublishSubject<MarketDataSet> publishSubject;
@@ -42,7 +42,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 	boolean requestSent;
 	private MarketDataSet marketDataSet;
 
-	public ReactiveMarketDataUpdater(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
+	public ReactiveMarketDataUpdater(JSONObject authJson, String position, List<CalibrationDataItem.Spec> itemList) {
 		this.mapper = new ObjectMapper(); // Spring's default object mapper has some settings which are incompatible with this data pipeline, create a new one
 		this.mapper.registerModule(new JavaTimeModule());
 		this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -71,11 +71,11 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 	 * Called when handshake is complete and websocket is open, send login
 	 */
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-		this.sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
+		this.sendLoginRequest(websocket, authJson.getString("access_token"), true);
 		logger.info("WebSocket successfully connected! Resetting connection.");
 		this.closeStreamsAndLogoff(websocket);
 		logger.info("Connection reset. Reopening connection...");
-		this.sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
+		this.sendLoginRequest(websocket, authJson.getString("access_token"), true);
 		logger.info("...done");
 
 	}

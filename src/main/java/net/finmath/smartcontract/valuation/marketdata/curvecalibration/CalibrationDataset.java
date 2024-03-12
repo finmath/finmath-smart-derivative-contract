@@ -1,6 +1,8 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,6 +58,12 @@ public class CalibrationDataset {
 		return new CalibrationDataset(clone, this.scenarioDate);
 	}
 
+	public MarketDataList toMarketDataList(){
+		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(),item.getSpec().getCurveName(),item.getSpec().getProductName(),item.getMaturity(), item.getQuote(), item.getDateTime())).collect(Collectors.toList());
+		MarketDataList marketDataList = new MarketDataList();
+		marketDataPointList.stream().forEach(point->marketDataList.add(point));
+		return marketDataList;
+	}
 
 	public String serializeToJson() {
 		ObjectMapper mapper = new ObjectMapper();
