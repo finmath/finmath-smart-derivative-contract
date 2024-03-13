@@ -20,6 +20,16 @@ see https://ssrn.com/abstract=3163074
 
 For non-technical description see the [articles](articles) section.
 
+## Standards (Protocols)
+
+### ERC-6123 Smart Derivative Contract
+
+See https://eips.ethereum.org/EIPS/eip-6123
+
+### ERC-7573 Secure Delivery-versus-Payment
+
+See [ERC 7573](erc-7573/ec-7573.md).
+
 ## Visualization and Demonstration
 
 The package `net.finmath.smartcontract.demo`contains a visualization of a smart derivative contract.
