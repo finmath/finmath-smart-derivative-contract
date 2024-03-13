@@ -1,9 +1,17 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
+import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -68,7 +76,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
+	public static List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
 		try {
@@ -82,6 +90,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 
 	}
 
+
 	/**
 	 * Static method which parses a json file from its string content and converts it to a list of market data scenarios
 	 *
@@ -90,12 +99,31 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<CalibrationDataset> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
+	public static List<CalibrationDataset> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
 		final String content;
 
 		content = jsonString;
 		return getScenariosFromJsonContent(content);
 
+	}
+
+	public static  CalibrationDataset getCalibrationDataSetFromXML(final String xmlString, List<CalibrationDataItem.Spec> dataSpecs) throws  Exception {
+		StringReader reader = new StringReader(xmlString);
+		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		MarketDataList marketDataList = (MarketDataList) jaxbUnmarshaller.unmarshal(reader);
+
+		Set<CalibrationDataItem> calibrationDataItems = new LinkedHashSet<>();
+
+		dataSpecs.stream().forEach(spec-> {
+			/* Can be more than one, if we have data points of type fixing*/
+			Set<CalibrationDataItem> calibrationDataItemSet = marketDataList.getPoints().stream().filter(marketDataPoint -> marketDataPoint.getId().equals(spec.getKey())).map(point-> new CalibrationDataItem(spec, point.getValue(), point.getTimeStamp())).collect(Collectors.toSet());
+			calibrationDataItems.addAll(calibrationDataItemSet);
+		});
+
+		CalibrationDataset set = new CalibrationDataset(calibrationDataItems, marketDataList.getRequestTimeStamp());
+
+		return set;
 	}
 
 	/**
@@ -175,7 +203,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 				curvePointEntry -> {
 					LocalDate fixingDate = LocalDate.parse(curvePointEntry.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 					String specKey = curveKey + "_" + entry.getKey() + "_" + curvePointEntry.getKey();
-					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), "0D");
+					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), "1D");
 					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(), fixingDate.atStartOfDay());
 					return dataItem;
 				})).collect(Collectors.toCollection(LinkedHashSet::new));

@@ -65,7 +65,7 @@ public class MarketDataList {
 		}
 	}
 
-	CalibrationDataset mapToCalibrationDataSet(){
+	public CalibrationDataset mapToCalibrationDataSet(){
 		return null;
 	}
 

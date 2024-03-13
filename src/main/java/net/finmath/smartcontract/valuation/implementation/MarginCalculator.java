@@ -64,18 +64,20 @@ public class MarginCalculator {
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
-		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
+		CalibrationDataset setStart = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataStart,productDescriptor.getMarketdataItemList());
+		CalibrationDataset setEnd = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataEnd,productDescriptor.getMarketdataItemList());
+//		List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
+//		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
-		List<CalibrationDataset> marketDataSetsEnd = CalibrationParserDataItems.getScenariosFromJsonString(marketDataEnd);
-		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
+//		List<CalibrationDataset> marketDataSetsEnd = CalibrationParserDataItems.getScenariosFromJsonString(marketDataEnd);
+//		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 
-		LocalDateTime startDate = marketDataSetsStart.get(0).getDate();
-		LocalDateTime endDate = marketDataSetsEnd.get(0).getDate();
-		double value = calculateMargin(List.of(marketDataSetsStart.get(0), marketDataSetsEnd.get(0)), startDate, endDate, productDescriptor, underlying);
+		LocalDateTime startDate = setStart.getDate();
+		LocalDateTime endDate = setEnd.getDate();
+		double value = calculateMargin(List.of(setStart, setEnd), startDate, endDate, productDescriptor, underlying);
 
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
@@ -133,14 +135,16 @@ public class MarginCalculator {
 	public ValueResult getValue(String marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		List<CalibrationDataset> marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
-		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
+//		List<CalibrationDataset> marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
+//		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
 
-		LocalDateTime endDate = marketDataSets.get(0).getDate();
-		double value = calculateMargin(marketDataSets, null, endDate, productDescriptor, underlying);
+//		LocalDateTime endDate = marketDataSets.get(0).getDate();
+
+		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
+		double value = calculateMargin(List.of(set), null, set.getDate(), productDescriptor, underlying);
 
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();

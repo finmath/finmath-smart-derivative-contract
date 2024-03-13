@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -25,9 +26,9 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 
 	int simulationFrequencySec;
 
-	public MarketDataGeneratorRandomFeed(Period processingPeriod, String referenceMarketDataJson) throws Exception {
+	public MarketDataGeneratorRandomFeed(Period processingPeriod, String referenceMarketDataStr, List<CalibrationDataItem.Spec> mdSpecs) throws Exception {
 		this.endTime = LocalDateTime.now().plus(processingPeriod);
-		referenceSet = CalibrationParserDataItems.getScenariosFromJsonString(referenceMarketDataJson).get(0);
+		referenceSet = CalibrationParserDataItems.getCalibrationDataSetFromXML(referenceMarketDataStr,mdSpecs);
 		simulationFrequencySec = 3;
 	}
 

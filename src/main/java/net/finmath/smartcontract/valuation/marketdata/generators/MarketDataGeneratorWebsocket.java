@@ -127,7 +127,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 						LocalDateTime adjustedTime = this.adjustTimestampForOvernightFixing(localDateTime,ric);
 
 						CalibrationDataItem.Spec spec = this.getSpec(ric);
-						MarketDataPoint dataPoint = new MarketDataPoint(spec.getKey(),spec.getCurveName(),spec.getProductName(),spec.getMaturity(),quoteScaled,adjustedTime);
+						MarketDataPoint dataPoint = new MarketDataPoint(spec.getKey(),quoteScaled,adjustedTime);
 
 						this.marketDataList.add(dataPoint);
 					}

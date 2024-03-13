@@ -1,5 +1,10 @@
 package net.finmath.smartcontract.settlement;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import net.finmath.smartcontract.valuation.marketdata.data.LocalDateTimeAdapter;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -16,7 +21,13 @@ import java.util.Map;
  *
  * @author Christian Fries
  */
+@XmlRootElement
 public class Settlement {
+
+
+	public Settlement(){
+
+	}
 
 	public enum SettlementType {
 		INITIAL,
@@ -38,7 +49,6 @@ public class Settlement {
 
 	private ZonedDateTime settlementTime;
 
-	private String marketData;
 
 	private BigDecimal settlementValue;
 
@@ -52,6 +62,8 @@ public class Settlement {
 
 	private BigDecimal settlementValueNext;
 
+	private MarketDataList marketData;
+
 	// Custom additional information (e.g. risk figures or szenario values)
 
 	private Map<String, String> info;
@@ -62,6 +74,101 @@ public class Settlement {
 
 	public void setTradeId(String tradeId) {
 		this.tradeId = tradeId;
+	}
+
+	public SettlementType getSettlementType() {
+		return settlementType;
+	}
+
+	public void setSettlementType(SettlementType settlementType) {
+		this.settlementType = settlementType;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public BigDecimal getMarginValue() {
+		return marginValue;
+	}
+
+	public void setMarginValue(BigDecimal marginValue) {
+		this.marginValue = marginValue;
+	}
+
+	public List<BigDecimal> getMarginLimits() {
+		return marginLimits;
+	}
+
+	public void setMarginLimits(List<BigDecimal> marginLimits) {
+		this.marginLimits = marginLimits;
+	}
+	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
+	public ZonedDateTime getSettlementTime() {
+		return settlementTime;
+	}
+
+	public void setSettlementTime(ZonedDateTime settlementTime) {
+		this.settlementTime = settlementTime;
+	}
+
+	public MarketDataList getMarketData() {
+		return marketData;
+	}
+
+	public void setMarketData(MarketDataList marketData) {
+		this.marketData = marketData;
+	}
+
+	public BigDecimal getSettlementValue() {
+		return settlementValue;
+	}
+
+	public void setSettlementValue(BigDecimal settlementValue) {
+		this.settlementValue = settlementValue;
+	}
+
+	public BigDecimal getSettlementValuePrevious() {
+		return settlementValuePrevious;
+	}
+
+	public void setSettlementValuePrevious(BigDecimal settlementValuePrevious) {
+		this.settlementValuePrevious = settlementValuePrevious;
+	}
+
+	public Settlement(String tradeId, SettlementType settlementType, String currency, BigDecimal marginValue, List<BigDecimal> marginLimits, ZonedDateTime settlementTime, MarketDataList marketData, BigDecimal settlementValue, BigDecimal settlementValuePrevious, ZonedDateTime settlementTimeNext, BigDecimal settlementValueNext) {
+		this.tradeId = tradeId;
+		this.settlementType = settlementType;
+		this.currency = currency;
+		this.marginValue = marginValue;
+		this.marginLimits = marginLimits;
+		this.settlementTime = settlementTime;
+		this.marketData = marketData;
+		this.settlementValue = settlementValue;
+		this.settlementValuePrevious = settlementValuePrevious;
+		this.settlementTimeNext = settlementTimeNext;
+		this.settlementValueNext = settlementValueNext;
+	}
+
+	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
+	public ZonedDateTime getSettlementTimeNext() {
+		return settlementTimeNext;
+	}
+
+	public void setSettlementTimeNext(ZonedDateTime settlementTimeNext) {
+		this.settlementTimeNext = settlementTimeNext;
+	}
+
+	public BigDecimal getSettlementValueNext() {
+		return settlementValueNext;
+	}
+
+	public void setSettlementValueNext(BigDecimal settlementValueNext) {
+		this.settlementValueNext = settlementValueNext;
 	}
 }
 

@@ -14,7 +14,7 @@ public class MockResourceGovernor extends ResourceGovernor {
 
 	@Override
 	public Resource getActiveDatasetAsResourceInReadMode(String username) {
-		return new ClassPathResource("net/finmath/smartcontract/valuation/client/md_testset_newformat_1.json");
+		return new ClassPathResource("net/finmath/smartcontract/valuation/client/legacy/md_testset_newformat_1.json");
 	}
 
 	@Override

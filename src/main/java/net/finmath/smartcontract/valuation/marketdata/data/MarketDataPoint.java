@@ -7,26 +7,21 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-@XmlType(propOrder = {"id","curveKey","productKey","maturityKey","quoteValue","timeStamp"})
-@JsonPropertyOrder({ "id","curveKey","productKey","maturityKey","quoteValue","timeStamp" })
+@XmlType(propOrder = {"id","value","timeStamp"})
+@JsonPropertyOrder({ "id","value","timeStamp" })
 public class MarketDataPoint {
 
 	private LocalDateTime timeStamp;
 	private String id;
-	private String curveKey;
-	private String productKey;
 
-	private String maturityKey;
-	private Double quoteValue;
+
+	private Double value;
 
 
 
-	public MarketDataPoint(String id, String curveKey, String productKey, String maturityKey, Double quoteValue, LocalDateTime timeStamp) {
+	public MarketDataPoint(String id, Double value, LocalDateTime timeStamp) {
 		this.id = id;
-		this.curveKey = curveKey;
-		this.productKey = productKey;
-		this.maturityKey=maturityKey;
-		this.quoteValue = quoteValue;
+		this.value = value;
 		this.timeStamp = timeStamp;
 	}
 
@@ -39,40 +34,20 @@ public class MarketDataPoint {
 		return id;
 	}
 
-	public String getCurveKey() {
-		return curveKey;
-	}
 
-	public String getProductKey() {
-		return productKey;
-	}
 
-	public String getMaturityKey() {
-		return maturityKey;
-	}
-
-	public Double getQuoteValue() {
-		return quoteValue;
+	public Double getValue() {
+		return value;
 	}
 
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	public void setCurveKey(String curveKey) {
-		this.curveKey = curveKey;
-	}
 
-	public void setProductKey(String productKey) {
-		this.productKey = productKey;
-	}
 
-	public void setMaturityKey(String maturityKey) {
-		this.maturityKey = maturityKey;
-	}
-
-	public void setQuoteValue(Double quoteValue) {
-		this.quoteValue = quoteValue;
+	public void setValue(Double value) {
+		this.value = value;
 	}
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
 	public LocalDateTime getTimeStamp() {

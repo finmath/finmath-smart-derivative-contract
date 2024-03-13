@@ -44,7 +44,7 @@ public class CalibrationTests {
 		SmartDerivativeContractDescriptor product;
 		try (
 				InputStream marketDataMessageStream = CalibrationTests.class.getClassLoader().getResourceAsStream(
-						"net/finmath/smartcontract/valuation/client/nf_md_20230711-123529.json");
+						"net/finmath/smartcontract/valuation/client/legacy/md_testset_newformat_1.json");
 				// data obtained from the new livefeed implementation. Contains several fixings.
 				InputStream sdcmlStream = CalibrationTests.class.getClassLoader()
 						.getResourceAsStream(

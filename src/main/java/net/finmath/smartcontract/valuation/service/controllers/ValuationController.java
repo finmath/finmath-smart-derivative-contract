@@ -132,7 +132,7 @@ public class ValuationController implements ValuationApi {
 		ValueResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
-			final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+			final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 			value = marginCalculator.getValue(marketData, new String(tradeData.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);

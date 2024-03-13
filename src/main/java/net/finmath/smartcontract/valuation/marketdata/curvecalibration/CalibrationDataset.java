@@ -59,9 +59,11 @@ public class CalibrationDataset {
 	}
 
 	public MarketDataList toMarketDataList(){
-		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(),item.getSpec().getCurveName(),item.getSpec().getProductName(),item.getMaturity(), item.getQuote(), item.getDateTime())).collect(Collectors.toList());
+		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
+		List<MarketDataPoint> fixings = fixingDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
 		MarketDataList marketDataList = new MarketDataList();
-		marketDataPointList.stream().forEach(point->marketDataList.add(point));
+		marketDataPointList.forEach(marketDataList::add);
+		fixings.forEach(marketDataList::add);
 		return marketDataList;
 	}
 
@@ -116,7 +118,10 @@ public class CalibrationDataset {
 	}
 
 	public Set<CalibrationDataItem> getDataPoints() {
-		return this.calibrationDataItems;
+		Set<CalibrationDataItem> allItems = new HashSet<>();
+		allItems.addAll(this.calibrationDataItems);
+		allItems.addAll(this.fixingDataItems);
+		return allItems;
 	}
 
 	public LocalDateTime getDate() {
