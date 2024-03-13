@@ -30,12 +30,12 @@ public class GeneratorTests {
 	@BeforeAll
 	@Disabled
 	void init() throws Exception{
-		String connectionPropertiesFile = "<your properties file>";
-		properties = new Properties();
-		properties.load(new FileInputStream(connectionPropertiesFile));
-		String sdcXML = new String(LaunchAGenerator.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
-		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
-		mdItemList = sdc.getMarketdataItemList();
+		//String connectionPropertiesFile = "<your properties file>";
+		//properties = new Properties();
+		//properties.load(new FileInputStream(connectionPropertiesFile));
+		//String sdcXML = new String(LaunchAGenerator.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		//SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
+		//mdItemList = sdc.getMarketdataItemList();
 	}
 
 

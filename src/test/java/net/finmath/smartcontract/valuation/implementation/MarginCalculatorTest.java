@@ -1,12 +1,25 @@
 package net.finmath.smartcontract.valuation.implementation;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
+import net.finmath.smartcontract.product.xml.Document;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import org.assertj.core.util.Files;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MarginCalculatorTest {
 
@@ -37,5 +50,20 @@ public class MarginCalculatorTest {
 
 		Assertions.assertEquals(582165.72, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
+	}
+
+	@Test
+	@Disabled
+	void testXMLMarketData() throws Exception{
+		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+
+		String s = "finmath-smart-derivative-contract\\src\\main\\resources\\net\\finmath\\smartcontract\\valuation\\client\\marketdata.xml";
+		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		MarketDataList l = (MarketDataList) jaxbUnmarshaller.unmarshal(new FileInputStream( s ));
+		String json = l.serializeToJson();
+		MarginCalculator marginCalculator = new MarginCalculator();
+		ValueResult valuationResult = marginCalculator.getValue(json, product);
+		System.out.println(valuationResult.getValue());
 	}
 }

@@ -159,7 +159,7 @@ public class WebSocketConnector {
 			} else {
 				// Use the refresh token we got from the last authentication response.
 				params.add(new BasicNameValuePair("grant_type", "refresh_token"));
-				params.add(new BasicNameValuePair("refresh_token", previousAuthResponseJson.get("refresh_token").textValue()));
+				params.add(new BasicNameValuePair("refresh_token", previousAuthResponseJson.getString("refresh_token")));
 				System.out.println("Sending authentication request with refresh token to " + url + "...");
 			}
 

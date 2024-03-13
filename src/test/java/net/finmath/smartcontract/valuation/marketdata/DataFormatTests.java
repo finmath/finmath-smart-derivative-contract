@@ -58,7 +58,7 @@ public class DataFormatTests {
 		MarketDataPoint point = new MarketDataPoint("test","curve","swap","10Y",0.0, LocalDateTime.now());
 		MarketDataList set = new MarketDataList();
 		set.add(point);
-		File file = new File("C:\\Temp\\file.xml");
+		File file = new File("marketdata.xml");
 		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
