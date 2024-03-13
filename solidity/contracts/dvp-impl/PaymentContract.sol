@@ -6,7 +6,6 @@ import "./interface/IDecryptionContract.sol";
 
 contract PaymentContract is IDecryptionContract {
 
-
     struct TransactionSpec {
         address from;
         address to;
@@ -25,12 +24,12 @@ contract PaymentContract is IDecryptionContract {
         buyerAddress = _buyerAddress;
     }
 
+    // Implementation of the interface IDecryptionContract
 
     function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
         transactionMap[id] = TransactionSpec(from, msg.sender, amount, keyEncryptedSuccess, keyEncryptedFailure);
-        emit TransferIncepted(msg.sender, id, amount);
+        emit TransferIncepted(id, amount, from, msg.sender, keyEncryptedSuccess, keyEncryptedFailure);
     }
-
 
     function transferAndDecrypt(bytes32 id, int amount, address to, string memory keyEncryptedSuccess, string memory keyEncryptedFailure) external override {
         // verify transaction spec
