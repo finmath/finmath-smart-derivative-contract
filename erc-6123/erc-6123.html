@@ -132,45 +132,68 @@
         <main id="bodyColumn"  class="span10" >
 <section><section>
 <h2>Abstract</h2>
-<p>The Smart Derivative Contract (SDC) allows fully automizing and securing a financial product's - e.g. a financial derivative or bond - complete trade life cycle.
-The SDC leverages the advantages of smart contracts to remove many of the frictions associated with the classical derivative life cycle. Most notably, the protocol allows the removal of counterpart risk essentially.
-The SDC can be implemented using a pre-agreed valuation oracle and valuation model, removing ambiguity in the settlement amounts. The SDC provides methods and callbacks to enable fully automated and fully transactional settlements (delivery-versus-payment, payment-vs-payment).
+<p>The Smart Derivative Contract (SDC) allows fully automizing and securing a financial product's - e.g. a financial
+derivative or bond - complete trade life cycle.
+The SDC leverages the advantages of smart contracts to remove many of the frictions associated with the classical
+derivative life cycle. Most notably, the protocol allows the removal of counterpart risk essentially.
+The SDC can be implemented using a pre-agreed valuation oracle and valuation model, removing ambiguity in the settlement
+amounts. The SDC provides methods and callbacks to enable fully automated and fully transactional settlements (
+delivery-versus-payment, payment-vs-payment).
 Token-based settlement can be realized by any contract implementation implementing an <a href="./eip-20.html">ERC-20</a> token.
 Proof of concepts in terms of two legally binding digital Interest Rate Swaps were conducted in 2021 and 2022.</p></section><section>
 <h2>Motivation</h2><section>
 <h3>Rethinking Financial Derivatives</h3>
-<p>By their very nature, so-called &#x201c;over-the-counter (OTC)&#x201d; financial contracts are bilateral contractual agreements on exchanging long-dated cash flow schedules.
-Since these contracts change their intrinsic market value due to changing market environments, they are subject to counterparty credit risk when one counterparty is subject to default.
-The initial white paper describes the concept of a Smart Derivative Contract (SDC) with the central aim to detach bilateral financial transactions from counterparty credit risk and to remove complexities
+<p>By their very nature, so-called &#x201c;over-the-counter (OTC)&#x201d; financial contracts are bilateral contractual agreements on
+exchanging long-dated cash flow schedules.
+Since these contracts change their intrinsic market value due to changing market environments, they are subject to
+counterparty credit risk when one counterparty is subject to default.
+The initial white paper describes the concept of a Smart Derivative Contract (SDC) with the central aim to detach
+bilateral financial transactions from counterparty credit risk and to remove complexities
 in bilateral post-trade processing by a complete redesign.</p></section><section>
 <h3>Concept of a Smart Derivative Contract</h3>
-<p>A Smart Derivative Contract is a deterministic settlement protocol with the same economic behaviour as a Financial Contract - e.g. an OTC-Derivative or a Bond.
-Every process state is specified; therefore, the trade and post-trade process is known in advance and is deterministic over the trade's life cycle. An <a href="./eip-20.html">ERC-20</a> token can be used for frictionless decentralized settlement, see reference implementation. We do provide a separate interface and implementation for a specific &#x201c;Settlement Token&#x201d; derived from <a href="./eip-20.html">ERC-20</a>.
-These features enable two or multiple trade parties to process their financial contracts fully decentralized without relying on a third central intermediary agent.
+<p>A Smart Derivative Contract is a deterministic settlement protocol with the same economic behaviour as a Financial
+Contract - e.g. an OTC-Derivative or a Bond.
+Every process state is specified; therefore, the trade and post-trade process is known in advance and is deterministic
+over the trade's life cycle. An <a href="./eip-20.html">ERC-20</a> token can be used for frictionless decentralized settlement, see
+reference implementation. We do provide a separate interface and implementation for a specific &#x201c;Settlement Token&#x201d;
+derived from <a href="./eip-20.html">ERC-20</a>.
+These features enable two or multiple trade parties to process their financial contracts fully decentralized without
+relying on a third central intermediary agent.
 The process logic of SDC can be implemented as a finite state machine on solidity.</p></section><section>
 <h3>Applications</h3>
 <p>The interface's life cycle functionality applies to several use cases.</p><section>
 <h4>Collateralized OTC Derivative</h4>
-<p>In the case of a collateralized OTC derivative, an SDC settles the outstanding net present value of the underlying financial contract on a frequent (e.g. daily) basis. With each settlement cycle, the net present value of the underlying contract is exchanged, and the value of the contract is reset to zero. Pre-agreed margin buffers are locked at the beginning of each settlement cycle so that settlement will be guaranteed up to a certain amount.
-If a counterparty fails to obey contract rules, e.g. not providing sufficient pre-funding, SDC will terminate automatically with the guaranteed transfer of a termination fee by the causing party.
+<p>In the case of a collateralized OTC derivative, an SDC settles the outstanding net present value of the underlying
+financial contract on a frequent (e.g. daily) basis. With each settlement cycle, the net present value of the underlying
+contract is exchanged, and the value of the contract is reset to zero. Pre-agreed margin buffers are locked at the
+beginning of each settlement cycle so that settlement will be guaranteed up to a certain amount.
+If a counterparty fails to obey contract rules, e.g. not providing sufficient pre-funding, SDC will terminate
+automatically with the guaranteed transfer of a termination fee by the causing party.
 We provide a Reference Implementation for this case.</p></section><section>
 <h4>Defaultable OTC Derivative</h4>
-<p>A defaultable OTC Derivative has no Collateral Process in place. In that case, a smart derivative will settle the according cash flows as determined in the derivative contract specification. A defaultable OTC derivative might end in
+<p>A defaultable OTC Derivative has no Collateral Process in place. In that case, a smart derivative will settle the
+according cash flows as determined in the derivative contract specification. A defaultable OTC derivative might end in
 a state &#x2018;Failure to Pay&#x2019; if a settlement cannot be conducted.</p></section><section>
 <h4>Smart Bond Contract</h4>
-<p>The life cycle of a bond can also make use of the function catalogue below. The interface enables the issuer to allocate and redeem the bond as well as settle coupon payments. On the other hand, it allows bondholders to interact with each other, conducting secondary market trades. It all boils down to a settlement phase, which needs to be pre-agreed by both parties or triggered by the issuer
+<p>The life cycle of a bond can also make use of the function catalogue below. The interface enables the issuer to allocate
+and redeem the bond as well as settle coupon payments. On the other hand, it allows bondholders to interact with each
+other, conducting secondary market trades. It all boils down to a settlement phase, which needs to be pre-agreed by both
+parties or triggered by the issuer
 which can be processed in a completely frictionless way.</p></section></section></section><section>
 <h2>Specification</h2><section>
 <h3>Methods</h3>
-<p>The following methods specify a Smart Derivative Contract's trade initiation and settlement life cycle. For further information, please also look at the interface documentation ISDC.sol.</p><section>
+<p>The following methods specify a Smart Derivative Contract's trade initiation and settlement life cycle. For further
+information, please also look at the interface documentation ISDC.sol.</p><section>
 <h4>Trade Initiation Phase: <code>inceptTrade</code></h4>
-<p>A party can initiate a trade by providing the party address to trade with, trade data, trade position, payment amount for the trade and initial settlement data. Only registered counterparties are allowed to use that function.</p>
+<p>A party can initiate a trade by providing the party address to trade with, trade data, trade position, payment amount
+for the trade and initial settlement data. Only registered counterparties are allowed to use that function.</p>
 
 <div class="verbatim">
 <pre><code class="language-solidity">function inceptTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
 </code></pre></div></section><section>
 <h4>Trade Initiation Phase: <code>confirmTrade</code></h4>
-<p>A counterparty can confirm a trade by providing its trade specification data, which then gets matched against the data stored from <code>inceptTrade</code> call.</p>
+<p>A counterparty can confirm a trade by providing its trade specification data, which then gets matched against the data
+stored from <code>inceptTrade</code> call.</p>
 
 <div class="verbatim">
 <pre><code class="language-solidity">function confirmTrade(address _withParty, string memory _tradeData, int _position, int256 _paymentAmount, string memory _initialSettlementData) external;
@@ -182,15 +205,19 @@ which can be processed in a completely frictionless way.</p></section></section>
 <pre><code class="language-solidity">function initiateSettlement() external;
 </code></pre></div></section><section>
 <h4>Trade Settlement Phase: <code>performSettlement</code></h4>
-<p>Valuation may be provided on-chain or off-chain via an external oracle service that calculates the settlement or coupon amounts and uses external market data.
-This method serves as a callback called from an external oracle providing settlement amount and used settlement data, which also get stored.
-The settlement amount will be checked according to contract terms, resulting in either a regular settlement or a termination of the trade.</p>
+<p>Valuation may be provided on-chain or off-chain via an external oracle service that calculates the settlement or coupon
+amounts and uses external market data.
+This method serves as a callback called from an external oracle providing settlement amount and used settlement data,
+which also get stored.
+The settlement amount will be checked according to contract terms, resulting in either a regular settlement or a
+termination of the trade.</p>
 
 <div class="verbatim">
 <pre><code class="language-solidity">function performSettlement(int256 settlementAmount, string memory settlementData) external;
 </code></pre></div></section><section>
 <h4>Trade Settlement Phase: <code>afterTransfer</code></h4>
-<p>This method - either called back from the provided settlement token directly or from an eligible address - completes the settlement transfer.
+<p>This method - either called back from the provided settlement token directly or from an eligible address - completes the
+settlement transfer.
 This might result in a termination or start of the next settlement phase, depending on the provided success flag.</p>
 
 <div class="verbatim">
@@ -203,7 +230,8 @@ This might result in a termination or start of the next settlement phase, depend
 <pre><code class="language-solidity">function requestTradeTermination(string memory tradeId, int256 _terminationPayment) external;
 </code></pre></div></section><section>
 <h4>Trade Termination: <code>confirmTradeTermination</code></h4>
-<p>Allows an eligible party to confirm a previously requested (mutual) trade termination, including termination payment value</p>
+<p>Allows an eligible party to confirm a previously requested (mutual) trade termination, including termination payment
+value</p>
 
 <div class="verbatim">
 <pre><code class="language-solidity">function confirmTradeTermination(string memory tradeId, int256 _terminationPayment) external;
@@ -268,22 +296,30 @@ This might result in a termination or start of the next settlement phase, depend
 <p>The interface design and reference implementation are based on the following considerations:</p>
 <ul>
 
-<li>An SDC protocol enables interacting parties to initiate and process a financial transaction in a bilateral and deterministic manner. Settlement and Counterparty Risk is managed by the contract.</li>
+<li>An SDC protocol enables interacting parties to initiate and process a financial transaction in a bilateral and
+deterministic manner. Settlement and Counterparty Risk is managed by the contract.</li>
 <li>The provided interface specification is supposed to completely reflect the entire trade life cycle.</li>
-<li>The interface specification is generic enough to handle the case that parties process one or even multiple financial transactions (on a netted base)</li>
-<li>Usually, the valuation of financial trades (e.g. OTC Derivatives) will require advanced valuation methodology to determine the market value. This is why the concept might rely on an external market data source and hosted valuation algorithms</li>
-<li>A pull-based valuation-based oracle pattern can be implemented by using the provided callback pattern (methods: <code>initiateSettlement</code>, <code>performSettlement</code>)</li>
-<li>The reference implementation <code>SDC.sol</code> is based on a state-machine pattern where the states also serve as guards (via modifiers) to check which method is allowed to be called at a particular given process and trade state</li>
+<li>The interface specification is generic enough to handle the case that parties process one or even multiple financial
+transactions (on a netted base)</li>
+<li>Usually, the valuation of financial trades (e.g. OTC Derivatives) will require advanced valuation methodology to
+determine the market value. This is why the concept might rely on an external market data source and hosted valuation
+algorithms</li>
+<li>A pull-based valuation-based oracle pattern can be implemented by using the provided callback pattern (
+methods: <code>initiateSettlement</code>, <code>performSettlement</code>)</li>
+<li>The reference implementation <code>SDC.sol</code> is based on a state-machine pattern where the states also serve as guards (via
+modifiers) to check which method is allowed to be called at a particular given process and trade state</li>
 </ul><section>
 <h3>State diagram of trade and process states</h3>
 <p><img src="../assets/eip-6123/doc/sdc_trade_states.png" alt="image info" /></p></section><section>
 <h3>Sequence diagram of trade initiation and settlement life-cycle</h3>
 <p><img src="../assets/eip-6123/doc/sdc_lifecycle_sequence_diagram.png" alt="image info" /></p></section></section><section>
 <h2>Test Cases</h2>
-<p>Life-cycle unit tests based on the sample implementation and usage of <a href="./eip-20.html">ERC-20</a> token is provided. See file <a href="../assets/eip-6123/test/SDCTests.js">test/SDCTests.js</a>
+<p>Life-cycle unit tests based on the sample implementation and usage of <a href="./eip-20.html">ERC-20</a> token is provided. See
+file <a href="../assets/eip-6123/test/SDCTests.js">test/SDCTests.js</a>
 ).</p></section><section>
 <h2>Reference Implementation</h2>
-<p>An abstract contract class SDC.sol as well as a full reference implementation SDCPledgedBalance.sol for an OTC-Derivative is provided and is based on the <a href="./eip-20.html">ERC-20</a> token standard.
+<p>An abstract contract class SDC.sol as well as a full reference implementation SDCPledgedBalance.sol for an
+OTC-Derivative is provided and is based on the <a href="./eip-20.html">ERC-20</a> token standard.
 See folder <code>/assets/contracts</code>, more explanation on the implementation is provided inline.</p><section>
 <h3>Trade Data Specification (suggestion)</h3>
 <p>Please take a look at the provided xml file as a suggestion on how trade parameters could be stored.</p></section></section><section>
