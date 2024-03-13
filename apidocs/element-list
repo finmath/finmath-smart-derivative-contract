@@ -11,9 +11,11 @@ net.finmath.smartcontract.valuation.client
 net.finmath.smartcontract.valuation.implementation
 net.finmath.smartcontract.valuation.implementation.reactive
 net.finmath.smartcontract.valuation.marketdata
-net.finmath.smartcontract.valuation.marketdata.adapters
 net.finmath.smartcontract.valuation.marketdata.curvecalibration
+net.finmath.smartcontract.valuation.marketdata.data
 net.finmath.smartcontract.valuation.marketdata.database
+net.finmath.smartcontract.valuation.marketdata.generators
+net.finmath.smartcontract.valuation.marketdata.generators.legacy
 net.finmath.smartcontract.valuation.oracle
 net.finmath.smartcontract.valuation.oracle.interestrates
 net.finmath.smartcontract.valuation.oracle.simulated
