@@ -121,7 +121,12 @@ public class CalibrationParserDataItems implements CalibrationParser {
 			calibrationDataItems.addAll(calibrationDataItemSet);
 		});
 
+		if(calibrationDataItems.isEmpty())
+			throw new RuntimeException("No calibration items detected.");
+
 		CalibrationDataset set = new CalibrationDataset(calibrationDataItems, marketDataList.getRequestTimeStamp());
+
+
 
 		return set;
 	}
