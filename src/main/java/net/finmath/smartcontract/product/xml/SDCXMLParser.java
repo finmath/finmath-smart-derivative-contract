@@ -91,8 +91,11 @@ public class SDCXMLParser {
 		Node underlying = document
 				.getElementsByTagName("underlying")
 				.item(0)
-				.getFirstChild()
-				.getNextSibling();
+				.getFirstChild();
+		if(!underlying.getNodeName().equals("dataDocument")){
+			underlying = underlying.getNextSibling();
+		}
+
 		return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
 	}
 
