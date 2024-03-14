@@ -31,14 +31,9 @@ public class ConditionalSettlementCalculator implements Function<CalibrationData
 		String marketDataAsJson = actualmarketdata.serializeToJson();
 		try {
 			if (previousmarketdata != null) {
-				String actualTime = CalibrationParserDataItems.getScenariosFromJsonString(marketDataAsJson).get(0).getDate().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 				ValueResult marginResult = calculator.getValue(marketDataAsJson, sdcXML);
-				//if (Math.abs(marginResult.getValue().doubleValue()) > resultTriggerValue.doubleValue()) {
-				String previousTime = CalibrationParserDataItems.getScenariosFromJsonString(previousmarketdata).get(0).getDate().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 				previousmarketdata = marketDataAsJson;
 				finalResult = marginResult;
-//                    System.out.println("ConditionalMarginCalculator: PreviousTime: " + previousTime + " - ActualTime: " + actualTime + " - SettlementValue: " + marginResult.getValue().doubleValue() );
-				//}
 			} else
 				previousmarketdata = marketDataAsJson;
 

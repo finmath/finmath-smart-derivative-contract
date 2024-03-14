@@ -1,14 +1,17 @@
-package net.finmath.smartcontract.valuation.marketdata.adapters;
+package net.finmath.smartcontract.valuation.marketdata.generators;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketAdapter;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -17,36 +20,32 @@ import reactor.core.publisher.Sinks;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDataset> {// implements Callable<String> {
+public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements MarketDataGeneratorInterface<MarketDataList> {// implements Callable<String> {
 
 	private final BusinessdayCalendarExcludingTARGETHolidays bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
-	private final JsonNode authJson;
+	private final JSONObject authJson;
 
-	private static final Logger logger = LoggerFactory.getLogger(MarketDataWebSocketAdapter.class);
+	private static final Logger logger = LoggerFactory.getLogger(MarketDataGeneratorWebsocket.class);
 	private final String position;
 	private final Set<CalibrationDataItem.Spec> calibrationSpecs;
-	private Set<CalibrationDataItem> calibrationDataSet;
+	private MarketDataList marketDataList;
 
-	final private PublishSubject<CalibrationDataset> publishSubject;
+	final private PublishSubject<MarketDataList> publishSubject;
 
-	final private Sinks.Many<CalibrationDataset> sink;
+	final private Sinks.Many<MarketDataList> sink;
 
 	boolean requestSent;
 
-	public MarketDataWebSocketAdapter(JsonNode authJson, String position, List<CalibrationDataItem.Spec> itemList) {
+	public MarketDataGeneratorWebsocket(JSONObject authJson, String position, List<CalibrationDataItem.Spec> itemList) {
 		this.authJson = authJson;
 		this.position = position;
-		this.calibrationSpecs = itemList.stream().collect(Collectors.toCollection(LinkedHashSet::new));
-		this.calibrationDataSet = new LinkedHashSet<>();
+		this.calibrationSpecs = new LinkedHashSet<>(itemList);
+		this.marketDataList = new MarketDataList();
 		requestSent = false;
 		publishSubject = PublishSubject.create();
 		sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
@@ -58,30 +57,24 @@ public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDatas
 
 
 	public boolean allQuotesRetrieved() {
-		return this.calibrationDataSet.size() >= this.calibrationSpecs.size();
+		return this.marketDataList.getSize() >= this.calibrationSpecs.size();
 	}
 
-	public void reset() {
-		this.calibrationDataSet = new LinkedHashSet<>();
-	}
-
-	public Set<CalibrationDataItem> getMarketDataItems() {
-		return calibrationDataSet.stream().collect(Collectors.toSet());
-	}
 
 	/**
 	 * Called when handshake is complete and websocket is open, send login
 	 */
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 		System.out.println("WebSocket successfully connected!");
-		sendLoginRequest(websocket, authJson.get("access_token").asText(), true);
+		sendLoginRequest(websocket, authJson.getString("access_token"), true);
+
 	}
 
-	public Observable<CalibrationDataset> asObservable() {
+	public Observable<MarketDataList> asObservable() {
 		return this.publishSubject;
 	}
 
-	public Flux<CalibrationDataset> asFlux() {return sink.asFlux();}
+	public Flux<MarketDataList> asFlux() {return sink.asFlux();}
 
 	/**
 	 * Sends a close login stream message. Closing the login stream also closes and resets all data streams.
@@ -94,12 +87,13 @@ public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDatas
 	}
 
 
-	public void writeDataset(String importDir, CalibrationDataset s, boolean isOvernightFixing) throws IOException {
-		String json = s.serializeToJson();
+	public void writeDataset(String importDir, MarketDataList s, boolean isOvernightFixing) throws IOException {
+		throw new RuntimeException("Not implemented");
+		/*String json = s.serializeToJson();
 		String timeStamp = s.getDate().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
 		logger.info("Consumer MarketDataStorage: Stored Market Data at: " + timeStamp);
 		Path path = Paths.get("C:\\Temp\\marketdata\\md_" + timeStamp + ".json");
-		Files.write(path, json.getBytes());
+		Files.write(path, json.getBytes());*/
 	}
 
 	public void onTextMessage(WebSocket websocket, String message) throws Exception {
@@ -118,27 +112,24 @@ public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDatas
 			try {
 				for (int i = 0; i < responseJson.size(); i++) {
 					if (responseJson.get(i).has("Fields")) {
+						if (this.marketDataList.getSize()== 0)
+							this.marketDataList.setRequestTimeStamp(LocalDateTime.now());
 						String ric = responseJson.get(i).get("Key").get("Name").asText();
 						JsonNode fields = responseJson.get(i).get("Fields");
 						Double BID = fields.has("BID") ? fields.get("BID").doubleValue() : null;
 						Double ASK = fields.has("ASK") ? fields.get("ASK").doubleValue() : null;
-						Double quote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0;
-						quote = BigDecimal.valueOf(quote).setScale(3, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100.)).doubleValue();
+						double midQuote = ASK == null ? BID : BID == null ? ASK : (BID + ASK) / 2.0;
+						Double quoteScaled = BigDecimal.valueOf(midQuote).setScale(3, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100.)).doubleValue();
 						String date = fields.get("VALUE_DT1").textValue();
 						String time = fields.get("VALUE_TS1").textValue();
 						/* Adjust Time on GMT */
 						LocalDateTime localDateTime = LocalDateTime.parse(date + "T" + time, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-						ZoneId zoneId = TimeZone.getDefault().toZoneId();
-						ZoneId gmt = TimeZone.getTimeZone("GMT").toZoneId();
-						LocalDateTime adjustedTime = localDateTime.atZone(gmt).withZoneSameInstant(zoneId).toLocalDateTime();
+						LocalDateTime adjustedTime = this.adjustTimestampForOvernightFixing(localDateTime,ric);
 
-						if (this.getSpec(ric).getProductName().equals("Fixing")) {
-							if (ric.equals("EUROSTR=")) { // The euro short-term rate (€STR) is published on each TARGET2 business day based on transactions conducted and settled on the previous TARGET2 business day.
-								adjustedTime = bdCalendar.getRolledDate(adjustedTime.toLocalDate(), 1).atTime(adjustedTime.toLocalTime());
-							}
-						}
+						CalibrationDataItem.Spec spec = this.getSpec(ric);
+						MarketDataPoint dataPoint = new MarketDataPoint(spec.getKey(),quoteScaled,adjustedTime);
 
-						this.calibrationDataSet.add(new CalibrationDataItem(this.getSpec(ric), quote, adjustedTime));
+						this.marketDataList.add(dataPoint);
 					}
 
 				}
@@ -150,17 +141,35 @@ public class MarketDataWebSocketAdapter extends LiveFeedAdapter<CalibrationDatas
 
 
 		if (this.allQuotesRetrieved()) {
-			Set<CalibrationDataItem> clone = new LinkedHashSet<>();
-			clone.addAll(this.calibrationDataSet);
-			CalibrationDataset set = new CalibrationDataset(clone, LocalDateTime.now());
-			this.calibrationDataSet.clear();
-			this.publishSubject.onNext(set);
-			this.sink.tryEmitNext(set);
+			this.publishSubject.onNext(marketDataList);
+			this.sink.tryEmitNext(marketDataList);
+			this.reset();
 			requestSent = false;
 		}
 
 
 	}
+
+	private void reset() {
+		this.marketDataList = new MarketDataList();
+	}
+
+	private	LocalDateTime	adjustTimestampForOvernightFixing(LocalDateTime localDateTimeUnadjusted, String symbol){
+		ZoneId zoneId = TimeZone.getDefault().toZoneId();
+		ZoneId gmt = TimeZone.getTimeZone("GMT").toZoneId();
+		LocalDateTime adjustedTime = localDateTimeUnadjusted.atZone(gmt).withZoneSameInstant(zoneId).toLocalDateTime();
+
+		if (this.getSpec(symbol).getProductName().equals("Fixing")) {
+			if (symbol.equals("EUROSTR=")) { // The euro short-term rate (€STR) is published on each TARGET2 business day based on transactions conducted and settled on the previous TARGET2 business day.
+				adjustedTime = bdCalendar.getRolledDate(adjustedTime.toLocalDate(), 1).atTime(adjustedTime.toLocalTime());
+			}
+		}
+
+		return adjustedTime;
+
+
+	}
+
 
 
 	/**

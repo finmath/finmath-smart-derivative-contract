@@ -11,7 +11,7 @@ module net.finmath.smartderivativecontract {
 	exports net.finmath.smartcontract.valuation.oracle.interestrates;
 	exports net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 	exports net.finmath.smartcontract.valuation.service.utils;
-	exports net.finmath.smartcontract.valuation.marketdata.adapters;
+	exports net.finmath.smartcontract.valuation.marketdata.generators;
 	exports net.finmath.smartcontract.valuation.service.controllers;
 	exports net.finmath.smartcontract.contract;
 

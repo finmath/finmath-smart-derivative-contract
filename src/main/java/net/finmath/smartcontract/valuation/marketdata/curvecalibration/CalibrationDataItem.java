@@ -123,6 +123,8 @@ public class CalibrationDataItem {
 
 	public LocalDate getDate() {return dateTime.toLocalDate();}
 
+	public LocalDateTime getDateTime(){ return dateTime;}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

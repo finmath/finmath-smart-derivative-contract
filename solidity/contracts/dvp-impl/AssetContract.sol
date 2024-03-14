@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract AssetContract is ILockingContract {
 
-    //   DEFINED in INTERFACE
-    //   event AssetTransferIncepted(address initiator, uint id);
-    //   event AssetTransferConfirmed(address confirmer, uint id);
-    //   event AssetClaimed(uint id, string key);
-    //   event AssetReclaimed(uint id, string key);
+    // DEFINED in INTERFACE
+    // event TransferIncepted(bytes32 id, int amount, address from, string keyEncryptedSeller);
+    // event TransferConfirmed(bytes32 id, int amount, address to, string keyEncryptedBuyer);
+    // event TokenClaimed(bytes32 id, string key);
+    // event TokenReclaimed(bytes32 id, string key);
 
     event TradeIncepted(bytes32 tradeId, address inceptor);
     event TradeConfirmed(bytes32 tradeId, address confirmer);
@@ -24,7 +24,6 @@ contract AssetContract is ILockingContract {
         TradeSettled,
         TradeUnwind
     }
-
 
     struct TransactionSpec {
         address inceptor;
@@ -47,7 +46,7 @@ contract AssetContract is ILockingContract {
     mapping(bytes32 => TransactionSpec)     transactionSpecs;
     mapping(bytes32 => TransactionKey)     transactionKeys;
 
-    constructor(){
+    constructor() {
     }
 
 
@@ -78,14 +77,14 @@ contract AssetContract is ILockingContract {
         emit TradeConfirmed(transactionHash,msg.sender);
     }
 
-
+    // Implementation of Interface ILockingContract
 
     function inceptTransfer(bytes32 id, int amount, address from, string memory keyEncryptedSeller) external override {
         require(msg.sender == transactionSpecs[id].buyer, "You are not the Buyer.");
         require(transactionStates[id] == TransactionState.TradeConfirmed, "TransactionState State is not 'TradeConfirmed'");
         transactionStates[id] = TransactionState.TransferIncepted;
         transactionKeys[id].encryptedKeySeller = keyEncryptedSeller;
-        emit TransferIncepted(transactionSpecs[id].buyer, id);
+        emit TransferIncepted(id, amount, from, transactionSpecs[id].buyer, keyEncryptedSeller);
     }
 
 
@@ -97,7 +96,7 @@ contract AssetContract is ILockingContract {
         TransactionSpec memory txSpec = transactionSpecs[id];
         bondHolderBalances[txSpec.seller]  -= txSpec.notional; // Decrement Notional from Seller Holder Balance
         bondHolderBalances[address(this)]  += txSpec.notional;  // Transfer Bond to INTERNAL Balance and trigger transfer of the paymentAmount
-        emit TransferConfirmed(transactionSpecs[id].seller, id);
+        emit TransferConfirmed(id, amount, transactionSpecs[id].seller, to, keyEncryptedBuyer);
     }
 
 

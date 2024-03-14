@@ -2,8 +2,8 @@ package net.finmath.smartcontract.valuation.service.websocket.handler;
 
 import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.core.Observable;
-import net.finmath.smartcontract.valuation.marketdata.adapters.MarketDataWebSocketAdapter;
-import net.finmath.smartcontract.valuation.marketdata.adapters.WebSocketConnector;
+import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorWebsocket;
+import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ValuationHandler implements WebSocketHandler {
 
-	private MarketDataWebSocketAdapter marketDataWebSocketAdapter;
+	private MarketDataGeneratorWebsocket marketDataWebSocketAdapter;
 
 	@Override
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
@@ -47,7 +47,7 @@ public class ValuationHandler implements WebSocketHandler {
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = "Q:\\refinitiv_connect.properties";
+		String connectionPropertiesFile = "<your properties file>";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -55,7 +55,7 @@ public class ValuationHandler implements WebSocketHandler {
 		final WebSocketConnector connector = new WebSocketConnector(properties);
 		final WebSocket socket = connector.getWebSocket();
 		/* Market Data Adapter*/
-		this.marketDataWebSocketAdapter = new MarketDataWebSocketAdapter(connector.getAuthJson(), connector.getPosition(), mdItemList);
+		this.marketDataWebSocketAdapter = new MarketDataGeneratorWebsocket(connector.getAuthJson(), connector.getPosition(), mdItemList);
 		socket.addListener(marketDataWebSocketAdapter);
 		socket.connect();
 //        emitter.asObservable().throttleFirst(2, TimeUnit.SECONDS).subscribe(s->session.sendMessage(new TextMessage(s.serializeToJson().substring(2,24))));

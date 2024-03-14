@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.valuation.marketdata.adapters;
+package net.finmath.smartcontract.valuation.marketdata.generators.legacy;
 
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
