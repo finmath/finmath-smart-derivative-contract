@@ -48,7 +48,7 @@ public class CalibrationTests {
 				// data obtained from the new livefeed implementation. Contains several fixings.
 				InputStream sdcmlStream = CalibrationTests.class.getClassLoader()
 						.getResourceAsStream(
-								"net.finmath.smartcontract.product.xml/smartderivativecontract.xml") // standard plain swap template
+								"net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml") // standard plain swap template
 		) {
 			final String marketDataMessageContents = new String(
 					Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);

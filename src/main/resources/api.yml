@@ -10,28 +10,6 @@ servers:
   - url: http://34.159.234.113:8080/
 
 paths:
-  /valuation/legacy/value:
-    post:
-      summary: Request mapping for the value
-      operationId: legacyValue
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LegacyValueRequest"
-      responses:
-        "200":
-          description: Value was calculated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValueResult"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /valuation/value:
     post:
       summary: Request mapping for the value
@@ -40,19 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - marketData
-                - tradeData
-                - valuationDate
-              properties:
-                marketData:
-                  type: MarketDataSet
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
-                  format: date-time
+              $ref: "#/components/schemas/ValueRequest"
       responses:
         "200":
           description: Value was calculated
@@ -66,53 +32,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
   /valuation/margin:
     post:
-      summary: Request mapping for the value
+      summary: Request mapping for the margin
       operationId: margin
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - marketDataStart
-                - marketDataEnd
-                - tradeData
-                - valuationDate
-              properties:
-                marketDataStart:
-                  type: MarketDataSet
-                marketDataEnd:
-                  type: MarketDataSet
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
-                  format: date-time
-      responses:
-        "200":
-          description: Margin was calculated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MarginResult"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
-  /valuation/legacy/margin:
-    post:
-      summary: Request mapping for the margin
-      operationId: legacyMargin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LegacyMarginRequest"
+              $ref: "#/components/schemas/MarginRequest"
       responses:
         "200":
           description: Margin was calculated
@@ -524,10 +453,10 @@ components:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
       $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
-    LegacyValueRequest:
-      $ref: "schemas/openapi-schemas/LegacyValueRequest.yml"
-    LegacyMarginRequest:
-      $ref: "schemas/openapi-schemas/LegacyMarginRequest.yml"
+    ValueRequest:
+      $ref: "schemas/openapi-schemas/ValueRequest.yml"
+    MarginRequest:
+      $ref: "schemas/openapi-schemas/MarginRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:

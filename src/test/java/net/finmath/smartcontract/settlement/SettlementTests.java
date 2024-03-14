@@ -36,7 +36,7 @@ public class SettlementTests {
 		ZonedDateTime settlementTime = ZonedDateTime.of(LocalDate.now(), LocalTime.of(17,0,0), zone);
 		ZonedDateTime settlementTimeNext = settlementTime.plusDays(1);
 
-		final String marketDataXMLStr = new String(SettlementTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset0.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataXMLStr = new String(SettlementTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		StringReader reader = new StringReader(marketDataXMLStr);
 		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);

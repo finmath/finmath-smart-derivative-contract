@@ -46,436 +46,436 @@
             <value>17:00</value>
         </settlementTime>
         <marketdata>
-            <provider>internal</provider>
+            <provider>refinitiv</provider>
             <marketdataitems>
                 <item>
-                    <symbol>ESTRFIX1D</symbol>
+                    <symbol>EUROSTR=</symbol>
                     <curve>ESTR</curve>
                     <type>Fixing</type>
                     <tenor>1D</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FIX6M</symbol>
+                    <symbol>EURIBOR6MD=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Fixing</type>
                     <tenor>6M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6DEP6M</symbol>
+                    <symbol>EUR6MD=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Deposit</type>
                     <tenor>6M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA7M</symbol>
+                    <symbol>EUR1X7F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>7M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA8M</symbol>
+                    <symbol>EUR2X8F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>8M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA9M</symbol>
+                    <symbol>EUR3X9F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>9M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA10M</symbol>
+                    <symbol>EUR4X10F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>10M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA12M</symbol>
+                    <symbol>EUR6X12F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>12M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA15M</symbol>
+                    <symbol>EUR9X15F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>15M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6FRA18M</symbol>
+                    <symbol>EUR12X18F=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Forward-Rate-Agreement</type>
                     <tenor>18M</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP2Y</symbol>
+                    <symbol>EURAB6E2Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>2Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP3Y</symbol>
+                    <symbol>EURAB6E3Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>3Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP4Y</symbol>
+                    <symbol>EURAB6E4Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>4Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP5Y</symbol>
+                    <symbol>EURAB6E5Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>5Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP6Y</symbol>
+                    <symbol>EURAB6E6Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>6Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP7Y</symbol>
+                    <symbol>EURAB6E7Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>7Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP8Y</symbol>
+                    <symbol>EURAB6E8Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>8Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP9Y</symbol>
+                    <symbol>EURAB6E9Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>9Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP10Y</symbol>
+                    <symbol>EURAB6E10Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>10Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP11Y</symbol>
+                    <symbol>EURAB6E11Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>11Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP12Y</symbol>
+                    <symbol>EURAB6E12Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>12Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP13Y</symbol>
+                    <symbol>EURAB6E13Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>13Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP14Y</symbol>
+                    <symbol>EURAB6E14Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>14Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP15Y</symbol>
+                    <symbol>EURAB6E15Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>15Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP16Y</symbol>
+                    <symbol>EURAB6E16Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>16Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP17Y</symbol>
+                    <symbol>EURAB6E17Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>17Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP18Y</symbol>
+                    <symbol>EURAB6E18Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>18Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP19Y</symbol>
+                    <symbol>EURAB6E19Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>19Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP20Y</symbol>
+                    <symbol>EURAB6E20Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>20Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP21Y</symbol>
+                    <symbol>EURAB6E21Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>21Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP22Y</symbol>
+                    <symbol>EURAB6E22Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>22Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP23Y</symbol>
+                    <symbol>EURAB6E23Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>23Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP24Y</symbol>
+                    <symbol>EURAB6E24Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>24Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP25Y</symbol>
+                    <symbol>EURAB6E25Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>25Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP26Y</symbol>
+                    <symbol>EURAB6E26Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>26Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP27Y</symbol>
+                    <symbol>EURAB6E27Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>27Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP28Y</symbol>
+                    <symbol>EURAB6E28Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>28Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP29Y</symbol>
+                    <symbol>EURAB6E29Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>29Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP30Y</symbol>
+                    <symbol>EURAB6E30Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>30Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP40Y</symbol>
+                    <symbol>EURAB6E40Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>40Y</tenor>
                 </item>
                 <item>
-                    <symbol>EUB6SWP50Y</symbol>
+                    <symbol>EURAB6E50Y=</symbol>
                     <curve>Euribor6M</curve>
                     <type>Swap-Rate</type>
                     <tenor>50Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP7D</symbol>
+                    <symbol>EURESTSW=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>7D</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP14D</symbol>
+                    <symbol>EUREST2W=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>14D</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP21D</symbol>
+                    <symbol>EUREST3W=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>21D</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP1M</symbol>
+                    <symbol>EUREST1M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>1M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP2M</symbol>
+                    <symbol>EUREST2M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>2M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP3M</symbol>
+                    <symbol>EUREST3M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>3M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP4M</symbol>
+                    <symbol>EUREST4M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>4M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP5M</symbol>
+                    <symbol>EUREST5M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>5M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP6M</symbol>
+                    <symbol>EUREST6M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>6M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP7M</symbol>
+                    <symbol>EUREST7M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>7M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP8M</symbol>
+                    <symbol>EUREST8M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>8M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP9M</symbol>
+                    <symbol>EUREST9M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>9M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP1Y</symbol>
+                    <symbol>EUREST1Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>1Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP15M</symbol>
+                    <symbol>EUREST15M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>15M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP18M</symbol>
+                    <symbol>EUREST18M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>18M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP21M</symbol>
+                    <symbol>EUREST21M=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>21M</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP2Y</symbol>
+                    <symbol>EUREST2Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>2Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP3Y</symbol>
+                    <symbol>EUREST3Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>3Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP4Y</symbol>
+                    <symbol>EUREST4Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>4Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP5Y</symbol>
+                    <symbol>EUREST5Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>5Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP6Y</symbol>
+                    <symbol>EUREST6Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>6Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP7Y</symbol>
+                    <symbol>EUREST7Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>7Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP8Y</symbol>
+                    <symbol>EUREST8Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>8Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP9Y</symbol>
+                    <symbol>EUREST9Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>9Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP10Y</symbol>
+                    <symbol>EUREST10Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>10Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP11Y</symbol>
+                    <symbol>EUREST11Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>11Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP12Y</symbol>
+                    <symbol>EUREST12Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>12Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP15Y</symbol>
+                    <symbol>EUREST15Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>15Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP20Y</symbol>
+                    <symbol>EUREST20Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>20Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP25Y</symbol>
+                    <symbol>EUREST25Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>25Y</tenor>
                 </item>
                 <item>
-                    <symbol>ESTRSWP30Y</symbol>
+                    <symbol>EUREST30Y=</symbol>
                     <curve>ESTR</curve>
                     <type>Swap-Rate</type>
                     <tenor>30Y</tenor>

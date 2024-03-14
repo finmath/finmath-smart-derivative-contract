@@ -169,14 +169,14 @@ public class JAXBTests {
 
 //		String product = handler.getContractAsXmlString();
 
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, handler.getContractAsXmlString());
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(-549345.3, value, 0.005, "Valuation");
+		Assertions.assertEquals(-881079.11, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
 
 
