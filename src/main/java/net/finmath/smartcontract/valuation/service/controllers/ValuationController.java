@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 public class ValuationController implements ValuationApi {
 
 	private final Logger logger = LoggerFactory.getLogger(ValuationController.class);
+	private final String FAILEDCALCULATION = "Failed to calculate value.";
 
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
@@ -69,10 +70,8 @@ public class ValuationController implements ValuationApi {
 	@Override
 	@Deprecated
 	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
-
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "value");
-
 		ValueResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
@@ -80,7 +79,7 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error("Failed to calculate value.");
+			logger.error(FAILEDCALCULATION);
 			logger.info(value.toString());
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -101,7 +100,7 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error("Failed to calculate value.");
+			logger.error(FAILEDCALCULATION);
 			logger.info(value.toString());
 			e.printStackTrace();
 			throw new RuntimeException(e);
