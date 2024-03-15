@@ -145,7 +145,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			//@TODO: where resourceGovenor retrieves the data from neeeds to be understood
 			// TODO clarify why the controller needs a fixed testset out of resources
 			//marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml")).readAllBytes(), StandardCharsets.UTF_8);
-			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset3.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml")).readAllBytes(), StandardCharsets.UTF_8);
 			/*
 			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName).getContentAsString(StandardCharsets.UTF_8);
 			marketData = objectMapper.readValue(marketDataString, MarketDataList.class);*/

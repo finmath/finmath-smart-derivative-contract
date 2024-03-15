@@ -1,371 +1,356 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <settlement>
     <marketData>
-        <requestTimeStamp>20240315-110941</requestTimeStamp>
+        <requestTimeStamp>20220908-170110</requestTimeStamp>
         <item>
-            <id>EURAB6E50Y=</id>
-            <value>0.02108</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP7D</id>
+            <value>0.0064125</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST9Y=</id>
-            <value>0.02543</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP14D</id>
+            <value>0.0065595</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E10Y=</id>
-            <value>0.027080000000000003</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP21D</id>
+            <value>0.006567000000000001</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST9M=</id>
-            <value>0.036264500000000005</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP1M</id>
+            <value>0.006572</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E2Y=</id>
-            <value>0.03241</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP2M</id>
+            <value>0.009576</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E27Y=</id>
-            <value>0.02491</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP3M</id>
+            <value>0.011339000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR12X18F=</id>
-            <value>0.02846</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP4M</id>
+            <value>0.01361</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST6M=</id>
-            <value>0.0377045</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP5M</id>
+            <value>0.01552</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E5Y=</id>
-            <value>0.02793</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6DEP6M</id>
+            <value>0.01875</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST15Y=</id>
-            <value>0.026310000000000004</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP6M</id>
+            <value>0.017040000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUROSTR=</id>
-            <value>3.908</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA7M</id>
+            <value>0.021630000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E20Y=</id>
-            <value>0.026479999999999997</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP7M</id>
+            <value>0.0186</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR1X7F=</id>
-            <value>0.03825</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA8M</id>
+            <value>0.025230000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E4Y=</id>
-            <value>0.02871</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP8M</id>
+            <value>0.01992</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR3X9F=</id>
-            <value>0.03619</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA9M</id>
+            <value>0.02767</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST8M=</id>
-            <value>0.0366835</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP9M</id>
+            <value>0.020934999999999995</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST7Y=</id>
-            <value>0.02537</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA10M</id>
+            <value>0.02924</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST2M=</id>
-            <value>0.039016</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA12M</id>
+            <value>0.031920000000000004</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E30Y=</id>
-            <value>0.0243</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP1Y</id>
+            <value>0.023434999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST15M=</id>
-            <value>0.0333605</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP15M</id>
+            <value>0.024894999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST10Y=</id>
-            <value>0.02557</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA15M</id>
+            <value>0.03327</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST7M=</id>
-            <value>0.0371895</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6FRA18M</id>
+            <value>0.03161</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E19Y=</id>
-            <value>0.026683</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP18M</id>
+            <value>0.0258</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR6MD=</id>
-            <value>0.0409</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP21M</id>
+            <value>0.02642</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST25Y=</id>
-            <value>0.0252</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP2Y</id>
+            <value>0.02681</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST12Y=</id>
-            <value>0.025910000000000002</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP2Y</id>
+            <value>0.029539999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E6Y=</id>
-            <value>0.02748</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP3Y</id>
+            <value>0.0297</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR9X15F=</id>
-            <value>0.030469999999999997</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP3Y</id>
+            <value>0.026760000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST8Y=</id>
-            <value>0.025355</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP4Y</id>
+            <value>0.026494999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURESTSW=</id>
-            <value>0.038992500000000006</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP4Y</id>
+            <value>0.029459999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST2Y=</id>
-            <value>0.030294999999999996</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP5Y</id>
+            <value>0.026304999999999995</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E12Y=</id>
-            <value>0.027190000000000002</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP5Y</id>
+            <value>0.02927</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E13Y=</id>
-            <value>0.027238</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP6Y</id>
+            <value>0.026070000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E26Y=</id>
-            <value>0.02512</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP6Y</id>
+            <value>0.02902</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST4M=</id>
-            <value>0.0385025</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP7Y</id>
+            <value>0.025774999999999996</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E17Y=</id>
-            <value>0.027028</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP7Y</id>
+            <value>0.02878</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST3M=</id>
-            <value>0.038901500000000006</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP8Y</id>
+            <value>0.02864</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR4X10F=</id>
-            <value>0.035140000000000005</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP8Y</id>
+            <value>0.02569</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E25Y=</id>
+            <id>EUB6SWP9Y</id>
+            <value>0.028579999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>ESTRSWP9Y</id>
+            <value>0.02565</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>ESTRSWP10Y</id>
+            <value>0.025670000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP10Y</id>
+            <value>0.02857</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP11Y</id>
+            <value>0.028520000000000004</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>ESTRSWP11Y</id>
+            <value>0.02568</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP12Y</id>
+            <value>0.028399999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>ESTRSWP12Y</id>
+            <value>0.025595</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP13Y</id>
+            <value>0.028300000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP14Y</id>
+            <value>0.028120000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>EUB6SWP15Y</id>
+            <value>0.02782</value>
+            <timeStamp>20220908-170110</timeStamp>
+        </item>
+        <item>
+            <id>ESTRSWP15Y</id>
             <value>0.02535</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUROND=</id>
-            <value>0.039900000000000005</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP16Y</id>
+            <value>0.027469999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E7Y=</id>
-            <value>0.02722</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP17Y</id>
+            <value>0.02705</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST3Y=</id>
-            <value>0.02795</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP18Y</id>
+            <value>0.026580000000000003</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E21Y=</id>
-            <value>0.02626</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP19Y</id>
+            <value>0.026079999999999996</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUR6X12F=</id>
-            <value>0.03307</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP20Y</id>
+            <value>0.025570000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST20Y=</id>
-            <value>0.02604</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP20Y</id>
+            <value>0.023715</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST4Y=</id>
-            <value>0.026619</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP21Y</id>
+            <value>0.02511</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E22Y=</id>
-            <value>0.02604</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP22Y</id>
+            <value>0.024569999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST2W=</id>
-            <value>0.038956</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP23Y</id>
+            <value>0.024169999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E23Y=</id>
-            <value>0.02581</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP24Y</id>
+            <value>0.02373</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST30Y=</id>
-            <value>0.024370000000000003</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP25Y</id>
+            <value>0.0233</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST18M=</id>
-            <value>0.03211</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP25Y</id>
+            <value>0.022010000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E28Y=</id>
-            <value>0.024700000000000003</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP26Y</id>
+            <value>0.0229</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST21M=</id>
-            <value>0.0311085</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP27Y</id>
+            <value>0.022489999999999996</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EUREST11Y=</id>
-            <value>0.02572</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP28Y</id>
+            <value>0.022090000000000002</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E16Y=</id>
-            <value>0.027153</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP29Y</id>
+            <value>0.021709999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E14Y=</id>
-            <value>0.027256999999999997</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP30Y</id>
+            <value>0.021349999999999997</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E3Y=</id>
-            <value>0.030045000000000002</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>ESTRSWP30Y</id>
+            <value>0.020489999999999998</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E18Y=</id>
-            <value>0.026868</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP40Y</id>
+            <value>0.01891</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
         <item>
-            <id>EURAB6E9Y=</id>
-            <value>0.02706</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST6Y=</id>
-            <value>0.025544999999999998</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURSWD=</id>
-            <value>0.039450000000000006</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E29Y=</id>
-            <value>0.024489999999999998</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST1Y=</id>
-            <value>0.03488</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST3W=</id>
-            <value>0.0389805</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E24Y=</id>
-            <value>0.02558</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E11Y=</id>
-            <value>0.027128</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E15Y=</id>
-            <value>0.027229999999999997</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST5Y=</id>
-            <value>0.025905</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E40Y=</id>
-            <value>0.02261</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST5M=</id>
-            <value>0.038045999999999996</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUR2X8F=</id>
-            <value>0.03722</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EURAB6E8Y=</id>
-            <value>0.0271</value>
-            <timeStamp>20240315-110941</timeStamp>
-        </item>
-        <item>
-            <id>EUREST1M=</id>
-            <value>0.0390015</value>
-            <timeStamp>20240315-110941</timeStamp>
+            <id>EUB6SWP50Y</id>
+            <value>0.01711</value>
+            <timeStamp>20220908-170110</timeStamp>
         </item>
     </marketData>
 </settlement>

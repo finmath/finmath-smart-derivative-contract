@@ -51,6 +51,7 @@ public class LaunchAGenerator {
 
 				System.out.println("Consumer MarketDataStorage: Stored Market Data at: ");
 				System.out.println(socket.isOpen());
+				//TODO replace file
 				File file = new File("md_testset3.xml");
 				JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
 				Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
