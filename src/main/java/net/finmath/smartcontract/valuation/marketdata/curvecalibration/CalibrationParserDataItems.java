@@ -3,13 +3,9 @@ package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
-import net.finmath.smartcontract.model.ValueResult;
-import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
+import net.finmath.smartcontract.model.MarketDataList;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;

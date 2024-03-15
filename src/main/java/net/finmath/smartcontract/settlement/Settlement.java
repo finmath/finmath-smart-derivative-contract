@@ -2,8 +2,7 @@ package net.finmath.smartcontract.settlement;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import net.finmath.smartcontract.valuation.marketdata.data.LocalDateTimeAdapter;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 
 import java.nio.charset.StandardCharsets;
 
@@ -99,10 +100,12 @@ public class ValuationController implements ValuationApi {
 			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
 			logger.info(margin.toString());
 			return ResponseEntity.ok(margin);
+		} catch (SAXException e){
+			logger.error("invalid trade data xml");
+			throw new RuntimeException(e);
 		} catch (Exception e) {
-			logger.error("Failed to calculate margin.");
-			logger.info(marginRequest.toString());
-			e.printStackTrace();
+			logger.error("Failed to calculate margin.", e);
+			logger.debug(marginRequest.toString());
 			throw new RuntimeException(e);
 		}
 	}

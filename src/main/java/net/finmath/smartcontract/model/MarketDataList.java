@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.valuation.marketdata.data;
+package net.finmath.smartcontract.model;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +9,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
+import net.finmath.smartcontract.valuation.marketdata.data.LocalDateTimeAdapter;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,8 +59,7 @@ public class MarketDataList {
 				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
 		try {
-			String e = mapper.writerFor(MarketDataList.class).writeValueAsString(this);
-			return e;
+			return mapper.writerFor(MarketDataList.class).writeValueAsString(this);
 		}
 		catch (Exception e){
 			return "";
@@ -69,4 +70,11 @@ public class MarketDataList {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		return "MarketDataList{" +
+				"points=" + points +
+				", requestTimeStamp=" + requestTimeStamp +
+				'}';
+	}
 }

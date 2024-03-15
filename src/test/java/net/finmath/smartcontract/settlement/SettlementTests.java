@@ -3,9 +3,7 @@ package net.finmath.smartcontract.settlement;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import net.bytebuddy.asm.Advice;
-import net.finmath.smartcontract.valuation.client.ValuationClient;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +16,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Set;
 
 public class SettlementTests {
 
@@ -36,7 +33,7 @@ public class SettlementTests {
 		ZonedDateTime settlementTime = ZonedDateTime.of(LocalDate.now(), LocalTime.of(17,0,0), zone);
 		ZonedDateTime settlementTimeNext = settlementTime.plusDays(1);
 
-		final String marketDataXMLStr = new String(SettlementTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset0.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataXMLStr = new String(SettlementTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		StringReader reader = new StringReader(marketDataXMLStr);
 		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
@@ -54,7 +51,5 @@ public class SettlementTests {
 		jaxbMarshaller.marshal(settlement, writer);
 		String xmlStr = writer.toString();
 		Assertions.assertFalse(xmlStr.isEmpty());
-
-
 	}
 }

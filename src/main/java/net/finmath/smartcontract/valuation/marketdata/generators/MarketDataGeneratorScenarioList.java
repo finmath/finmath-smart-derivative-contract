@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.valuation.marketdata.generators;
 
 import io.reactivex.rxjava3.core.Observable;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 
 import java.util.List;
 

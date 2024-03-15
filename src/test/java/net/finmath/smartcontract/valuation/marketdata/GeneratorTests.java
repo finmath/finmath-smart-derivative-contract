@@ -5,17 +5,13 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
-import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
-import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorWebsocket;
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import org.junit.jupiter.api.*;
 
-import java.io.FileInputStream;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

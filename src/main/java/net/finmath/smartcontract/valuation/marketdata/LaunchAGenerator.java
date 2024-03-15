@@ -5,7 +5,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.functions.Consumer;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.generators.*;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;

@@ -13,11 +13,7 @@ public class MarketDataPoint {
 
 	private LocalDateTime timeStamp;
 	private String id;
-
-
 	private Double value;
-
-
 
 	public MarketDataPoint(String id, Double value, LocalDateTime timeStamp) {
 		this.id = id;
@@ -25,16 +21,11 @@ public class MarketDataPoint {
 		this.timeStamp = timeStamp;
 	}
 
-	public MarketDataPoint(){
-
-	}
-
+	public MarketDataPoint(){}
 
 	public String getId() {
 		return id;
 	}
-
-
 
 	public Double getValue() {
 		return value;
@@ -43,8 +34,6 @@ public class MarketDataPoint {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-
 
 	public void setValue(Double value) {
 		this.value = value;
@@ -57,5 +46,12 @@ public class MarketDataPoint {
 		this.timeStamp = timeStamp;
 	}
 
-
+	@Override
+	public String toString() {
+		return "MarketDataPoint{" +
+				"timeStamp=" + timeStamp +
+				", id='" + id + '\'' +
+				", value=" + value +
+				'}';
+	}
 }

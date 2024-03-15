@@ -1,7 +1,11 @@
 package net.finmath.smartcontract.product.xml;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import net.finmath.smartcontract.model.MarketDataList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -9,8 +13,10 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +35,6 @@ public class SDCXMLParser {
 	}
 
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
-
 
 		LocalDateTime settlementDateInitial;
 
@@ -148,5 +153,18 @@ public class SDCXMLParser {
 		}
 
 		throw new IllegalArgumentException("Node not found");
+	}
+
+	public static MarketDataList unmarshalMarketDataList(InputStream inputStream){
+
+		JAXBElement<MarketDataList> jaxbElement;
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			jaxbElement = unmarshaller.unmarshal(new StreamSource(inputStream), MarketDataList.class);
+		} catch (java.lang.Exception e) {
+			throw new RuntimeException(e);
+		}
+		return jaxbElement.getValue();
 	}
 }
