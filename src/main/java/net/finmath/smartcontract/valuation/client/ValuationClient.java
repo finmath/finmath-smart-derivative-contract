@@ -59,7 +59,7 @@ public class ValuationClient {
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
-		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(url + "/valuation/legacy/margin"), MarginRequest.class);
+		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(url + "/valuation/margin"), MarginRequest.class);
 
 		ResponseEntity<MarginResult> response = new RestTemplate().exchange(requestEntity, MarginResult.class);
 		MarginResult result = response.getBody();
