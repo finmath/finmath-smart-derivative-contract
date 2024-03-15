@@ -169,7 +169,8 @@ public class JAXBTests {
 
 //		String product = handler.getContractAsXmlString();
 
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
+		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset3.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, handler.getContractAsXmlString());

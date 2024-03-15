@@ -10,28 +10,6 @@ servers:
   - url: http://34.159.234.113:8080/
 
 paths:
-  /valuation/legacy/value:
-    post:
-      summary: Request mapping for the value
-      operationId: legacyValue
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LegacyValueRequest"
-      responses:
-        "200":
-          description: Value was calculated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValueResult"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
   /valuation/value:
     post:
       summary: Request mapping for the value
@@ -96,7 +74,7 @@ paths:
   /valuation/legacy/margin:
     post:
       summary: Request mapping for the margin
-      operationId: margin
+      operationId: legacyMargin
       requestBody:
         content:
           application/json:

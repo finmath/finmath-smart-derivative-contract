@@ -39,10 +39,10 @@ public class ValuationController implements ValuationApi {
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
 	 *
-	 * @param marginRequest The request
-	 * @return String Json representing the valuation.
+	 //* @param marginRequest The request
+	 //* @return String Json representing the valuation.
 	 */
-	@Override
+	/*@Override
 	@Deprecated
 	public ResponseEntity<MarginResult> legacyMargin(LegacyMarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -60,15 +60,15 @@ public class ValuationController implements ValuationApi {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-	}
+	}*/
 
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPMLOneCurve
 	 *
-	 * @param valueRequest The request
-	 * @return String Json representing the valuation.
+	 //* @param valueRequest The request
+	 //* @return String Json representing the valuation.
 	 */
-	@Override
+	/*@Override
 	@Deprecated
 	public ResponseEntity<ValueResult> legacyValue(LegacyValueRequest valueRequest) {
 
@@ -87,7 +87,7 @@ public class ValuationController implements ValuationApi {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-	}
+	}*/
 
 	@Override
 	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {

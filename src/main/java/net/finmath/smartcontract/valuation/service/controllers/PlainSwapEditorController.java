@@ -7,8 +7,6 @@ import com.neovisionaries.ws.client.WebSocketException;
 import jakarta.xml.bind.JAXBException;
 import net.finmath.rootfinder.BisectionSearch;
 import net.finmath.smartcontract.api.PlainSwapEditorApi;
-import net.finmath.smartcontract.valuation.client.ValuationClient;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.LiveFeedAdapter;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.ReactiveMarketDataUpdater;
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
@@ -145,7 +143,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		try {
 
 			//@TODO: where resourceGovenor retrieves the data from neeeds to be understood
-			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			// TODO clarify why the controller needs a fixed testset out of resources
+			//marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset3.xml")).readAllBytes(), StandardCharsets.UTF_8);
 			/*
 			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName).getContentAsString(StandardCharsets.UTF_8);
 			marketData = objectMapper.readValue(marketDataString, MarketDataList.class);*/
