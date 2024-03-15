@@ -82,9 +82,9 @@ paths:
                 - valuationDate
               properties:
                 marketDataStart:
-                  type: MarketDataSet
+                  type: MarketDataList
                 marketDataEnd:
-                  type: MarketDataSet
+                  type: MarketDataList
                 tradeData:
                   type: string
                 valuationDate:
