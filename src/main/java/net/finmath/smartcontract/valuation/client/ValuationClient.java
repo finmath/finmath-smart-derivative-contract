@@ -50,9 +50,9 @@ public class ValuationClient {
 		}
 
 		final String marketDataStartXml = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml")).readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataStart = SDCXMLParser.unmarshalMarketDataList(marketDataStartXml);
+		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
 		final String marketDataEndXml = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml")).readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalMarketDataList(marketDataEndXml);
+		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
 		final String product = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml")).readAllBytes(), StandardCharsets.UTF_8);
 
 		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(OffsetDateTime.from(LocalDateTime.now()));

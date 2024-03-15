@@ -1,11 +1,9 @@
 package net.finmath.smartcontract.product.xml;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.*;
+import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
-import net.finmath.smartcontract.model.MarketDataList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,11 +11,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -156,13 +150,26 @@ public class SDCXMLParser {
         throw new IllegalArgumentException("Node not found");
     }
 
-    public static MarketDataList unmarshalMarketDataList(String marketDataListXml) {
+    public static <T> T unmarshalXml(String xml, Class<T> t) {
         try {
-            StringReader reader = new StringReader(marketDataListXml);
-            JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
+            StringReader reader = new StringReader(xml);
+            JAXBContext jaxbContext = JAXBContext.newInstance(t);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return  (MarketDataList) unmarshaller.unmarshal(reader);
+            return (T) unmarshaller.unmarshal(reader);
         } catch (java.lang.Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> String marshalClassToXMLString(T t) {
+        try {
+            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlement.class);
+            Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            StringWriter writer = new StringWriter();
+            jaxbMarshaller.marshal(t, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
     }
