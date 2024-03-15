@@ -27,7 +27,7 @@ public class LaunchAGenerator {
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = "<your_properties>";
+		String connectionPropertiesFile = "<propertiesfile>";
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(connectionPropertiesFile));
 
@@ -51,7 +51,7 @@ public class LaunchAGenerator {
 
 				System.out.println("Consumer MarketDataStorage: Stored Market Data at: ");
 				System.out.println(socket.isOpen());
-				File file = new File("md_testset0.xml");
+				File file = new File("md_testset3.xml");
 				JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
 				Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 				jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

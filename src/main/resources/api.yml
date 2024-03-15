@@ -40,19 +40,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - marketData
-                - tradeData
-                - valuationDate
-              properties:
-                marketData:
-                  type: MarketDataSet
-                tradeData:
-                  type: string
-                valuationDate:
-                  type: string
-                  format: date-time
+              $ref: "#/components/schemas/ValueRequest"
       responses:
         "200":
           description: Value was calculated
@@ -66,6 +54,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
   /valuation/margin:
     post:
       summary: Request mapping for the value
@@ -107,12 +96,12 @@ paths:
   /valuation/legacy/margin:
     post:
       summary: Request mapping for the margin
-      operationId: legacyMargin
+      operationId: margin
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LegacyMarginRequest"
+              $ref: "#/components/schemas/MarginRequest"
       responses:
         "200":
           description: Margin was calculated
@@ -524,10 +513,10 @@ components:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
       $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
-    LegacyValueRequest:
-      $ref: "schemas/openapi-schemas/LegacyValueRequest.yml"
-    LegacyMarginRequest:
-      $ref: "schemas/openapi-schemas/LegacyMarginRequest.yml"
+    ValueRequest:
+      $ref: "schemas/openapi-schemas/ValueRequest.yml"
+    MarginRequest:
+      $ref: "schemas/openapi-schemas/MarginRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:

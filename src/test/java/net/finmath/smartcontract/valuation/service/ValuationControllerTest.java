@@ -1,9 +1,9 @@
 package net.finmath.smartcontract.valuation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.ValueRequest;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
-import net.finmath.smartcontract.model.LegacyMarginRequest;
-import net.finmath.smartcontract.model.LegacyValueRequest;
 import net.finmath.smartcontract.valuation.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.valuation.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.valuation.service.controllers.ValuationController;
@@ -49,13 +49,13 @@ public class ValuationControllerTest {
 		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final LegacyMarginRequest marginRequest = new LegacyMarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(marginRequest);
 
 		mockMvc.perform(MockMvcRequestBuilders
-						.post("/valuation/legacy/margin")
+						.post("/valuation/margin")
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON)
 						.content(json)
@@ -71,13 +71,13 @@ public class ValuationControllerTest {
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final LegacyValueRequest valueRequest = new LegacyValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final ValueRequest valueRequest = new ValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(valueRequest);
 
 		mockMvc.perform(MockMvcRequestBuilders
-						.post("/valuation/legacy/value").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json).characterEncoding("utf-8"))
+						.post("/valuation/value").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json).characterEncoding("utf-8"))
 				.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
 	}
 

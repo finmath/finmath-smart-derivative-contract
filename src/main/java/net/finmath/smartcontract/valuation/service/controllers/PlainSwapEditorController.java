@@ -7,6 +7,8 @@ import com.neovisionaries.ws.client.WebSocketException;
 import jakarta.xml.bind.JAXBException;
 import net.finmath.rootfinder.BisectionSearch;
 import net.finmath.smartcontract.api.PlainSwapEditorApi;
+import net.finmath.smartcontract.valuation.client.ValuationClient;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.LiveFeedAdapter;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.ReactiveMarketDataUpdater;
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
@@ -142,9 +144,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		MarketDataSet marketData;
 		try {
 
-			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
-					.getContentAsString(StandardCharsets.UTF_8);
-			marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
+			//@TODO: where resourceGovenor retrieves the data from neeeds to be understood
+			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			/*
+			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName).getContentAsString(StandardCharsets.UTF_8);
+			marketData = objectMapper.readValue(marketDataString, MarketDataList.class);*/
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -154,7 +158,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		}
 		ValueResult valueResult;
 		try {
-			valueResult = (new MarginCalculator()).getValue(marketData, sdcmlBody);
+			valueResult = (new MarginCalculator()).getValue(marketDataString, sdcmlBody);
 		} catch (Exception e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Valuation error.");
 			pd.setType(URI.create(hostname + ErrorTypeURI.VALUATION_ERROR_URI));
@@ -439,7 +443,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			DoubleUnaryOperator swapValue = (swapRate) -> {
 				plainSwapOperationRequest.fixedRate(swapRate);
 				try {
-					return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(
+					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
 									plainSwapOperationRequest.notionalAmount(1E15),
 									plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString())
 							.getValue().doubleValue();

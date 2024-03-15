@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.valuation.client;
 
-import net.finmath.smartcontract.model.LegacyMarginRequest;
+import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.MarginResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Objects;
 
 /**
  * Spring-boot application to demonstrate the ReST service for the valuation oracle,
@@ -45,11 +46,11 @@ public class ValuationClient {
 			System.out.println("Using default endpoint " + url);
 		}
 
-		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataStart = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml")).readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataEnd = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml")).readAllBytes(), StandardCharsets.UTF_8);
+		final String product = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml")).readAllBytes(), StandardCharsets.UTF_8);
 
-		final LegacyMarginRequest marginRequest = new LegacyMarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -58,7 +59,7 @@ public class ValuationClient {
 		String base64Creds = Base64.getEncoder().encodeToString(authString.getBytes());
 		headers.add("Authorization", "Basic " + base64Creds);
 
-		RequestEntity<LegacyMarginRequest> requestEntity = new RequestEntity<LegacyMarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(url + "/valuation/legacy/margin"), LegacyMarginRequest.class);
+		RequestEntity<MarginRequest> requestEntity = new RequestEntity<MarginRequest>(marginRequest, headers, HttpMethod.POST, new URI(url + "/valuation/legacy/margin"), MarginRequest.class);
 
 		ResponseEntity<MarginResult> response = new RestTemplate().exchange(requestEntity, MarginResult.class);
 		MarginResult result = response.getBody();
