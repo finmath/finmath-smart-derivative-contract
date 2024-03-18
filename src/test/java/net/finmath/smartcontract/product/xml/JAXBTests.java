@@ -10,7 +10,6 @@ import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -31,7 +30,7 @@ import java.time.ZoneOffset;
 
 @AutoConfigureJsonTesters // manually re-enable Spring Jackson auto-config
 @AutoConfigureJson
-public class JAXBTests {
+class JAXBTests {
 
 	@Test
 	void checkChangedTradeParams() throws java.lang.Exception {
@@ -133,17 +132,12 @@ public class JAXBTests {
 
 	@Test
 	void jaxBPlainTest() throws java.lang.Exception {
-
-
 		String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
 		File file = new File(path);
 		JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-
 		Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
-
-		System.out.println(sdc.getParties().getParty().get(0).getAddress());
 
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -179,8 +173,6 @@ public class JAXBTests {
 
 		Assertions.assertEquals(-881079.11, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
-
-
 	}
 
 	private PlainSwapOperationRequest generateRequest(String currentGeneratorFile) throws java.lang.Exception {

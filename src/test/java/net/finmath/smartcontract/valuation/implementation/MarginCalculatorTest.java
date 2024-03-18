@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-public class MarginCalculatorTest {
+class MarginCalculatorTest {
 
 	@Test
 	void testMargin() throws Exception {
