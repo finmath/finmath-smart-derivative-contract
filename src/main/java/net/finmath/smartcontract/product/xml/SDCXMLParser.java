@@ -165,7 +165,7 @@ public class SDCXMLParser {
         try {
             JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlement.class);
             Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            //jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             StringWriter writer = new StringWriter();
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
