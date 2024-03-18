@@ -22,13 +22,15 @@ For non-technical description see the [articles](articles) section.
 
 ## Standards (Protocols)
 
+For details see the [solidity page](solidity).
+
 ### ERC-6123 Smart Derivative Contract
 
 See https://eips.ethereum.org/EIPS/eip-6123
 
 ### ERC-7573 Secure Delivery-versus-Payment
 
-See [ERC 7573](erc-7573/ec-7573.md).
+See [ERC 7573](solidity/erc-7573.md).
 
 ## Visualization and Demonstration
 
