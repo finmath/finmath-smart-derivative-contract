@@ -5,7 +5,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import io.reactivex.rxjava3.functions.Consumer;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.generators.*;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -51,6 +51,7 @@ public class LaunchAGenerator {
 
 				System.out.println("Consumer MarketDataStorage: Stored Market Data at: ");
 				System.out.println(socket.isOpen());
+				//TODO replace file
 				File file = new File("md_testset3.xml");
 				JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
 				Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

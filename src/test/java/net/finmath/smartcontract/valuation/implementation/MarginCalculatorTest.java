@@ -1,25 +1,12 @@
 package net.finmath.smartcontract.valuation.implementation;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Unmarshaller;
-import net.finmath.smartcontract.product.xml.Document;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
-import org.assertj.core.util.Files;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class MarginCalculatorTest {
 

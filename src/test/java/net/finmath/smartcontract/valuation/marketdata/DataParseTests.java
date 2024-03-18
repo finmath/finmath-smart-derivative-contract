@@ -10,7 +10,7 @@ import net.finmath.smartcontract.product.xml.Smartderivativecontract;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
 import org.junit.jupiter.api.Assertions;

@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

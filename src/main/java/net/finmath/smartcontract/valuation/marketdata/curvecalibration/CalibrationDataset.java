@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.finmath.smartcontract.valuation.marketdata.data.MarketDataList;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 
 import java.time.LocalDateTime;

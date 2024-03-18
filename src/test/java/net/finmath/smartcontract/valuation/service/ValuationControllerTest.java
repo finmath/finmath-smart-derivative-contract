@@ -1,8 +1,11 @@
 package net.finmath.smartcontract.valuation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.valuation.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.valuation.service.config.MockUserAuthConfig;
@@ -24,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * Tests ValuationController / Valuation API Endpoint.
@@ -45,13 +49,15 @@ public class ValuationControllerTest {
 	@WithUserDetails("user1")    // testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
 	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
-		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataStartXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
+		final String marketDataEndXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(OffsetDateTime.now());
 
-		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		String json = objectMapper.writeValueAsString(marginRequest);
 
 		mockMvc.perform(MockMvcRequestBuilders

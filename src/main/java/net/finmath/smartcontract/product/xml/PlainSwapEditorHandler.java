@@ -365,11 +365,11 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 		} catch (SAXException e) {
 			logger.error("Failed to validate the generated XML or some unrecoverable error occurred while validating.");
-			logger.error("Details: " + e.getMessage());
+			logger.error("Details: {}", e.getMessage());
 			throw e;
 		} catch (IOException e) {
 			logger.error("Failed to marshall out the generated XML file.");
-			logger.error("Details: " + e.getMessage());
+			logger.error("Details: {}", e.getMessage());
 			throw e;
 		}
 

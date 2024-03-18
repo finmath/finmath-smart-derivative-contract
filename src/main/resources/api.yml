@@ -35,8 +35,46 @@ paths:
 
   /valuation/margin:
     post:
-      summary: Request mapping for the margin
+      summary: Request mapping for the value
       operationId: margin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
+              properties:
+                marketDataStart:
+                  type: MarketDataList
+                marketDataEnd:
+                  type: MarketDataList
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: Margin was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/legacy/margin:
+    post:
+      summary: Request mapping for the margin
+      operationId: legacyMargin
       requestBody:
         content:
           application/json:

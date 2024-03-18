@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 
 import java.nio.charset.StandardCharsets;
 
@@ -38,12 +39,12 @@ public class ValuationController implements ValuationApi {
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
 	 *
-	 * @param marginRequest The request
-	 * @return String Json representing the valuation.
+	 //* @param marginRequest The request
+	 //* @return String Json representing the valuation.
 	 */
-	@Override
+	/*@Override
 	@Deprecated
-	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
+	public ResponseEntity<MarginResult> legacyMargin(LegacyMarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "margin");
 
@@ -59,16 +60,57 @@ public class ValuationController implements ValuationApi {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-	}
+	}*/
 
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPMLOneCurve
 	 *
-	 * @param valueRequest The request
-	 * @return String Json representing the valuation.
+	 //* @param valueRequest The request
+	 //* @return String Json representing the valuation.
 	 */
-	@Override
+	/*@Override
 	@Deprecated
+	public ResponseEntity<ValueResult> legacyValue(LegacyValueRequest valueRequest) {
+
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "value");
+
+		ValueResult value = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			value = marginCalculator.getValue(valueRequest.getMarketData(), valueRequest.getTradeData());
+			logger.info(value.toString());
+			return ResponseEntity.ok(value);
+		} catch (Exception e) {
+			logger.error(FAILEDCALCULATION);
+			logger.info(value.toString());
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}*/
+
+	@Override
+	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Responded", "margin");
+
+		MarginResult margin = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			margin = marginCalculator.getValue(marginRequest.getMarketDataStart(), marginRequest.getMarketDataEnd(), marginRequest.getTradeData());
+			logger.info(margin.toString());
+			return ResponseEntity.ok(margin);
+		} catch (SAXException e){
+			logger.error("invalid trade data xml");
+			throw new RuntimeException(e);
+		} catch (Exception e) {
+			logger.error("Failed to calculate margin.", e);
+			logger.debug(marginRequest.toString());
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.add("Responded", "value");
@@ -85,7 +127,6 @@ public class ValuationController implements ValuationApi {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 
 	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {
@@ -119,7 +160,7 @@ public class ValuationController implements ValuationApi {
 		responseHeaders.add("Responded", "test");
 		String totalResult = "Connect successful";
 
-		return new ResponseEntity<String>(totalResult, responseHeaders, HttpStatus.OK);
+		return new ResponseEntity<>(totalResult, responseHeaders, HttpStatus.OK);
 	}
 
 
