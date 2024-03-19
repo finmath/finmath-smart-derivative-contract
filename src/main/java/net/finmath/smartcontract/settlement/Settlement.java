@@ -23,9 +23,7 @@ import java.util.Map;
 @XmlRootElement
 public class Settlement {
 
-
 	public Settlement(){
-
 	}
 
 	public enum SettlementType {
