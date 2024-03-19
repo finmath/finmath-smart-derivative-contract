@@ -10,7 +10,6 @@ import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -31,7 +30,7 @@ import java.time.ZoneOffset;
 
 @AutoConfigureJsonTesters // manually re-enable Spring Jackson auto-config
 @AutoConfigureJson
-public class JAXBTests {
+class JAXBTests {
 
 	@Test
 	void checkChangedTradeParams() throws java.lang.Exception {
