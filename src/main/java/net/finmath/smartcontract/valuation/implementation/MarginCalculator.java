@@ -17,6 +17,7 @@ import net.finmath.smartcontract.valuation.oracle.SmartDerivativeContractSettlem
 import net.finmath.smartcontract.valuation.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +62,21 @@ public class MarginCalculator {
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
-		CalibrationDataset setStart = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataStart,productDescriptor.getMarketdataItemList());
-		CalibrationDataset setEnd = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataEnd,productDescriptor.getMarketdataItemList());
-//		List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
-//		Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
 
-//		List<CalibrationDataset> marketDataSetsEnd = CalibrationParserDataItems.getScenariosFromJsonString(marketDataEnd);
-//		Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
+		CalibrationDataset setStart = null;
+		CalibrationDataset setEnd = null;
+		try {
+
+			setStart = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataStart, productDescriptor.getMarketdataItemList());
+			setEnd = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketDataEnd, productDescriptor.getMarketdataItemList());
+		}
+		catch(Exception e) {
+			List<CalibrationDataset> marketDataSetsStart = CalibrationParserDataItems.getScenariosFromJsonString(marketDataStart);
+			Validate.isTrue(marketDataSetsStart.size() == 1, "Parameter marketDataStart should be only a single market data set");
+
+			List<CalibrationDataset> marketDataSetsEnd = CalibrationParserDataItems.getScenariosFromJsonString(marketDataEnd);
+			Validate.isTrue(marketDataSetsEnd.size() == 1, "Parameter marketDataStart should be only a single market data set");
+		}
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());

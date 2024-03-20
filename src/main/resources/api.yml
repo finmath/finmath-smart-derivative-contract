@@ -49,14 +49,14 @@ paths:
                 - valuationDate
               properties:
                 marketDataStart:
-                  type: MarketDataList
+                  type: string
                 marketDataEnd:
-                  type: MarketDataList
+                  type: string
                 tradeData:
                   type: string
                 valuationDate:
                   type: string
-                  format: date-time
+                  format: string
       responses:
         "200":
           description: Margin was calculated

@@ -50,12 +50,12 @@ public class ValuationControllerTest {
 	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketDataStartXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
+//		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
 		final String marketDataEndXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
+//		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(OffsetDateTime.now());
+		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStartXml).marketDataEnd(marketDataEndXml).tradeData(product).valuationDate(OffsetDateTime.now().toString());
 
 		ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		String json = objectMapper.writeValueAsString(marginRequest);

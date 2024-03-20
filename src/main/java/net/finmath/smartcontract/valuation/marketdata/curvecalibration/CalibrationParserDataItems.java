@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 import net.finmath.smartcontract.model.MarketDataList;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -106,8 +107,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	public static  CalibrationDataset getCalibrationDataSetFromXML(final String xmlString, List<CalibrationDataItem.Spec> dataSpecs) throws  Exception {
 		StringReader reader = new StringReader(xmlString);
 		JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		MarketDataList marketDataList = (MarketDataList) jaxbUnmarshaller.unmarshal(reader);
+		MarketDataList marketDataList =  SDCXMLParser.unmarshalXml(xmlString, MarketDataList.class);
 
 		Set<CalibrationDataItem> calibrationDataItems = new LinkedHashSet<>();
 
