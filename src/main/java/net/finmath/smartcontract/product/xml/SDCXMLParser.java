@@ -1,7 +1,7 @@
 package net.finmath.smartcontract.product.xml;
 
 import jakarta.xml.bind.*;
-import net.finmath.smartcontract.settlement.Settlement;
+import net.finmath.smartcontract.settlement.Settlements;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.w3c.dom.Document;
@@ -163,7 +163,7 @@ public class SDCXMLParser {
 
     public static <T> String marshalClassToXMLString(T t) {
         try {
-            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlement.class);
+            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlements.class);
             Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
             //jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             StringWriter writer = new StringWriter();
