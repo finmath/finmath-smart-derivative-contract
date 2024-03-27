@@ -27,9 +27,11 @@ public class LaunchAGenerator {
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
 		/* Load connection properties*/
-		String connectionPropertiesFile = "<propertiesfile>";
+		//String connectionPropertiesFile = "<propertiesfile>";
+		String connectionPropertiesFile = "./finmath-smart-derivative-contract/src/main/resources/refinitiv_connect.properties";
 		Properties properties = new Properties();
-		properties.load(new FileInputStream(connectionPropertiesFile));
+		properties.load(LaunchAGenerator.class.getClassLoader().getResourceAsStream("refinitiv_connect.properties"));
+		//properties.load(new FileInputStream(connectionPropertiesFile));
 
 
 		/* Init Websockect Connection*/
@@ -44,7 +46,7 @@ public class LaunchAGenerator {
 		socket.connect();
 
 		/* Write Market Data to File */
-		final Consumer<MarketDataList> marketDataWriter = new Consumer<MarketDataList>() {
+		final Consumer<MarketDataList> marketDataWriter = new Consumer<>() {
 
 			@Override
 			public void accept(MarketDataList s) throws Throwable {
