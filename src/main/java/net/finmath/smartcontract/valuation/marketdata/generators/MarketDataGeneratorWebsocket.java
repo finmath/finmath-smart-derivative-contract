@@ -14,6 +14,8 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
@@ -25,7 +27,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements MarketDataGeneratorInterface<MarketDataList> {// implements Callable<String> {
+@Profile("prod")
+@Service
+public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements MarketDataGeneratorInterface<MarketDataList> {// implements Callable<String> {
 
 	private final BusinessdayCalendarExcludingTARGETHolidays bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 	private final JSONObject authJson;
@@ -35,9 +39,9 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 	private final Set<CalibrationDataItem.Spec> calibrationSpecs;
 	private MarketDataList marketDataList;
 
-	final private PublishSubject<MarketDataList> publishSubject;
+	private final PublishSubject<MarketDataList> publishSubject;
 
-	final private Sinks.Many<MarketDataList> sink;
+	//final private Sinks.Many<MarketDataList> sink;
 
 	boolean requestSent;
 
@@ -48,7 +52,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 		this.marketDataList = new MarketDataList();
 		requestSent = false;
 		publishSubject = PublishSubject.create();
-		sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
+		//sink = Sinks.many().multicast().onBackpressureBuffer();   // https://prateek-ashtikar512.medium.com/projectreactor-sinks-bac6c88e5e69
 	}
 
 	private CalibrationDataItem.Spec getSpec(String key) {
@@ -67,14 +71,14 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 		System.out.println("WebSocket successfully connected!");
 		sendLoginRequest(websocket, authJson.getString("access_token"), true);
-
 	}
 
+	@Override
 	public Observable<MarketDataList> asObservable() {
 		return this.publishSubject;
 	}
 
-	public Flux<MarketDataList> asFlux() {return sink.asFlux();}
+	//public Flux<MarketDataList> asFlux() {return sink.asFlux();}
 
 	/**
 	 * Sends a close login stream message. Closing the login stream also closes and resets all data streams.
@@ -84,6 +88,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 	public void closeStreamsAndLogoff(WebSocket webSocket) {
 		String request = "{\"ID\":1, \"Type\": \"Close\", \"Domain\":\"Login\"}";
 		webSocket.sendText(request);
+		logger.info("WebSocket logged off");
 	}
 
 
@@ -97,6 +102,8 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 	}
 
 	public void onTextMessage(WebSocket websocket, String message) throws Exception {
+
+		System.out.println("message: " +  message);
 
 		JsonNode responseJson = null;
 		if (!message.isEmpty()) {
@@ -141,8 +148,10 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 
 
 		if (this.allQuotesRetrieved()) {
+			logger.info("all quotes retrieved");
+			logger.info(marketDataList.toString());
 			this.publishSubject.onNext(marketDataList);
-			this.sink.tryEmitNext(marketDataList);
+			//this.sink.tryEmitNext(marketDataList);
 			this.reset();
 			requestSent = false;
 		}
@@ -166,8 +175,6 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 		}
 
 		return adjustedTime;
-
-
 	}
 
 
@@ -217,6 +224,4 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter   implements 
 
 
 	}
-
-
 }
