@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("java:S125")
 @Profile(value = {"dev", "test", "int", "default"})
 @Service
 public class MarketDataGeneratorScenarioList implements MarketDataGeneratorInterface<MarketDataList> {

@@ -40,8 +40,6 @@ import java.util.function.DoubleUnaryOperator;
  */
 public class MarginCalculator {
 
-	private static final Logger logger = LoggerFactory.getLogger(MarginCalculator.class);
-
 	private final DoubleUnaryOperator rounding;
 
 	public MarginCalculator(DoubleUnaryOperator rounding) {this.rounding = rounding;}
