@@ -4,6 +4,6 @@ import io.reactivex.rxjava3.core.Observable;
 
 public interface MarketDataGeneratorInterface<T> {
 
-	public Observable<T> asObservable();
+	Observable<T> asObservable();
 
 }
