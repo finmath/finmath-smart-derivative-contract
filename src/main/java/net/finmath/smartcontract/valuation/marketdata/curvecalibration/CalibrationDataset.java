@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings("java:S125")
 /**
  * IR Market Data Scenario Class holds a SecnarioDate an a Map containing CurveData
  *
@@ -17,15 +18,15 @@ import java.util.stream.Stream;
  */
 public class CalibrationDataset {
 
+	private static final String FIXING = "Fixing";
 	LocalDateTime scenarioDate;
 	Set<CalibrationDataItem> calibrationDataItems;
 	Set<CalibrationDataItem> fixingDataItems;
 
 	public CalibrationDataset(final Set<CalibrationDataItem> curveDataPointSet, final LocalDateTime scenarioDate) {
 		this.scenarioDate = scenarioDate;
-		this.fixingDataItems = curveDataPointSet.stream().filter(dataItem -> dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparing(CalibrationDataItem::getDate)).collect(Collectors.toCollection(LinkedHashSet::new));
-		this.calibrationDataItems = curveDataPointSet.stream().filter(dataItem -> !dataItem.getProductName().equals("Fixing")).sorted(Comparator.comparing(CalibrationDataItem::getDaysToMaturity)).collect(Collectors.toCollection(LinkedHashSet::new));
-
+		this.fixingDataItems = curveDataPointSet.stream().filter(dataItem -> dataItem.getProductName().equals(FIXING)).sorted(Comparator.comparing(CalibrationDataItem::getDate)).collect(Collectors.toCollection(LinkedHashSet::new));
+		this.calibrationDataItems = curveDataPointSet.stream().filter(dataItem -> !dataItem.getProductName().equals(FIXING)).sorted(Comparator.comparing(CalibrationDataItem::getDaysToMaturity)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	public CalibrationDataset getScaled(double scaleFactor) {
@@ -50,7 +51,7 @@ public class CalibrationDataset {
 		clone.addAll(this.calibrationDataItems);
 		clone.addAll(this.fixingDataItems);
 		newFixingDataItems.stream().forEach(newFixing -> {
-			if (newFixing.getProductName().equals("Fixing")) {
+			if (newFixing.getProductName().equals(FIXING)) {
 				if (!this.fixingDataItems.stream().filter(fixing -> fixing.getCurveName().equals(newFixing.getCurveName()) && fixing.getDate().equals(newFixing.getDate())).findAny().isPresent())
 					clone.add(newFixing);
 			}
@@ -58,9 +59,9 @@ public class CalibrationDataset {
 		return new CalibrationDataset(clone, this.scenarioDate);
 	}
 
-	public MarketDataList toMarketDataList(){
-		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
-		List<MarketDataPoint> fixings = fixingDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
+	public MarketDataList toMarketDataList() {
+		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item -> new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
+		List<MarketDataPoint> fixings = fixingDataItems.stream().map(item -> new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
 		MarketDataList marketDataList = new MarketDataList();
 		marketDataPointList.forEach(marketDataList::add);
 		fixings.forEach(marketDataList::add);
@@ -95,8 +96,7 @@ public class CalibrationDataset {
 			nestedMap.get(date).get(fixingKey).get(item.getSpec().getCurveName()).get(item.getSpec().getProductName()).put(item.getDateString(), item.getQuote()); /*Date is mapped to Fixing*/
 		}
 		try {
-			String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nestedMap);
-			return json;
+			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nestedMap);
 		} catch (Exception e) {
 			return null;
 		}
@@ -114,7 +114,7 @@ public class CalibrationDataset {
 	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataPointStream(final CalibrationParser parser) {
 		// TODO There are possilby items that have maturity 0D. These are filteres out here. TODO - check why items with maturity 0D occure.
 		/* Return only calibraiton specs EXCEPT Past Fixings and spot data */
-		return parser.parse(calibrationDataItems.stream().filter(dataItem -> !dataItem.getProductName().equals("Fixing") && !dataItem.getProductName().equals("Deposit") && !dataItem.getSpec().getMaturity().equals("0D")));
+		return parser.parse(calibrationDataItems.stream().filter(dataItem -> !dataItem.getProductName().equals(FIXING) && !dataItem.getProductName().equals("Deposit") && !dataItem.getSpec().getMaturity().equals("0D")));
 	}
 
 	public Set<CalibrationDataItem> getDataPoints() {

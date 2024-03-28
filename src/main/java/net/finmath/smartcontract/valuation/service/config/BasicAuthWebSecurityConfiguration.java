@@ -51,6 +51,7 @@ public class BasicAuthWebSecurityConfiguration {
 		logger.info("CORS filter has been loaded.");
 		return new WebMvcConfigurer() {
 
+			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/editor/**").allowedOrigins("http://localhost:4200", serviceUrl); // localhost:4200 is the angular dev server
 			}
@@ -71,7 +72,7 @@ public class BasicAuthWebSecurityConfiguration {
 	 */
 	private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
 		List<UserDetails> userDetailsList = new ArrayList<>();
-		applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
+		applicationProperties.getUsers().forEach(sdcUser -> userDetailsList.add(User
 				.withUsername(sdcUser.getUsername())
 				.password("{noop}" + sdcUser.getPassword())
 				.roles(sdcUser.getRole())
