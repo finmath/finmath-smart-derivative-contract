@@ -50,6 +50,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
+@SuppressWarnings("java:S125")
 @RestController
 @CrossOrigin(origins = {"http://localhost:4200", "${serviceUrl}"}, allowCredentials = "true")
 public class PlainSwapEditorController implements PlainSwapEditorApi {
@@ -71,18 +72,18 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	};
 	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
 	//may be changed to allow for different versions of the schema
-	@Autowired
-	private DatabaseConnector databaseConnector;
-
-	@Autowired
-	private ResourceGovernor resourceGovernor;
 
 	@Value("${hostname:localhost:8080}")
 	private String hostname;
+	private final DatabaseConnector databaseConnector;
+	private final ResourceGovernor resourceGovernor;
+	private final ObjectMapper objectMapper;
 
-
-	@Autowired
-	private ObjectMapper objectMapper;
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+		this.databaseConnector = databaseConnector;
+		this.resourceGovernor = resourceGovernor;
+		this.objectMapper = objectMapper;
+	}
 
 
 	/**
@@ -440,7 +441,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             TODO: this could be made faster by avoiding regeneration of the SDCml at every iteration.
                   I just don't know how to keep into account business calendars and fixing dates in an elegant way
              */
-			DoubleUnaryOperator swapValue = (swapRate) -> {
+			DoubleUnaryOperator swapValue = swapRate -> {
 				plainSwapOperationRequest.fixedRate(swapRate);
 				try {
 					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
@@ -609,6 +610,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	public ResponseEntity<String> saveContract(SaveContractRequest saveContractRequest) {
 		String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal()).getUsername();
+		//TODO clarify if regex should be A-Za-z
 		String regex = "^[A-za-z0-9]{1,255}$"; // only alphanumerical characters allowed!
 		LocalDate date = LocalDate.now();
 		if (saveContractRequest.getName().matches(regex)) {
@@ -619,9 +621,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 						.getFile();
 				boolean creationResult = targetFile.createNewFile();
 				if (creationResult)
-					logger.info("New file created at " + targetFile.getAbsolutePath());
+					logger.info("New file created at {}", targetFile.getAbsolutePath());
 				else
-					logger.info("Attempting overwrite of file " + targetFile.getAbsolutePath());
+					logger.info("Attempting overwrite of file {}", targetFile.getAbsolutePath());
 
 				objectMapper.writeValue(targetFile, saveContractRequest.getPlainSwapOperationRequest());
 			} catch (IOException e) {

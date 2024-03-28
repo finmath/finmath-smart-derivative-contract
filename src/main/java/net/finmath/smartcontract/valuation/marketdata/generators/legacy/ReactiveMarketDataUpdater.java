@@ -70,6 +70,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 	/**
 	 * Called when handshake is complete and websocket is open, send login
 	 */
+	@Override
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 		this.sendLoginRequest(websocket, authJson.getString("access_token"), true);
 		logger.info("WebSocket successfully connected! Resetting connection.");
@@ -86,9 +87,8 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 	}
 
 
+	@Override
 	public void onTextMessage(WebSocket websocket, String message) {
-
-
 		if (!message.isEmpty()) {
 			List<RefinitivMarketData> marketDataValues;
 			try {
@@ -118,7 +118,7 @@ public class ReactiveMarketDataUpdater extends LiveFeedAdapter<MarketDataSet> {
 
 
 			} catch (JsonProcessingException | NullPointerException | IllegalStateException e) {
-				logger.info("JSON mapper is failing silently in order to skip message:" + System.lineSeparator() + message + System.lineSeparator() + "as it is not a quote/fixing update.");
+				logger.info("JSON mapper is failing silently in order to skip message:{}{}{}as it is not a quote/fixing update.", System.lineSeparator(), message, System.lineSeparator());
 			}
 			if (!requestSent) {
 				sendRICRequest(websocket);

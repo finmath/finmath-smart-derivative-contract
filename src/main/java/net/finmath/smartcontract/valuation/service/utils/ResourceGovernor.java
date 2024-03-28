@@ -20,7 +20,6 @@ import java.util.Objects;
 @Profile("!test")
 public class ResourceGovernor {
 
-	private static final Logger logger = LoggerFactory.getLogger(ResourceGovernor.class);
 	@Autowired
 	private ResourcePatternResolver resourcePatternResolver;
 	@Value("${storage.basedir}")

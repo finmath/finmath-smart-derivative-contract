@@ -41,7 +41,7 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 			}
 			emitter.onComplete();
 		};
-		Period period;
+		//Period period;
 		//   Observable.interval(0,period.get(TimeUnit.SECONDS.toChronoUnit()),TimeUnit.SECONDS).map(i->...)
 		return Observable.create(observable).delay(this.simulationFrequencySec, TimeUnit.SECONDS);
 
@@ -52,8 +52,7 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 	private CalibrationDataset getShiftedReferenceSet() {
 		double randomShiftBp = ThreadLocalRandom.current().nextDouble(-1, 1) / 10000;
 		Set<CalibrationDataItem> shifted = this.referenceSet.getDataPoints().stream().map(datapoint -> datapoint.getClonedShifted(1 + randomShiftBp)).collect(Collectors.toSet());
-		CalibrationDataset set = new CalibrationDataset(shifted, this.referenceSet.getDate());
-		return set;
+		return new CalibrationDataset(shifted, this.referenceSet.getDate());
 	}
 
 }
