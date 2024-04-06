@@ -12,14 +12,13 @@ import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
+import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrator;
 import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 import net.finmath.smartcontract.valuation.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.valuation.oracle.interestrates.ValuationOraclePlainSwap;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +40,8 @@ import java.util.function.DoubleUnaryOperator;
 public class MarginCalculator {
 
 	private final DoubleUnaryOperator rounding;
+	private static final String FORWARD_EUR_6M = "forward-EUR-6M";
+	private static final String DISCOUNT_EUR_OIS = Calibrator.DISCOUNT_EUR_OIS;
 
 	public MarginCalculator(DoubleUnaryOperator rounding) {this.rounding = rounding;}
 
@@ -77,7 +78,7 @@ public class MarginCalculator {
 		}
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 		LocalDateTime startDate = setStart.getDate();
 		LocalDateTime endDate = setEnd.getDate();
@@ -124,7 +125,7 @@ public class MarginCalculator {
 		marketDataListEnd.add(new CalibrationDataset(calibrationDataItemsEnd, marketDataEnd.getRequestTimeStamp()));
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 		LocalDateTime startDate = marketDataListStart.get(0).getDate();
 		LocalDateTime endDate = marketDataListEnd.get(0).getDate();
@@ -140,7 +141,7 @@ public class MarginCalculator {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
@@ -172,7 +173,7 @@ public class MarginCalculator {
 		List<CalibrationDataset> marketDataList = new ArrayList<>();
 		marketDataList.add(new CalibrationDataset(calibrationDataItems, marketData.getRequestTimeStamp()));
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
-		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, "forward-EUR-6M", "discount-EUR-OIS").getProductDescriptor(productDescriptor.getUnderlying());
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 		LocalDateTime endDate = marketDataList.get(0).getDate();
 		double value = calculateMargin(marketDataList, null, endDate, productDescriptor, underlying);
@@ -189,9 +190,8 @@ public class MarginCalculator {
 	 * @param productDescriptor The product descriptor (wrapper to the product XML)
 	 * @param underlying        The underlying descriptor (wrapper to the underlying XML)
 	 * @return The margin
-	 * @throws Exception Exception
 	 */
-	private double calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) throws Exception {
+	private double calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product
 		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();

@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import net.finmath.information.Library;
 import net.finmath.smartcontract.api.InfoApi;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,7 @@ import java.io.InputStream;
 public class InfoController implements InfoApi {
 
 	private final Logger logger = LoggerFactory.getLogger(InfoController.class);
+	private static final String GIT_ERROR = "Failed to get git info.";
 
 	/**
 	 * @return String Json representing the info on Git
@@ -50,10 +53,10 @@ public class InfoController implements InfoApi {
 
 			String info = ow.writeValueAsString(node);
 			return ResponseEntity.ok(info);
-		} catch (final Exception e) {
-			logger.error("Failed to get git info.");
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			logger.error(GIT_ERROR);
+			logger.error(e.getMessage());
+			throw new SDCException(ExceptionId.SDC_003, GIT_ERROR);
 		}
 	}
 
@@ -73,10 +76,10 @@ public class InfoController implements InfoApi {
 
 			String info = ow.writeValueAsString(node);
 			return ResponseEntity.ok(info);
-		} catch (final Exception e) {
-			logger.error("Failed to get git info.");
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			logger.error(GIT_ERROR);
+			logger.error(e.getMessage());
+			throw new SDCException(ExceptionId.SDC_004, GIT_ERROR);
 		}
 	}
 }

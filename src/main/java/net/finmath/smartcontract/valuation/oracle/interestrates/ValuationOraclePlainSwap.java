@@ -2,6 +2,8 @@ package net.finmath.smartcontract.valuation.oracle.interestrates;
 
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.*;
 import net.finmath.smartcontract.valuation.oracle.ValuationOracle;
 import net.finmath.time.FloatingpointDate;
@@ -90,11 +92,10 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 						referenceDate.atStartOfDay(),
 						marketDataTime);
 				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
-
-
+				
 				return rounding.applyAsDouble(valueWithCurves);
 			} catch (final Exception e) {
-				throw new RuntimeException(e);
+				throw new SDCException(ExceptionId.SDC_012, e.getMessage());
 			}
 		} else {
 			return null;

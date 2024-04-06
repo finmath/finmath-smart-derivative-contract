@@ -34,7 +34,8 @@ import java.nio.charset.StandardCharsets;
 public class ValuationController implements ValuationApi {
 
 	private final Logger logger = LoggerFactory.getLogger(ValuationController.class);
-	private final String FAILEDCALCULATION = "Failed to calculate value.";
+	private static final String FAILED_CALCULATION = "Failed to calculate value.";
+	private static final String RESPONDED = "Responded";
 
 	/**
 	 * Request mapping for the settlementvaluationForProductAsFPML
@@ -92,7 +93,7 @@ public class ValuationController implements ValuationApi {
 	@Override
 	public ResponseEntity<MarginResult> margin(MarginRequest marginRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Responded", "margin");
+		responseHeaders.add(RESPONDED, "margin");
 
 		MarginResult margin = null;
 		try {
@@ -102,18 +103,18 @@ public class ValuationController implements ValuationApi {
 			return ResponseEntity.ok(margin);
 		} catch (SAXException e){
 			logger.error("invalid trade data xml");
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_008, e.getMessage());
 		} catch (Exception e) {
 			logger.error("Failed to calculate margin.", e);
 			logger.debug(marginRequest.toString());
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_009, e.getMessage());
 		}
 	}
 
 	@Override
 	public ResponseEntity<ValueResult> value(ValueRequest valueRequest) {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Responded", "value");
+		responseHeaders.add(RESPONDED, "value");
 		ValueResult value = null;
 		try {
 			MarginCalculator marginCalculator = new MarginCalculator();
@@ -121,17 +122,17 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error(FAILEDCALCULATION);
+			logger.error(FAILED_CALCULATION);
 			logger.info(value.toString());
 			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_010, e.getMessage());
 		}
 	}
 
-
+	@Override
 	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Responded", "value");
+		responseHeaders.add(RESPONDED, "value");
 
 		ValueResult value = null;
 		try {
@@ -141,10 +142,10 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error(FAILEDCALCULATION);
+			logger.error(FAILED_CALCULATION);
 			logger.info(value.toString());
 			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_011, e.getMessage());
 		}
 	}
 
@@ -157,7 +158,7 @@ public class ValuationController implements ValuationApi {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-		responseHeaders.add("Responded", "test");
+		responseHeaders.add(RESPONDED, "test");
 		String totalResult = "Connect successful";
 
 		return new ResponseEntity<>(totalResult, responseHeaders, HttpStatus.OK);

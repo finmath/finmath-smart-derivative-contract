@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  * @author Björn Paffen
  * @author Stefanie Weddigen
  */
+@SuppressWarnings("java:S125")
 public class VisualiserSDC {
 
 	private List<Point2D> seriesMarketValues;
@@ -53,8 +54,8 @@ public class VisualiserSDC {
 		final LocalDate startDate = LocalDate.of(2008, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
-		final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-		final List<CalibrationDataset> scenarioList = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
+		//final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+		final List<CalibrationDataset> scenarioList = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(s -> s.getDate().toLocalDate().isAfter(startDate)).filter(s -> s.getDate().toLocalDate().isBefore(maturity)).toList();
 		// CSV Method returns same List
 		// final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromCSVFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
 
@@ -96,7 +97,7 @@ public class VisualiserSDC {
 		}
 	}
 
-	public void start() throws Exception {
+	public void start() {
 
 		seriesMarketValues = new ArrayList<>();
 
@@ -116,30 +117,27 @@ public class VisualiserSDC {
 		plotMarketValue.setXAxisLabel("Date");
 		plotMarketValue.setYAxisLabel("Market Value");
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				// This method is invoked on Swing thread
-				final JFrame frame = new JFrame("Smart Derivative Contract: Settlement Visualization");
-				final JFXPanel fxPanel = new JFXPanel();
-				frame.add(fxPanel);
-				frame.setVisible(true);
-				frame.setSize(1600, 600);
-				//				frame.setSize(960, 540+22);
+		SwingUtilities.invokeLater(() -> {
+			// This method is invoked on Swing thread
+			final JFrame frame = new JFrame("Smart Derivative Contract: Settlement Visualization");
+			final JFXPanel fxPanel = new JFXPanel();
+			frame.add(fxPanel);
+			frame.setVisible(true);
+			frame.setSize(1600, 600);
+			//				frame.setSize(960, 540+22);
 
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
 
-						final FlowPane root = new FlowPane();
-						root.getChildren().addAll(new Group(plotMarginAccounts.get()), plotMarketValue.get());
+					final FlowPane root = new FlowPane();
+					root.getChildren().addAll(new Group(plotMarginAccounts.get()), plotMarketValue.get());
 
-						final Scene scene = new Scene(root, 1600, 600);
-						scene.getStylesheets().add("barchart.css");
-						fxPanel.setScene(scene);
-					}
-				});
-			}
+					final Scene scene = new Scene(root, 1600, 600);
+					scene.getStylesheets().add("barchart.css");
+					fxPanel.setScene(scene);
+				}
+			});
 		});
 	}
 

@@ -1,6 +1,8 @@
 package net.finmath.smartcontract.product.xml;
 
 import jakarta.xml.bind.*;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.settlement.Settlements;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
@@ -157,7 +159,7 @@ public class SDCXMLParser {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return (T) unmarshaller.unmarshal(reader);
         } catch (java.lang.Exception e) {
-            throw new RuntimeException(e);
+            throw new SDCException(ExceptionId.SDC_007, e.getMessage());
         }
     }
 
@@ -165,12 +167,11 @@ public class SDCXMLParser {
         try {
             JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlements.class);
             Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-            //jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             StringWriter writer = new StringWriter();
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            throw new SDCException(ExceptionId.SDC_006, e.getMessage());
         }
     }
 }

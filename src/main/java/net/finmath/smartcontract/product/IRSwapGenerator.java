@@ -19,7 +19,9 @@ import java.util.Optional;
  */
 public class IRSwapGenerator {
 
-	public static final Swap generateAnalyticSwapObject(final LocalDate startDate, final String maturityLabel, final double fixRate, final boolean isReceiveFix, final String forwardCurveName, final String discountCurveName) {
+	private IRSwapGenerator(){}
+
+	public static Swap generateAnalyticSwapObject(final LocalDate startDate, final String maturityLabel, final double fixRate, final boolean isReceiveFix, final String forwardCurveName, final String discountCurveName) {
 
 		final String frequencyLabel = forwardCurveName.contains("3M") ? "quarterly" : forwardCurveName.contains("6M") ? "semiannual" : forwardCurveName.contains("1M") ? "monthly" : "annual";
 
@@ -28,8 +30,7 @@ public class IRSwapGenerator {
 		final SwapLeg floatLeg = new SwapLeg(Optional.of(LocalDateTime.of(startDate, LocalTime.of(0, 0))), scheduleFloat, forwardCurveName, 0.0, discountCurveName);
 		final SwapLeg fixLeg = new SwapLeg(Optional.of(LocalDateTime.of(startDate, LocalTime.of(0, 0))), scheduleFix, "", fixRate, discountCurveName);
 
-		final Swap swap = isReceiveFix ? new Swap(fixLeg, floatLeg) : new Swap(floatLeg, fixLeg);
-		return swap;
+		return isReceiveFix ? new Swap(fixLeg, floatLeg) : new Swap(floatLeg, fixLeg);
 	}
 
 

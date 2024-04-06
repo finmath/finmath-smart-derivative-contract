@@ -12,6 +12,7 @@ import java.util.Optional;
 @XmlRootElement
 public class Settlements {
 
+	@SuppressWarnings("java:S1700")
 	private List<Settlement> settlements;
 
 	@XmlElement(name = "settlement")

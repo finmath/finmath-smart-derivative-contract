@@ -4,16 +4,12 @@ import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -25,9 +21,8 @@ import java.util.Objects;
  * @author Peter Kohl-Landgraf
  * @author Dietmar Schnabel
  */
+@SuppressWarnings("java:S125")
 public class ValuationClient {
-
-	private static final Logger logger = LoggerFactory.getLogger(ValuationClient.class);
 
 	public static void main(String[] args) throws Exception {
 		String url = "http://localhost:8080";
@@ -50,9 +45,9 @@ public class ValuationClient {
 		}
 
 		final String marketDataStartXml = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml")).readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
+		//final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
 		final String marketDataEndXml = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml")).readAllBytes(), StandardCharsets.UTF_8);
-		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
+		//final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
 		final String product = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml")).readAllBytes(), StandardCharsets.UTF_8);
 
 		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStartXml).marketDataEnd(marketDataEndXml).tradeData(product).valuationDate("");

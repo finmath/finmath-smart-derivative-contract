@@ -3,6 +3,8 @@ package net.finmath.smartcontract.valuation.service.websocket.client;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import jakarta.websocket.*;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -50,7 +52,7 @@ public class WebSocketClientEndpoint extends Endpoint {
 			container.setDefaultMaxBinaryMessageBufferSize(1024 * 1024);
 			this.userSession = container.connectToServer(this, config, endpointURI);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_013, e.getMessage());
 		}
 	}
 
@@ -63,12 +65,8 @@ public class WebSocketClientEndpoint extends Endpoint {
 	@Override
 	public void onOpen(Session session, EndpointConfig config) {
 		System.out.println("Opening websocket");
-		session.addMessageHandler(new MessageHandler.Whole<String>() {
-			@Override
-			public void onMessage(String message) {
-				System.out.println("Received message: " + message);
-			}
-		});
+		session.addMessageHandler((MessageHandler.Whole<String>) message
+			-> System.out.println("Received message: " + message));
 	}
 
 

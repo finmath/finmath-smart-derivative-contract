@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
  *
  * @author Christian Fries
  */
+//TODO check if needed, not used
 public class ContinouslyCompoundedBankAccountOracle implements StochasticValuationOracle {
 
 	private final TimeDiscretization timeDiscretization;
