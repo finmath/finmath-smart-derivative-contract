@@ -29,6 +29,6 @@ public class CalibrationSpecProviderOis implements CalibrationSpecProvider {
 		final Schedule scheduleInterfacePay = ScheduleGenerator.createScheduleFromConventions(ctx.getReferenceDate(), 2, "0D", maturityLabel, frequency, "act/360", "first", "modified_following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 1);
 		final double calibrationTime = scheduleInterfaceRec.getPayment(scheduleInterfaceRec.getNumberOfPeriods() - 1);
 
-		return new CalibratedCurves.CalibrationSpec(String.format("EUR-OIS-%1$s", maturityLabel), "Swap", scheduleInterfaceRec, "forward-EUR-OIS", 0.0, "discount-EUR-OIS", scheduleInterfacePay, "", swapRate, "discount-EUR-OIS", "discount-EUR-OIS", calibrationTime);
+		return new CalibratedCurves.CalibrationSpec(String.format("EUR-OIS-%1$s", maturityLabel), "Swap", scheduleInterfaceRec, "forward-EUR-OIS", 0.0, Calibrator.DISCOUNT_EUR_OIS, scheduleInterfacePay, "", swapRate, Calibrator.DISCOUNT_EUR_OIS, Calibrator.DISCOUNT_EUR_OIS, calibrationTime);
 	}
 }

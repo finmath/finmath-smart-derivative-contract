@@ -50,6 +50,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
+@SuppressWarnings("java:S125")
 @RestController
 @CrossOrigin(origins = {"http://localhost:4200", "${serviceUrl}"}, allowCredentials = "true")
 public class PlainSwapEditorController implements PlainSwapEditorApi {
@@ -421,11 +422,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal()).getUsername();
 		String marketDataString;
-		MarketDataSet marketData;
+		//MarketDataSet marketData;
 		try {
 			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
 					.getContentAsString(StandardCharsets.UTF_8);
-			marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
+			//marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -440,7 +441,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             TODO: this could be made faster by avoiding regeneration of the SDCml at every iteration.
                   I just don't know how to keep into account business calendars and fixing dates in an elegant way
              */
-			DoubleUnaryOperator swapValue = (swapRate) -> {
+			DoubleUnaryOperator swapValue = swapRate -> {
 				plainSwapOperationRequest.fixedRate(swapRate);
 				try {
 					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
@@ -619,9 +620,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 						.getFile();
 				boolean creationResult = targetFile.createNewFile();
 				if (creationResult)
-					logger.info("New file created at " + targetFile.getAbsolutePath());
+					logger.info("New file created at {}", targetFile.getAbsolutePath());
 				else
-					logger.info("Attempting overwrite of file " + targetFile.getAbsolutePath());
+					logger.info("Attempting overwrite of file {}", targetFile.getAbsolutePath());
 
 				objectMapper.writeValue(targetFile, saveContractRequest.getPlainSwapOperationRequest());
 			} catch (IOException e) {

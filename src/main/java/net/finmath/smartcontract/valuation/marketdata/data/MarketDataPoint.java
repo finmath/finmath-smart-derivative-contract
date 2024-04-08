@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @XmlRootElement
 @XmlType(propOrder = {"id","value","timeStamp"})
@@ -53,5 +54,13 @@ public class MarketDataPoint {
 				", id='" + id + '\'' +
 				", value=" + value +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		MarketDataPoint that = (MarketDataPoint) o;
+		return Objects.equals(timeStamp, that.timeStamp) && Objects.equals(id, that.id) && Objects.equals(value, that.value);
 	}
 }

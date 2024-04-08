@@ -6,8 +6,6 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrati
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.model.MarketDataList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -21,8 +19,6 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 
 	LocalDateTime endTime;
 	CalibrationDataset referenceSet;
-
-	private static final Logger logger = LoggerFactory.getLogger(MarketDataGeneratorRandomFeed.class);
 
 	int simulationFrequencySec;
 
@@ -52,8 +48,7 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 	private CalibrationDataset getShiftedReferenceSet() {
 		double randomShiftBp = ThreadLocalRandom.current().nextDouble(-1, 1) / 10000;
 		Set<CalibrationDataItem> shifted = this.referenceSet.getDataPoints().stream().map(datapoint -> datapoint.getClonedShifted(1 + randomShiftBp)).collect(Collectors.toSet());
-		CalibrationDataset set = new CalibrationDataset(shifted, this.referenceSet.getDate());
-		return set;
+		return new CalibrationDataset(shifted, this.referenceSet.getDate());
 	}
 
 }

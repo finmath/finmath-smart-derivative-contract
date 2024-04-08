@@ -1,5 +1,7 @@
 package net.finmath.smartcontract.valuation.service.config;
 
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.valuation.service.utils.ApplicationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,7 @@ public class BasicAuthWebSecurityConfiguration {
 					try {
 						authz.anyRequest().authenticated().and().httpBasic();
 					} catch (Exception e) {
-						throw new RuntimeException(e);
+						throw new SDCException(ExceptionId.SDC_001, e.getMessage());
 					}
 				})
 				.cors();
@@ -51,6 +53,7 @@ public class BasicAuthWebSecurityConfiguration {
 		logger.info("CORS filter has been loaded.");
 		return new WebMvcConfigurer() {
 
+			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/editor/**").allowedOrigins("http://localhost:4200", serviceUrl); // localhost:4200 is the angular dev server
 			}
@@ -71,7 +74,7 @@ public class BasicAuthWebSecurityConfiguration {
 	 */
 	private List<UserDetails> buildUserDetailsList(ApplicationProperties applicationProperties) {
 		List<UserDetails> userDetailsList = new ArrayList<>();
-		applicationProperties.getUsers().forEach((sdcUser) -> userDetailsList.add(User
+		applicationProperties.getUsers().forEach(sdcUser -> userDetailsList.add(User
 				.withUsername(sdcUser.getUsername())
 				.password("{noop}" + sdcUser.getPassword())
 				.roles(sdcUser.getRole())

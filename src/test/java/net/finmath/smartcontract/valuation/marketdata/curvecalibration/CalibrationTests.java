@@ -34,7 +34,7 @@ import static net.finmath.time.FloatingpointDate.getFloatingPointDateFromDate;
  * @author Luca Bressan
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CalibrationTests {
+class CalibrationTests {
 	private AnalyticModel calibratedModel;
 	private CalibrationContext calibrationContext;
 	private CalibratedCurves calibratedCurves;

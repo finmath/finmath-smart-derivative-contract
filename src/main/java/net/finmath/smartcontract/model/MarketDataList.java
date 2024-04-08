@@ -15,6 +15,7 @@ import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @XmlRootElement
 @XmlType(propOrder = {"requestTimeStamp","points"})
@@ -76,5 +77,13 @@ public class MarketDataList {
 				"points=" + points +
 				", requestTimeStamp=" + requestTimeStamp +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		MarketDataList that = (MarketDataList) o;
+		return Objects.equals(points, that.points) && Objects.equals(requestTimeStamp, that.requestTimeStamp);
 	}
 }
