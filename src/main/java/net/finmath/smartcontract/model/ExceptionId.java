@@ -17,4 +17,6 @@ public enum ExceptionId {
 	SDC_014,
 	SDC_015,
 	SDC_016,
+	SDC_017,
+	SDC_018,
 }
