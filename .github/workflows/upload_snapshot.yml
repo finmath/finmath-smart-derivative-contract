@@ -1,5 +1,6 @@
 name: finmath smart derivative contract
 
+#trigg
 #only push new SNAPSHOTS from develop
 on:
   push:
@@ -17,4 +18,7 @@ jobs:
         with:
           java-version: 17
       - name: upload SNAPSHOT to GitLab
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          PRIVATE_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
         run: mvn -s github_SNAPSHOT_settings.xml clean install deploy
