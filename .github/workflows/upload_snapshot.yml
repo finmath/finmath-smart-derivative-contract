@@ -1,0 +1,20 @@
+name: finmath smart derivative contract
+
+#only push new SNAPSHOTS from develop
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  bCP1ld:
+    name: Java 17 build and unit testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: upload SNAPSHOT to GitLab
+        run: mvn -s github_SNAPSHOT_settings.xml clean install deploy
