@@ -13,6 +13,10 @@
             <name>Deploy-Token</name>
             <value>${DEPLOY_TOKEN}</value>
           </property>
+          <property>
+            <name>Private-Token</name>
+            <value>${PRIVATE_TOKEN}</value>
+          </property>
         </httpHeaders>
       </configuration>
     </server>
