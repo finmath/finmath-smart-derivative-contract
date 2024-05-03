@@ -7,5 +7,5 @@ RUN mvn -f /usr/src/app/pom.xml clean package spring-boot:repackage
 
 # Run Stage: Copy fat-jar and define Entrypoint
 FROM openjdk:17 as RunStage
-COPY --from=BuildStage /usr/src/app/target/finmath-smart-derivative-contract-1.0.2-SNAPSHOT.jar /usr/app/finmath-smart-derivative-contract-1.0.2-SNAPSHOT.jar
-ENTRYPOINT ["java", "-jar", "/usr/app/finmath-smart-derivative-contract-1.0.2-SNAPSHOT.jar"]
+COPY --from=BuildStage /usr/src/app/target/finmath-smart-derivative-contract-1.0.7-SNAPSHOT.jar /usr/app/finmath-smart-derivative-contract-1.0.7-SNAPSHOT.jar
+ENTRYPOINT ["java", "-jar", "/usr/app/finmath-smart-derivative-contract-1.0.7-SNAPSHOT.jar"]
