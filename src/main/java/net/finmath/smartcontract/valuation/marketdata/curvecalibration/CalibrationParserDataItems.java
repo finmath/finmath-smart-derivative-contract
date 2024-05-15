@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 @SuppressWarnings("java:S125")
 public class CalibrationParserDataItems implements CalibrationParser {
 
-
 	private static final Logger logger = LoggerFactory.getLogger(CalibrationParserDataItems.class);
 
 	@Override
@@ -200,6 +199,4 @@ public class CalibrationParserDataItems implements CalibrationParser {
 					return new CalibrationDataItem(spec, curvePointEntry.getValue(), fixingDate.atStartOfDay());
 				})).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
-
-
 }

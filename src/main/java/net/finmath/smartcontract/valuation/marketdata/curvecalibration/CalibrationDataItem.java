@@ -11,7 +11,6 @@ import java.util.Objects;
 public class CalibrationDataItem {
 	private static final String REGEX = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
 
-
 	public static class Spec {
 		private final String key;
 		private final String curveName;
@@ -118,7 +117,6 @@ public class CalibrationDataItem {
 	public String getDateString() {
 		return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
-
 
 	public LocalDate getDate() {return dateTime.toLocalDate();}
 

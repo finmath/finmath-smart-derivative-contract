@@ -17,14 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("java:S125")
 @Profile(value = {"dev", "test", "int", "default"})
 @Service
 public class MarketDataGeneratorScenarioList implements MarketDataGeneratorInterface<MarketDataList> {
-
 	private static final Logger logger = LoggerFactory.getLogger(MarketDataGeneratorScenarioList.class);
 	private Observable<MarketDataList> publishSubject;
-
 	private int counter = 0;
 
 	private final List<String> files = List.of("marketdata_2008-05-02.xml", "marketdata_2008-05-05.xml", "marketdata_2008-05-06.xml", "marketdata_2008-05-07.xml", "marketdata_2008-05-08.xml", "marketdata_2008-05-09.xml", "marketdata_2008-05-12.xml", "marketdata_2008-05-13.xml", "marketdata_2008-05-14.xml", "marketdata_2008-05-15.xml", "marketdata_2008-05-16.xml", "marketdata_2008-05-19.xml", "marketdata_2008-05-20.xml", "marketdata_2008-05-21.xml", "marketdata_2008-05-22.xml", "marketdata_2008-05-23.xml", "marketdata_2008-05-26.xml", "marketdata_2008-05-27.xml", "marketdata_2008-05-28.xml", "marketdata_2008-05-29.xml", "marketdata_2008-05-30.xml",
@@ -35,9 +32,6 @@ public class MarketDataGeneratorScenarioList implements MarketDataGeneratorInter
 		"marketdata_2008-10-01.xml", "marketdata_2008-10-02.xml", "marketdata_2008-10-03.xml", "marketdata_2008-10-06.xml", "marketdata_2008-10-07.xml", "marketdata_2008-10-08.xml", "marketdata_2008-10-09.xml", "marketdata_2008-10-10.xml", "marketdata_2008-10-13.xml", "marketdata_2008-10-14.xml", "marketdata_2008-10-15.xml", "marketdata_2008-10-16.xml", "marketdata_2008-10-17.xml", "marketdata_2008-10-20.xml", "marketdata_2008-10-21.xml", "marketdata_2008-10-22.xml", "marketdata_2008-10-23.xml", "marketdata_2008-10-24.xml", "marketdata_2008-10-27.xml", "marketdata_2008-10-28.xml", "marketdata_2008-10-29.xml", "marketdata_2008-10-30.xml", "marketdata_2008-10-31.xml");
 
 
-    /*public MarketDataGeneratorScenarioList(List<MarketDataList> scenarioList) {
-        publishSubject = PublishSubject.create();
-    }*/
 	public MarketDataGeneratorScenarioList() {
 		publishSubject = PublishSubject.create();
 	}

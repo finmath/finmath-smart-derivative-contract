@@ -84,7 +84,6 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		this.objectMapper = objectMapper;
 	}
 
-
 	/**
 	 * Controller that handles requests for generation of a SDCmL document.
 	 *
