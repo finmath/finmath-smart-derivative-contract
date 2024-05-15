@@ -3,11 +3,12 @@ package net.finmath.smartcontract.settlement;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ZonedDateTimeAdapter extends XmlAdapter<String, ZonedDateTime> {
-
 
 	@Override
 	public String marshal(ZonedDateTime v) {
@@ -17,7 +18,8 @@ public class ZonedDateTimeAdapter extends XmlAdapter<String, ZonedDateTime> {
 	@Override
 	public ZonedDateTime unmarshal(String str) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
-		return ZonedDateTime.parse(str, formatter);
+		LocalDateTime ldt = LocalDateTime.parse(str, formatter);
+		//return ZonedDateTime.parse(str, formatter);
+		return ZonedDateTime.of(ldt, ZoneId.systemDefault());
 	}
-
 }
