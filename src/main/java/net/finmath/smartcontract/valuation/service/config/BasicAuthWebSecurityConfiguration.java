@@ -39,7 +39,7 @@ public class BasicAuthWebSecurityConfiguration {
 					try {
 						authz.anyRequest().authenticated().and().httpBasic();
 					} catch (Exception e) {
-						throw new SDCException(ExceptionId.SDC_001, e.getMessage());
+						throw new SDCException(ExceptionId.SDC_AUTH_ERROR, e.getMessage());
 					}
 				})
 				.cors();

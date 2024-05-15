@@ -68,7 +68,7 @@ public class MarketDataGeneratorScenarioList implements MarketDataGeneratorInter
 		try {
 			marketDataXml = new String(Objects.requireNonNull(MarketDataGeneratorScenarioList.class.getClassLoader().getResourceAsStream(fileName)).readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException | NullPointerException e) {
-			throw new SDCException(ExceptionId.SDC_014, "File not found", 404);
+			throw new SDCException(ExceptionId.SDC_FILE_NOT_FOUND, "File not found", 404);
 		}
 		return marketDataXml;
 	}

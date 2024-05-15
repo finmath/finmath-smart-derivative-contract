@@ -103,11 +103,11 @@ public class ValuationController implements ValuationApi {
 			return ResponseEntity.ok(margin);
 		} catch (SAXException e){
 			logger.error("invalid trade data xml");
-			throw new SDCException(ExceptionId.SDC_008, e.getMessage());
+			throw new SDCException(ExceptionId.SDC_INVALID_TRADE_DATA, e.getMessage());
 		} catch (Exception e) {
 			logger.error("Failed to calculate margin.", e);
 			logger.debug(marginRequest.toString());
-			throw new SDCException(ExceptionId.SDC_009, e.getMessage());
+			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
 		}
 	}
 
@@ -122,10 +122,8 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error(FAILED_CALCULATION);
-			logger.info(value.toString());
-			e.printStackTrace();
-			throw new SDCException(ExceptionId.SDC_010, e.getMessage());
+			logger.error(FAILED_CALCULATION, e);
+			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
 		}
 	}
 
@@ -142,10 +140,8 @@ public class ValuationController implements ValuationApi {
 			logger.info(value.toString());
 			return ResponseEntity.ok(value);
 		} catch (Exception e) {
-			logger.error(FAILED_CALCULATION);
-			logger.info(value.toString());
-			e.printStackTrace();
-			throw new SDCException(ExceptionId.SDC_011, e.getMessage());
+			logger.error(FAILED_CALCULATION, e);
+			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
 		}
 	}
 

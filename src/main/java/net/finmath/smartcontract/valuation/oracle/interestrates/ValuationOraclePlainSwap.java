@@ -95,7 +95,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				
 				return rounding.applyAsDouble(valueWithCurves);
 			} catch (final Exception e) {
-				throw new SDCException(ExceptionId.SDC_012, e.getMessage());
+				throw new SDCException(ExceptionId.SDC_CALIBRATION_ERROR, e.getMessage());
 			}
 		} else {
 			return null;
