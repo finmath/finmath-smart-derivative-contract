@@ -118,7 +118,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 		});
 
 		if(calibrationDataItems.isEmpty())
-			throw new SDCException(ExceptionId.SDC_002, "No calibration items detected.");
+			throw new SDCException(ExceptionId.SDC_CALIBRATION_DATA_EMPTY, "No calibration items detected.");
 
 		return new CalibrationDataset(calibrationDataItems, marketDataList.getRequestTimeStamp());
 	}

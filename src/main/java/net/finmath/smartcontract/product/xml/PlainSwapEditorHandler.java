@@ -666,7 +666,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		try {
 			productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
 		} catch (ParserConfigurationException | SAXException | JAXBException e) {
-			throw new SDCException(ExceptionId.SDC_005, e.getMessage());
+			throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, e.getMessage());
 		}
 
 		Set<CalibrationDataItem> cdi = new HashSet<>();

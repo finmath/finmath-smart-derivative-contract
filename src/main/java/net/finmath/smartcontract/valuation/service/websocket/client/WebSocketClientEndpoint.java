@@ -52,7 +52,7 @@ public class WebSocketClientEndpoint extends Endpoint {
 			container.setDefaultMaxBinaryMessageBufferSize(1024 * 1024);
 			this.userSession = container.connectToServer(this, config, endpointURI);
 		} catch (Exception e) {
-			throw new SDCException(ExceptionId.SDC_013, e.getMessage());
+			throw new SDCException(ExceptionId.SDC_WEBSOCKET_CONNECTION_ERROR, e.getMessage());
 		}
 	}
 

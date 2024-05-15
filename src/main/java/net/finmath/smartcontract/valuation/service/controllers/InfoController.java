@@ -56,7 +56,7 @@ public class InfoController implements InfoApi {
 		} catch (Exception e) {
 			logger.error(GIT_ERROR);
 			logger.error(e.getMessage());
-			throw new SDCException(ExceptionId.SDC_003, GIT_ERROR);
+			throw new SDCException(ExceptionId.SDC_GIT_ERROR, GIT_ERROR);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class InfoController implements InfoApi {
 		} catch (Exception e) {
 			logger.error(GIT_ERROR);
 			logger.error(e.getMessage());
-			throw new SDCException(ExceptionId.SDC_004, GIT_ERROR);
+			throw new SDCException(ExceptionId.SDC_GIT_ERROR, GIT_ERROR);
 		}
 	}
 }

@@ -158,8 +158,8 @@ public class SDCXMLParser {
             JAXBContext jaxbContext = JAXBContext.newInstance(t);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return (T) unmarshaller.unmarshal(reader);
-        } catch (java.lang.Exception e) {
-            throw new SDCException(ExceptionId.SDC_007, e.getMessage());
+        } catch (JAXBException e) {
+            throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ public class SDCXMLParser {
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
         } catch (JAXBException e) {
-            throw new SDCException(ExceptionId.SDC_006, e.getMessage());
+            throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage());
         }
     }
 }
