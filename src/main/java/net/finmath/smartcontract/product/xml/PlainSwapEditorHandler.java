@@ -222,7 +222,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		floatingLeg.paymentDates.paymentFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
 		logger.info("Reading back floating payment frequency period multiplier: {}", floatingLeg.paymentDates.paymentFrequency.periodMultiplier);
 		floatingLeg.paymentDates.paymentFrequency.setPeriod(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod());
-		logger.info("Reading back floating payment frequency period:  {}", floatingLeg.paymentDates.paymentFrequency.period);
+		logger.info("Reading back floating payment frequency period: {}", floatingLeg.paymentDates.paymentFrequency.period);
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value = plainSwapOperationRequest.getFloatingRateIndex();
 		logger.info("Reading back floating rate index: {}", ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value);
 		fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFixedDayCountFraction();
@@ -648,7 +648,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		AnalyticModel calibratedModel;
 		if (optionalCalibrationResult.isPresent())
 			calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
-		else throw new IllegalStateException();
+		else throw new IllegalStateException(FAILED_MODEL_CALIBRATION);
 
 
 		Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();

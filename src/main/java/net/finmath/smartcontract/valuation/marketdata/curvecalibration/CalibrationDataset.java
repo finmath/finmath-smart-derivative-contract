@@ -27,7 +27,6 @@ public class CalibrationDataset {
 		this.scenarioDate = scenarioDate;
 		this.fixingDataItems = curveDataPointSet.stream().filter(dataItem -> dataItem.getProductName().equals(FIXING)).sorted(Comparator.comparing(CalibrationDataItem::getDate)).collect(Collectors.toCollection(LinkedHashSet::new));
 		this.calibrationDataItems = curveDataPointSet.stream().filter(dataItem -> !dataItem.getProductName().equals(FIXING)).sorted(Comparator.comparing(CalibrationDataItem::getDaysToMaturity)).collect(Collectors.toCollection(LinkedHashSet::new));
-
 	}
 
 	public CalibrationDataset getScaled(double scaleFactor) {
@@ -60,9 +59,9 @@ public class CalibrationDataset {
 		return new CalibrationDataset(clone, this.scenarioDate);
 	}
 
-	public MarketDataList toMarketDataList(){
-		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
-		List<MarketDataPoint> fixings = fixingDataItems.stream().map(item->new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
+	public MarketDataList toMarketDataList() {
+		List<MarketDataPoint> marketDataPointList = calibrationDataItems.stream().map(item -> new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
+		List<MarketDataPoint> fixings = fixingDataItems.stream().map(item -> new MarketDataPoint(item.getSpec().getKey(), item.getQuote(), item.getDateTime())).toList();
 		MarketDataList marketDataList = new MarketDataList();
 		marketDataPointList.forEach(marketDataList::add);
 		fixings.forEach(marketDataList::add);

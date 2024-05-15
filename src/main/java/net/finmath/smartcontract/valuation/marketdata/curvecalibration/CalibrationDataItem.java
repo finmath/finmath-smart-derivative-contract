@@ -23,9 +23,7 @@ public class CalibrationDataItem {
 			this.curveName = curveName;
 			this.productName = productName;
 			this.maturity = maturity;
-
 		}
-
 
 		public String getKey() {return key;}
 

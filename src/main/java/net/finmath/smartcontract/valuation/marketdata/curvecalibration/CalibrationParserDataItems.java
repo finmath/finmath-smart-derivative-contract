@@ -107,13 +107,11 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	}
 
 	public static  CalibrationDataset getCalibrationDataSetFromXML(final String xmlString, List<CalibrationDataItem.Spec> dataSpecs) {
-		//StringReader reader = new StringReader(xmlString);
-		//JAXBContext jaxbContext = JAXBContext.newInstance(MarketDataList.class);
 		MarketDataList marketDataList =  SDCXMLParser.unmarshalXml(xmlString, MarketDataList.class);
 
 		Set<CalibrationDataItem> calibrationDataItems = new LinkedHashSet<>();
 
-		dataSpecs.stream().forEach(spec-> {
+		dataSpecs.forEach(spec-> {
 			/* Can be more than one, if we have data points of type fixing*/
 			Set<CalibrationDataItem> calibrationDataItemSet = marketDataList.getPoints().stream().filter(marketDataPoint -> marketDataPoint.getId().equals(spec.getKey())).map(point-> new CalibrationDataItem(spec, point.getValue(), point.getTimeStamp())).collect(Collectors.toSet());
 			calibrationDataItems.addAll(calibrationDataItemSet);
