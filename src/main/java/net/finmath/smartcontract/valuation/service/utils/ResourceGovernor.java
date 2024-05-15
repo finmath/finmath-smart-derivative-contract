@@ -18,8 +18,8 @@ import java.util.Objects;
 @Profile("!test")
 public class ResourceGovernor {
 
-	@Autowired
-	private ResourcePatternResolver resourcePatternResolver;
+	private final ResourcePatternResolver resourcePatternResolver;
+
 	@Value("${storage.basedir}")
 	private String storageBaseDir;
 	@Value("${storage.importdir}")
@@ -29,6 +29,10 @@ public class ResourceGovernor {
 
 	@Value("${storage.internals.databaseConnectionPropertiesFile}")
 	private String databaseConnectionPropertiesFile;
+
+	public ResourceGovernor(ResourcePatternResolver resourcePatternResolver) {
+		this.resourcePatternResolver = resourcePatternResolver;
+	}
 
 	public Resource getActiveDatasetAsResourceInReadMode(String username) {
 

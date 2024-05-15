@@ -15,7 +15,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class GeneratorTests {
+class GeneratorTests {
 
 
 	Properties properties;

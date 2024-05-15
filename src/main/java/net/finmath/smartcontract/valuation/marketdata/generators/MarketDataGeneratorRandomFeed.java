@@ -37,7 +37,7 @@ public class MarketDataGeneratorRandomFeed implements MarketDataGeneratorInterfa
 			}
 			emitter.onComplete();
 		};
-		Period period;
+		// Period period;
 		//   Observable.interval(0,period.get(TimeUnit.SECONDS.toChronoUnit()),TimeUnit.SECONDS).map(i->...)
 		return Observable.create(observable).delay(this.simulationFrequencySec, TimeUnit.SECONDS);
 

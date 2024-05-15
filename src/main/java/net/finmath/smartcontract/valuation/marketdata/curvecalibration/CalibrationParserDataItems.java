@@ -6,8 +6,10 @@ import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -24,7 +26,7 @@ import java.util.stream.Stream;
 public class CalibrationParserDataItems implements CalibrationParser {
 
 
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CalibrationParserDataItems.class);
+	private static final Logger logger = LoggerFactory.getLogger(CalibrationParserDataItems.class);
 
 	@Override
 	public Stream<CalibrationSpecProvider> parse(final Stream<CalibrationDataItem> datapoints) {
@@ -76,10 +78,10 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	public static List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
-		try {
-			content = new String(CalibrationParserDataItems.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
+		try (InputStream inputStream = CalibrationParserDataItems.class.getResourceAsStream(fileName)) {
+			content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			System.out.println("Please provide the market data file " + fileName);
+			logger.error("Please provide the market data file: {}.", fileName, e);
 			throw e;
 		}
 

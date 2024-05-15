@@ -72,18 +72,21 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	};
 	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
 	//may be changed to allow for different versions of the schema
-	@Autowired
-	private DatabaseConnector databaseConnector;
-
-	@Autowired
-	private ResourceGovernor resourceGovernor;
 
 	@Value("${hostname:localhost:8080}")
 	private String hostname;
 
+	private final DatabaseConnector databaseConnector;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+	private final ResourceGovernor resourceGovernor;
+
+	private final ObjectMapper objectMapper;
+
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+		this.databaseConnector = databaseConnector;
+		this.resourceGovernor = resourceGovernor;
+		this.objectMapper = objectMapper;
+	}
 
 
 	/**

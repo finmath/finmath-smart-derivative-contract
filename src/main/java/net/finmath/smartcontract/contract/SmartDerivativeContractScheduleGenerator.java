@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class SmartDerivativeContractScheduleGenerator {
 
+	private SmartDerivativeContractScheduleGenerator(){}
+
 	/**
 	 * Simple POJO implementation of <code>SmartDerivativeContractSchedule.EventTimes</code>.
 	 *

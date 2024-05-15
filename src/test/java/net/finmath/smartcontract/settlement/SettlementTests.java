@@ -17,7 +17,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class SettlementTests {
+class SettlementTests {
 
 	@Test
 	void testGenerateSettlementXML() throws Exception{

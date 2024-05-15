@@ -55,6 +55,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorHandler.class);
 	private static final String CONSTANT = "constant";
+	private static final String FAILED_MODEL_CALIBRATION = "Failed to calibrate model.";
 	private final Smartderivativecontract smartDerivativeContract;
 	private final Schema sdcmlSchema;
 	private final Marshaller marshaller;
@@ -408,9 +409,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			default -> throw new IllegalArgumentException("Failed to detect leg type");
 		}
 		final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Start date detected: {]", startDate.toString());
+		logger.info("Start date detected: {}", startDate);
 		final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Maturity date detected: {}", maturityDate.toString());
+		logger.info("Maturity date detected: {}", maturityDate);
 		int fixingOffsetDays = 0;
 		try {
 			fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
@@ -518,9 +519,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			default -> throw new IllegalArgumentException("Failed to detect leg type");
 		}
 		final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Start date detected: {}", startDate.toString());
+		logger.info("Start date detected: {}", startDate);
 		final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Maturity date detected: {}", maturityDate.toString());
+		logger.info("Maturity date detected: {}", maturityDate);
 		int fixingOffsetDays = 0;
 		try {
 			fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
@@ -641,13 +642,13 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		try {
 			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 		} catch (CloneNotSupportedException e) {
-			logger.error("Failed to calibrate model.");
+			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
 		}
 		AnalyticModel calibratedModel;
 		if (optionalCalibrationResult.isPresent())
 			calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
-		else throw new IllegalStateException("Failed to calibrate model.");
+		else throw new IllegalStateException();
 
 
 		Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
@@ -709,13 +710,13 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		try {
 			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 		} catch (CloneNotSupportedException e) {
-			logger.error("Failed to calibrate model.");
+			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
 		}
 		AnalyticModel calibratedModel;
 		if (optionalCalibrationResult.isPresent())
 			calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
-		else throw new IllegalStateException("Failed to calibrate model.");
+		else throw new IllegalStateException(FAILED_MODEL_CALIBRATION);
 		return calibratedModel;
 	}
 
