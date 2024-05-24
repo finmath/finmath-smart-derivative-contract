@@ -37,9 +37,8 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("java:S125")
 public class VisualiserSDC {
-
+	private static final String COUNTERPART = "Counterpart";
 	private List<Point2D> seriesMarketValues;
-
 	private Plot2DBarFX plotMarginAccounts;
 	private Plot2DFX plotMarketValue;
 
@@ -54,11 +53,9 @@ public class VisualiserSDC {
 		final LocalDate startDate = LocalDate.of(2008, 1, 1);
 		final LocalDate maturity = LocalDate.of(2012, 1, 3);
 		final String fileName = "timeseriesdatamap.json";
-		//final DateTimeFormatter providedDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 		final List<CalibrationDataset> scenarioList = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(s -> s.getDate().toLocalDate().isAfter(startDate)).filter(s -> s.getDate().toLocalDate().isBefore(maturity)).toList();
 		// CSV Method returns same List
 		// final List<IRMarketDataScenario> scenarioList = IRScenarioGenerator.getScenariosFromCSVFile(fileName,providedDateFormat).stream().filter(S->S.getDate().toLocalDate().isAfter(startDate)).filter(S->S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-
 
 		final double notional = 1.0E7;
 		final String maturityKey = "5Y";
@@ -126,17 +123,13 @@ public class VisualiserSDC {
 			frame.setSize(1600, 600);
 			//				frame.setSize(960, 540+22);
 
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
+			Platform.runLater(() -> {
+				final FlowPane root = new FlowPane();
+				root.getChildren().addAll(new Group(plotMarginAccounts.get()), plotMarketValue.get());
 
-					final FlowPane root = new FlowPane();
-					root.getChildren().addAll(new Group(plotMarginAccounts.get()), plotMarketValue.get());
-
-					final Scene scene = new Scene(root, 1600, 600);
-					scene.getStylesheets().add("barchart.css");
-					fxPanel.setScene(scene);
-				}
+				final Scene scene = new Scene(root, 1600, 600);
+				scene.getStylesheets().add("barchart.css");
+				fxPanel.setScene(scene);
 			});
 		});
 	}
@@ -144,15 +137,15 @@ public class VisualiserSDC {
 	void updateWithValue(final LocalDateTime date, final double base, final double x, final Double value, final double increment) throws InterruptedException {
 		final List<Category2D> marginBase = new ArrayList<>();
 		marginBase.add(new Category2D("We", base + Math.min(0, +increment)));
-		marginBase.add(new Category2D("Counterpart", base + Math.min(0, -increment)));
+		marginBase.add(new Category2D(COUNTERPART, base + Math.min(0, -increment)));
 
 		final List<Category2D> marginRemoved = new ArrayList<>();
 		marginRemoved.add(new Category2D("We", -Math.min(0, +increment)));
-		marginRemoved.add(new Category2D("Counterpart", -Math.min(0, -increment)));
+		marginRemoved.add(new Category2D(COUNTERPART, -Math.min(0, -increment)));
 
 		final List<Category2D> marginExcessed = new ArrayList<>();
 		marginExcessed.add(new Category2D("We", Math.max(0, +increment)));
-		marginExcessed.add(new Category2D("Counterpart", Math.max(0, -increment)));
+		marginExcessed.add(new Category2D(COUNTERPART, Math.max(0, -increment)));
 
 		final List<PlotableCategories> plotables = new ArrayList<>();
 		plotables.add(new PlotableCategories() {

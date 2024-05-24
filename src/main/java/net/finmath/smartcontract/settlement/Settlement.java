@@ -8,7 +8,6 @@ import net.finmath.smartcontract.model.MarketDataList;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Describes the result of a single settlement as reported by the valuation oracle.
@@ -67,7 +66,7 @@ public class Settlement {
 
 	// Custom additional information (e.g. risk figures or szenario values)
 
-	private Map<String, String> info;
+	//private Map<String, String> info;
 
 	public String getTradeId() {
 		return tradeId;

@@ -41,7 +41,7 @@ class MarketDataGeneratorScenarioListTest {
 		assertNotNull(fileMarketDataList);
 		assertNotNull(observedMarketDataList);
 
-		assertTrue(fileMarketDataList.equals(observedMarketDataList.get()));
+		assertEquals(fileMarketDataList, observedMarketDataList.get());
 
 
 		//iteration 2
@@ -56,7 +56,7 @@ class MarketDataGeneratorScenarioListTest {
 		assertNotNull(fileMarketDataList);
 		assertNotNull(observedMarketDataList);
 
-		assertTrue(fileMarketDataList.equals(observedMarketDataList.get()));
+		assertEquals(fileMarketDataList, observedMarketDataList.get());
 	}
 
 	@Test

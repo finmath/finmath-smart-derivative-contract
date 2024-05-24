@@ -51,7 +51,7 @@ import java.time.ZoneOffset;
 @AutoConfigureJson
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-public class PlainSwapEditorControllerTest {
+class PlainSwapEditorControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorControllerTest.class);
 

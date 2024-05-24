@@ -33,8 +33,12 @@ public class DatabaseConnector {
 
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseConnector.class);
 	private Connection connection;
-	@Autowired
-	private ResourceGovernor resourceGovernor;
+
+	private final ResourceGovernor resourceGovernor;
+
+	public DatabaseConnector(ResourceGovernor resourceGovernor) {
+		this.resourceGovernor = resourceGovernor;
+	}
 
 
 	/**
@@ -45,11 +49,11 @@ public class DatabaseConnector {
 		try {
 			Properties databaseConnectionProperties = new Properties();
 			databaseConnectionProperties.load(new StringReader(
-					resourceGovernor.getDatabasePropertiesAsResourceInReadMode()
-							.getContentAsString(StandardCharsets.UTF_8)));
+				resourceGovernor.getDatabasePropertiesAsResourceInReadMode()
+					.getContentAsString(StandardCharsets.UTF_8)));
 			connection = DriverManager.getConnection(databaseConnectionProperties.getProperty("URL"),
-					databaseConnectionProperties.getProperty("USERNAME"),
-					databaseConnectionProperties.getProperty("PASSWORD"));
+				databaseConnectionProperties.getProperty("USERNAME"),
+				databaseConnectionProperties.getProperty("PASSWORD"));
 			logger.info("Connected to the PostgreSQL server successfully.");
 		} catch (SQLException | IOException e) {
 			// Allow connection to be null - if we run without database
@@ -67,8 +71,9 @@ public class DatabaseConnector {
 	 * @throws IOException  when writing to the active dataset fails
 	 */
 	public void fetchFromDatabase(List<String> fixingSymbols, String username) throws SQLException, IOException {
-		Statement fetchStatement = connection.createStatement();
-		String rawOutput;
+		try (Statement fetchStatement = connection.createStatement()) {
+
+			String rawOutput;
         /*
         Explaination of the query:
         SELECT the most recent quote/fixing for all symbols provided
@@ -76,7 +81,7 @@ public class DatabaseConnector {
         THEN order the results in chronological order
         THEN format the output as a JSON market data transfer message
          */
-		if (fetchStatement.execute("""
+			if (fetchStatement.execute("""
 				SELECT json_build_object('requestTimestamp',to_json((now() at time zone 'utc')::timestamptz(0)),'values',json_agg(t1)) FROM (
 				SELECT 	"dataTimestamp_"::timestamptz(0) as "dataTimestamp",
 				"symbolId_" as "symbol",
@@ -92,18 +97,18 @@ public class DatabaseConnector {
 				ORDER BY "symbolId_") AS T5) AS T1;
 				""".formatted(fixingSymbols.stream().collect(joining("','", "'", "'")))
 				.replaceFirst(".$",
-						""))) { // PostgreSQL JSON parser won't parse multiline-JSONs correctly, remove all newline chars
-			if (fetchStatement.getResultSet().next()) {
-				rawOutput = fetchStatement.getResultSet().getString(1);
-				logger.info("Writing dataset...");
-				logger.info(rawOutput);
-				try (OutputStream outputStream = resourceGovernor.getActiveDatasetAsResourceInWriteMode(username).getOutputStream()) {
-					outputStream.write(rawOutput.getBytes());
-					logger.info("...done.");
+					""))) { // PostgreSQL JSON parser won't parse multiline-JSONs correctly, remove all newline chars
+				if (fetchStatement.getResultSet().next()) {
+					rawOutput = fetchStatement.getResultSet().getString(1);
+					logger.info("Writing dataset...");
+					logger.info(rawOutput);
+					try (OutputStream outputStream = resourceGovernor.getActiveDatasetAsResourceInWriteMode(username).getOutputStream()) {
+						outputStream.write(rawOutput.getBytes());
+						logger.info("...done.");
+					}
 				}
 			}
 		}
-		fetchStatement.close();
 	}
 
 	/**
@@ -113,10 +118,12 @@ public class DatabaseConnector {
 	 * @throws IOException  if opening the import candidates file was not possible
 	 */
 	public void updateDatabase() throws SQLException, IOException {
-		Statement importTableCreationStatement = connection.createStatement();
-		Statement importStatement = connection.createStatement();
-		Statement clearAfterUpdateStatement = connection.createStatement();
-		String importfileLocation = resourceGovernor.getImportCandidateAsResourceInReadMode().getFile().getAbsolutePath();
+		try (
+			Statement importTableCreationStatement = connection.createStatement();
+			Statement importStatement = connection.createStatement();
+			Statement clearAfterUpdateStatement = connection.createStatement();) {
+
+			String importfileLocation = resourceGovernor.getImportCandidateAsResourceInReadMode().getFile().getAbsolutePath();
 
 
         /*
@@ -125,18 +132,18 @@ public class DatabaseConnector {
         CLEAR the table
         COPY the import candidates to the table
          */
-		String sql = """
+			String sql = """
 				CREATE UNLOGGED TABLE IF NOT EXISTS import_helper (import_helper text);
 				DELETE FROM import_helper;
 				COPY import_helper FROM '%s';
 				""".formatted(importfileLocation);
-		importTableCreationStatement.execute(sql);
+			importTableCreationStatement.execute(sql);
         /*
         Explaination of the query:
         parse the import candidate from the temporary table
         if there are conflict with already imported quotes, do nothing and keep the old version
          */
-		importStatement.execute("""
+			importStatement.execute("""
 				INSERT INTO public."MarketDataPoints"
 				  SELECT 	(dataPoints_ ->> 'dataTimestamp')::timestamp without time zone AS dataTimestamp_,
 					(dataPoints_ ->> 'symbol')::varchar AS symbolId_,
@@ -153,9 +160,7 @@ public class DatabaseConnector {
         Explaination of the query:
         remove the temporary table
          */
-		clearAfterUpdateStatement.execute("DROP TABLE IF EXISTS import_helper;");
-		importTableCreationStatement.close();
-		importStatement.close();
-		clearAfterUpdateStatement.close();
+			clearAfterUpdateStatement.execute("DROP TABLE IF EXISTS import_helper;");
+		}
 	}
 }

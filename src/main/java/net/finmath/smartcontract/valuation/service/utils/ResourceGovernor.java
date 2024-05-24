@@ -1,6 +1,5 @@
 package net.finmath.smartcontract.valuation.service.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
@@ -18,8 +17,8 @@ import java.util.Objects;
 @Profile("!test")
 public class ResourceGovernor {
 
-	@Autowired
-	private ResourcePatternResolver resourcePatternResolver;
+	private final ResourcePatternResolver resourcePatternResolver;
+
 	@Value("${storage.basedir}")
 	private String storageBaseDir;
 	@Value("${storage.importdir}")
@@ -29,6 +28,10 @@ public class ResourceGovernor {
 
 	@Value("${storage.internals.databaseConnectionPropertiesFile}")
 	private String databaseConnectionPropertiesFile;
+
+	public ResourceGovernor(ResourcePatternResolver resourcePatternResolver) {
+		this.resourcePatternResolver = resourcePatternResolver;
+	}
 
 	public Resource getActiveDatasetAsResourceInReadMode(String username) {
 

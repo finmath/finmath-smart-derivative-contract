@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 /**
  * @author Christian Fries
  */
-public class GeometricBrownianMotionOracleTest {
+class GeometricBrownianMotionOracleTest {
 
 	@Test
-	public void test() {
+	void test() {
 		final LocalDateTime initialTime = LocalDateTime.of(2018, 8, 12, 12, 00);
 		final LocalDateTime finalTime = LocalDateTime.of(2028, 8, 12, 12, 00);
 		final int path = 0;

@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -27,6 +25,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@SuppressWarnings("java:S125")
 @Profile("prod")
 @Service
 public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements MarketDataGeneratorInterface<MarketDataList> {// implements Callable<String> {
@@ -101,9 +100,10 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 		Files.write(path, json.getBytes());*/
 	}
 
+	@Override
 	public void onTextMessage(WebSocket websocket, String message) throws Exception {
 
-		System.out.println("message: " +  message);
+		logger.info("message: {}",  message);
 
 		JsonNode responseJson = null;
 		if (!message.isEmpty()) {
@@ -141,7 +141,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 
 				}
 			} catch (Exception e) {
-				System.out.println("Fetching Quote Error:" + e);
+				logger.error("Fetching Quote Error:", e);
 			}
 
 		}
@@ -183,9 +183,8 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	 * Create and send simple Market Price request
 	 *
 	 * @param websocket Websocket to send the message on
-	 * @throws Exception
 	 */
-	public void sendRICRequest(WebSocket websocket) throws Exception {
+	public void sendRICRequest(WebSocket websocket) {
 		String requestJsonString;
 		String keyString1 = ricsToString(); //;+ ",\"Service\":\""; //  + "\"}}"; //
 		requestJsonString = "{\"ID\":2," + keyString1 + ",\"View\":[\"MID\",\"BID\",\"ASK\",\"VALUE_DT1\",\"VALUE_TS1\"]}";
@@ -213,14 +212,14 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 
 	private String ricsToString() {
 
-		String ricsAsString = "\"Key\":{\"Name\":[";
+		StringBuilder ricsAsString = new StringBuilder("\"Key\":{\"Name\":[");
 
 		for (CalibrationDataItem.Spec item : this.calibrationSpecs)
-			ricsAsString += "\"" + item.getKey() + "\",";
-		ricsAsString = ricsAsString.substring(0, ricsAsString.length() - 1);
-		ricsAsString += "]}";
+			ricsAsString.append("\"").append(item.getKey()).append("\",");
+		ricsAsString = new StringBuilder(ricsAsString.substring(0, ricsAsString.length() - 1));
+		ricsAsString.append("]}");
 
-		return ricsAsString;
+		return ricsAsString.toString();
 
 
 	}

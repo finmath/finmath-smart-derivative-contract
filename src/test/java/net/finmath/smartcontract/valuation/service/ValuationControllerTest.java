@@ -41,13 +41,13 @@ import java.time.OffsetDateTime;
 @AutoConfigureMockMvc
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ValuationControllerTest {
+class ValuationControllerTest {
 
 	final String productXMLFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 
 	@Test
 	@WithUserDetails("user1")    // testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
-	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
+	void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketDataStartXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 //		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
@@ -72,7 +72,7 @@ public class ValuationControllerTest {
 
 	@Test
 	@WithUserDetails("user1")
-	public void getValue(@Autowired MockMvc mockMvc) throws Exception {
+	void getValue(@Autowired MockMvc mockMvc) throws Exception {
 
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);

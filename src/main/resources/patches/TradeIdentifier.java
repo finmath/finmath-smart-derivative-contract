@@ -181,7 +181,7 @@ public class TradeIdentifier {
 	 */
 	public List<Object> getTradeIdOrVersionedTradeId() {
 		if (tradeIdOrVersionedTradeId == null) {
-			tradeIdOrVersionedTradeId = new ArrayList<Object>();
+			tradeIdOrVersionedTradeId = new ArrayList<>();
 		}
 		return this.tradeIdOrVersionedTradeId;
 	}

@@ -21,7 +21,6 @@ import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -72,19 +71,18 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	};
 	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
 	//may be changed to allow for different versions of the schema
-	@Autowired
-	private DatabaseConnector databaseConnector;
-
-	@Autowired
-	private ResourceGovernor resourceGovernor;
 
 	@Value("${hostname:localhost:8080}")
 	private String hostname;
+	private final DatabaseConnector databaseConnector;
+	private final ResourceGovernor resourceGovernor;
+	private final ObjectMapper objectMapper;
 
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+		this.databaseConnector = databaseConnector;
+		this.resourceGovernor = resourceGovernor;
+		this.objectMapper = objectMapper;
+	}
 
 	/**
 	 * Controller that handles requests for generation of a SDCmL document.
@@ -124,8 +122,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	 */
 	@Override
 	public ResponseEntity<ValueResult> evaluateFromPlainSwapEditor(PlainSwapOperationRequest plainSwapOperationRequest) {
-		String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal()).getUsername();
+		//String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+		//		.getPrincipal()).getUsername();
 
 		String sdcmlBody;
 		try {
@@ -140,7 +138,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
 		}
 		String marketDataString;
-		MarketDataSet marketData;
+		//MarketDataSet marketData;
 		try {
 
 			//@TODO: where resourceGovenor retrieves the data from neeeds to be understood
