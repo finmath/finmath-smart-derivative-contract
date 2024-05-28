@@ -9,3 +9,4 @@ echo $PWD
 
 # Start
 mvn clean spring-boot:run
+
