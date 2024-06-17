@@ -3,9 +3,10 @@ package net.finmath.smartcontract.product.xml;
 import jakarta.xml.bind.*;
 import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.SDCException;
-import net.finmath.smartcontract.settlement.Settlements;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,6 +28,8 @@ import java.util.Map;
  * @author Christian Fries
  */
 public class SDCXMLParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(SDCXMLParser.class);
 
     private SDCXMLParser() {
     }
@@ -165,12 +168,13 @@ public class SDCXMLParser {
 
     public static <T> String marshalClassToXMLString(T t) {
         try {
-            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlements.class);
+            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
             Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
             StringWriter writer = new StringWriter();
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
         } catch (JAXBException e) {
+            logger.error("jaxb error, ", e);
             throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage());
         }
     }
