@@ -29,7 +29,7 @@ class DataParseTests {
     @Test
     void testParseSymbols() {
         try {
-            String sdcXML = new String(Objects.requireNonNull(DataParseTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml")).readAllBytes(), StandardCharsets.UTF_8);
+            String sdcXML = new String(Objects.requireNonNull(DataParseTests.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml")).readAllBytes(), StandardCharsets.UTF_8);
             SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
             List<CalibrationDataItem.Spec> marketdataItems = sdc.getMarketdataItemList();
 
@@ -66,7 +66,7 @@ class DataParseTests {
         final String fileName = "timeseriesdatamap.json";
         final List<CalibrationDataset> scenarioListRaw = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
         final List<CalibrationDataset> scenarioList = scenarioListRaw.stream().map(scenario -> scenario.getScaled(100)).toList();
-        final String productData = new String(DataParseTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+        final String productData = new String(DataParseTests.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
         SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
         List<CalibrationDataItem.Spec> specList = productDescriptor.getMarketdataItemList();
 
@@ -91,7 +91,7 @@ class DataParseTests {
 
     @Test
     void testXMLToCalibrationSet() throws Exception {
-        final String productData = new String(DataParseTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+        final String productData = new String(DataParseTests.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
         final String marketData = new String(DataParseTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
         SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
@@ -107,7 +107,7 @@ class DataParseTests {
         String sdcXML = new String(DataParseTests.class.getClassLoader().getResourceAsStream("generators/eur_euribor_y_s_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 
-        String path = DataParseTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract_with_rics.xml").getPath();
+        String path = DataParseTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml").getPath();
         File file = new File(path);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);

@@ -15,7 +15,7 @@ public class DemoStarter {
 
 	public static void main(String[] args) throws Exception {
 
-		String sdcXML = new String(DemoStarter.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String sdcXML = new String(DemoStarter.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		WebSocketClientEndpoint client = new WebSocketClientEndpoint(new URI("ws://localhost:443/valuationfeed"), "user1", "password1");
 		long timeout = client.getUserSession().getMaxIdleTimeout();
 		client.sendTextMessage(sdcXML);

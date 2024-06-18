@@ -4,7 +4,7 @@
            xmlns="uri:sdc"
            targetNamespace="uri:sdc">
     <xs:import namespace="http://www.fpml.org/FpML-5/confirmation"
-               schemaLocation="../../../../../schemas/fpml-schemas/fpml-main-5-9.xsd"/>
+               schemaLocation="../schemas/fpml-schemas/fpml-main-5-9.xsd"/>
     <xs:element name="smartderivativecontract">
         <xs:complexType>
             <xs:sequence>

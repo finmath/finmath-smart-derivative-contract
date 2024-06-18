@@ -25,7 +25,7 @@ class SDCXMLParserTest {
 	@Test
 	void testParser() throws IOException, SAXException, ParserConfigurationException {
 
-		String sdcXML = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String sdcXML = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 

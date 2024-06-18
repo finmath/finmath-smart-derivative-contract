@@ -3,7 +3,9 @@ package net.finmath.smartcontract.valuation.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.valuation.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.valuation.service.config.MockUserAuthConfig;
@@ -41,7 +43,7 @@ import java.time.OffsetDateTime;
 @ActiveProfiles("test")
 class ValuationControllerTest {
 
-	final String productXMLFile = "net/finmath/smartcontract/product/xml/smartderivativecontract.xml";
+	final String productXMLFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 
 	@Test
 	@WithUserDetails("user1")    // testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.

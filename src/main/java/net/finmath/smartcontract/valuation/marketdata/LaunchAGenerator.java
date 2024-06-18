@@ -22,7 +22,7 @@ public class LaunchAGenerator {
 
 	public static void main(String[] args) throws Exception {
 
-		String sdcXML = new String(LaunchAGenerator.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String sdcXML = new String(LaunchAGenerator.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 		List<CalibrationDataItem.Spec> mdItemList = sdc.getMarketdataItemList();
 
