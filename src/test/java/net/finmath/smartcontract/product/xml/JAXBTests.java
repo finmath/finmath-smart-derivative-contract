@@ -35,7 +35,7 @@ class JAXBTests {
 	@Test
 	void checkChangedTradeParams() throws java.lang.Exception {
 
-		final URL url = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
+		final URL url = JAXBTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract.xml");
 		final JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 
 		Smartderivativecontract sdc = getUnmarshalledObjectFromXML(jaxbContext, url);
@@ -63,7 +63,7 @@ class JAXBTests {
 	@Test
 	void checkValuation() throws java.lang.Exception {
 
-		final URL url = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
+		final URL url = JAXBTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract.xml");
 		final JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 
 		Smartderivativecontract sdc = getUnmarshalledObjectFromXML(jaxbContext, url);
@@ -101,11 +101,11 @@ class JAXBTests {
 	@Test
 	void jaxBTestWithValidation() {
 		try {
-			String xsdFile = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xsd").getPath();
+			String xsdFile = JAXBTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract.xsd").getPath();
 			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			Schema sdcSchema = sf.newSchema(new File(xsdFile));
 
-			String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
+			String path = JAXBTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").getPath();
 			File file = new File(path);
 			JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -132,7 +132,7 @@ class JAXBTests {
 
 	@Test
 	void jaxBPlainTest() throws java.lang.Exception {
-		String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
+		String path = JAXBTests.class.getClassLoader().getResource("net/finmath/smartcontract/product/xml/smartderivativecontract.xml").getPath();
 		File file = new File(path);
 		JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
