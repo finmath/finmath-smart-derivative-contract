@@ -22,7 +22,7 @@ class TradeUtilsTest {
 			assertEquals(20, id.length());
 
 			//id only contains letters and numbers (and the leading underscore)
-			assertTrue(Pattern.matches("ID_[a-zA-Z0-9]+", id));
+			assertTrue(Pattern.matches("ID-[a-zA-Z0-9]+", id));
 
 			//check on uniqueness
 			assertFalse(ids.contains(id));
