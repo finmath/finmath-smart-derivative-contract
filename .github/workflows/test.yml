@@ -7,7 +7,7 @@ jobs:
     name: Java 17 build and unit testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Java
         uses: actions/setup-java@v1
         with:
