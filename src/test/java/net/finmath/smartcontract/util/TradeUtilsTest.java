@@ -12,17 +12,18 @@ class TradeUtilsTest {
 
 	@Test
 	void getUniqueTradeId() {
+		String idPrefix = "ID-";
 		List<String> ids = new ArrayList<>();
-		for (int i = 1; i <= 200 ; i++){
+		for (int i = 1; i <= 200; i++) {
 			String id = TradeUtils.getUniqueTradeId();
-			System.out.println(i + ". " +id);
-			assertTrue(id.contains("ID_"));
+			System.out.println(i + ". " + id);
+			assertTrue(id.contains(idPrefix));
 
 			//max length 20
 			assertEquals(20, id.length());
 
 			//id only contains letters and numbers (and the leading underscore)
-			assertTrue(Pattern.matches("ID-[a-zA-Z0-9]+", id));
+			assertTrue(Pattern.matches(idPrefix + "[a-zA-Z0-9]+", id));
 
 			//check on uniqueness
 			assertFalse(ids.contains(id));
