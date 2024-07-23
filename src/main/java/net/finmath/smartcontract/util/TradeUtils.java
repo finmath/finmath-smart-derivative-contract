@@ -12,6 +12,6 @@ public class TradeUtils {
 	 */
 	public static String getUniqueTradeId(){
 		String uniqueID = UUID.randomUUID().toString().replace("-", "").substring(0, 17);
-		return "ID_" + uniqueID;
+		return "ID-" + uniqueID;
 	}
 }
