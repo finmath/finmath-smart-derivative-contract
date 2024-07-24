@@ -4,6 +4,7 @@ import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
 import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.smartcontract.model.MarketDataList;
+import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
@@ -19,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SDCXMLParserTest {
 
@@ -66,6 +69,12 @@ class SDCXMLParserTest {
 		Assertions.assertNotNull(marketData);
     }
 
+	@Test
+	void unmarshalXml_wrongInput() throws IOException {
+		final String marketDataXml = new String(Objects.requireNonNull(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml")).readAllBytes(), StandardCharsets.UTF_8);
+		assertThrows(SDCException.class, () -> SDCXMLParser.unmarshalXml(marketDataXml, Object.class));
+	}
+
     @Test
     void marshalClassToXMLString() {
 		Settlement newSettlement = new Settlement();
@@ -87,4 +96,5 @@ class SDCXMLParserTest {
 		Assertions.assertTrue(xmlString.contains("<settlement>"));
 		Assertions.assertTrue(xmlString.contains("</marketData>"));
     }
+
 }
