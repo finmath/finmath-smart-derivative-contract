@@ -38,6 +38,8 @@ class SDCXMLParserTest {
 		System.out.println(date);
 
 		Assertions.assertEquals("UTI12345", sdc.getUniqueTradeIdentifier());
+		Assertions.assertEquals("ID-Test123", sdc.getDltTradeId());
+		Assertions.assertEquals("0x000000001", sdc.getDltAddress());
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
