@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SDCXMLParserTest {
@@ -59,6 +60,19 @@ class SDCXMLParserTest {
 		InterestRateSwapProductDescriptor irs = (InterestRateSwapProductDescriptor) productDescriptor;
 		System.out.println(irs.getLegPayer());
 		System.out.println(irs.getLegReceiver());
+	}
+
+	@Test
+	void parseFpmlByGenericParser() throws IOException {
+		final String fpml = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+
+		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(fpml, Smartderivativecontract.class);
+
+		System.out.println(sdc.getSettlement().getSettlementDateInitial().trim());
+
+		assertEquals("net.finmath", sdc.getValuation().getArtefact().getGroupId().trim());
+		assertEquals("UTI12345", sdc.getUniqueTradeIdentifier().trim());
+		assertEquals("party1", sdc.getReceiverPartyID().trim());
 	}
 
     @Test
