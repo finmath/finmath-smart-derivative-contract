@@ -38,7 +38,7 @@
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element type="xs:string" name="type"/>
-                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:double" name="value"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -46,7 +46,7 @@
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element type="xs:string" name="type"/>
-                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:double" name="value"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
