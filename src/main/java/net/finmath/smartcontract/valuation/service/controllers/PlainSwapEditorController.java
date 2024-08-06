@@ -159,6 +159,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		try {
 			valueResult = (new MarginCalculator()).getValue(marketDataString, sdcmlBody);
 		} catch (Exception e) {
+			logger.error("error in valuation, ", e);
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Valuation error.");
 			pd.setType(URI.create(hostname + ErrorTypeURI.VALUATION_ERROR_URI));
 			pd.setTitle(ErrorDetails.VALUATION_ERROR_DETAIL);

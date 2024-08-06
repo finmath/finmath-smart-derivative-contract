@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,12 +37,7 @@ public class SDCXMLParser {
 
         Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
 
-        LocalDateTime settlementDateInitial;
-
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
-        document.getDocumentElement().normalize();
-
-        settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
+        LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
 
         String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
         String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
@@ -53,16 +47,10 @@ public class SDCXMLParser {
 		Market Data
 		 */
         List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
-        //List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0), "item");
-        //for (Node itemNode : itemNodes) {
         for(Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item item : sdc.getSettlement().getMarketdata().getMarketdataitems().getItem()){
-            //String symbol = nodeValueByName(itemNode, "symbol", String.class);
             String symbol = item.getSymbol().get(0).trim();
-            //String curve = nodeValueByName(itemNode, "curve", String.class);
             String curve = item.getCurve().get(0).trim();
-            //String type = nodeValueByName(itemNode, "type", String.class);
             String type = item.getType().get(0).trim();
-            //String tenor = nodeValueByName(itemNode, "tenor", String.class);
             String tenor = item.getTenor().get(0).trim();
             CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol, curve, type, tenor);
             marketdataItems.add(spec);
@@ -87,13 +75,15 @@ public class SDCXMLParser {
             penaltyFeeInitialByPartyID.put(party.getId(), p.getPenaltyFee().getValue());
         }
 
-
         // Receiver party ID
         String receiverPartyID = sdc.getReceiverPartyID().trim();
 
         // TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
 
         // TODO Support multiple underlyings
+
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
+        document.getDocumentElement().normalize();
 
         Node underlying = document
                 .getElementsByTagName("underlying")
@@ -104,57 +94,6 @@ public class SDCXMLParser {
         }
 
         return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
-    }
-
-    /*
-     * Private helpers
-     */
-
-    private static List<Node> nodeChildsByName(Node node, String name) {
-        // Iterate
-        List<Node> nodes = new ArrayList<>();
-        NodeList childs = node.getChildNodes();
-        for (int i = 0; i < childs.getLength(); i++) {
-            Node childNode = childs.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                nodes.add(childNode);
-            }
-        }
-        return nodes;
-    }
-
-    private static Node nodeChildByName(Node node, String name) {
-        // Iterate
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node childNode = nodes.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                return childNode;
-            }
-        }
-
-        throw new IllegalArgumentException("Node not found");
-    }
-
-    private static <T> T nodeValueByName(Node node, String name, Class<T> type) {
-
-        // Iterate
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node childNode = nodes.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                String value = childNode.getTextContent();
-                if (type.equals(String.class)) {
-                    return type.cast(value);
-                } else if (type.equals(Double.class)) {
-                    return type.cast(Double.valueOf(value));
-                } else {
-                    throw new IllegalArgumentException("Type not supported");
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Node not found");
     }
 
     public static <T> T unmarshalXml(String xml, Class<T> t) {
