@@ -1,6 +1,8 @@
 <smartderivativecontract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                          xmlns="uri:sdc"
                          xsi:schemaLocation="uri:sdc smartderivativecontract.xsd">
+    <dltTradeId>ID-historical123</dltTradeId>
+    <dltAddress>0x000000002</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <valuation>
         <artefact>

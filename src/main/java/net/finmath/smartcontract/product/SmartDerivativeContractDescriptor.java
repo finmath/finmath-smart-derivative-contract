@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public class SmartDerivativeContractDescriptor {
 
+	private final String dltTradeId;
+	private final String dltAddress;
 	private final String uniqueTradeIdentifier;
 	private final LocalDateTime tradeDate;
 	private final List<Party> counterparties;
@@ -69,7 +71,9 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
+	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems) {
+		this.dltTradeId = dltTradeId;
+		this.dltAddress = dltAddress;
 		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
 		this.tradeDate = tradeDate;
 		this.counterparties = counterparties;
@@ -83,6 +87,14 @@ public class SmartDerivativeContractDescriptor {
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
 		Validate.isTrue(penaltyFeeInitialByPartyID.size() == 2, "Number of penalty fee values must be 2.");
 		Validate.notNull(underlying, "Underlying must not be null.");
+	}
+
+	public String getDltTradeId() {
+		return dltTradeId;
+	}
+
+	public String getDltAddress() {
+		return dltAddress;
 	}
 
 	public String getUniqueTradeIdentifier() {

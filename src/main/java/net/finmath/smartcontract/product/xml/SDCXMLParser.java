@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,26 +35,23 @@ public class SDCXMLParser {
 
     public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
-        LocalDateTime settlementDateInitial;
+        Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
 
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
-        document.getDocumentElement().normalize();
+        LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
 
-        String tradeDateString = document.getElementsByTagName("settlementDateInitial").item(0).getTextContent();
-        settlementDateInitial = LocalDateTime.parse(tradeDateString.trim());
-
-        String uniqueTradeIdentifier = document.getElementsByTagName("uniqueTradeIdentifier").item(0).getTextContent();
+        String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
+        String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
+        String dltTradeId = sdc.getDltTradeId() == null ? "" : sdc.getDltTradeId().trim();
 
 		/*
 		Market Data
 		 */
         List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
-        List<Node> itemNodes = nodeChildsByName(document.getElementsByTagName("marketdataitems").item(0), "item");
-        for (Node itemNode : itemNodes) {
-            String symbol = nodeValueByName(itemNode, "symbol", String.class);
-            String curve = nodeValueByName(itemNode, "curve", String.class);
-            String type = nodeValueByName(itemNode, "type", String.class);
-            String tenor = nodeValueByName(itemNode, "tenor", String.class);
+        for(Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item item : sdc.getSettlement().getMarketdata().getMarketdataitems().getItem()){
+            String symbol = item.getSymbol().get(0).trim();
+            String curve = item.getCurve().get(0).trim();
+            String type = item.getType().get(0).trim();
+            String tenor = item.getTenor().get(0).trim();
             CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol, curve, type, tenor);
             marketdataItems.add(spec);
         }
@@ -67,31 +63,27 @@ public class SDCXMLParser {
         Map<String, Double> marginAccountInitialByPartyID = new HashMap<>();
         Map<String, Double> penaltyFeeInitialByPartyID = new HashMap<>();
 
-        List<Node> partyNodes = nodeChildsByName(document.getElementsByTagName("parties").item(0), "party");
-        for (Node partyNode : partyNodes) {
-
+        for(Smartderivativecontract.Parties.Party p : sdc.getParties().getParty()){
             SmartDerivativeContractDescriptor.Party party = new SmartDerivativeContractDescriptor.Party(
-                    nodeValueByName(partyNode, "id", String.class),
-                    nodeValueByName(partyNode, "name", String.class),
+                    p.getId().trim(),
+                    p.getName().trim(),
                     null,
-                    nodeValueByName(partyNode, "address", String.class)
+                    p.getAddress().trim()
             );
-
-            Double marginAccountInitial = nodeValueByName(nodeChildByName(partyNode, "marginAccount"), "value", Double.class);
-            Double penaltyFeeInitial = nodeValueByName(nodeChildByName(partyNode, "penaltyFee"), "value", Double.class);
-
             parties.add(party);
-            marginAccountInitialByPartyID.put(party.getId(), marginAccountInitial);
-            penaltyFeeInitialByPartyID.put(party.getId(), penaltyFeeInitial);
+            marginAccountInitialByPartyID.put(party.getId(), p.getMarginAccount().getValue());
+            penaltyFeeInitialByPartyID.put(party.getId(), p.getPenaltyFee().getValue());
         }
 
-
         // Receiver party ID
-        String receiverPartyID = document.getElementsByTagName("receiverPartyID").item(0).getTextContent().trim();
+        String receiverPartyID = sdc.getReceiverPartyID().trim();
 
         // TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
 
         // TODO Support multiple underlyings
+
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
+        document.getDocumentElement().normalize();
 
         Node underlying = document
                 .getElementsByTagName("underlying")
@@ -101,58 +93,7 @@ public class SDCXMLParser {
             underlying = underlying.getNextSibling();
         }
 
-        return new SmartDerivativeContractDescriptor(uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
-    }
-
-    /*
-     * Private helpers
-     */
-
-    private static List<Node> nodeChildsByName(Node node, String name) {
-        // Iterate
-        List<Node> nodes = new ArrayList<>();
-        NodeList childs = node.getChildNodes();
-        for (int i = 0; i < childs.getLength(); i++) {
-            Node childNode = childs.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                nodes.add(childNode);
-            }
-        }
-        return nodes;
-    }
-
-    private static Node nodeChildByName(Node node, String name) {
-        // Iterate
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node childNode = nodes.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                return childNode;
-            }
-        }
-
-        throw new IllegalArgumentException("Node not found");
-    }
-
-    private static <T> T nodeValueByName(Node node, String name, Class<T> type) {
-
-        // Iterate
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node childNode = nodes.item(i);
-            if (name.equals(childNode.getNodeName())) {
-                String value = childNode.getTextContent();
-                if (type.equals(String.class)) {
-                    return type.cast(value);
-                } else if (type.equals(Double.class)) {
-                    return type.cast(Double.valueOf(value));
-                } else {
-                    throw new IllegalArgumentException("Type not supported");
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Node not found");
+        return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems);
     }
 
     public static <T> T unmarshalXml(String xml, Class<T> t) {
