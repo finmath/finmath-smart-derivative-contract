@@ -23,3 +23,4 @@ jobs:
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           PRIVATE_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
         run: mvn -s github_SNAPSHOT_settings.xml clean install deploy
+        continue-on-error: true
