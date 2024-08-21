@@ -35,7 +35,7 @@ public class WebSocketIT {
 
     @BeforeAll
     void init() throws Exception {
-        connectionPropertiesFile="config/market_data_connect.properties"; // TODO: read-in via application.yml
+        connectionPropertiesFile = "config/market_data_connect.properties"; // TODO: read-in via application.yml
 
         this.properties = new Properties();
         this.properties.load(new FileInputStream(connectionPropertiesFile));
@@ -70,11 +70,12 @@ public class WebSocketIT {
         System.out.println("Connecting...");
         ws.connect();
         System.out.println("Waiting for pong...");
-        boolean timeOut = latch.await(5, TimeUnit.SECONDS); // Blocks this thread until latch is counted down
+        boolean timeOut = !latch.await(5, TimeUnit.SECONDS); // Blocks this thread until latch is counted down
 
-        assertTrue(isOnPongFrameCalled && !timeOut, "No pong or timeout");
-
+	assertTrue(isOnPongFrameCalled && !timeOut, "No pong or timeout");
+	System.out.println("Disconnecting ws...");
         ws.disconnect();
+	// TODO: Assert disconnect?
     }
 
     @Test
