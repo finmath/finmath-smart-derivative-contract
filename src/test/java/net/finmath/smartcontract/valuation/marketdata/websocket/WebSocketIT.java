@@ -72,8 +72,8 @@ public class WebSocketIT {
         System.out.println("Waiting for pong...");
         boolean timeOut = !latch.await(5, TimeUnit.SECONDS); // Blocks this thread until latch is counted down
 
-	assertTrue(isOnPongFrameCalled && !timeOut, "No pong or timeout");
-	System.out.println("Disconnecting ws...");
+        assertTrue(isOnPongFrameCalled && !timeOut, "No pong or timeout");
+        System.out.println("Disconnecting ws...");
         ws.disconnect();
 	// TODO: Assert disconnect?
     }
