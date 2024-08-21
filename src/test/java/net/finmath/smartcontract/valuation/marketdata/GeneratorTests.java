@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GeneratorTests {
 
@@ -32,28 +33,6 @@ class GeneratorTests {
 		//String sdcXML = new String(LaunchAGenerator.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		//SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 		//mdItemList = sdc.getMarketdataItemList();
-	}
-
-
-	@Test
-	@Disabled
-	void testWebsocketConnection(){
-		try {
-			/* Init Websockect Connection*/
-			webSocketConnector = new WebSocketConnector(properties);
-			/*WebSocket webSocket = webSocketConnector.getWebSocket();
-			webSocket.connect();
-			boolean connect = webSocket.isOpen();
-			webSocket.disconnect();
-			Assertions.assertTrue(connect);*/
-		}
-		catch (Exception e){
-			Assertions.fail();
-		}
-
-		/* Market Data Adapter */
-		//
-
 	}
 
 	@Test
