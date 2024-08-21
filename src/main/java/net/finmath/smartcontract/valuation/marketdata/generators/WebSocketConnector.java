@@ -108,7 +108,7 @@ public class WebSocketConnector {
 		params.setProtocols(new String[]{"TLSv1.2"});
 
 		ProxySettings settings = factory.getProxySettings();
-		if(connectionProperties.get("USEPROXY").equals("TRUE")) {
+		if("TRUE".equals(connectionProperties.get("USEPROXY"))) {
 			settings.setHost(connectionProperties.get("PROXYHOST").toString()).setPort(Integer.parseInt(connectionProperties.get("PROXYPORT").toString()));
 			settings.setCredentials(connectionProperties.get("PROXYUSER").toString(), connectionProperties.get("PROXYPASS").toString());
 		}
