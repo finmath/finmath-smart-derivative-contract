@@ -4,6 +4,7 @@
 ### Refintiv credentials ###
 
 refinitiv_connect.properties
+market_data_connect.properties
 
 ### DB properties and credentials ###
 
