@@ -117,6 +117,8 @@ public class WebSocketIT {
         ws.connect();
         System.out.println("Waiting for login...");
         boolean timeOut = !latch.await(5, TimeUnit.SECONDS);
+        String logoffRequest = "{\"ID\":1, \"Type\": \"Close\", \"Domain\":\"Login\"}";
+        ws.sendText(logoffRequest);
 
 
 //        String ricString = ""; //;+ ",\"Service\":\""; //  + "\"}}"; //
