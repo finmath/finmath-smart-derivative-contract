@@ -4,14 +4,14 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketListener;
+import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorWebsocket;
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.FileInputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.SQLOutput;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -75,12 +75,62 @@ public class WebSocketIT {
         assertTrue(isOnPongFrameCalled && !timeOut, "No pong or timeout");
         System.out.println("Disconnecting ws...");
         ws.disconnect();
-	// TODO: Assert disconnect?
+	    // TODO: Assert disconnect?
     }
 
     @Test
     void testWebsocketConnection() {
         // TODO: Test ws.connect() only?
+    }
+
+    @Test
+    void testMarketDataProvision() throws Exception {
+        WebSocketConnector wsConnector = new WebSocketConnector(properties);
+
+        WebSocketListener listener = new WebSocketAdapter() {
+            @Override
+            public void onConnected(WebSocket webSocket, Map<String, List<String>> map) throws Exception {
+                System.out.println("onConnected called");
+                MarketDataGeneratorWebsocket.sendLoginRequest(
+                        webSocket,
+                        wsConnector.getAuthJson().getString("access_token"),
+                        true, wsConnector.getPosition()
+                );
+            }
+
+            @Override
+            public void onTextMessage(WebSocket websocket, String text) {
+                // if (containsLoginResponse(text))
+                System.out.println("NEW TEXT MESSAGE: " + text); // TODO: let's assume response for login request
+                latch.countDown();
+
+
+            }
+
+        };
+
+
+        WebSocket ws = wsConnector.getWebSocket();
+
+        ws.addListener(listener);
+        System.out.println("Connecting...");
+        ws.connect();
+        System.out.println("Waiting for login...");
+        boolean timeOut = !latch.await(5, TimeUnit.SECONDS);
+
+
+//        String ricString = ""; //;+ ",\"Service\":\""; //  + "\"}}"; //
+//        String requestJsonString = "{\"ID\":2," + ricString + ",\"View\":[\"MID\",\"BID\",\"ASK\",\"VALUE_DT1\",\"VALUE_TS1\"]}";
+//        ws.sendText(requestJsonString);
+
+
+        // Adapter
+        // Websocket
+        // Login
+        // Request
+        // onText...?
+
+
     }
 
 }

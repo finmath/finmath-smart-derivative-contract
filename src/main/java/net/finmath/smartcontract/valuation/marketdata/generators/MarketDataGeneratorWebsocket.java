@@ -69,7 +69,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	 */
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
 		System.out.println("WebSocket successfully connected!");
-		sendLoginRequest(websocket, authJson.getString("access_token"), true);
+		sendLoginRequest(websocket, authJson.getString("access_token"), true, this.position);
 	}
 
 	@Override
@@ -192,14 +192,14 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	}
 
 
-	public void sendLoginRequest(WebSocket websocket, String authToken, boolean isFirstLogin) throws Exception {
+	public static void sendLoginRequest(WebSocket websocket, String authToken, boolean isFirstLogin, String position) throws Exception {
 		String loginJsonString = "{\"ID\":1,\"Domain\":\"Login\",\"Key\":{\"Elements\":{\"ApplicationId\":\"\",\"Position\":\"\",\"AuthenticationToken\":\"\"},\"NameType\":\"AuthnToken\"}}";
 		ObjectMapper mapper = new ObjectMapper();
 
 		ObjectNode loginJson = (ObjectNode) mapper.readTree(loginJsonString);
 		((ObjectNode) loginJson.get("Key").get("Elements")).put("AuthenticationToken", authToken);
 		((ObjectNode) loginJson.get("Key").get("Elements")).put("ApplicationId", "256");
-		((ObjectNode) loginJson.get("Key").get("Elements")).put("Position", this.position);
+		((ObjectNode) loginJson.get("Key").get("Elements")).put("Position", position);
 
 		if (!isFirstLogin) { // If this isn't our first login, we don't need another refresh for it.
 			loginJson.put("Refresh", false);//.get("Key").get("Elements")).put("Position",this.position);
