@@ -27,6 +27,7 @@ public class SmartDerivativeContractDescriptor {
 	private final Node underlying;
 	private final List<CalibrationDataItem.Spec> marketdataItemList;
 	private final String currency;
+	private final String marketDataProvider;
 
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
@@ -72,7 +73,7 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency) {
+	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider) {
 		this.dltTradeId = dltTradeId;
 		this.dltAddress = dltAddress;
 		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
@@ -84,6 +85,7 @@ public class SmartDerivativeContractDescriptor {
 		this.marketdataItemList = marketdataItems;
 		this.underlying = underlying;
 		this.currency = currency;
+		this.marketDataProvider = marketDataProvider;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
@@ -147,5 +149,9 @@ public class SmartDerivativeContractDescriptor {
 
 	public String getCurrency() {
 		return currency;
+	}
+
+	public String getMarketDataProvider() {
+		return marketDataProvider;
 	}
 }
