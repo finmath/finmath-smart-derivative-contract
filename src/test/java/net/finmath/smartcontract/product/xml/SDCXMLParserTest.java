@@ -41,6 +41,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("ID-Test123", sdc.getDltTradeId());
 		Assertions.assertEquals("0x000000001", sdc.getDltAddress());
 		Assertions.assertEquals("EUR", sdc.getCurrency());
+		Assertions.assertEquals("internal", sdc.getMarketDataProvider());
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
