@@ -5,16 +5,19 @@ import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class SettlementGenerator {
+
+	private static final Logger logger = LoggerFactory.getLogger(SettlementGenerator.class);
 
 	private Settlement settlement;
 
@@ -66,10 +69,13 @@ public class SettlementGenerator {
 	}
 
 	public String build(){
+		String settlementString = SDCXMLParser.marshalClassToXMLString(settlement);
 		if(allFieldsSet(settlement))
-			return SDCXMLParser.marshalClassToXMLString(settlement);
-		else
+			return settlementString;
+		else{
+			logger.error("missing input for settlement, settlement string so far: {}", settlementString);
 			throw new SDCException(ExceptionId.SDC_WRONG_INPUT, "settlement input incomplete", 400);
+		}
 	}
 
 	private static boolean allFieldsSet(Settlement settlement){
