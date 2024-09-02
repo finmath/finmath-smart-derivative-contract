@@ -33,6 +33,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /valuation/valueAtTime:
+    post:
+      summary: Request mapping for the value at specific evaluationTime
+      operationId: valueAtTime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /valuation/margin:
     post:
       summary: Request mapping for the value
