@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the settlement valuation REST service.
@@ -126,6 +128,25 @@ public class ValuationController implements ValuationApi {
 			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
 		}
 	}
+
+	@Override
+	public ResponseEntity<ValueResult> valueAtTime(ValueRequest valueRequest) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add(RESPONDED, "valueAtTime");
+		ValueResult value = null;
+		try {
+			MarginCalculator marginCalculator = new MarginCalculator();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+			LocalDateTime evaluationTime = LocalDateTime.parse(valueRequest.getValuationDate(), formatter);
+			value = marginCalculator.getValueAtEvaluationTime(valueRequest.getMarketData(), valueRequest.getTradeData(),evaluationTime);
+			logger.info(value.toString());
+			return ResponseEntity.ok(value);
+		} catch (Exception e) {
+			logger.error(FAILED_CALCULATION, e);
+			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
+		}
+	}
+
 
 	@Override
 	public ResponseEntity<ValueResult> testProductValue(MultipartFile tradeData) {

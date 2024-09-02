@@ -153,6 +153,21 @@ public class MarginCalculator {
 		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
 	}
 
+	public ValueResult getValueAtEvaluationTime(String marketData, String productData, LocalDateTime evaluationTime) throws Exception {
+		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+
+		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
+
+
+		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
+		double value = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
+
+		String currency = "EUR";
+
+		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(evaluationTime.toString());
+	}
+
 	public ValueResult getValue(MarketDataList marketData, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
@@ -216,5 +231,34 @@ public class MarginCalculator {
 		}
 
 		return marginCall;
+	}
+
+	/**
+	 * Calculates values at different valuation times
+	 *
+	 * @param marketDataList    list of market data scenarios.
+	 * @param evaluationTime	the evaluation time
+	 * @param marketDataTime	the marketdata time
+	 * @param productDescriptor The product descriptor (wrapper to the product XML)
+	 * @param underlying        The underlying descriptor (wrapper to the underlying XML)
+	 */
+	private double calculateValueAtTime(List<CalibrationDataset> marketDataList, LocalDateTime evaluationTime, LocalDateTime marketDataTime, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
+
+		// Build product
+		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
+		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
+		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
+		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
+		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
+		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
+
+		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
+
+		// Build valuation oracle with given market data.
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, 1.0, marketDataList);
+
+		double value = oracle.getValue(evaluationTime,marketDataTime);
+
+		return value;
 	}
 }
