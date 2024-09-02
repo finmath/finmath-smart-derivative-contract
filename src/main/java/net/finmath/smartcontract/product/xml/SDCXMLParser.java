@@ -107,6 +107,7 @@ public class SDCXMLParser {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return (T) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
+            logger.error("unmarshalXml: jaxb error, ", e);
             throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
         }
     }
@@ -119,7 +120,7 @@ public class SDCXMLParser {
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
         } catch (JAXBException e) {
-            logger.error("jaxb error, ", e);
+            logger.error("marshalClassToXMLString: jaxb error, ", e);
             throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
         }
     }
