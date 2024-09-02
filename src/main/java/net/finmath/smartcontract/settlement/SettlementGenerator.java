@@ -68,12 +68,26 @@ public class SettlementGenerator {
 		return this;
 	}
 
+	public Settlement buildObject(){
+		String settlementString = SDCXMLParser.marshalClassToXMLString(settlement);
+		if(allFieldsSet(settlement))
+			return settlement;
+		else{
+			logger.error("buildObject: missing input for settlement, settlement string so far: {}", settlementString);
+			throw new SDCException(ExceptionId.SDC_WRONG_INPUT, "settlement input incomplete", 400);
+		}
+	}
+
+	/**
+	 *
+	 * @return settlement xml String
+	 */
 	public String build(){
 		String settlementString = SDCXMLParser.marshalClassToXMLString(settlement);
 		if(allFieldsSet(settlement))
 			return settlementString;
 		else{
-			logger.error("missing input for settlement, settlement string so far: {}", settlementString);
+			logger.error("buildString: missing input for settlement, settlement string so far: {}", settlementString);
 			throw new SDCException(ExceptionId.SDC_WRONG_INPUT, "settlement input incomplete", 400);
 		}
 	}
