@@ -1,15 +1,14 @@
 package net.finmath.smartcontract.valuation.implementation.reactive;
 
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
-import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.model.ValueResult;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
+//TODO check if needed, not used
 public class ConditionalSettlementCalculator implements Function<CalibrationDataset, ValueResult>, Serializable {
 
 	private BigDecimal resultTriggerValue;
@@ -31,14 +30,9 @@ public class ConditionalSettlementCalculator implements Function<CalibrationData
 		String marketDataAsJson = actualmarketdata.serializeToJson();
 		try {
 			if (previousmarketdata != null) {
-				String actualTime = CalibrationParserDataItems.getScenariosFromJsonString(marketDataAsJson).get(0).getDate().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 				ValueResult marginResult = calculator.getValue(marketDataAsJson, sdcXML);
-				//if (Math.abs(marginResult.getValue().doubleValue()) > resultTriggerValue.doubleValue()) {
-				String previousTime = CalibrationParserDataItems.getScenariosFromJsonString(previousmarketdata).get(0).getDate().format(DateTimeFormatter.ofPattern("HH-mm-ss"));
 				previousmarketdata = marketDataAsJson;
 				finalResult = marginResult;
-//                    System.out.println("ConditionalMarginCalculator: PreviousTime: " + previousTime + " - ActualTime: " + actualTime + " - SettlementValue: " + marginResult.getValue().doubleValue() );
-				//}
 			} else
 				previousmarketdata = marketDataAsJson;
 

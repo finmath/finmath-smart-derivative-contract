@@ -1,9 +1,15 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.MarketDataList;
+import net.finmath.smartcontract.model.SDCException;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -16,10 +22,10 @@ import java.util.stream.Stream;
 /**
  * Parses calibration data points and converts it to calibration specs
  */
+@SuppressWarnings("java:S125")
 public class CalibrationParserDataItems implements CalibrationParser {
 
-
-	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(CalibrationParserDataItems.class);
+	private static final Logger logger = LoggerFactory.getLogger(CalibrationParserDataItems.class);
 
 	@Override
 	public Stream<CalibrationSpecProvider> parse(final Stream<CalibrationDataItem> datapoints) {
@@ -68,19 +74,20 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
+	public static List<CalibrationDataset> getScenariosFromJsonFile(final String fileName) throws IOException {
 
 		final String content;
-		try {
-			content = new String(CalibrationParserDataItems.class.getResourceAsStream(fileName).readAllBytes(), StandardCharsets.UTF_8);
+		try (InputStream inputStream = CalibrationParserDataItems.class.getResourceAsStream(fileName)) {
+			content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			System.out.println("Please provide the market data file " + fileName);
+			logger.error("Please provide the market data file: {}.", fileName, e);
 			throw e;
 		}
 
 		return getScenariosFromJsonContent(content);
 
 	}
+
 
 	/**
 	 * Static method which parses a json file from its string content and converts it to a list of market data scenarios
@@ -90,12 +97,29 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 * @throws IOException                  File not found
 	 * @throws UnsupportedEncodingException UnsupportedEncodingException
 	 */
-	public static final List<CalibrationDataset> getScenariosFromJsonString(final String jsonString) throws UnsupportedEncodingException, IOException {
+	public static List<CalibrationDataset> getScenariosFromJsonString(final String jsonString) throws IOException {
 		final String content;
 
 		content = jsonString;
 		return getScenariosFromJsonContent(content);
 
+	}
+
+	public static  CalibrationDataset getCalibrationDataSetFromXML(final String xmlString, List<CalibrationDataItem.Spec> dataSpecs) {
+		MarketDataList marketDataList =  SDCXMLParser.unmarshalXml(xmlString, MarketDataList.class);
+
+		Set<CalibrationDataItem> calibrationDataItems = new LinkedHashSet<>();
+
+		dataSpecs.forEach(spec-> {
+			/* Can be more than one, if we have data points of type fixing*/
+			Set<CalibrationDataItem> calibrationDataItemSet = marketDataList.getPoints().stream().filter(marketDataPoint -> marketDataPoint.getId().equals(spec.getKey())).map(point-> new CalibrationDataItem(spec, point.getValue(), point.getTimeStamp())).collect(Collectors.toSet());
+			calibrationDataItems.addAll(calibrationDataItemSet);
+		});
+
+		if(calibrationDataItems.isEmpty())
+			throw new SDCException(ExceptionId.SDC_CALIBRATION_DATA_EMPTY, "No calibration items detected.");
+
+		return new CalibrationDataset(calibrationDataItems, marketDataList.getRequestTimeStamp());
 	}
 
 	/**
@@ -121,7 +145,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 		final ObjectMapper mapper = new ObjectMapper();
 		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String, Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
 
-		final List<CalibrationDataset> scenarioList = timeSeriesDatamap.entrySet().stream()
+		return timeSeriesDatamap.entrySet().stream()
 				.map(
 						scenarioData -> {
 							final String timeStampStr = scenarioData.getKey();
@@ -136,9 +160,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 							return scenario;
 						})
 				.sorted((scenario1, scenario2) -> scenario1.getDate().compareTo(scenario2.getDate()))
-				.collect(Collectors.toList());
-
-		return scenarioList;
+				.toList();
 	}
 
 	private static LocalDateTime parseTimestampString(String timeStampString) {
@@ -159,28 +181,22 @@ public class CalibrationParserDataItems implements CalibrationParser {
 
 
 	private static Set<CalibrationDataItem> getCalibrationDataItemSet(final String curveKey, final Map<String, Map<String, Double>> typeCurveMap, final LocalDateTime timestamp) {
-		Set<CalibrationDataItem> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
+		return typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
 				curvePointEntry -> {
 					String specKey = curveKey + "_" + entry.getKey() + "_" + curvePointEntry.getKey();
 					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), curvePointEntry.getKey());
-					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(), timestamp);
-					return dataItem;
+					return new CalibrationDataItem(spec, curvePointEntry.getValue(), timestamp);
 				})).collect(Collectors.toCollection(LinkedHashSet::new));
-		return datapoints;
 	}
 
 	private static Set<CalibrationDataItem> getFixingDataItemSet(final String curveKey, final Map<String, Map<String, Double>> typeCurveMap, final LocalDateTime timestamp) {
 
-		Set<CalibrationDataItem> datapoints = typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
+		return typeCurveMap.entrySet().stream().flatMap(entry -> entry.getValue().entrySet().stream().map(
 				curvePointEntry -> {
 					LocalDate fixingDate = LocalDate.parse(curvePointEntry.getKey(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 					String specKey = curveKey + "_" + entry.getKey() + "_" + curvePointEntry.getKey();
-					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), "0D");
-					CalibrationDataItem dataItem = new CalibrationDataItem(spec, curvePointEntry.getValue(), fixingDate.atStartOfDay());
-					return dataItem;
+					CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(specKey, curveKey, entry.getKey(), "1D");
+					return new CalibrationDataItem(spec, curvePointEntry.getValue(), fixingDate.atStartOfDay());
 				})).collect(Collectors.toCollection(LinkedHashSet::new));
-		return datapoints;
 	}
-
-
 }

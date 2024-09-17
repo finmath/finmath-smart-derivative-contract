@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -12,9 +13,13 @@ import java.io.IOException;
 @Profile("test")
 public class MockResourceGovernor extends ResourceGovernor {
 
+	public MockResourceGovernor(ResourcePatternResolver resourcePatternResolver) {
+		super(resourcePatternResolver);
+	}
+
 	@Override
 	public Resource getActiveDatasetAsResourceInReadMode(String username) {
-		return new ClassPathResource("net/finmath/smartcontract/valuation/client/md_testset_newformat_1.json");
+		return new ClassPathResource("net/finmath/smartcontract/valuation/client/legacy/md_testset_newformat_1.json");
 	}
 
 	@Override

@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class SmartDerivativeContractScheduleGenerator {
 
+	private SmartDerivativeContractScheduleGenerator(){}
+
 	/**
 	 * Simple POJO implementation of <code>SmartDerivativeContractSchedule.EventTimes</code>.
 	 *
@@ -121,7 +123,7 @@ public class SmartDerivativeContractScheduleGenerator {
 
 		final AbstractBusinessdayCalendar bdCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 
-		final List<EventTimes> eventTimesList = new ArrayList<EventTimes>();
+		final List<EventTimes> eventTimesList = new ArrayList<>();
 		LocalDate settlementDate = startDate;
 		while (!settlementDate.isAfter(maturity)) {
 			final SmartDerivativeContractSchedule.EventTimes event = new EventTimesImpl(

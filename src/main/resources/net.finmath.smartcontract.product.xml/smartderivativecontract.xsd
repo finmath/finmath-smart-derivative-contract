@@ -8,6 +8,8 @@
     <xs:element name="smartderivativecontract">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="dltTradeId" type="xs:string"/>
+                <xs:element name="dltAddress" type="xs:string"/>
                 <xs:element name="uniqueTradeIdentifier" type="xs:string"/>
                 <xs:element name="valuation">
                     <xs:complexType>
@@ -36,7 +38,7 @@
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element type="xs:string" name="type"/>
-                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:double" name="value"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -44,7 +46,7 @@
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element type="xs:string" name="type"/>
-                                                    <xs:element type="xs:float" name="value"/>
+                                                    <xs:element type="xs:double" name="value"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>

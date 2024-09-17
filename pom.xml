@@ -10,7 +10,7 @@
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
@@ -298,10 +298,6 @@
             <version>${jackson-databind-nullable.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>io.reactivex.rxjava3</groupId>
@@ -966,6 +962,10 @@
         <!--            <id>finmath-site</id>-->
         <!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
         <!--        </site>-->
+        <snapshotRepository>
+            <id>gitlab</id>
+            <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <scm>

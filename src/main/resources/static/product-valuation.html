@@ -123,7 +123,7 @@ const app = new Vue({
 
         // Trigger Promises
         Promise.all(readers).then((values) => {
-            fetch('/valuation/legacy/value', {
+            fetch('/valuation/value', {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',

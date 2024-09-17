@@ -1,15 +1,21 @@
 package net.finmath.smartcontract.settlement;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Collection of settlements.
  */
+@XmlRootElement
 public class Settlements {
 
+	@SuppressWarnings("java:S1700")
 	private List<Settlement> settlements;
 
+	@XmlElement(name = "settlement")
 	public List<Settlement> getSettlements() {
 		return settlements;
 	}

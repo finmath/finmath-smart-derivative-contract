@@ -7,6 +7,7 @@ import net.finmath.smartcontract.valuation.service.config.BasicAuthWebSecurityCo
 import net.finmath.smartcontract.valuation.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.valuation.service.controllers.PlainSwapEditorController;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +51,7 @@ import java.time.ZoneOffset;
 @AutoConfigureJson
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-public class PlainSwapEditorControllerTest {
+class PlainSwapEditorControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorControllerTest.class);
 

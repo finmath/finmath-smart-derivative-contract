@@ -50,9 +50,12 @@ import java.util.stream.Stream;
  * @author Luca Bressan
  * @version alpha.1
  */
+@SuppressWarnings("java:S125")
 public final class PlainSwapEditorHandler { //TODO: this code needs some cleaning up
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorHandler.class);
+	private static final String CONSTANT = "constant";
+	private static final String FAILED_MODEL_CALIBRATION = "Failed to calibrate model.";
 	private final Smartderivativecontract smartDerivativeContract;
 	private final Schema sdcmlSchema;
 	private final Marshaller marshaller;
@@ -75,7 +78,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
 		} catch (IOException | SAXException e) {
-			logger.error("Failed to recover XSD schema. The file '" + schemaPath + "' is missing, unreachable or invalid.");
+			logger.error("Failed to recover XSD schema. The file '{}' is missing, unreachable or invalid.", schemaPath);
 
 			throw e;
 		}
@@ -213,23 +216,23 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 
 		floatingLeg.resetDates.fixingDates.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingFixingDayOffset().longValue());
-		logger.info("Reading back floating fixing date offset: " + floatingLeg.resetDates.fixingDates.periodMultiplier);
+		logger.info("Reading back floating fixing date offset: {}", floatingLeg.resetDates.fixingDates.periodMultiplier);
 		floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFloatingDayCountFraction();
-		logger.info("Reading back floating day count fraction: " + floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
+		logger.info("Reading back floating day count fraction: {}", floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
 		floatingLeg.paymentDates.paymentFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-		logger.info("Reading back floating payment frequency period multiplier: " + floatingLeg.paymentDates.paymentFrequency.periodMultiplier);
+		logger.info("Reading back floating payment frequency period multiplier: {}", floatingLeg.paymentDates.paymentFrequency.periodMultiplier);
 		floatingLeg.paymentDates.paymentFrequency.setPeriod(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod());
-		logger.info("Reading back floating payment frequency period:  " + floatingLeg.paymentDates.paymentFrequency.period);
+		logger.info("Reading back floating payment frequency period: {}", floatingLeg.paymentDates.paymentFrequency.period);
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value = plainSwapOperationRequest.getFloatingRateIndex();
-		logger.info("Reading back floating rate index: " + ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value);
+		logger.info("Reading back floating rate index: {}", ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value);
 		fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFixedDayCountFraction();
-		logger.info("Reading back fixed day count fraction " + fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
+		logger.info("Reading back fixed day count fraction {}", fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
 		fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue = BigDecimal.valueOf(plainSwapOperationRequest.getFixedRate()).setScale(12, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(12, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
-		logger.info("Reading back fixed rate: " + fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
+		logger.info("Reading back fixed rate: {}", fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
 		fixedLeg.paymentDates.paymentFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
-		logger.info("Reading back fixed period multiplier: " + fixedLeg.paymentDates.paymentFrequency.periodMultiplier);
+		logger.info("Reading back fixed period multiplier: {}", fixedLeg.paymentDates.paymentFrequency.periodMultiplier);
 		fixedLeg.paymentDates.paymentFrequency.period = plainSwapOperationRequest.getFixedPaymentFrequency().getPeriod();
-		logger.info("Reading back fixed period: " + fixedLeg.paymentDates.paymentFrequency.period);
+		logger.info("Reading back fixed period: {}", fixedLeg.paymentDates.paymentFrequency.period);
 
 		//TODO: ask people who know more about FPmL if the next lines are actually needed
 		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
@@ -290,26 +293,26 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		List<Smartderivativecontract.Parties.Party> partyList = new ArrayList<>();
 
 		Smartderivativecontract.Parties.Party party1 = new Smartderivativecontract.Parties.Party();
-		logger.info("Setting id party1 for party " + tradeDescriptor.getFirstCounterparty());
+		logger.info("Setting id party1 for party {}", tradeDescriptor.getFirstCounterparty());
 		party1.setName(tradeDescriptor.getFirstCounterparty().getFullName());
 		party1.setId("party1");
 		Smartderivativecontract.Parties.Party.MarginAccount marginAccount1 = new Smartderivativecontract.Parties.Party.MarginAccount();
-		marginAccount1.setType("constant");
+		marginAccount1.setType(CONSTANT);
 		marginAccount1.setValue(tradeDescriptor.getMarginBufferAmount().floatValue());
 		Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee1 = new Smartderivativecontract.Parties.Party.PenaltyFee();
-		penaltyFee1.setType("constant");
+		penaltyFee1.setType(CONSTANT);
 		penaltyFee1.setValue(tradeDescriptor.getTerminationFeeAmount().floatValue());
 		party1.setAddress("0x0");
 
-		logger.info("Setting id party2 for party " + tradeDescriptor.getSecondCounterparty());
+		logger.info("Setting id party2 for party {}", tradeDescriptor.getSecondCounterparty());
 		Smartderivativecontract.Parties.Party party2 = new Smartderivativecontract.Parties.Party();
 		party2.setName(tradeDescriptor.getSecondCounterparty().getFullName());
 		party2.setId("party2");
 		Smartderivativecontract.Parties.Party.MarginAccount marginAccount2 = new Smartderivativecontract.Parties.Party.MarginAccount();
-		marginAccount2.setType("constant");
+		marginAccount2.setType(CONSTANT);
 		marginAccount2.setValue(tradeDescriptor.getMarginBufferAmount().floatValue());
 		Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee2 = new Smartderivativecontract.Parties.Party.PenaltyFee();
-		penaltyFee2.setType("constant");
+		penaltyFee2.setType(CONSTANT);
 		penaltyFee2.setValue(tradeDescriptor.getTerminationFeeAmount().floatValue());
 		party2.setAddress("0x0");
 
@@ -365,11 +368,11 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 		} catch (SAXException e) {
 			logger.error("Failed to validate the generated XML or some unrecoverable error occurred while validating.");
-			logger.error("Details: " + e.getMessage());
+			logger.error("Details: {}", e.getMessage());
 			throw e;
 		} catch (IOException e) {
 			logger.error("Failed to marshall out the generated XML file.");
-			logger.error("Details: " + e.getMessage());
+			logger.error("Details: {}", e.getMessage());
 			throw e;
 		}
 
@@ -406,9 +409,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			default -> throw new IllegalArgumentException("Failed to detect leg type");
 		}
 		final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Start date detected: " + startDate.toString());
+		logger.info("Start date detected: {}", startDate);
 		final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Maturity date detected: " + maturityDate.toString());
+		logger.info("Maturity date detected: {}", maturityDate);
 		int fixingOffsetDays = 0;
 		try {
 			fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
@@ -432,16 +435,17 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
 			case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
 			case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
-			default -> throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
+			default ->
+				throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
 		}
 
-		logger.info("Date roll convention detected: " + dateRollConvention);
+		logger.info("Date roll convention detected: {}", dateRollConvention);
 
 		final ScheduleGenerator.DaycountConvention daycountConvention = ScheduleGenerator.DaycountConvention.getEnum(swapLeg.getCalculationPeriodAmount().getCalculation().getDayCountFraction().getValue());
 		ScheduleGenerator.Frequency frequency = null;
 		final int multiplier = swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue();
 
-		logger.info("Reading period symbol: " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod());
+		logger.info("Reading period symbol: {}", swapLeg.getPaymentDates().getPaymentFrequency().getPeriod());
 		switch (swapLeg.getPaymentDates().getPaymentFrequency().getPeriod()) {
 			case "D" -> {
 				if (multiplier == 1) {
@@ -457,13 +461,15 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 				case 1 -> ScheduleGenerator.Frequency.MONTHLY;
 				case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
 				case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
-				default -> throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
+				default ->
+					throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
 			};
-			default -> throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
+			default ->
+				throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
 		}
 
 		//build schedule
-		logger.info("Payment frequency detected: " + Objects.requireNonNull(frequency));
+		logger.info("Payment frequency detected: {}", Objects.requireNonNull(frequency));
 		final ScheduleDescriptor scheduleDescriptor = new ScheduleDescriptor(startDate, maturityDate, frequency, daycountConvention, ScheduleGenerator.ShortPeriodConvention.LAST, dateRollConvention, new BusinessdayCalendarExcludingTARGETHolidays(), fixingOffsetDays, paymentOffsetDays);
 
 
@@ -513,9 +519,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			default -> throw new IllegalArgumentException("Failed to detect leg type");
 		}
 		final LocalDate startDate = swapLeg.getCalculationPeriodDates().getEffectiveDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Start date detected: " + startDate.toString());
+		logger.info("Start date detected: {}", startDate);
 		final LocalDate maturityDate = swapLeg.getCalculationPeriodDates().getTerminationDate().getUnadjustedDate().getValue().toGregorianCalendar().toZonedDateTime().toLocalDate();
-		logger.info("Maturity date detected: " + maturityDate.toString());
+		logger.info("Maturity date detected: {}", maturityDate);
 		int fixingOffsetDays = 0;
 		try {
 			fixingOffsetDays = swapLeg.getResetDates().getFixingDates().getPeriodMultiplier().intValue();
@@ -539,16 +545,17 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
 			case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
 			case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
-			default -> throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
+			default ->
+				throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
 		}
 
-		logger.info("Date roll convention detected: " + dateRollConvention);
+		logger.info("Date roll convention detected: {}", dateRollConvention);
 
 		final ScheduleGenerator.DaycountConvention daycountConvention = ScheduleGenerator.DaycountConvention.getEnum(swapLeg.getCalculationPeriodAmount().getCalculation().getDayCountFraction().getValue());
 		ScheduleGenerator.Frequency frequency = null;
 		final int multiplier = swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue();
 
-		logger.info("Reading period symbol: " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod());
+		logger.info("Reading period symbol: {}", swapLeg.getPaymentDates().getPaymentFrequency().getPeriod());
 		switch (swapLeg.getPaymentDates().getPaymentFrequency().getPeriod()) {
 			case "D" -> {
 				if (multiplier == 1) {
@@ -564,13 +571,15 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 				case 1 -> ScheduleGenerator.Frequency.MONTHLY;
 				case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
 				case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
-				default -> throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
+				default ->
+					throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
 			};
-			default -> throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
+			default ->
+				throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
 		}
 
 		//build schedule
-		logger.info("Payment frequency detected: " + Objects.requireNonNull(frequency));
+		logger.info("Payment frequency detected: {}", Objects.requireNonNull(frequency));
 		final ScheduleDescriptor scheduleDescriptor = new ScheduleDescriptor(startDate, maturityDate, frequency, daycountConvention, ScheduleGenerator.ShortPeriodConvention.LAST, dateRollConvention, new BusinessdayCalendarExcludingTARGETHolidays(), fixingOffsetDays, paymentOffsetDays);
 
 
@@ -633,13 +642,13 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		try {
 			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 		} catch (CloneNotSupportedException e) {
-			logger.error("Failed to calibrate model.");
+			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
 		}
 		AnalyticModel calibratedModel;
 		if (optionalCalibrationResult.isPresent())
 			calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
-		else throw new IllegalStateException("Failed to calibrate model.");
+		else throw new IllegalStateException(FAILED_MODEL_CALIBRATION);
 
 
 		Set<CalibrationDataItem> pastFixings = scenario.getFixingDataItems();
@@ -657,12 +666,8 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		SmartDerivativeContractDescriptor productDescriptor = null;
 		try {
 			productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		} catch (SAXException e) {
-			throw new RuntimeException(e);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
+		} catch (ParserConfigurationException | SAXException | JAXBException e) {
+			throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, e.getMessage());
 		}
 
 		Set<CalibrationDataItem> cdi = new HashSet<>();
@@ -705,13 +710,13 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		try {
 			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 		} catch (CloneNotSupportedException e) {
-			logger.error("Failed to calibrate model.");
+			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
 		}
 		AnalyticModel calibratedModel;
 		if (optionalCalibrationResult.isPresent())
 			calibratedModel = optionalCalibrationResult.get().getCalibratedModel();
-		else throw new IllegalStateException("Failed to calibrate model.");
+		else throw new IllegalStateException(FAILED_MODEL_CALIBRATION);
 		return calibratedModel;
 	}
 

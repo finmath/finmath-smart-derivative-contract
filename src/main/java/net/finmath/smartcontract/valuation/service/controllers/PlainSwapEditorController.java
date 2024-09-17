@@ -7,9 +7,9 @@ import com.neovisionaries.ws.client.WebSocketException;
 import jakarta.xml.bind.JAXBException;
 import net.finmath.rootfinder.BisectionSearch;
 import net.finmath.smartcontract.api.PlainSwapEditorApi;
-import net.finmath.smartcontract.valuation.marketdata.adapters.LiveFeedAdapter;
-import net.finmath.smartcontract.valuation.marketdata.adapters.ReactiveMarketDataUpdater;
-import net.finmath.smartcontract.valuation.marketdata.adapters.WebSocketConnector;
+import net.finmath.smartcontract.valuation.marketdata.generators.legacy.LiveFeedAdapter;
+import net.finmath.smartcontract.valuation.marketdata.generators.legacy.ReactiveMarketDataUpdater;
+import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.valuation.marketdata.database.DatabaseConnector;
 import net.finmath.smartcontract.model.*;
@@ -21,7 +21,6 @@ import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -50,6 +49,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
+@SuppressWarnings("java:S125")
 @RestController
 @CrossOrigin(origins = {"http://localhost:4200", "${serviceUrl}"}, allowCredentials = "true")
 public class PlainSwapEditorController implements PlainSwapEditorApi {
@@ -71,19 +71,18 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	};
 	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
 	//may be changed to allow for different versions of the schema
-	@Autowired
-	private DatabaseConnector databaseConnector;
-
-	@Autowired
-	private ResourceGovernor resourceGovernor;
 
 	@Value("${hostname:localhost:8080}")
 	private String hostname;
+	private final DatabaseConnector databaseConnector;
+	private final ResourceGovernor resourceGovernor;
+	private final ObjectMapper objectMapper;
 
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+		this.databaseConnector = databaseConnector;
+		this.resourceGovernor = resourceGovernor;
+		this.objectMapper = objectMapper;
+	}
 
 	/**
 	 * Controller that handles requests for generation of a SDCmL document.
@@ -123,8 +122,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	 */
 	@Override
 	public ResponseEntity<ValueResult> evaluateFromPlainSwapEditor(PlainSwapOperationRequest plainSwapOperationRequest) {
-		String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal()).getUsername();
+		//String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
+		//		.getPrincipal()).getUsername();
 
 		String sdcmlBody;
 		try {
@@ -139,12 +138,16 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
 		}
 		String marketDataString;
-		MarketDataSet marketData;
+		//MarketDataSet marketData;
 		try {
 
-			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
-					.getContentAsString(StandardCharsets.UTF_8);
-			marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
+			//@TODO: where resourceGovenor retrieves the data from neeeds to be understood
+			// TODO clarify why the controller needs a fixed testset out of resources
+			//marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			marketDataString = new String(Objects.requireNonNull(PlainSwapEditorController.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml")).readAllBytes(), StandardCharsets.UTF_8);
+			/*
+			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName).getContentAsString(StandardCharsets.UTF_8);
+			marketData = objectMapper.readValue(marketDataString, MarketDataList.class);*/
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -154,8 +157,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		}
 		ValueResult valueResult;
 		try {
-			valueResult = (new MarginCalculator()).getValue(marketData, sdcmlBody);
+			valueResult = (new MarginCalculator()).getValue(marketDataString, sdcmlBody);
 		} catch (Exception e) {
+			logger.error("error in valuation, ", e);
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Valuation error.");
 			pd.setType(URI.create(hostname + ErrorTypeURI.VALUATION_ERROR_URI));
 			pd.setTitle(ErrorDetails.VALUATION_ERROR_DETAIL);
@@ -417,11 +421,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		String currentUserName = ((UserDetails) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal()).getUsername();
 		String marketDataString;
-		MarketDataSet marketData;
+		//MarketDataSet marketData;
 		try {
 			marketDataString = resourceGovernor.getActiveDatasetAsResourceInReadMode(currentUserName)
 					.getContentAsString(StandardCharsets.UTF_8);
-			marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
+			//marketData = objectMapper.readValue(marketDataString, MarketDataSet.class);
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.MARKET_DATA_ERROR_DETAIL);
@@ -436,10 +440,10 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
             TODO: this could be made faster by avoiding regeneration of the SDCml at every iteration.
                   I just don't know how to keep into account business calendars and fixing dates in an elegant way
              */
-			DoubleUnaryOperator swapValue = (swapRate) -> {
+			DoubleUnaryOperator swapValue = swapRate -> {
 				plainSwapOperationRequest.fixedRate(swapRate);
 				try {
-					return (new MarginCalculator()).getValue(marketData, new PlainSwapEditorHandler(
+					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
 									plainSwapOperationRequest.notionalAmount(1E15),
 									plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString())
 							.getValue().doubleValue();
@@ -615,9 +619,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 						.getFile();
 				boolean creationResult = targetFile.createNewFile();
 				if (creationResult)
-					logger.info("New file created at " + targetFile.getAbsolutePath());
+					logger.info("New file created at {}", targetFile.getAbsolutePath());
 				else
-					logger.info("Attempting overwrite of file " + targetFile.getAbsolutePath());
+					logger.info("Attempting overwrite of file {}", targetFile.getAbsolutePath());
 
 				objectMapper.writeValue(targetFile, saveContractRequest.getPlainSwapOperationRequest());
 			} catch (IOException e) {

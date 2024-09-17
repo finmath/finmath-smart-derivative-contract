@@ -1,9 +1,12 @@
 package net.finmath.smartcontract.valuation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import net.finmath.smartcontract.model.MarginRequest;
+import net.finmath.smartcontract.model.MarketDataList;
+import net.finmath.smartcontract.model.ValueRequest;
+import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
-import net.finmath.smartcontract.model.LegacyMarginRequest;
-import net.finmath.smartcontract.model.LegacyValueRequest;
 import net.finmath.smartcontract.valuation.service.config.BasicAuthWebSecurityConfiguration;
 import net.finmath.smartcontract.valuation.service.config.MockUserAuthConfig;
 import net.finmath.smartcontract.valuation.service.controllers.ValuationController;
@@ -24,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * Tests ValuationController / Valuation API Endpoint.
@@ -37,25 +41,27 @@ import java.time.LocalDateTime;
 @AutoConfigureMockMvc
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ValuationControllerTest {
+class ValuationControllerTest {
 
 	final String productXMLFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 
 	@Test
 	@WithUserDetails("user1")    // testing now uses more of the server environment, including security. Tests would fail if requests are not authenticated.
-	public void getMargin(@Autowired MockMvc mockMvc) throws Exception {
+	void getMargin(@Autowired MockMvc mockMvc) throws Exception {
 
-		final String marketDataStart = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketDataEnd = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketDataStartXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
+//		final MarketDataList marketDataStart = SDCXMLParser.unmarshalXml(marketDataStartXml, MarketDataList.class);
+		final String marketDataEndXml = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset2.xml").readAllBytes(), StandardCharsets.UTF_8);
+//		final MarketDataList marketDataEnd = SDCXMLParser.unmarshalXml(marketDataEndXml, MarketDataList.class);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final LegacyMarginRequest marginRequest = new LegacyMarginRequest().marketDataStart(marketDataStart).marketDataEnd(marketDataEnd).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final MarginRequest marginRequest = new MarginRequest().marketDataStart(marketDataStartXml).marketDataEnd(marketDataEndXml).tradeData(product).valuationDate(OffsetDateTime.now().toString());
 
-		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 		String json = objectMapper.writeValueAsString(marginRequest);
 
 		mockMvc.perform(MockMvcRequestBuilders
-						.post("/valuation/legacy/margin")
+						.post("/valuation/margin")
 						.contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON)
 						.content(json)
@@ -66,18 +72,18 @@ public class ValuationControllerTest {
 
 	@Test
 	@WithUserDetails("user1")
-	public void getValue(@Autowired MockMvc mockMvc) throws Exception {
+	void getValue(@Autowired MockMvc mockMvc) throws Exception {
 
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset1.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream(productXMLFile).readAllBytes(), StandardCharsets.UTF_8);
 
-		final LegacyValueRequest valueRequest = new LegacyValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());
+		final ValueRequest valueRequest = new ValueRequest().marketData(marketData).tradeData(product).valuationDate(LocalDateTime.now().toString());
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(valueRequest);
 
 		mockMvc.perform(MockMvcRequestBuilders
-						.post("/valuation/legacy/value").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json).characterEncoding("utf-8"))
+						.post("/valuation/value").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json).characterEncoding("utf-8"))
 				.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
 	}
 

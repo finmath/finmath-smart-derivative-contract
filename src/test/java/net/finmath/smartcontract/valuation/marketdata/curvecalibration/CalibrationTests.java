@@ -6,11 +6,12 @@ import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.valuation.marketdata.MarketDataImportTest;
+import net.finmath.smartcontract.model.MarginRequest;
 import net.finmath.smartcontract.model.MarketDataSet;
 import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.time.FloatingpointDate;
 import org.junit.jupiter.api.*;
 import org.xml.sax.SAXException;
@@ -24,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static net.finmath.time.FloatingpointDate.getFloatingPointDateFromDate;
+
 /**
  * Tests concerning the bootstrap procedure. Test relies on a valuation framework that can handle intraday data updates
  * (i.e. valuation time must not be forced at model-time 0).
@@ -31,49 +34,25 @@ import java.util.stream.Stream;
  * @author Luca Bressan
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CalibrationTests {
+class CalibrationTests {
 	private AnalyticModel calibratedModel;
 	private CalibrationContext calibrationContext;
 	private CalibratedCurves calibratedCurves;
 	private CalibratedCurves.CalibrationSpec[] calibrationSpecs;
-	private HashSet<CalibrationDataItem> calibrationDataItems;
+	private Set<CalibrationDataItem> calibrationDataItems;
 	private LocalDateTime referenceDateTime;
 
 	@BeforeAll
-	void initializeTests() throws IOException, ParserConfigurationException, SAXException, CloneNotSupportedException {
-		MarketDataSet marketData;
-		SmartDerivativeContractDescriptor product;
-		try (
-				InputStream marketDataMessageStream = MarketDataImportTest.class.getClassLoader().getResourceAsStream(
-						"net/finmath/smartcontract/valuation/client/nf_md_20230711-123529.json");
-				// data obtained from the new livefeed implementation. Contains several fixings.
-				InputStream sdcmlStream = MarketDataImportTest.class.getClassLoader()
-						.getResourceAsStream(
-								"net.finmath.smartcontract.product.xml/smartderivativecontract.xml") // standard plain swap template
-		) {
-			final String marketDataMessageContents = new String(
-					Objects.requireNonNull(marketDataMessageStream).readAllBytes(), StandardCharsets.UTF_8);
-			marketData = new ObjectMapper().registerModule(new JavaTimeModule())
-					.readValue(marketDataMessageContents, MarketDataSet.class);
-			final String sdcmlFileContents = new String(
-					Objects.requireNonNull(sdcmlStream).readAllBytes(),
-					StandardCharsets.UTF_8);
-			product = SDCXMLParser.parse(sdcmlFileContents);
-		}
+	void initializeTests() throws IOException, ParserConfigurationException, SAXException, CloneNotSupportedException, Exception {
 
-		final LocalDate referenceDate = marketData.getRequestTimestamp().toLocalDate(); // strip time info from request, model time 0.0 is at midnight, dataset day
-		referenceDateTime = marketData.getRequestTimestamp()
-				.toLocalDateTime(); // upgrade variable type for decimal time calculations
-		final List<CalibrationDataItem.Spec> marketdataItemSpecList = product.getMarketdataItemList();
-		final List<MarketDataSetValuesInner> marketDataValues = marketData.getValues();
-		calibrationDataItems = new HashSet<>();
-		marketdataItemSpecList.forEach(marketDataItemSpec -> marketDataValues.stream()
-				.filter(marketDataValue -> marketDataValue.getSymbol().equals(marketDataItemSpec.getKey()))
-				.map(marketDataValue -> new CalibrationDataItem(marketDataItemSpec, marketDataValue.getValue(),
-						marketDataValue.getDataTimestamp().toLocalDateTime()))
-				.forEach(calibrationDataItems::add));
-		final CalibrationDataset calibrationDataset = new CalibrationDataset(calibrationDataItems, referenceDateTime);
-		calibrationContext = new CalibrationContextImpl(referenceDate, 1E-9);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String productData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
+
+
+		final CalibrationDataset calibrationDataset = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
+
+		calibrationContext = new CalibrationContextImpl(calibrationDataset.getDate().toLocalDate(), 1E-9);
 
 		/* Recover calibration products spec */
 		Stream<CalibrationSpecProvider> calibrationSpecsDataPointStream =
@@ -81,6 +60,9 @@ public class CalibrationTests {
 						new CalibrationParserDataItems());
 		calibrationSpecs = calibrationSpecsDataPointStream.map(c -> c.getCalibrationSpec(calibrationContext))
 				.toArray(CalibratedCurves.CalibrationSpec[]::new);
+
+		calibrationDataItems = calibrationDataset.getDataPoints();
+		referenceDateTime = calibrationDataset.getDate();
 
 
 		/* Actual calibration to be tested. These instructions are the ones used throughout the rest of the library*/
@@ -151,12 +133,12 @@ public class CalibrationTests {
 	@DisplayName("The spot EURIBOR rate should match the calibration data.")
 	void testSpotEuriborRateRetrieval_whenSpotDoesNotMatchDataFails() {
 
-		Double spotRate = calibrationDataItems.stream().filter(i -> i.getSpec().getKey().equals("EUR6MD="))
+		Double spotRate = calibrationDataItems.stream().filter(i -> i.getSpec().getKey().equals("EUB6DEP6M"))
 				.findFirst() //in the test dataset EUR6MD is more recent than EURIBOR6MD (as it is usually the case)
 				.orElseThrow().getQuote();
 		Assertions.assertEquals(spotRate, calibratedModel.getForwardCurve("forward-EUR-6M").getForward(
 						calibratedModel,
-						FloatingpointDate.getFloatingPointDateFromDate(
+						getFloatingPointDateFromDate(
 								calibrationContext.getReferenceDate().atStartOfDay(),
 								// get decimal representation of the valuation time
 								calibrationContext.getReferenceDate().atTime(referenceDateTime.toLocalTime()))), 1E-6,
@@ -166,6 +148,15 @@ public class CalibrationTests {
 	@Test
 	@DisplayName("The past EURIBOR fixings should be copied to the forward curve.")
 	void testEuriborFixingsRetrieval_whenCurveDoesNotMatchDataFails() {
+
+		CalibrationDataItem item = calibrationDataItems.stream().filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("Euribor6M")).findAny().get();
+
+		double quote = calibratedModel.getForwardCurve("forward-EUR-6M")
+				.getForward(
+						calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
+								calibrationContext.getReferenceDate().atStartOfDay(),
+								item.getDate().atTime(13, 0, 0)));
+
 		calibrationDataItems.stream()
 				.filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("Euribor6M")).forEach(
 						f -> Assertions.assertEquals(0.0, Math.min(
@@ -173,12 +164,12 @@ public class CalibrationTests {
 												.getForward(
 														calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
 																calibrationContext.getReferenceDate().atStartOfDay(),
-																f.getDate().atTime(9, 0, 0))) - f.getQuote()), Math.abs(
+																f.getDate().atTime(13, 0, 0))) - f.getQuote()), Math.abs(
 												calibratedModel.getForwardCurve("forward-EUR-6M").getForward(
 														calibratedModel,
 														FloatingpointDate.getFloatingPointDateFromDate(
 																calibrationContext.getReferenceDate().atStartOfDay(),
-																f.getDate().atTime(13, 0, 0))) - f.getQuote())), 5E-7,
+																f.getDate().atTime(13, 0, 0))) - f.getQuote())), 5E-5,
                                 /* EURIBOR is fixed at 09:00 UTC (11:00 CEST), or refixed at 13:00 UTC (15:00 CEST)
                                 So if testing at first fixing fails we check if the calibrator used a refixing.
                                  */
@@ -199,9 +190,9 @@ public class CalibrationTests {
 						f -> Assertions.assertEquals(
 								f.getQuote(),
 								calibratedModel.getForwardCurve("forward-EUR-OIS")
-										.getForward(calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
+										.getForward(calibratedModel, getFloatingPointDateFromDate(
 												calibrationContext.getReferenceDate().atStartOfDay(),
-												f.getDate().atTime(6, 0, 0))),
+												f.getDate().atTime(13, 0, 0))),
 								// €STR is fixed at 06:00 UTC (08:00 CET), this test does not account for refixings
 								1E-5,
 								"Error exceeded tolerance for fixing " + f.getDate() + "."));

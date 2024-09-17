@@ -131,7 +131,7 @@ const app = new Vue({
 
         // Trigger Promises
         Promise.all(readers).then((values) => {
-            fetch('/valuation/legacy/margin', {
+            fetch('/valuation/margin', {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',

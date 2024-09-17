@@ -18,10 +18,10 @@ import java.time.LocalTime;
 /**
  * @author Christian Fries
  */
-public class SmartDerivativeContractScheduleGeneratorTest {
+class SmartDerivativeContractScheduleGeneratorTest {
 
 	@Test
-	public void test() {
+	void test() {
 		final LocalDate startDate = LocalDate.of(2018, 9, 15);
 		final LocalDate maturity = LocalDate.of(2028, 9, 15);
 		final LocalTime settlementTime = LocalTime.of(17, 30);

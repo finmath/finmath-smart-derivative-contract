@@ -3,6 +3,10 @@ package net.finmath.smartcontract.valuation.service.websocket.client;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import jakarta.websocket.*;
+import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.SDCException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,11 +23,12 @@ import java.util.Base64;
 @ClientEndpoint
 public class WebSocketClientEndpoint extends Endpoint {
 
+	private static final Logger logger = LoggerFactory.getLogger(WebSocketClientEndpoint.class);
 	private final PublishSubject<String> messageSubject = PublishSubject.create();
 
-	private URI endpointURI;
+	private final URI endpointURI;
 	private Session userSession;
-	private ClientEndpointConfig config;
+	private final ClientEndpointConfig config;
 
 
 	public WebSocketClientEndpoint(URI endpointURI, String user, String password) {
@@ -50,7 +55,7 @@ public class WebSocketClientEndpoint extends Endpoint {
 			container.setDefaultMaxBinaryMessageBufferSize(1024 * 1024);
 			this.userSession = container.connectToServer(this, config, endpointURI);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new SDCException(ExceptionId.SDC_WEBSOCKET_CONNECTION_ERROR, e.getMessage());
 		}
 	}
 
@@ -62,19 +67,16 @@ public class WebSocketClientEndpoint extends Endpoint {
 
 	@Override
 	public void onOpen(Session session, EndpointConfig config) {
-		System.out.println("Opening websocket");
-		session.addMessageHandler(new MessageHandler.Whole<String>() {
-			@Override
-			public void onMessage(String message) {
-				System.out.println("Received message: " + message);
-			}
-		});
+		logger.info("Opening websocket");
+		session.addMessageHandler((MessageHandler.Whole<String>) message
+			-> logger.info("Received message: {}", message));
 	}
 
 
+	@Override
 	@OnClose
 	public void onClose(Session userSession, CloseReason reason) {
-		System.out.println("Closing websocket");
+		logger.info("Closing websocket");
 		this.messageSubject.onComplete();
 		this.userSession = null;
 	}

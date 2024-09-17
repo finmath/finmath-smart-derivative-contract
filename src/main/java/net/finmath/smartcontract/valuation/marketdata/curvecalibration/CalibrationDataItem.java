@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("java:S125")
 public class CalibrationDataItem {
-	private static final String regex = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
-
+	private static final String REGEX = "((?<=[a-zA-Z])(?=[0-9]))|((?<=[0-9])(?=[a-zA-Z]))";
 
 	public static class Spec {
 		private final String key;
@@ -22,9 +22,7 @@ public class CalibrationDataItem {
 			this.curveName = curveName;
 			this.productName = productName;
 			this.maturity = maturity;
-
 		}
-
 
 		public String getKey() {return key;}
 
@@ -103,7 +101,7 @@ public class CalibrationDataItem {
 
 
 	public Integer getDaysToMaturity() {
-		List<String> list = Arrays.asList(getSpec().getMaturity().split(regex));
+		List<String> list = Arrays.asList(getSpec().getMaturity().split(REGEX));
 		int nTimeUnits = Integer.parseInt(list.get(0));
 		String timeUnitKey = list.get(1);
 		if (timeUnitKey.equals("D"))
@@ -120,8 +118,9 @@ public class CalibrationDataItem {
 		return this.dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 
-
 	public LocalDate getDate() {return dateTime.toLocalDate();}
+
+	public LocalDateTime getDateTime(){ return dateTime;}
 
 	@Override
 	public boolean equals(Object o) {

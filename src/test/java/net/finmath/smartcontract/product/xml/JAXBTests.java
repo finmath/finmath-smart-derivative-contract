@@ -10,7 +10,6 @@ import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -31,7 +30,7 @@ import java.time.ZoneOffset;
 
 @AutoConfigureJsonTesters // manually re-enable Spring Jackson auto-config
 @AutoConfigureJson
-public class JAXBTests {
+class JAXBTests {
 
 	@Test
 	void checkChangedTradeParams() throws java.lang.Exception {
@@ -49,7 +48,7 @@ public class JAXBTests {
 		String marshalledXML = getMarshalledXMLfromObject(jaxbContext, sdc);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
-		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		ValueResult valuationResultOrig = marginCalculator.getValue(marketData, new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
 		ValueResult valuationResultMarshalled = marginCalculator.getValue(marketData, marshalledXML);
@@ -72,7 +71,7 @@ public class JAXBTests {
 		String marshalledXML = getMarshalledXMLfromObject(jaxbContext, sdc);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
-		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		ValueResult valuationResultOrig = marginCalculator.getValue(marketData, new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
 		ValueResult valuationResultMarshalled = marginCalculator.getValue(marketData, marshalledXML);
@@ -133,17 +132,12 @@ public class JAXBTests {
 
 	@Test
 	void jaxBPlainTest() throws java.lang.Exception {
-
-
 		String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
 		File file = new File(path);
 		JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-
 		Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
-
-		System.out.println(sdc.getParties().getParty().get(0).getAddress());
 
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -157,7 +151,6 @@ public class JAXBTests {
 	}
 
 
-	@Disabled
 	@Test
 	void handlerTest() throws java.lang.Exception {
 
@@ -170,17 +163,16 @@ public class JAXBTests {
 
 //		String product = handler.getContractAsXmlString();
 
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.json").readAllBytes(), StandardCharsets.UTF_8);
+		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, handler.getContractAsXmlString());
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(-549726.34, value, 0.005, "Valuation");
+		Assertions.assertEquals(-881079.11, value, 0.005, "Valuation");
 		System.out.println(valuationResult);
-
-
 	}
 
 	private PlainSwapOperationRequest generateRequest(String currentGeneratorFile) throws java.lang.Exception {
