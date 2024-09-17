@@ -116,6 +116,8 @@ public class SDCXMLParser {
         try {
             JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
             Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
+            if (t instanceof Smartderivativecontract)
+                jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "uri:sdc smartderivativecontract.xsd");
             StringWriter writer = new StringWriter();
             jaxbMarshaller.marshal(t, writer);
             return writer.toString();
