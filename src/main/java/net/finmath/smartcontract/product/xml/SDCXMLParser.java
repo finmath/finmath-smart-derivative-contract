@@ -89,7 +89,7 @@ public class SDCXMLParser {
                 .getElementsByTagName("underlying")
                 .item(0)
                 .getFirstChild();
-        if (!underlying.getNodeName().equals("dataDocument")) {
+        if (!underlying.getNodeName().contains("dataDocument")) {
             underlying = underlying.getNextSibling();
         }
         Swap swap = (Swap) sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getProduct().getValue();
