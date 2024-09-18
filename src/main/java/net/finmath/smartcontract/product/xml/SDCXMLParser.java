@@ -112,6 +112,12 @@ public class SDCXMLParser {
 		}
 	}
 
+	/**
+	 * Generic object-to-XML-string converter for all annotated classes
+	 * @param t object to be converted to an XML string
+	 * @return XML formatted String
+	 * @param <T> generic Type, which has the correct XML bind annotations
+	 */
 	public static <T> String marshalClassToXMLString(T t) {
 		try {
 			JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
@@ -127,10 +133,13 @@ public class SDCXMLParser {
 		}
 	}
 
+	/**
+	 * this version of an SDC-object-to-XML-string conversion includes text replacements to get rid of XML namespace tags like "fpml:dataDocument"
+	 * @param smartderivativecontract SDC product data object which will be transformed into an XML string
+	 * @return formatted xml string
+	 */
 	public static String marshalSDCToXMLString(Smartderivativecontract smartderivativecontract) {
-		//TODO took over an old implementation
-		// add tests to make sure that the format we are expecting to replace exists and only exists once.
-		// add test to make sure format is parseable after marshalling
+		//TODO took over an old implementation, please review
 		return marshalClassToXMLString(smartderivativecontract)
 				.replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
 				.replaceAll("fpml:", "");
