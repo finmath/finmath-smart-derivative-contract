@@ -528,6 +528,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /settlement/generate-initial-settlement:
+    post:
+      summary: generate an initial settlement xml based on given product xml
+      operationId: generateInitialSettlementResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitialSettlementRequest"
+      responses:
+        "200":
+          description: initial settlement xml was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitialSettlementResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     ValueResult:
@@ -536,6 +558,8 @@ components:
       $ref: "schemas/openapi-schemas/MarginResult.yml"
     RegularSettlementResult:
       $ref: "schemas/openapi-schemas/RegularSettlementResult.yml"
+    InitialSettlementResult:
+      $ref: "schemas/openapi-schemas/InitialSettlementResult.yml"
     Error:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
@@ -546,6 +570,8 @@ components:
       $ref: "schemas/openapi-schemas/MarginRequest.yml"
     RegularSettlementRequest:
       $ref: "schemas/openapi-schemas/RegularSettlementRequest.yml"
+    InitialSettlementRequest:
+      $ref: "schemas/openapi-schemas/InitialSettlementRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
