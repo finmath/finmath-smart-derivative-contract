@@ -1,0 +1,16 @@
+type: object
+required:
+  - marginValue
+  - currency
+  - valuationDate
+  - generatedRegularSettlement
+properties:
+  marginValue:
+    type: integer
+    format: int64
+  currency:
+    type: string
+  valuationDate:
+    type: string
+  generatedRegularSettlement:
+    type: string

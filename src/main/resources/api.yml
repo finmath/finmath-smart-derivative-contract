@@ -510,6 +510,8 @@ components:
       $ref: "schemas/openapi-schemas/ValueResult.yml"
     MarginResult:
       $ref: "schemas/openapi-schemas/MarginResult.yml"
+    RegularSettlementResult:
+      $ref: "schemas/openapi-schemas/RegularSettlementResult.yml"
     Error:
       $ref: "schemas/openapi-schemas/Error.yml"
     PlainSwapOperationResponse:
@@ -518,6 +520,8 @@ components:
       $ref: "schemas/openapi-schemas/ValueRequest.yml"
     MarginRequest:
       $ref: "schemas/openapi-schemas/MarginRequest.yml"
+    RegularSettlementRequest:
+      $ref: "schemas/openapi-schemas/RegularSettlementRequest.yml"
     PlainSwapOperationRequest:
       $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
     CashflowPeriod:
