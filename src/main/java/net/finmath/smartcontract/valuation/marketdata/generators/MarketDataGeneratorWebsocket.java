@@ -91,6 +91,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	}
 
 
+	@Deprecated(forRemoval = true)
 	public void writeDataset(String importDir, MarketDataList s, boolean isOvernightFixing) throws IOException {
 		throw new RuntimeException("Not implemented");
 		/*String json = s.serializeToJson();
