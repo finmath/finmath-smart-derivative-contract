@@ -9,6 +9,7 @@ import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
@@ -114,5 +115,33 @@ class SDCXMLParserTest {
 		Assertions.assertTrue(xmlString.contains("<settlement>"));
 		Assertions.assertTrue(xmlString.contains("</marketData>"));
     }
+
+	@Test
+	void marshalSDCToXMLString() throws IOException, ParserConfigurationException, SAXException {
+		//given
+		String fpml = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(fpml, Smartderivativecontract.class);
+
+		//when
+		String xmlString = SDCXMLParser.marshalSDCToXMLString(sdc);
+		String xmlStringNameSpaceTags = SDCXMLParser.marshalClassToXMLString(sdc);
+		SmartDerivativeContractDescriptor sdcDescriptor = SDCXMLParser.parse(xmlString);
+
+		//then
+		//xml based
+		Assertions.assertTrue(xmlStringNameSpaceTags.contains("<fpml:dataDocument fpmlVersion=\"5-9\">"));
+		Assertions.assertEquals(1, StringUtils.countMatches(xmlStringNameSpaceTags,"<fpml:dataDocument fpmlVersion=\"5-9\">"));
+		Assertions.assertFalse(xmlString.contains("<fpml:dataDocument fpmlVersion=\"5-9\">"));
+		Assertions.assertTrue(xmlString.contains("<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">"));
+		Assertions.assertTrue(xmlStringNameSpaceTags.contains("</fpml:"));
+		Assertions.assertFalse(xmlString.contains("</fpml:"));
+
+		//parsed back
+		Assertions.assertEquals("UTI12345", sdcDescriptor.getUniqueTradeIdentifier());
+		Assertions.assertEquals("ID-Test123", sdcDescriptor.getDltTradeId());
+		Assertions.assertEquals("0x000000001", sdcDescriptor.getDltAddress());
+		Assertions.assertEquals("EUR", sdcDescriptor.getCurrency());
+		Assertions.assertEquals("internal", sdcDescriptor.getMarketDataProvider());
+	}
 
 }

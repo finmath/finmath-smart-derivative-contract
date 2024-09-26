@@ -28,100 +28,120 @@ import java.util.Map;
  */
 public class SDCXMLParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SDCXMLParser.class);
+	private static final Logger logger = LoggerFactory.getLogger(SDCXMLParser.class);
 
-    private SDCXMLParser() {
-    }
+	private SDCXMLParser() {
+	}
 
-    public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
+	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
-        Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
+		Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
 
-        LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
+		LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
 
-        String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
-        String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
-        String dltTradeId = sdc.getDltTradeId() == null ? "" : sdc.getDltTradeId().trim();
+		String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
+		String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
+		String dltTradeId = sdc.getDltTradeId() == null ? "" : sdc.getDltTradeId().trim();
 
 		/*
 		Market Data
 		 */
-        List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
-        for(Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item item : sdc.getSettlement().getMarketdata().getMarketdataitems().getItem()){
-            String symbol = item.getSymbol().get(0).trim();
-            String curve = item.getCurve().get(0).trim();
-            String type = item.getType().get(0).trim();
-            String tenor = item.getTenor().get(0).trim();
-            CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol, curve, type, tenor);
-            marketdataItems.add(spec);
-        }
+		List<CalibrationDataItem.Spec> marketdataItems = new ArrayList<>();
+		for (Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item item : sdc.getSettlement().getMarketdata().getMarketdataitems().getItem()) {
+			String symbol = item.getSymbol().get(0).trim();
+			String curve = item.getCurve().get(0).trim();
+			String type = item.getType().get(0).trim();
+			String tenor = item.getTenor().get(0).trim();
+			CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec(symbol, curve, type, tenor);
+			marketdataItems.add(spec);
+		}
 
-        /*
-         * Counterparties
-         */
-        List<SmartDerivativeContractDescriptor.Party> parties = new ArrayList<>();
-        Map<String, Double> marginAccountInitialByPartyID = new HashMap<>();
-        Map<String, Double> penaltyFeeInitialByPartyID = new HashMap<>();
+		/*
+		 * Counterparties
+		 */
+		List<SmartDerivativeContractDescriptor.Party> parties = new ArrayList<>();
+		Map<String, Double> marginAccountInitialByPartyID = new HashMap<>();
+		Map<String, Double> penaltyFeeInitialByPartyID = new HashMap<>();
 
-        for(Smartderivativecontract.Parties.Party p : sdc.getParties().getParty()){
-            SmartDerivativeContractDescriptor.Party party = new SmartDerivativeContractDescriptor.Party(
-                    p.getId().trim(),
-                    p.getName().trim(),
-                    null,
-                    p.getAddress().trim()
-            );
-            parties.add(party);
-            marginAccountInitialByPartyID.put(party.getId(), p.getMarginAccount().getValue());
-            penaltyFeeInitialByPartyID.put(party.getId(), p.getPenaltyFee().getValue());
-        }
+		for (Smartderivativecontract.Parties.Party p : sdc.getParties().getParty()) {
+			SmartDerivativeContractDescriptor.Party party = new SmartDerivativeContractDescriptor.Party(
+					p.getId().trim(),
+					p.getName().trim(),
+					null,
+					p.getAddress().trim()
+			);
+			parties.add(party);
+			marginAccountInitialByPartyID.put(party.getId(), p.getMarginAccount().getValue());
+			penaltyFeeInitialByPartyID.put(party.getId(), p.getPenaltyFee().getValue());
+		}
 
-        // Receiver party ID
-        String receiverPartyID = sdc.getReceiverPartyID().trim();
+		// Receiver party ID
+		String receiverPartyID = sdc.getReceiverPartyID().trim();
 
-        // TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
+		// TODO The parser needs to check that the field receiverPartyID of the SDC matched the field <receiverPartyReference href="party2"/> in the FPML
 
-        // TODO Support multiple underlyings
+		// TODO Support multiple underlyings
 
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
-        document.getDocumentElement().normalize();
+		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(sdcxml.getBytes(StandardCharsets.UTF_8)));
+		document.getDocumentElement().normalize();
 
-        Node underlying = document
-                .getElementsByTagName("underlying")
-                .item(0)
-                .getFirstChild();
-        if (!underlying.getNodeName().equals("dataDocument")) {
-            underlying = underlying.getNextSibling();
-        }
-        Swap swap = (Swap) sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getProduct().getValue();
-        String currency = swap.getSwapStream().get(0).getCalculationPeriodAmount().getCalculation().getNotionalSchedule().getNotionalStepSchedule().getCurrency().getValue().trim();
+		Node underlying = document
+				.getElementsByTagName("underlying")
+				.item(0)
+				.getFirstChild();
+		if (!underlying.getNodeName().contains("dataDocument")) {
+			underlying = underlying.getNextSibling();
+		}
+		Swap swap = (Swap) sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getProduct().getValue();
+		String currency = swap.getSwapStream().get(0).getCalculationPeriodAmount().getCalculation().getNotionalSchedule().getNotionalStepSchedule().getCurrency().getValue().trim();
 
-        String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
+		String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
 
-        return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider);
-    }
+		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider);
+	}
 
-    public static <T> T unmarshalXml(String xml, Class<T> t) {
-        try {
-            StringReader reader = new StringReader(xml);
-            JAXBContext jaxbContext = JAXBContext.newInstance(t);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return (T) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            logger.error("unmarshalXml: jaxb error, ", e);
-            throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
-        }
-    }
+	public static <T> T unmarshalXml(String xml, Class<T> t) {
+		try {
+			StringReader reader = new StringReader(xml);
+			JAXBContext jaxbContext = JAXBContext.newInstance(t);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			return (T) unmarshaller.unmarshal(reader);
+		} catch (JAXBException e) {
+			logger.error("unmarshalXml: jaxb error, ", e);
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
+		}
+	}
 
-    public static <T> String marshalClassToXMLString(T t) {
-        try {
-            JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
-            Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-            StringWriter writer = new StringWriter();
-            jaxbMarshaller.marshal(t, writer);
-            return writer.toString();
-        } catch (JAXBException e) {
-            logger.error("marshalClassToXMLString: jaxb error, ", e);
-            throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
-        }
-    }
+	/**
+	 * Generic object-to-XML-string converter for all annotated classes
+	 * @param t object to be converted to an XML string
+	 * @return XML formatted String
+	 * @param <T> generic Type, which has the correct XML bind annotations
+	 */
+	public static <T> String marshalClassToXMLString(T t) {
+		try {
+			JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
+			Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
+			if (t instanceof Smartderivativecontract)
+				jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "uri:sdc smartderivativecontract.xsd");
+			StringWriter writer = new StringWriter();
+			jaxbMarshaller.marshal(t, writer);
+			return writer.toString();
+		} catch (JAXBException e) {
+			logger.error("marshalClassToXMLString: jaxb error, ", e);
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
+		}
+	}
+
+	/**
+	 * this version of an SDC-object-to-XML-string conversion includes text replacements to get rid of XML namespace tags like "fpml:dataDocument"
+	 * @param smartderivativecontract SDC product data object which will be transformed into an XML string
+	 * @return formatted xml string
+	 */
+	public static String marshalSDCToXMLString(Smartderivativecontract smartderivativecontract) {
+		//TODO took over an old implementation, please review
+		return marshalClassToXMLString(smartderivativecontract)
+				.replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
+				.replaceAll("fpml:", "");
+	}
 }
