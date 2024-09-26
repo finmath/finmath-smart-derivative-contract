@@ -504,6 +504,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+
+  /settlement/generate-regular-settlement:
+    post:
+      summary: generate a regular settlement xml based on given settlement and product xml
+      operationId: generateRegularSettlementResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegularSettlementRequest"
+      responses:
+        "200":
+          description: regular settlement xml was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegularSettlementResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     ValueResult:

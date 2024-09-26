@@ -52,6 +52,10 @@ storage:
     marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
     databaseConnectionPropertiesFile: '/config/database_connect.properties'
 
+valuation:
+  live-marketdata: false
+  settlement-currency: "EUR"
+
 refinitiv:
   user: ${REFINITIV_USER}
   password: ${REFINITIV_PASSWORD}

@@ -6,8 +6,7 @@ required:
   - generatedRegularSettlement
 properties:
   marginValue:
-    type: integer
-    format: int64
+    type: number
   currency:
     type: string
   valuationDate:
