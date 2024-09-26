@@ -21,6 +21,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,7 +42,7 @@ public class SettlementService {
 
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
 
-		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest);
+		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
@@ -53,7 +55,7 @@ public class SettlementService {
 
 		BigDecimal margin = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
 
-		Settlement newSettlement = new SettlementGenerator()
+		String newSettlement = new SettlementGenerator()
 				.generateRegularSettlementXml(
 						newMarketDataString,
 						sdc,
@@ -63,18 +65,50 @@ public class SettlementService {
 				.settlementValuePrevious(settlementLast.getSettlementValue())
 				.settlementTimeNext(settlementTimeNext)
 				.settlementValueNext(settlementValueNext.getValue())
-				.buildObject();
+				.build();
 
 		return new RegularSettlementResult()
-				.generatedRegularSettlement(SDCXMLParser.marshalClassToXMLString(newSettlement))
+				.generatedRegularSettlement(newSettlement)
 				.currency(valuationConfig.getSettlementCurrency())
 				.marginValue(margin)
 				.valuationDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")));
 	}
 
-	private static SmartDerivativeContractDescriptor parseProductData(RegularSettlementRequest regularSettlementRequest) {
+	public InitialSettlementResult generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
+
+		SmartDerivativeContractDescriptor sdc = parseProductData(initialSettlementRequest.getTradeData());
+		MarketDataList newMarketDataList = retrieveMarketData(sdc);
+		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+
+		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
+
+		ValueResult settlementValueNext = getValuationValueAtTime(
+				newMarketDataString, initialSettlementRequest.getTradeData(), settlementTimeNext.toLocalDateTime());
+
+		List<BigDecimal> marginLimits = new ArrayList<>();
+		sdc.getCounterparties().forEach(party -> marginLimits.add(BigDecimal.valueOf(sdc.getMarginAccount(party.getId()))));
+
+		String newSettlement = new SettlementGenerator()
+				.generateInitialSettlementXml(newMarketDataString, sdc)
+				.marginLimits(marginLimits)
+				.settlementValue(getValue(newMarketDataString, initialSettlementRequest.getTradeData()))
+				//.settlementValuePrevious(BigDecimal.ZERO)
+				.settlementTimeNext(settlementTimeNext)
+				.settlementValueNext(settlementValueNext.getValue())
+				.build();
+
+		return new InitialSettlementResult()
+				.generatedInitialSettlement(newSettlement)
+				.currency(valuationConfig.getSettlementCurrency())
+				.marginValue(BigDecimal.ZERO)
+				.valuationDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")));
+	}
+
+
+
+	private static SmartDerivativeContractDescriptor parseProductData(String tradeData) {
 		try {
-			return SDCXMLParser.parse(regularSettlementRequest.getTradeData());
+			return SDCXMLParser.parse(tradeData);
 		} catch (ParserConfigurationException | IOException | SAXException e) {
 			logger.error("error parsing product data ", e);
 			throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, "product data format incorrect, could not parse xml", 400);

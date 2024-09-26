@@ -1,6 +1,8 @@
 package net.finmath.smartcontract.valuation.service.controllers;
 
 import net.finmath.smartcontract.api.SettlementApi;
+import net.finmath.smartcontract.model.InitialSettlementRequest;
+import net.finmath.smartcontract.model.InitialSettlementResult;
 import net.finmath.smartcontract.model.RegularSettlementRequest;
 import net.finmath.smartcontract.model.RegularSettlementResult;
 import net.finmath.smartcontract.valuation.service.utils.SettlementService;
@@ -20,4 +22,9 @@ public class SettlementController implements SettlementApi {
 		return ResponseEntity.ok(regularSettlementResult);
 	}
 
+	@Override
+	public ResponseEntity<InitialSettlementResult> generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
+		InitialSettlementResult initialSettlementResult = settlementService.generateInitialSettlementResult(initialSettlementRequest);
+		return ResponseEntity.ok(initialSettlementResult);
+	}
 }
