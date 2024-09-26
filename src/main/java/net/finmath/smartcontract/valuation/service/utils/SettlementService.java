@@ -105,7 +105,6 @@ public class SettlementService {
 	}
 
 
-
 	private static SmartDerivativeContractDescriptor parseProductData(String tradeData) {
 		try {
 			return SDCXMLParser.parse(tradeData);
@@ -132,31 +131,37 @@ public class SettlementService {
 	}
 
 	private Properties initConnectionProperties() {
-		Properties connectionProperties = new Properties();
-		connectionProperties.put("USER", refinitivConfig.getUser());
-		connectionProperties.put("PASSWORD", refinitivConfig.getPassword());
-		connectionProperties.put("CLIENTID", refinitivConfig.getClientId());
-		connectionProperties.put("HOSTNAME", refinitivConfig.getHostName());
-		connectionProperties.put("PORT", refinitivConfig.getPort());
-		connectionProperties.put("AUTHURL", refinitivConfig.getAuthUrl());
-		connectionProperties.put("USEPROXY", refinitivConfig.getUseProxy());
-		connectionProperties.put("PROXYHOST", refinitivConfig.getProxyHost());
-		connectionProperties.put("PROXYPORT", refinitivConfig.getProxyPort());
-		connectionProperties.put("PROXYUSER", refinitivConfig.getProxyUser());
-		connectionProperties.put("PROXYPASS", refinitivConfig.getProxyPassword());
+		try {
+			Properties connectionProperties = new Properties();
+			connectionProperties.put("USER", refinitivConfig.getUser());
+			connectionProperties.put("PASSWORD", refinitivConfig.getPassword());
+			connectionProperties.put("CLIENTID", refinitivConfig.getClientId());
+			connectionProperties.put("HOSTNAME", refinitivConfig.getHostName());
+			connectionProperties.put("PORT", refinitivConfig.getPort());
+			connectionProperties.put("AUTHURL", refinitivConfig.getAuthUrl());
+			connectionProperties.put("USEPROXY", refinitivConfig.getUseProxy());
+			connectionProperties.put("PROXYHOST", refinitivConfig.getProxyHost());
+			connectionProperties.put("PROXYPORT", refinitivConfig.getProxyPort());
+			connectionProperties.put("PROXYUSER", refinitivConfig.getProxyUser());
+			connectionProperties.put("PROXYPASS", refinitivConfig.getProxyPassword());
 
-		return connectionProperties;
+			return connectionProperties;
+		} catch (NullPointerException e) {
+			logger.error("refinitiv connection properties not set", e);
+			throw new SDCException(ExceptionId.SDC_NO_DATA_FOUND, "missing connection properties", 400);
+		}
 	}
 
-	private ValueResult getValuationValueAtTime(String marketData, String tradeData, LocalDateTime valuationDate){
+	private ValueResult getValuationValueAtTime(String marketData, String tradeData, LocalDateTime valuationDate) {
 		try {
 			return marginCalculator.getValueAtEvaluationTime(marketData, tradeData, valuationDate);
 		} catch (Exception e) {
 			logger.error("unable to get valueAtTime for market data ", e);
-			throw new SDCException(ExceptionId.SDC_VALUE_CALCULATION_ERROR, "error in MarginCalculator getValueAtTime");		}
+			throw new SDCException(ExceptionId.SDC_VALUE_CALCULATION_ERROR, "error in MarginCalculator getValueAtTime");
+		}
 	}
 
-	private BigDecimal getValue(String marketData, String tradeData){
+	private BigDecimal getValue(String marketData, String tradeData) {
 		try {
 			return marginCalculator.getValue(marketData, tradeData).getValue();
 		} catch (Exception e) {
@@ -165,7 +170,7 @@ public class SettlementService {
 		}
 	}
 
-	private BigDecimal getMargin(String marketDataStart, String marketDataEnd, String tradeData){
+	private BigDecimal getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
 		try {
 			return marginCalculator.getValue(marketDataStart, marketDataEnd, tradeData).getValue();
 		} catch (Exception e) {
