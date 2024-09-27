@@ -91,6 +91,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	}
 
 
+	@Deprecated(forRemoval = true)
 	public void writeDataset(String importDir, MarketDataList s, boolean isOvernightFixing) throws IOException {
 		throw new RuntimeException("Not implemented");
 		/*String json = s.serializeToJson();
@@ -103,7 +104,7 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 	@Override
 	public void onTextMessage(WebSocket websocket, String message) throws Exception {
 
-		logger.info("message: {}",  message);
+		logger.debug("message: {}",  message);
 
 		JsonNode responseJson = null;
 		if (!message.isEmpty()) {
@@ -146,17 +147,14 @@ public class MarketDataGeneratorWebsocket extends WebSocketAdapter implements Ma
 
 		}
 
-
 		if (this.allQuotesRetrieved()) {
 			logger.info("all quotes retrieved");
-			logger.info(marketDataList.toString());
+			logger.debug(marketDataList.toString());
 			this.publishSubject.onNext(marketDataList);
 			//this.sink.tryEmitNext(marketDataList);
 			this.reset();
 			requestSent = false;
 		}
-
-
 	}
 
 	private void reset() {

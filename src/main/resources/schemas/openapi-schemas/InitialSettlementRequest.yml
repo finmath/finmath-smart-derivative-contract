@@ -1,0 +1,6 @@
+type: object
+required:
+  - tradeData
+properties:
+  tradeData:
+    type: string
