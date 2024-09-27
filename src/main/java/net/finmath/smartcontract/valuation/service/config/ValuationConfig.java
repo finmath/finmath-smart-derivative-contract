@@ -10,6 +10,7 @@ public class ValuationConfig {
 	private boolean liveMarketData;
 	private String settlementCurrency;
 	private String liveMarketDataProvider;
+	private String internalMarketDataProvider;
 
 	public boolean isLiveMarketData() {
 		return liveMarketData;
@@ -33,5 +34,13 @@ public class ValuationConfig {
 
 	public void setLiveMarketDataProvider(String liveMarketDataProvider) {
 		this.liveMarketDataProvider = liveMarketDataProvider;
+	}
+
+	public String getInternalMarketDataProvider() {
+		return internalMarketDataProvider;
+	}
+
+	public void setInternalMarketDataProvider(String internalMarketDataProvider) {
+		this.internalMarketDataProvider = internalMarketDataProvider;
 	}
 }

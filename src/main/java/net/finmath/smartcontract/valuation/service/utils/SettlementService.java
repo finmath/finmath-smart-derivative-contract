@@ -43,12 +43,14 @@ public class SettlementService {
 	}
 
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
-
+		logger.info("Generating regular settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
+		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
+		logger.info("newMarketDataString: {}", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -77,10 +79,12 @@ public class SettlementService {
 	}
 
 	public InitialSettlementResult generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
-
+		logger.info("Generating initial settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(initialSettlementRequest.getTradeData());
+		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+		logger.info("newMarketDataString: {}", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -118,15 +122,19 @@ public class SettlementService {
 
 	private MarketDataList retrieveMarketData(SmartDerivativeContractDescriptor sdc) {
 		AtomicReference<MarketDataList> marketDataList = new AtomicReference<>(new MarketDataList());
+		logger.info("retrieveMarketData started for trade: {}", sdc.getDltTradeId());
 
 		if (sdc.getMarketDataProvider().equals(valuationConfig.getLiveMarketDataProvider()) && valuationConfig.isLiveMarketData()) {
 			marketDataList.set(MarketDataGeneratorLauncher.instantiateMarketDataGeneratorWebsocket(initConnectionProperties(), sdc));
-		} else {
+		} else if (sdc.getMarketDataProvider().equals(valuationConfig.getInternalMarketDataProvider())) {
 			//includes provider internal or no liveMarketData activated
 			final io.reactivex.rxjava3.functions.Consumer<MarketDataList> marketDataWriter = marketDataList::set;
 			marketDataServiceScenarioList.asObservable().subscribe(marketDataWriter,                        //onNext
 					throwable -> logger.error("unable to generate marketData from files ", throwable),        //onError
 					() -> logger.info("on complete, simulated marketData generated from files"));            //onComplete
+		} else {
+			throw new SDCException(ExceptionId.SDC_WRONG_INPUT,
+					"Product data XML is not compatible with valuation service configuration, see logs for further investigation", 400);
 		}
 		return marketDataList.get();
 	}
