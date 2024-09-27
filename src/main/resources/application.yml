@@ -53,7 +53,7 @@ storage:
     databaseConnectionPropertiesFile: '/config/database_connect.properties'
 
 valuation:
-  live-marketdata: false
+  live-market-data: false
   live-market-data-provider: "refinitiv"
   internal-market-data-provider: "internal"
   settlement-currency: "EUR"
