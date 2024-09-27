@@ -54,6 +54,8 @@ storage:
 
 valuation:
   live-marketdata: false
+  live-market-data-provider: "refinitiv"
+  internal-market-data-provider: "internal"
   settlement-currency: "EUR"
 
 refinitiv:
