@@ -34,10 +34,12 @@ public class SettlementService {
 
 	private final RefinitivConfig refinitivConfig;
 	private final ValuationConfig valuationConfig;
+	private final MarketDataGeneratorScenarioList marketDataServiceScenarioList;
 
 	public SettlementService(RefinitivConfig refinitivConfig, ValuationConfig valuationConfig) {
 		this.refinitivConfig = refinitivConfig;
 		this.valuationConfig = valuationConfig;
+		this.marketDataServiceScenarioList = new MarketDataGeneratorScenarioList();
 	}
 
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
@@ -122,7 +124,6 @@ public class SettlementService {
 		} else {
 			//includes provider internal or no liveMarketData activated
 			final io.reactivex.rxjava3.functions.Consumer<MarketDataList> marketDataWriter = marketDataList::set;
-			MarketDataGeneratorScenarioList marketDataServiceScenarioList = new MarketDataGeneratorScenarioList();
 			marketDataServiceScenarioList.asObservable().subscribe(marketDataWriter,                        //onNext
 					throwable -> logger.error("unable to generate marketData from files ", throwable),        //onError
 					() -> logger.info("on complete, simulated marketData generated from files"));            //onComplete
