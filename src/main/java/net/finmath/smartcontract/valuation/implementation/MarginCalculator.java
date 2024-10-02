@@ -19,6 +19,8 @@ import net.finmath.smartcontract.valuation.oracle.interestrates.ValuationOracleP
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +41,7 @@ import java.util.function.DoubleUnaryOperator;
  */
 public class MarginCalculator {
 
+	private static final Logger logger = LoggerFactory.getLogger(MarginCalculator.class);
 	private final DoubleUnaryOperator rounding;
 	private static final String FORWARD_EUR_6M = "forward-EUR-6M";
 	private static final String DISCOUNT_EUR_OIS = Calibrator.DISCOUNT_EUR_OIS;
@@ -165,7 +168,10 @@ public class MarginCalculator {
 
 		String currency = "EUR";
 
-		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(evaluationTime.toString());
+		BigDecimal valueAtTime = BigDecimal.valueOf(value);
+		logger.info("calculated value at time: {}", valueAtTime);
+
+		return new ValueResult().value(valueAtTime).currency(currency).valuationDate(evaluationTime.toString());
 	}
 
 	public ValueResult getValue(MarketDataList marketData, String productData) throws Exception {
@@ -229,6 +235,7 @@ public class MarginCalculator {
 		} else {
 			marginCall = margin.getMargin(startDate, endState);
 		}
+		logger.info("margin call: {}", marginCall);
 
 		return marginCall;
 	}
