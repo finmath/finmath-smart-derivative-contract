@@ -28,10 +28,10 @@ class SettlementGeneratorTest {
 
 		String settlementString = new SettlementGenerator().generateInitialSettlementXml(marketDataString, sdc)
 				.marginLimits(List.of(BigDecimal.ONE, BigDecimal.ZERO))
-				.settlementValue(BigDecimal.ZERO)
-				//.settlementValuePrevious(BigDecimal.ZERO)
+				.settlementNPV(BigDecimal.ZERO)
+				//.settlementNPVPrevious(BigDecimal.ZERO)
 				.settlementTimeNext(ZonedDateTime.now())
-				.settlementValueNext(BigDecimal.ZERO)
+				.settlementNPVNext(BigDecimal.ZERO)
 				.build();
 
 		System.out.println(settlementString);
@@ -46,9 +46,9 @@ class SettlementGeneratorTest {
 		assertTrue(settlementString.contains("<item>"));
 		assertTrue(settlementString.contains("<value>"));
 		assertTrue(settlementString.contains("<settlementTimeNext>"));
-		assertTrue(settlementString.contains("<settlementValueNext>"));
-		assertTrue(settlementString.contains("<settlementValuePrevious>"));
-		assertTrue(settlementString.contains("<settlementValue>"));
+		assertTrue(settlementString.contains("<settlementNPVNext>"));
+		assertTrue(settlementString.contains("<settlementNPVPrevious>"));
+		assertTrue(settlementString.contains("<settlementNPV>"));
 		assertTrue(settlementString.contains("<marginLimits>"));
 	}
 
@@ -63,10 +63,10 @@ class SettlementGeneratorTest {
 
 		String settlementString = new SettlementGenerator().generateRegularSettlementXml(marketDataString, sdc, BigDecimal.ONE)
 				.marginLimits(List.of(BigDecimal.ONE, BigDecimal.ZERO))
-				.settlementValue(BigDecimal.ZERO)
-				.settlementValuePrevious(BigDecimal.ZERO)
+				.settlementNPV(BigDecimal.ZERO)
+				.settlementNPVPrevious(BigDecimal.ZERO)
 				.settlementTimeNext(ZonedDateTime.now())
-				.settlementValueNext(BigDecimal.ZERO)
+				.settlementNPVNext(BigDecimal.ZERO)
 				.build();
 
 		System.out.println(settlementString);
@@ -81,9 +81,9 @@ class SettlementGeneratorTest {
 		assertTrue(settlementString.contains("<item>"));
 		assertTrue(settlementString.contains("<value>"));
 		assertTrue(settlementString.contains("<settlementTimeNext>"));
-		assertTrue(settlementString.contains("<settlementValueNext>"));
-		assertTrue(settlementString.contains("<settlementValuePrevious>"));
-		assertTrue(settlementString.contains("<settlementValue>"));
+		assertTrue(settlementString.contains("<settlementNPVNext>"));
+		assertTrue(settlementString.contains("<settlementNPVPrevious>"));
+		assertTrue(settlementString.contains("<settlementNPV>"));
 		assertTrue(settlementString.contains("<marginLimits>"));
 	}
 
@@ -98,10 +98,10 @@ class SettlementGeneratorTest {
 
 		SettlementGenerator generator = new SettlementGenerator().generateRegularSettlementXml(marketDataString, sdc, BigDecimal.ONE)
 				.marginLimits(List.of(BigDecimal.ONE, BigDecimal.ZERO))
-				.settlementValue(BigDecimal.ZERO)
-				.settlementValuePrevious(BigDecimal.ZERO)
+				.settlementNPV(BigDecimal.ZERO)
+				.settlementNPVPrevious(BigDecimal.ZERO)
 				.settlementTimeNext(ZonedDateTime.now());
-				//.settlementValueNext(BigDecimal.ZERO);
+				//.settlementNPVNext(BigDecimal.ZERO);
 
 		assertThrows(SDCException.class, generator::build);
 	}

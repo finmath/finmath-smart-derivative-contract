@@ -65,10 +65,10 @@ public class SettlementService {
 						sdc,
 						margin)
 				.marginLimits(settlementLast.getMarginLimits())
-				.settlementValue(getValue(newMarketDataString, regularSettlementRequest.getTradeData()))
-				.settlementValuePrevious(settlementLast.getSettlementValue())
+				.settlementNPV(getValue(newMarketDataString, regularSettlementRequest.getTradeData()))
+				.settlementNPVPrevious(settlementLast.getSettlementNPV())
 				.settlementTimeNext(settlementTimeNext)
-				.settlementValueNext(settlementValueNext.getValue())
+				.settlementNPVNext(settlementValueNext.getValue())
 				.build();
 
 		return new RegularSettlementResult()
@@ -97,10 +97,10 @@ public class SettlementService {
 		String newSettlement = new SettlementGenerator()
 				.generateInitialSettlementXml(newMarketDataString, sdc)
 				.marginLimits(marginLimits)
-				.settlementValue(getValue(newMarketDataString, initialSettlementRequest.getTradeData()))
+				.settlementNPV(getValue(newMarketDataString, initialSettlementRequest.getTradeData()))
 				//.settlementValuePrevious(BigDecimal.ZERO)
 				.settlementTimeNext(settlementTimeNext)
-				.settlementValueNext(settlementValueNext.getValue())
+				.settlementNPVNext(settlementValueNext.getValue())
 				.build();
 
 		return new InitialSettlementResult()
@@ -125,14 +125,17 @@ public class SettlementService {
 		logger.info("retrieveMarketData started for trade: {}", sdc.getDltTradeId());
 
 		if (sdc.getMarketDataProvider().equals(valuationConfig.getLiveMarketDataProvider()) && valuationConfig.isLiveMarketData()) {
+			logger.info("using live market data provider");
 			marketDataList.set(MarketDataGeneratorLauncher.instantiateMarketDataGeneratorWebsocket(initConnectionProperties(), sdc));
 		} else if (sdc.getMarketDataProvider().equals(valuationConfig.getInternalMarketDataProvider())) {
+			logger.info("using internal market data provider");
 			//includes provider internal or no liveMarketData activated
 			final io.reactivex.rxjava3.functions.Consumer<MarketDataList> marketDataWriter = marketDataList::set;
 			marketDataServiceScenarioList.asObservable().subscribe(marketDataWriter,                        //onNext
 					throwable -> logger.error("unable to generate marketData from files ", throwable),        //onError
 					() -> logger.info("on complete, simulated marketData generated from files"));            //onComplete
 		} else {
+			logger.error("unable to retrieve marketData for {}", sdc.getDltTradeId());
 			throw new SDCException(ExceptionId.SDC_WRONG_INPUT,
 					"Product data XML is not compatible with valuation service configuration, see logs for further investigation", 400);
 		}
