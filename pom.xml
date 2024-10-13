@@ -168,6 +168,10 @@
                     <groupId>net.finmath</groupId>
                     <artifactId>finmath-lib</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.itextpdf</groupId>
+                    <artifactId>itextpdf</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
