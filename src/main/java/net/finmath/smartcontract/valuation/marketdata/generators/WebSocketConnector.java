@@ -7,23 +7,26 @@ package net.finmath.smartcontract.valuation.marketdata.generators;//|-----------
 
 import com.neovisionaries.ws.client.*;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.json.JSONObject;
 
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +51,8 @@ import java.util.Properties;
  *   providing the updated token to the Real-Time endpoint before token expiration.
  */
 public class WebSocketConnector {
-
-
 	Properties connectionProperties;
 	public JSONObject authJson;
-
 
 	public String position;
 	public String scope = "";
@@ -63,8 +63,6 @@ public class WebSocketConnector {
 	public WebSocketConnector(Properties connectionProperties) throws Exception {
 		this.connectionProperties = connectionProperties;
 		this.position = Inet4Address.getLocalHost().getHostAddress();
-
-
 	}
 
 	public WebSocket getWebSocket() throws Exception{
@@ -134,9 +132,15 @@ public class WebSocketConnector {
 	public JSONObject getAuthenticationInfo(JSONObject previousAuthResponseJson, String url) {
 		try
 		{
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(new SSLContextBuilder().build());
+			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+					.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create().build())
+					.build();
 
-			HttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+			//SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(new SSLContextBuilder().build());
+
+			//HttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+			HttpClient httpclient = HttpClientBuilder.create()
+					.setConnectionManager(connectionManager).build();
 			HttpPost httppost = new HttpPost(url);
            /* HttpParams httpParams = new BasicHttpParams();
 
@@ -144,7 +148,7 @@ public class WebSocketConnector {
             httpParams.setParameter(ClientPNames.HANDLE_REDIRECTS, false);*/
 
 			// Set request parameters.
-			List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+			List<NameValuePair> params = new ArrayList<>(2);
 			params.add(new BasicNameValuePair("client_id", connectionProperties.get("CLIENTID").toString()));
 			params.add(new BasicNameValuePair("username", connectionProperties.get("USER").toString()));
 
@@ -164,12 +168,14 @@ public class WebSocketConnector {
 			}
 
 			//httppost.setParams(httpParams);
-			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			httppost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
 
 			//Execute and get the response.
-			HttpResponse response = httpclient.execute(httppost);
+			//HttpResponse response = httpclient.execute(httppost);
+			ClassicHttpResponse response = httpclient.executeOpen(null, httppost, null);
 
-			int statusCode = response.getStatusLine().getStatusCode();
+			//int statusCode = response.getStatusLine().getStatusCode();
+			int statusCode = response.getCode();
 
 			switch ( statusCode ) {
 				case HttpStatus.SC_OK:                  // 200
@@ -198,7 +204,7 @@ public class WebSocketConnector {
 				case HttpStatus.SC_BAD_REQUEST:                    // 400
 				case HttpStatus.SC_UNAUTHORIZED:                   // 401
 					// Retry with username and password
-					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getCode() + " " + response.getReasonPhrase());
 					if (previousAuthResponseJson != null) {
 						System.out.println("Retry with username and password");
 						return getAuthenticationInfo(null, connectionProperties.get("AUTHURL").toString());
@@ -209,12 +215,12 @@ public class WebSocketConnector {
 				case HttpStatus.SC_GONE:                           // 410
 				case 451:                                          // 451 Unavailable For Legal Reasons
 					// Stop retrying with the request
-					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getCode() + " " + response.getReasonPhrase());
 					System.out.println("Stop retrying with the request");
 					return null;
 				default:
 					// Retry the request to Refinitiv Data Platform
-					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+					System.out.println("Refinitiv Data Platform authentication HTTP code: " + response.getCode() + " " + response.getReasonPhrase());
 					Thread.sleep(5000);
 					// CAUTION: This is sample code with infinite retries.
 					System.out.println("Retry the request to Refinitiv Data Platform");
