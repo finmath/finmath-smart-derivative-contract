@@ -313,12 +313,11 @@
             <version>${commons-cli.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
+        <!-- currently no need for postgres db connection -->
+        <!--dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
-
+        </dependency-->
 
         <dependency>
             <groupId>org.slf4j</groupId>
