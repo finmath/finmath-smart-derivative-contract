@@ -130,9 +130,6 @@ public class WebSocketConnector {
 					.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create().build())
 					.build();
 
-			//SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(new SSLContextBuilder().build());
-
-			//HttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
 			HttpClient httpclient = HttpClientBuilder.create()
 					.setConnectionManager(connectionManager).build();
 			HttpPost httppost = new HttpPost(url);
