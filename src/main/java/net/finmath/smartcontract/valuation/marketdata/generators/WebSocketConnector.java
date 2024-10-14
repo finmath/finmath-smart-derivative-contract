@@ -11,16 +11,12 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.json.JSONObject;
 
 import javax.net.ssl.SSLParameters;
@@ -82,10 +78,8 @@ public class WebSocketConnector {
 
 	public WebSocketConnector initAuthJson() {
 		try {
-
 			// Connect to Live Market Data Platform and authenticate (using our username and password)
 			this.authJson = getAuthenticationInfo(null, connectionProperties.get("AUTHURL").toString());
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -171,10 +165,8 @@ public class WebSocketConnector {
 			httppost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
 
 			//Execute and get the response.
-			//HttpResponse response = httpclient.execute(httppost);
 			ClassicHttpResponse response = httpclient.executeOpen(null, httppost, null);
 
-			//int statusCode = response.getStatusLine().getStatusCode();
 			int statusCode = response.getCode();
 
 			switch ( statusCode ) {
