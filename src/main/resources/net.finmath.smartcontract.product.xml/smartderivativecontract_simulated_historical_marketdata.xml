@@ -5,6 +5,7 @@
     <dltAddress>0x000000002</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <settlementCurrency>EUR</settlementCurrency>
+    <tradeType>SDCNoPrefunding</tradeType>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>

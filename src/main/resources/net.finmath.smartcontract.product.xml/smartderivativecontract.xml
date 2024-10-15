@@ -5,6 +5,7 @@
     <dltAddress>0x000000001</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
     <settlementCurrency>EUR</settlementCurrency>
+    <tradeType>SDCPledgedBalance</tradeType>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
