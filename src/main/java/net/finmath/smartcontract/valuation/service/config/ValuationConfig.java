@@ -11,6 +11,7 @@ public class ValuationConfig {
 	private String settlementCurrency;
 	private String liveMarketDataProvider;
 	private String internalMarketDataProvider;
+	private String productFixingType;
 
 	public boolean isLiveMarketData() {
 		return liveMarketData;
@@ -42,5 +43,13 @@ public class ValuationConfig {
 
 	public void setInternalMarketDataProvider(String internalMarketDataProvider) {
 		this.internalMarketDataProvider = internalMarketDataProvider;
+	}
+
+	public String getProductFixingType() {
+		return productFixingType;
+	}
+
+	public void setProductFixingType(String productFixingType) {
+		this.productFixingType = productFixingType;
 	}
 }

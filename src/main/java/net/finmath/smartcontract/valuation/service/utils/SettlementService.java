@@ -200,7 +200,7 @@ public class SettlementService {
 		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(regularSettlementRequest.getTradeData(), Smartderivativecontract.class);
 		Optional<Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item> symbolsOptional = sdc.getSettlement().getMarketdata()
 				.getMarketdataitems().getItem().stream().filter(
-						item -> item.getType().get(0).equalsIgnoreCase("Fixing"))
+						item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
 				.findAny();
 		List<String> symbols;
 

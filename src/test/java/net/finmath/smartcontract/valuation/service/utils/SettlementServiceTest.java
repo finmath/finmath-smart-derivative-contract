@@ -101,6 +101,7 @@ class SettlementServiceTest {
 		when(valuationConfig.getLiveMarketDataProvider()).thenReturn("internal");
 		when(valuationConfig.getInternalMarketDataProvider()).thenReturn("internal");
 		when(valuationConfig.isLiveMarketData()).thenReturn(false);
+		when(valuationConfig.getProductFixingType()).thenReturn("Fixing");
 
 		RegularSettlementResult regularSettlementResult = serviceUnderTest.generateRegularSettlementResult(regularSettlementRequest);
 		String settlementString = regularSettlementResult.getGeneratedRegularSettlement();
