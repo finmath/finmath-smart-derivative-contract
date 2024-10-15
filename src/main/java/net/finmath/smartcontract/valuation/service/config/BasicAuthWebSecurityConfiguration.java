@@ -24,7 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(value = ApplicationProperties.class)
+//@EnableConfigurationProperties(value = ApplicationProperties.class)
 public class BasicAuthWebSecurityConfiguration {
 
 	Logger logger = LoggerFactory.getLogger(BasicAuthWebSecurityConfiguration.class);
