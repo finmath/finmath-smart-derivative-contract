@@ -221,7 +221,7 @@ public class SettlementService {
 		}).findAny().stream().toList();
 
 		//add matching marketdataPoints to the new marketdata
-		logger.info("matching marketdataPoints to product symbols: {}", marketDataPointsLastSettlement);
+		logger.info("add matching marketdataPoints to product symbols: {}", marketDataPointsLastSettlement);
 		for (MarketDataPoint marketDataPoint : marketDataPointsLastSettlement) {
 			newMarketDataList.add(marketDataPoint);
 		}
