@@ -4,6 +4,7 @@
     <dltTradeId>ID-historical123</dltTradeId>
     <dltAddress>0x000000002</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
+    <settlementCurrency>EUR</settlementCurrency>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>

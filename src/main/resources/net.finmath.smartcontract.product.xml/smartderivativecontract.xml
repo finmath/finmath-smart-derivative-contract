@@ -4,6 +4,7 @@
     <dltTradeId>ID-Test123</dltTradeId>
     <dltAddress>0x000000001</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
+    <settlementCurrency>EUR</settlementCurrency>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
