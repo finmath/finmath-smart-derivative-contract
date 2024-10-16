@@ -1,7 +1,11 @@
 <smartderivativecontract xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                          xmlns="uri:sdc"
                          xsi:schemaLocation="uri:sdc smartderivativecontract.xsd">
+    <dltTradeId>ID-rics567</dltTradeId>
+    <dltAddress>0x000000006</dltAddress>
     <uniqueTradeIdentifier>UTI12345</uniqueTradeIdentifier>
+    <settlementCurrency>EUR</settlementCurrency>
+    <tradeType>SDCPledgedBalance</tradeType>
     <valuation>
         <artefact>
             <groupId>net.finmath</groupId>
