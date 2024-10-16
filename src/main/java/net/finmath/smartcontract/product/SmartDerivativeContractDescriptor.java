@@ -74,6 +74,7 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
+	//TODO convert constructor into builder pattern or something comparable
 	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType) {
 		this.dltTradeId = dltTradeId;
 		this.dltAddress = dltAddress;
