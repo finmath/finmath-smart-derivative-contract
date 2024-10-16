@@ -97,7 +97,9 @@ public class SDCXMLParser {
 
 		String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
 
-		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider);
+		String tradeType = sdc.getTradeType();
+
+		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType);
 	}
 
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
