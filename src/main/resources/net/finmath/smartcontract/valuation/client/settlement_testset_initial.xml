@@ -4,6 +4,7 @@
     <marginLimits>-50000</marginLimits>
     <marginLimits>50000</marginLimits>
     <marginValue>-5000</marginValue>
+	<settlementNPV>18937.55</settlementNPV>
     <marketData>
         <requestTimeStamp>20220908-170110</requestTimeStamp>
         <item>

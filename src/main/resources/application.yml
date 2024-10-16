@@ -57,6 +57,7 @@ valuation:
   live-market-data-provider: "refinitiv"
   internal-market-data-provider: "internal"
   settlement-currency: "EUR"
+  product-fixing-type: "Fixing"
 
 refinitiv:
   user: ${REFINITIV_USER}

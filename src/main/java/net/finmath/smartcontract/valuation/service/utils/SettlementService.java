@@ -3,9 +3,11 @@ package net.finmath.smartcontract.valuation.service.utils;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.product.xml.Smartderivativecontract;
 import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.settlement.SettlementGenerator;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
+import net.finmath.smartcontract.valuation.marketdata.data.MarketDataPoint;
 import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorLauncher;
 import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorScenarioList;
 import net.finmath.smartcontract.valuation.service.config.RefinitivConfig;
@@ -23,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +50,7 @@ public class SettlementService {
 		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
 		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
+		includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
@@ -188,6 +192,38 @@ public class SettlementService {
 		} catch (Exception e) {
 			logger.error("unable to get margin for market data ", e);
 			throw new SDCException(ExceptionId.SDC_VALUE_CALCULATION_ERROR, "error in MarginCalculator getMargin");
+		}
+	}
+
+	private void includeFixingsOfLastSettlement(RegularSettlementRequest regularSettlementRequest, MarketDataList newMarketDataList) {
+		//searching for Fixings in the sdc product data XML
+		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(regularSettlementRequest.getTradeData(), Smartderivativecontract.class);
+		Optional<Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item> symbolsOptional = sdc.getSettlement().getMarketdata()
+				.getMarketdataitems().getItem().stream().filter(
+						item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
+				.findAny();
+		List<String> symbols;
+
+		if(symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();}
+		else {
+			logger.warn("no Fixings found in SDC product data XML, marketDataList not changed");
+			return;
+		}
+		logger.info("found symbols in product data XML: {}", symbols);
+
+		//matching symbols from product data xml to last settlement xml marketdataPoints
+		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
+		List<MarketDataPoint> marketDataPointsLastSettlement = settlementLast.getMarketData().getPoints().stream().filter(marketDataPoint -> {
+			for (String symbol : symbols) {
+				if (marketDataPoint.getId().equalsIgnoreCase(symbol)) return true;
+			}
+			return false;
+		}).findAny().stream().toList();
+
+		//add matching marketdataPoints to the new marketdata
+		logger.info("add matching marketdataPoints to product symbols: {}", marketDataPointsLastSettlement);
+		for (MarketDataPoint marketDataPoint : marketDataPointsLastSettlement) {
+			newMarketDataList.add(marketDataPoint);
 		}
 	}
 }
