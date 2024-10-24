@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class SettlementService {
@@ -213,16 +214,15 @@ public class SettlementService {
 
 		//matching symbols from product data xml to last settlement xml marketdataPoints
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
-		List<MarketDataPoint> marketDataPointsLastSettlement = settlementLast.getMarketData().getPoints().stream().filter(marketDataPoint -> {
-			for (String symbol : symbols) {
-				if (marketDataPoint.getId().equalsIgnoreCase(symbol)) return true;
-			}
-			return false;
-		}).findAny().stream().toList();
+		List<MarketDataPoint> fixingsLastSettlement = new ArrayList<>();
+		symbols.forEach(s -> settlementLast.getMarketData().getPoints().forEach(marketDataPoint -> {
+			if (marketDataPoint.getId().equalsIgnoreCase(s))
+				fixingsLastSettlement.add(marketDataPoint);
+		}));
 
 		//add matching marketdataPoints to the new marketdata
-		logger.info("add matching marketdataPoints to product symbols: {}", marketDataPointsLastSettlement);
-		for (MarketDataPoint marketDataPoint : marketDataPointsLastSettlement) {
+		logger.info("add matching marketdataPoints to product symbols: {}", fixingsLastSettlement);
+		for (MarketDataPoint marketDataPoint : fixingsLastSettlement) {
 			newMarketDataList.add(marketDataPoint);
 		}
 	}
