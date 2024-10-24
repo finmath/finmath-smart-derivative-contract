@@ -52,3 +52,22 @@ storage:
     marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
     databaseConnectionPropertiesFile: '/config/database_connect.properties'
 
+valuation:
+  live-market-data: false
+  live-market-data-provider: "refinitiv"
+  internal-market-data-provider: "internal"
+  settlement-currency: "EUR"
+  product-fixing-type: "Fixing"
+
+refinitiv:
+  user: ${REFINITIV_USER}
+  password: ${REFINITIV_PASSWORD}
+  client-id: ${REFINITIV_CLIENT_ID}
+  host-name: ${REFINITIV_HOST_NAME}
+  port: 443
+  auth-url: "https://api.refinitiv.com:443/auth/oauth2/v1/token"
+  use-proxy: "FALSE"
+  proxy-host: ""
+  proxy-port: 9400
+  proxy-user: ""
+  proxy-password: ""

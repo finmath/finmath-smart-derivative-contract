@@ -1,0 +1,15 @@
+type: object
+required:
+  - marginValue
+  - currency
+  - valuationDate
+  - generatedRegularSettlement
+properties:
+  marginValue:
+    type: number
+  currency:
+    type: string
+  valuationDate:
+    type: string
+  generatedRegularSettlement:
+    type: string

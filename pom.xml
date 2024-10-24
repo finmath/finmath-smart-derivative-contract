@@ -30,7 +30,7 @@
         <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
-        <spring-boot-dependencies.version>3.0.5</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.2.10</spring-boot-dependencies.version>
         <finmath-lib.version>6.0.12</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
@@ -56,6 +56,7 @@
         <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
         <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
+        <httpcore.version>5.3</httpcore.version>
     </properties>
 
     <developers>
@@ -167,17 +168,23 @@
                     <groupId>net.finmath</groupId>
                     <artifactId>finmath-lib</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.itextpdf</groupId>
+                    <artifactId>itextpdf</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>${httpcore.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+            <version>${httpcore.version}</version>
         </dependency>
 
         <dependency>
@@ -310,17 +317,22 @@
             <version>${commons-cli.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
+        <!-- currently no need for postgres db connection -->
+        <!--dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
-
+        </dependency-->
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
         </dependency>
     </dependencies>
 
