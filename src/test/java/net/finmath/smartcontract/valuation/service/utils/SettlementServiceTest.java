@@ -50,6 +50,30 @@ class SettlementServiceTest {
 
 		InitialSettlementResult initialSettlementResult = serviceUnderTest.generateInitialSettlementResult(initialSettlementRequest);
 		System.out.println(initialSettlementResult.getGeneratedInitialSettlement());
+		assertTrue(initialSettlementResult.getGeneratedInitialSettlement().contains("<settlementType>INITIAL</settlementType>"));
+	}
+
+	@Test
+	void generateInitialSettlement_providedMarketData() throws IOException {
+		String productXml = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").readAllBytes());
+		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_historical_test_from_initial.xml").readAllBytes());
+
+		InitialSettlementRequest initialSettlementRequest = new InitialSettlementRequest().tradeData(productXml).newProvidedMarketData(providedMarketData);
+
+		InitialSettlementResult initialSettlementResult = serviceUnderTest.generateInitialSettlementResult(initialSettlementRequest);
+		System.out.println(initialSettlementResult.getGeneratedInitialSettlement());
+		assertTrue(initialSettlementResult.getGeneratedInitialSettlement().contains("<marketData><requestTimeStamp>20220908-170110</requestTimeStamp><item><id>ESTRSWP7D</id><value>0.0064125</value><timeStamp>20220908-170110</timeStamp>"));
+		assertTrue(initialSettlementResult.getGeneratedInitialSettlement().contains("<settlementType>INITIAL</settlementType>"));
+	}
+
+	@Test
+	void generateInitialSettlement_providedMarketData_wrongFormat() throws IOException {
+		String productXml = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").readAllBytes());
+		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_1.xml").readAllBytes());
+
+		InitialSettlementRequest initialSettlementRequest = new InitialSettlementRequest().tradeData(productXml).newProvidedMarketData(providedMarketData);
+
+		assertThrows(SDCException.class, () -> serviceUnderTest.generateInitialSettlementResult(initialSettlementRequest));
 	}
 
 	@Test
@@ -85,6 +109,53 @@ class SettlementServiceTest {
 		assertTrue(settlementString.contains("<settlementNPVPrevious>"));
 		assertTrue(settlementString.contains("<settlementNPV>"));
 		assertTrue(settlementString.contains("<marginLimits>"));
+	}
+
+	@Test
+	void generateRegularSettlement_providedMarketData() throws IOException {
+		String settlementLast = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_initial.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_historical_test_from_initial.xml").readAllBytes());
+
+		String productXml = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").readAllBytes());
+
+		RegularSettlementRequest regularSettlementRequest = new RegularSettlementRequest()
+				.settlementLast(settlementLast)
+				.tradeData(productXml)
+				.newProvidedMarketData(providedMarketData);
+
+		RegularSettlementResult regularSettlementResult = serviceUnderTest.generateRegularSettlementResult(regularSettlementRequest);
+		String settlementString = regularSettlementResult.getGeneratedRegularSettlement();
+		System.out.println(settlementString);
+
+		assertTrue(settlementString.contains("ESTRSWP3Y"));
+		assertTrue(settlementString.contains("EUB6SWP30Y"));
+		assertTrue(settlementString.contains("REGULAR"));
+		assertFalse(settlementString.contains("INITIAL"));
+		assertTrue(settlementString.contains("<marginValue>0.0</marginValue>"));
+		assertTrue(settlementString.contains("<marketData>"));
+		assertTrue(settlementString.contains("<requestTimeStamp>"));
+		assertTrue(settlementString.contains("<item>"));
+		assertTrue(settlementString.contains("<value>"));
+		assertTrue(settlementString.contains("<settlementTimeNext>"));
+		assertTrue(settlementString.contains("<settlementNPVNext>"));
+		assertTrue(settlementString.contains("<settlementNPVPrevious>"));
+		assertTrue(settlementString.contains("<settlementNPV>"));
+		assertTrue(settlementString.contains("<marginLimits>"));
+	}
+
+	@Test
+	void generateRegularSettlement_providedMarketData_wrongFormat() throws IOException {
+		String settlementLast = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_initial.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_1.xml").readAllBytes());
+
+		String productXml = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").readAllBytes());
+
+		RegularSettlementRequest regularSettlementRequest = new RegularSettlementRequest()
+				.settlementLast(settlementLast)
+				.tradeData(productXml)
+				.newProvidedMarketData(providedMarketData);
+
+		assertThrows(SDCException.class, () -> serviceUnderTest.generateRegularSettlementResult(regularSettlementRequest));
 	}
 
 	@Test
