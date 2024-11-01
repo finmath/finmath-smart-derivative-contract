@@ -4,7 +4,13 @@
 	<marginLimits>-50000</marginLimits>
 	<marginLimits>50000</marginLimits>
 	<marginValue>-5000</marginValue>
+	<tradeId>SDCTestTrade1</tradeId>
+	<settlementType>INITIAL</settlementType>
+	<settlementTime>20240314-170000</settlementTime>
 	<settlementNPV>18937.55</settlementNPV>
+	<settlementNPVPrevious>0</settlementNPVPrevious>
+	<settlementTimeNext>20240315-170000</settlementTimeNext>
+	<settlementNPVNext>18940.22</settlementNPVNext>
 	<marketData>
 		<requestTimeStamp>20080917-170000</requestTimeStamp>
 		<item>
@@ -348,11 +354,4 @@
 			<timeStamp>20080917-170000</timeStamp>
 		</item>
 	</marketData>
-	<settlementTime>20240314-170000</settlementTime>
-	<settlementTimeNext>20240315-170000</settlementTimeNext>
-	<settlementType>INITIAL</settlementType>
-	<settlementValue>20000</settlementValue>
-	<settlementValueNext>20001</settlementValueNext>
-	<settlementValuePrevious>25000</settlementValuePrevious>
-	<tradeId>SDCTestTrade1</tradeId>
 </settlement>
