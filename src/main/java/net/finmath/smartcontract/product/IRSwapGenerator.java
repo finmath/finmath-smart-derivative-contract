@@ -13,7 +13,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Scenario Generator provides static method for generating an analytic swap object
+ * Generates an interest rate swap. This is used for testing and visualization.
+ * Alternative way to generate the swap is via the parser.
  *
  * @author Peter Kohl-Landgraf
  * @author Christian Fries
@@ -31,6 +32,7 @@ public class IRSwapGenerator {
 		final Schedule scheduleFix = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityLabel, "annual", "E30/360", "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), 0, 0);
 
 		// TODO Remove hardcoded effective date
+		// TODO Test effective date from parser
 		LocalDateTime cashFlowEffectiveDate = LocalDateTime.of(startDate, LocalTime.of(0, 0));
 		boolean isNotionalExchanged = false;
 
