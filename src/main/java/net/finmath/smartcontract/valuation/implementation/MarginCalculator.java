@@ -173,12 +173,13 @@ public class MarginCalculator {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		// TODO Remove fixed forward and discount curve
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
-
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
 		double value = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
 
+		// TODO Remove hardcoded currency
 		String currency = "EUR";
 
 		BigDecimal valueAtTime = BigDecimal.valueOf(value);
@@ -244,7 +245,7 @@ public class MarginCalculator {
 		);
 
 		// Build valuation oracle with given market data.
-		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, 1.0, marketDataList);
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, marketDataList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
 		Map<String, Double> marginCall;
@@ -288,7 +289,7 @@ public class MarginCalculator {
 
 
 		// Build valuation oracle with given market data.
-		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, 1.0, marketDataList);
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, marketDataList);
 
 		double value = oracle.getValue(evaluationTime,marketDataTime);
 

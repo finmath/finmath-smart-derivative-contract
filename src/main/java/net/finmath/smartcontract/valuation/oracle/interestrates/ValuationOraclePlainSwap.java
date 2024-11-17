@@ -42,19 +42,16 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
 	private final List<CalibrationDataset> scenarioList;
 	private final Map<String, AnalyticProduct> products;
-	private final double notionalAmount;
 	private final DoubleUnaryOperator rounding;
 
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
 	 *
 	 * @param products        The underlying products.
-	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 * @param rounding       An operator implementing the rounding.
 	 */
-	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final double notionalAmount, final List<CalibrationDataset> scenarioList, DoubleUnaryOperator rounding) {
-		this.notionalAmount = notionalAmount;
+	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final List<CalibrationDataset> scenarioList, DoubleUnaryOperator rounding) {
 		this.products = products;
 		this.scenarioList = scenarioList;
 		this.rounding = rounding;
@@ -64,11 +61,10 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	 * Oracle will be instantiated based on a Swap product and market data scenario list
 	 *
 	 * @param products       A list of products to valuate.
-	 * @param notionalAmount The notional of the product.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
-	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final double notionalAmount, final List<CalibrationDataset> scenarioList) {
-		this(products, notionalAmount, scenarioList, x -> Math.round(x * 100) / 100.0);
+	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final List<CalibrationDataset> scenarioList) {
+		this(products, scenarioList, x -> Math.round(x * 100) / 100.0);
 	}
 
 	@Override

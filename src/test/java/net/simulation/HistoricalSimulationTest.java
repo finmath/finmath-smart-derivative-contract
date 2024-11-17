@@ -39,10 +39,10 @@ class HistoricalSimulationTest {
 							datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 							datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
-			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
+			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, notional, fixRate, true, forwardCurveKey, discountCurveKey);
 
 			/* Start Valuation for filter historical scenarios */
-			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), notional, scenarioList);
+			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), scenarioList);
 
 			final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).collect(Collectors.toList());
 

@@ -69,9 +69,9 @@ public class VisualiserSDC {
 						datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 						datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, notional, fixRate, false, forwardCurveKey, discountCurveKey);
 
-		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), notional, scenarioList);
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), scenarioList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
 		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());

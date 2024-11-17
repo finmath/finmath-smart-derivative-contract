@@ -123,7 +123,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	 *
 	 * @param content Content of the json.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException                  File not found
+	 * @throws IllegalArgumentException If the JSON format is incorrect.
 	 */
 	public static final List<CalibrationDataset> getScenariosFromJsonString(final String content) {
 		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap;
