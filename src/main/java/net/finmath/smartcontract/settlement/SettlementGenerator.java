@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SettlementGenerator {
@@ -65,6 +66,11 @@ public class SettlementGenerator {
 
 	public SettlementGenerator settlementNPVNext(BigDecimal settlementNPVNext){
 		settlement.setSettlementNPVNext(settlementNPVNext);
+		return this;
+	}
+
+	public SettlementGenerator info(Map<String, Double> info){
+		settlement.setInfo(info);
 		return this;
 	}
 

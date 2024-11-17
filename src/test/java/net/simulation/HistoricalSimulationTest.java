@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class HistoricalSimulationTest {
@@ -41,7 +42,7 @@ class HistoricalSimulationTest {
 			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
 
 			/* Start Valuation for filter historical scenarios */
-			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, notional, scenarioList);
+			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), notional, scenarioList);
 
 			final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).collect(Collectors.toList());
 

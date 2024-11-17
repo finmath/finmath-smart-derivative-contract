@@ -23,11 +23,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.DoubleUnaryOperator;
 
 @Service
 public class SettlementService {
@@ -61,7 +59,10 @@ public class SettlementService {
 		ValueResult settlementValueNext = getValuationValueAtTime(
 				newMarketDataString, regularSettlementRequest.getTradeData(), settlementTimeNext.toLocalDateTime());
 
-		BigDecimal margin = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
+		Map<String, Double> marginValues = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
+		// TODO Fix hardcoded rounding
+		DoubleUnaryOperator rounding = x -> Math.round(x * 1000) / 1000.0;
+		BigDecimal margin = BigDecimal.valueOf(rounding.applyAsDouble(marginValues.get("value")));
 
 		String newSettlement = new SettlementGenerator()
 				.generateRegularSettlementXml(
@@ -73,6 +74,7 @@ public class SettlementService {
 				.settlementNPVPrevious(settlementLast.getSettlementNPV())
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
+				.info(marginValues)
 				.build();
 
 		return new RegularSettlementResult()
@@ -105,6 +107,7 @@ public class SettlementService {
 				//.settlementValuePrevious(BigDecimal.ZERO)
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
+				.info(Map.of())
 				.build();
 
 		return new InitialSettlementResult()
@@ -186,9 +189,9 @@ public class SettlementService {
 		}
 	}
 
-	private BigDecimal getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
+	private Map<String, Double> getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
 		try {
-			return marginCalculator.getValue(marketDataStart, marketDataEnd, tradeData).getValue();
+			return marginCalculator.getValues(marketDataStart, marketDataEnd, tradeData);
 		} catch (Exception e) {
 			logger.error("unable to get margin for market data ", e);
 			throw new SDCException(ExceptionId.SDC_VALUE_CALCULATION_ERROR, "error in MarginCalculator getMargin");
