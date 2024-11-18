@@ -60,10 +60,8 @@ public class SettlementService {
 		ValueResult settlementValueNext = getValuationValueAtTime(
 				newMarketDataString, regularSettlementRequest.getTradeData(), settlementTimeNext.toLocalDateTime());
 
-		Map<String, Double> marginValues = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
-		// TODO Fix hardcoded rounding
-		DoubleUnaryOperator rounding = x -> Math.round(x * 1000) / 1000.0;
-		BigDecimal margin = BigDecimal.valueOf(rounding.applyAsDouble(marginValues.get("value")));
+		Map<String, BigDecimal> marginValues = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
+		BigDecimal margin = marginValues.get("value");
 
 		String newSettlement = new SettlementGenerator()
 				.generateRegularSettlementXml(
@@ -190,7 +188,7 @@ public class SettlementService {
 		}
 	}
 
-	private Map<String, Double> getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
+	private Map<String, BigDecimal> getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
 		try {
 			return marginCalculator.getValues(marketDataStart, marketDataEnd, tradeData);
 		} catch (Exception e) {

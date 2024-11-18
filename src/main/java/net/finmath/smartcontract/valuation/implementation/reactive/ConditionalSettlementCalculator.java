@@ -11,8 +11,8 @@ import java.util.function.Function;
 //TODO check if needed, not used
 public class ConditionalSettlementCalculator implements Function<CalibrationDataset, ValueResult>, Serializable {
 
-	private BigDecimal resultTriggerValue;
-	private String sdcXML;
+	private final BigDecimal resultTriggerValue;
+	private final String sdcXML;
 	private String previousmarketdata = null;
 	private final MarginCalculator calculator = new MarginCalculator();
 

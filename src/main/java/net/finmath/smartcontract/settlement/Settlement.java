@@ -7,7 +7,6 @@ import net.finmath.smartcontract.model.MarketDataList;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Describes the result of a single settlement as reported by the valuation oracle.
@@ -24,7 +23,7 @@ import java.util.Map;
 @XmlRootElement
 @XmlType(propOrder = {"tradeId", "settlementType", "currency", "marginValue",
 		"marginLimits", "settlementTime", "settlementNPV", "settlementNPVPrevious",
-		"settlementTimeNext", "settlementNPVNext", "marketData", "info"})
+		"settlementTimeNext", "settlementNPVNext", "marketData", "settlementInfos"})
 public class Settlement {
 
 	public enum SettlementType {
@@ -61,7 +60,7 @@ public class Settlement {
 	private MarketDataList marketData;
 
 	/// Custom additional information (e.g. risk figures or szenario values)
-	private Map<String, Double> info;
+	private List<SettlementInfo> settlementInfos;
 
 	/*
 	 * Getter and setters
@@ -156,12 +155,14 @@ public class Settlement {
 		this.marketData = marketData;
 	}
 
-	public Map<String, Double> getInfo() {
-		return info;
+	@XmlElementWrapper(name="settlementInfos")
+	@XmlElement(name = "settlementInfo")
+	public List<SettlementInfo> getSettlementInfos() {
+		return settlementInfos;
 	}
 
-	public void setInfo(Map<String, Double> info) {
-		this.info = info;
+	public void setSettlementInfos(List<SettlementInfo> settlementInfos) {
+		this.settlementInfos = settlementInfos;
 	}
 }
 

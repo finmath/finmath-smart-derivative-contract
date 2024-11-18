@@ -43,7 +43,7 @@ class CalibrationTests {
 	private LocalDateTime referenceDateTime;
 
 	@BeforeAll
-	void initializeTests() throws IOException, ParserConfigurationException, SAXException, CloneNotSupportedException, Exception {
+	void initializeTests() throws Exception {
 
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String productData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);

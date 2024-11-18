@@ -3,6 +3,7 @@ package net.finmath.smartcontract.product.xml;
 import jakarta.xml.bind.*;
 import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.SDCException;
+import net.finmath.smartcontract.settlement.SettlementInfo;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,7 +107,7 @@ public class SDCXMLParser {
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
 		try {
 			StringReader reader = new StringReader(xml);
-			JAXBContext jaxbContext = JAXBContext.newInstance(t);
+			JAXBContext jaxbContext = JAXBContext.newInstance(t, BigDecimal.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {

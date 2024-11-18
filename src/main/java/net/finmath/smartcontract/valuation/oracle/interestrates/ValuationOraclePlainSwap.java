@@ -15,6 +15,9 @@ import org.javamoney.moneta.Money;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,19 +45,19 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
 	private final List<CalibrationDataset> scenarioList;
 	private final Map<String, AnalyticProduct> products;
-	private final DoubleUnaryOperator rounding;
+	private final int scale;
 
 	/**
 	 * Oracle will be instantiated based on a Swap product an market data scenario list
 	 *
 	 * @param products        The underlying products.
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
-	 * @param rounding       An operator implementing the rounding.
+	 * @param scale     Specification of the rounding.
 	 */
-	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final List<CalibrationDataset> scenarioList, DoubleUnaryOperator rounding) {
+	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final List<CalibrationDataset> scenarioList, int scale) {
 		this.products = products;
 		this.scenarioList = scenarioList;
-		this.rounding = rounding;
+		this.scale = scale;
 	}
 
 	/**
@@ -64,7 +67,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	 * @param scenarioList   The list of market data scenarios to be used for valuation.
 	 */
 	public ValuationOraclePlainSwap(final Map<String, AnalyticProduct> products, final List<CalibrationDataset> scenarioList) {
-		this(products, scenarioList, x -> Math.round(x * 100) / 100.0);
+		this(products, scenarioList,2);
 	}
 
 	@Override
@@ -73,11 +76,11 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	}
 
 	@Override
-	public Double getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
+	public BigDecimal getValue(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
 		return getValues(evaluationDate, marketDataTime).get("value");
 	}
 
-	public Map<String, Double> getValues(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
+	public Map<String, BigDecimal> getValues(final LocalDateTime evaluationDate, final LocalDateTime marketDataTime) {
 		final Optional<CalibrationDataset> optionalScenario =
 				scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
@@ -103,7 +106,10 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 						referenceDate.atStartOfDay(),
 						marketDataTime);
 
-				Map<String,Double> values = (products.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> (Double)rounding.applyAsDouble(e.getValue().getValue(evaluationTime, calibratedModel)))));
+				Map<String,BigDecimal> values = (
+						products.entrySet().stream().collect(Collectors.toMap(
+								e -> e.getKey(),
+								e -> BigDecimal.valueOf(e.getValue().getValue(evaluationTime, calibratedModel)).setScale(scale,RoundingMode.HALF_UP))));
 
 //				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
 

@@ -121,7 +121,7 @@ public class DatabaseConnector {
 		try (
 			Statement importTableCreationStatement = connection.createStatement();
 			Statement importStatement = connection.createStatement();
-			Statement clearAfterUpdateStatement = connection.createStatement();) {
+			Statement clearAfterUpdateStatement = connection.createStatement()) {
 
 			String importfileLocation = resourceGovernor.getImportCandidateAsResourceInReadMode().getFile().getAbsolutePath();
 

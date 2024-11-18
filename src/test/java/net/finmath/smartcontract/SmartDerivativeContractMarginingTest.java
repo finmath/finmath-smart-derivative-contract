@@ -34,7 +34,7 @@ public class SmartDerivativeContractMarginingTest {
 
 		LocalDateTime previousTime = initialTime;
 		for (LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
-			final double value = smartDerivativeContractMargening.getMargin(previousTime, time).get("value");
+			final double value = smartDerivativeContractMargening.getMargin(previousTime, time).get("value").doubleValue();
 			System.out.println(time.toLocalDate() + "\t" + value);
 			previousTime = time;
 		}

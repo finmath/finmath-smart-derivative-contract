@@ -63,7 +63,7 @@ public class MarginCalculator {
 	 * @return the margin (MarginResult).
 	 * @throws Exception Exception
 	 */
-	public Map<String, Double> getValues(String marketDataStart, String marketDataEnd, String productData) throws Exception {
+	public Map<String, BigDecimal> getValues(String marketDataStart, String marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		CalibrationDataset setStart = null;
@@ -86,21 +86,21 @@ public class MarginCalculator {
 
 		LocalDateTime startDate = setStart.getDate();
 		LocalDateTime endDate = setEnd.getDate();
-		Map<String, Double> values = calculateMargin(List.of(setStart, setEnd), startDate, endDate, productDescriptor, underlying);
+		Map<String, BigDecimal> values = calculateMargin(List.of(setStart, setEnd), startDate, endDate, productDescriptor, underlying);
 
 		return values;
 	}
 
 	public MarginResult getValue(String marketDataStart, String marketDataEnd, String productData) throws Exception {
-		double value = getValues(marketDataStart, marketDataEnd, productData).get("value");
+		BigDecimal value = getValues(marketDataStart, marketDataEnd, productData).get("value");
 		// TODO Fix hardcoded currency
 		String currency = "EUR";
 		// TODO This needs to be replaced by the actual valuation date (can be different from now)
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new MarginResult().value(BigDecimal.valueOf(rounding.applyAsDouble(value))).currency(currency).valuationDate(valuationDate.toString());
+		return new MarginResult().value(value).currency(currency).valuationDate(valuationDate.toString());
 	}
-	public Map<String, Double> getValues(MarketDataList marketDataStart, MarketDataList marketDataEnd, String productData) throws Exception {
+	public Map<String, BigDecimal> getValues(MarketDataList marketDataStart, MarketDataList marketDataEnd, String productData) throws Exception {
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
 		List<CalibrationDataItem.Spec> marketdataItemList = productDescriptor.getMarketdataItemList();
@@ -139,18 +139,18 @@ public class MarginCalculator {
 
 		LocalDateTime startDate = marketDataListStart.get(0).getDate();
 		LocalDateTime endDate = marketDataListEnd.get(0).getDate();
-		Map<String,Double> values = calculateMargin(List.of(marketDataListStart.get(0), marketDataListEnd.get(0)), startDate, endDate, productDescriptor, underlying);
+		Map<String,BigDecimal> values = calculateMargin(List.of(marketDataListStart.get(0), marketDataListEnd.get(0)), startDate, endDate, productDescriptor, underlying);
 
 		return values;
 	}
 
 	public MarginResult getValue(MarketDataList marketDataStart, MarketDataList marketDataEnd, String productData) throws Exception {
-		Map<String, Double> values = getValues(marketDataStart, marketDataEnd, productData);
+		Map<String, BigDecimal> values = getValues(marketDataStart, marketDataEnd, productData);
 
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new MarginResult().value(BigDecimal.valueOf(rounding.applyAsDouble(values.get("values")))).currency(currency).valuationDate(valuationDate.toString());
+		return new MarginResult().value(values.get("values")).currency(currency).valuationDate(valuationDate.toString());
 	}
 
 	public ValueResult getValue(String marketData, String productData) throws Exception {
@@ -161,12 +161,12 @@ public class MarginCalculator {
 
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
-		double value = calculateMargin(List.of(set), null, set.getDate(), productDescriptor, underlying).get("value");
+		BigDecimal value = calculateMargin(List.of(set), null, set.getDate(), productDescriptor, underlying).get("value");
 
 		String currency = "EUR";
 		LocalDateTime valuationDate = LocalDateTime.now();
 
-		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(valuationDate.toString());
+		return new ValueResult().value(value).currency(currency).valuationDate(valuationDate.toString());
 	}
 
 	public ValueResult getValueAtEvaluationTime(String marketData, String productData, LocalDateTime evaluationTime) throws Exception {
@@ -177,12 +177,11 @@ public class MarginCalculator {
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
-		double value = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
+		BigDecimal valueAtTime = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
 
 		// TODO Remove hardcoded currency
 		String currency = "EUR";
 
-		BigDecimal valueAtTime = BigDecimal.valueOf(value);
 		logger.info("calculated value at time: {}", valueAtTime);
 
 		return new ValueResult().value(valueAtTime).currency(currency).valuationDate(evaluationTime.toString());
@@ -211,11 +210,11 @@ public class MarginCalculator {
 		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
 
 		LocalDateTime endDate = marketDataList.get(0).getDate();
-		double value = calculateMargin(marketDataList, null, endDate, productDescriptor, underlying).get("value");
+		BigDecimal value = calculateMargin(marketDataList, null, endDate, productDescriptor, underlying).get("value");
 
 		String currency = "EUR";
 
-		return new ValueResult().value(BigDecimal.valueOf(value)).currency(currency).valuationDate(marketData.getRequestTimeStamp().toString());
+		return new ValueResult().value(value).currency(currency).valuationDate(marketData.getRequestTimeStamp().toString());
 	}
 
 	/**
@@ -226,7 +225,7 @@ public class MarginCalculator {
 	 * @param underlying        The underlying descriptor (wrapper to the underlying XML)
 	 * @return The margin
 	 */
-	private Map<String, Double> calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
+	private Map<String, BigDecimal> calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product
 		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
@@ -236,25 +235,29 @@ public class MarginCalculator {
 		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
 		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
 
+		// Swap will be calculated outside
 		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
 
 		Map<String, AnalyticProduct> products = Map.of(
 				"value", swap,
-				"receiverLeg", (SwapLeg)legReceiverProduct,
-				"payerLeg", (SwapLeg)legPayerProduct
+				"value.receiverLeg", (SwapLeg)legReceiverProduct
+//				, "value.payerLeg", (SwapLeg)legPayerProduct
 		);
 
 		// Build valuation oracle with given market data.
 		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, marketDataList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
-		Map<String, Double> marginCall;
-
+		Map<String, BigDecimal> marginCall;
 		if (Objects.isNull(startDate)) {
 			marginCall = oracle.getValues(endState, endState);
 		} else {
 			marginCall = margin.getMargin(startDate, endState);
 		}
+
+		// Recalculate payer leg to ensure rounding consistency.
+		marginCall.put("value.payerLeg", marginCall.get("value.receiverLeg").subtract(marginCall.get("value")));
+
 		logger.info("margin call: {}", marginCall);
 
 		return marginCall;
@@ -269,7 +272,7 @@ public class MarginCalculator {
 	 * @param productDescriptor The product descriptor (wrapper to the product XML)
 	 * @param underlying        The underlying descriptor (wrapper to the underlying XML)
 	 */
-	private double calculateValueAtTime(List<CalibrationDataset> marketDataList, LocalDateTime evaluationTime, LocalDateTime marketDataTime, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
+	private BigDecimal calculateValueAtTime(List<CalibrationDataset> marketDataList, LocalDateTime evaluationTime, LocalDateTime marketDataTime, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product - we only support interest rtes swaps here
 		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
@@ -283,15 +286,15 @@ public class MarginCalculator {
 
 		Map<String, AnalyticProduct> products = Map.of(
 				"value", swap,
-				"receiverLeg", (SwapLeg)legReceiverProduct,
-				"payerLeg", (SwapLeg)legPayerProduct
+				"value.receiverLeg", (SwapLeg)legReceiverProduct,
+				"value.payerLeg", (SwapLeg)legPayerProduct
 		);
 
 
 		// Build valuation oracle with given market data.
 		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(products, marketDataList);
 
-		double value = oracle.getValue(evaluationTime,marketDataTime);
+		BigDecimal value = oracle.getValue(evaluationTime,marketDataTime);
 
 		return value;
 	}

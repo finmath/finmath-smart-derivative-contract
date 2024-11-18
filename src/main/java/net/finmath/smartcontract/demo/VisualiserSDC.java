@@ -84,7 +84,7 @@ public class VisualiserSDC {
 		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
 		Thread.sleep(1000);
 		for (int i = 0; i < scenarioDates.size(); i++) {
-			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)).get("value") : 0.0;
+			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)).get("value").doubleValue() : 0.0;
 			//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;

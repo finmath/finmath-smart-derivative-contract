@@ -69,8 +69,8 @@ public class SettlementGenerator {
 		return this;
 	}
 
-	public SettlementGenerator info(Map<String, Double> info){
-		settlement.setInfo(info);
+	public SettlementGenerator info(Map<String, BigDecimal> info){
+		settlement.setSettlementInfos(info.entrySet().stream().map(e -> new SettlementInfo(e.getKey(), e.getValue())).toList());
 		return this;
 	}
 
