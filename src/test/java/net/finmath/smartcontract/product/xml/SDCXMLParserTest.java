@@ -46,6 +46,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("0x000000001", sdc.getDltAddress());
 		Assertions.assertEquals("EUR", sdc.getCurrency());
 		Assertions.assertEquals("internal", sdc.getMarketDataProvider());
+		Assertions.assertEquals("2011-12-03T10:15:30", sdc.getInitialSettlementDate());
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
@@ -154,6 +155,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("0x000000001", sdcDescriptor.getDltAddress());
 		Assertions.assertEquals("EUR", sdcDescriptor.getCurrency());
 		Assertions.assertEquals("internal", sdcDescriptor.getMarketDataProvider());
+		Assertions.assertEquals("2011-12-03T10:15:30", sdcDescriptor.getInitialSettlementDate());
 	}
 
 }
