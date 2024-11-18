@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -117,6 +118,7 @@ class SDCXMLParserTest {
 				.settlementNPVNext(BigDecimal.valueOf(20.14))
 				.settlementNPVPrevious(BigDecimal.valueOf(12.12))
 				.settlementTimeNext(ZonedDateTime.now())
+				.settlementInfo(Map.of())
 				.buildObject();
 
 		String xmlString = SDCXMLParser.marshalClassToXMLString(newSettlement);

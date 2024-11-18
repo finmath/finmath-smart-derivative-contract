@@ -25,7 +25,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.DoubleUnaryOperator;
 
 @Service
 public class SettlementService {
@@ -73,7 +72,7 @@ public class SettlementService {
 				.settlementNPVPrevious(settlementLast.getSettlementNPV())
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
-				.info(marginValues)
+				.settlementInfo(marginValues)
 				.build();
 
 		return new RegularSettlementResult()
@@ -106,7 +105,7 @@ public class SettlementService {
 				//.settlementValuePrevious(BigDecimal.ZERO)
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
-				.info(Map.of())
+				.settlementInfo(Map.of())
 				.build();
 
 		return new InitialSettlementResult()
