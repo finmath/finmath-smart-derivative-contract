@@ -40,7 +40,18 @@ class SettlementTests {
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		MarketDataList marketData = (MarketDataList) jaxbUnmarshaller.unmarshal(reader);
 
-		Settlement settlement = new Settlement(tradeID,type,"EUR",marginValue,marginLimits,settlementTime,marketData,settlementValue,setttlementValuePrevious,settlementTimeNext,settlementValueNext);
+		Settlement settlement = new Settlement();
+		settlement.setTradeId(tradeID);
+		settlement.setSettlementType(type);
+		settlement.setCurrency("EUR");
+		settlement.setMarginValue(marginValue);
+		settlement.setMarginLimits(marginLimits);
+		settlement.setSettlementTime(settlementTime);
+		settlement.setMarketData(marketData);
+		settlement.setSettlementNPV(settlementValue);
+		settlement.setSettlementNPVPrevious(setttlementValuePrevious);
+		settlement.setSettlementTimeNext(settlementTimeNext);
+		settlement.setSettlementNPVNext(settlementValueNext);
 
 		JAXBContext jaxbContextSettlement = JAXBContext.newInstance(Settlement.class);
 		Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();

@@ -54,6 +54,7 @@ public class SettlementService {
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
 		logger.info("newMarketDataString: {}", newMarketDataString);
 
+		// TODO Using now here is a bit strange in the unit test. Results will vary.
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
 		ValueResult settlementValueNext = getValuationValueAtTime(

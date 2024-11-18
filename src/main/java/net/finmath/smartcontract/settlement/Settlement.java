@@ -27,9 +27,6 @@ import java.util.Map;
 		"settlementTimeNext", "settlementNPVNext", "marketData", "info"})
 public class Settlement {
 
-	public Settlement() {
-	}
-
 	public enum SettlementType {
 		INITIAL,
 		REGULAR,
@@ -63,10 +60,12 @@ public class Settlement {
 
 	private MarketDataList marketData;
 
-	/*
-	 * Custom additional information (e.g. risk figures or szenario values)
-	 */
+	/// Custom additional information (e.g. risk figures or szenario values)
 	private Map<String, Double> info;
+
+	/*
+	 * Getter and setters
+	 */
 
 	public String getTradeId() {
 		return tradeId;
@@ -117,22 +116,6 @@ public class Settlement {
 		this.settlementTime = settlementTime;
 	}
 
-	public MarketDataList getMarketData() {
-		return marketData;
-	}
-
-	public void setMarketData(MarketDataList marketData) {
-		this.marketData = marketData;
-	}
-
-	public Map<String, Double> getInfo() {
-		return info;
-	}
-
-	public void setInfo(Map<String, Double> info) {
-		this.info = info;
-	}
-
 	public BigDecimal getSettlementNPV() {
 		return settlementNPV;
 	}
@@ -147,20 +130,6 @@ public class Settlement {
 
 	public void setSettlementNPVPrevious(BigDecimal settlementNPVPrevious) {
 		this.settlementNPVPrevious = settlementNPVPrevious;
-	}
-
-	public Settlement(String tradeId, SettlementType settlementType, String currency, BigDecimal marginValue, List<BigDecimal> marginLimits, ZonedDateTime settlementTime, MarketDataList marketData, BigDecimal settlementNPV, BigDecimal settlementNPVPrevious, ZonedDateTime settlementTimeNext, BigDecimal settlementNPVNext) {
-		this.tradeId = tradeId;
-		this.settlementType = settlementType;
-		this.currency = currency;
-		this.marginValue = marginValue;
-		this.marginLimits = marginLimits;
-		this.settlementTime = settlementTime;
-		this.marketData = marketData;
-		this.settlementNPV = settlementNPV;
-		this.settlementNPVPrevious = settlementNPVPrevious;
-		this.settlementTimeNext = settlementTimeNext;
-		this.settlementNPVNext = settlementNPVNext;
 	}
 
 	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
@@ -178,6 +147,21 @@ public class Settlement {
 
 	public void setSettlementNPVNext(BigDecimal settlementNPVNext) {
 		this.settlementNPVNext = settlementNPVNext;
+	}
+	public MarketDataList getMarketData() {
+		return marketData;
+	}
+
+	public void setMarketData(MarketDataList marketData) {
+		this.marketData = marketData;
+	}
+
+	public Map<String, Double> getInfo() {
+		return info;
+	}
+
+	public void setInfo(Map<String, Double> info) {
+		this.info = info;
 	}
 }
 
