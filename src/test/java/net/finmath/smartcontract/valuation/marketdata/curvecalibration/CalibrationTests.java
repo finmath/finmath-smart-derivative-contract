@@ -1,28 +1,21 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.ForwardRateAgreement;
 import net.finmath.marketdata.products.Swap;
-import net.finmath.smartcontract.model.MarginRequest;
-import net.finmath.smartcontract.model.MarketDataSet;
-import net.finmath.smartcontract.model.MarketDataSetValuesInner;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.time.FloatingpointDate;
 import org.junit.jupiter.api.*;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static net.finmath.time.FloatingpointDate.getFloatingPointDateFromDate;

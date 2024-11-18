@@ -2,10 +2,8 @@ package net.finmath.smartcontract.valuation.oracle.interestrates;
 
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.AnalyticProduct;
-import net.finmath.marketdata.products.Swap;
 import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.SDCException;
-import net.finmath.modelling.Product;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.*;
 import net.finmath.smartcontract.valuation.oracle.ValuationOracle;
 import net.finmath.smartcontract.valuation.oracle.ValuationType;
@@ -16,14 +14,12 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.DoubleUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

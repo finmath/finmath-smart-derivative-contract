@@ -1,10 +1,11 @@
 package net.finmath.smartcontract.settlement;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 @XmlRootElement(name="settlementInfo")
 public class SettlementInfo {
