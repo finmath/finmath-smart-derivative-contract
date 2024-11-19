@@ -32,6 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class SettlementService {
 	private static final Logger logger = LoggerFactory.getLogger(SettlementService.class);
+	public static final String NEW_MARKET_DATA_STRING = "newMarketDataString: {}";
+	public static final String SETTLEMENT_REQUEST_INFO = "sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}";
 
 	private final MarginCalculator marginCalculator = new MarginCalculator();
 
@@ -48,13 +50,24 @@ public class SettlementService {
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
 		logger.info("Generating regular settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
-		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
-		MarketDataList newMarketDataList = retrieveMarketData(sdc);
-		includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
-		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+		logger.info(SETTLEMENT_REQUEST_INFO, sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+
+		String newMarketDataString;
+
+		if (regularSettlementRequest.getNewProvidedMarketData() == null) {
+			MarketDataList newMarketDataList = retrieveMarketData(sdc);
+			includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
+			newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+		} else {
+			logger.info("provided custom marketData per string in regularSettlementRequest");
+			newMarketDataString = regularSettlementRequest.getNewProvidedMarketData();
+			checkMarketDataString(newMarketDataString);
+			logger.info("provided marketData in regularSettlementRequest passed the marketData check");
+		}
+		logger.info(NEW_MARKET_DATA_STRING, newMarketDataString);
+
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
-		logger.info("newMarketDataString: {}", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -85,10 +98,19 @@ public class SettlementService {
 	public InitialSettlementResult generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
 		logger.info("Generating initial settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(initialSettlementRequest.getTradeData());
-		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
-		MarketDataList newMarketDataList = retrieveMarketData(sdc);
-		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
-		logger.info("newMarketDataString: {}", newMarketDataString);
+		logger.info(SETTLEMENT_REQUEST_INFO, sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+		String newMarketDataString;
+
+		if (initialSettlementRequest.getNewProvidedMarketData() == null) {
+			MarketDataList newMarketDataList = retrieveMarketData(sdc);
+			newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+		} else {
+			logger.info("provided custom marketData per string in initialSettlementRequest");
+			newMarketDataString = initialSettlementRequest.getNewProvidedMarketData();
+			checkMarketDataString(newMarketDataString);
+			logger.info("provided marketData in initialSettlementRequest passed the marketData check");
+		}
+		logger.info(NEW_MARKET_DATA_STRING, newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -114,6 +136,21 @@ public class SettlementService {
 				.valuationDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")));
 	}
 
+	/**
+	 * checks the format of a providedMarketDataString, if not valid it will throw an exception
+	 * @param newMarketDataString XML marketDataList as string
+	 */
+	private void checkMarketDataString(String newMarketDataString) {
+		try {
+			SDCXMLParser.unmarshalXml(newMarketDataString, MarketDataList.class);
+		} catch (SDCException e){
+			logger.error("MarketDataString is invalid, error while unmarshalling string: " + newMarketDataString, e);
+			throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, "provided MarketDataString is invalid, please check input", 400);
+		} catch (Exception e) {
+			logger.error("unknown error recognized while unmarshalling string: " + newMarketDataString, e);
+			throw e;
+		}
+	}
 
 	private static SmartDerivativeContractDescriptor parseProductData(String tradeData) {
 		try {
@@ -204,8 +241,7 @@ public class SettlementService {
 				.findAny();
 		List<String> symbols;
 
-		if(symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();}
-		else {
+		if (symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();} else {
 			logger.warn("no Fixings found in SDC product data XML, marketDataList not changed");
 			return;
 		}
