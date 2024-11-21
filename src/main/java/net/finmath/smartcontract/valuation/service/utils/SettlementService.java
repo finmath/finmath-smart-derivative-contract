@@ -48,13 +48,13 @@ public class SettlementService {
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
 		logger.info("Generating regular settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
-		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+		logger.info("generateRegularSettlementResult - sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
 		includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
-		logger.info("newMarketDataString: {}", newMarketDataString);
+		logger.info("generateRegularSettlementResult - newMarketDataString: {}", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -85,10 +85,10 @@ public class SettlementService {
 	public InitialSettlementResult generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
 		logger.info("Generating initial settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(initialSettlementRequest.getTradeData());
-		logger.info("sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+		logger.info("generateInitialSettlementResult- sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		MarketDataList newMarketDataList = retrieveMarketData(sdc);
 		String newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
-		logger.info("newMarketDataString: {}", newMarketDataString);
+		logger.debug("generateInitialSettlementResult- newMarketDataString: {}", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
