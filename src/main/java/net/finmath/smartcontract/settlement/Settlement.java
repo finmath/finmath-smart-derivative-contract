@@ -1,6 +1,9 @@
 package net.finmath.smartcontract.settlement;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import net.finmath.smartcontract.model.MarketDataList;
 
@@ -23,11 +26,8 @@ import java.util.List;
 @XmlRootElement
 @XmlType(propOrder = {"tradeId", "settlementType", "currency", "marginValue",
 		"marginLimits", "settlementTime", "settlementNPV", "settlementNPVPrevious",
-		"settlementTimeNext", "settlementNPVNext", "marketData"})
+		"settlementTimeNext", "settlementNPVNext", "marketData", "settlementInfos"})
 public class Settlement {
-
-	public Settlement() {
-	}
 
 	public enum SettlementType {
 		INITIAL,
@@ -62,9 +62,12 @@ public class Settlement {
 
 	private MarketDataList marketData;
 
-	// Custom additional information (e.g. risk figures or szenario values)
+	/// Custom additional information (e.g. risk figures or szenario values)
+	private List<SettlementInfo> settlementInfos;
 
-	//private Map<String, String> info;
+	/*
+	 * Getter and setters
+	 */
 
 	public String getTradeId() {
 		return tradeId;
@@ -115,14 +118,6 @@ public class Settlement {
 		this.settlementTime = settlementTime;
 	}
 
-	public MarketDataList getMarketData() {
-		return marketData;
-	}
-
-	public void setMarketData(MarketDataList marketData) {
-		this.marketData = marketData;
-	}
-
 	public BigDecimal getSettlementNPV() {
 		return settlementNPV;
 	}
@@ -137,20 +132,6 @@ public class Settlement {
 
 	public void setSettlementNPVPrevious(BigDecimal settlementNPVPrevious) {
 		this.settlementNPVPrevious = settlementNPVPrevious;
-	}
-
-	public Settlement(String tradeId, SettlementType settlementType, String currency, BigDecimal marginValue, List<BigDecimal> marginLimits, ZonedDateTime settlementTime, MarketDataList marketData, BigDecimal settlementNPV, BigDecimal settlementNPVPrevious, ZonedDateTime settlementTimeNext, BigDecimal settlementNPVNext) {
-		this.tradeId = tradeId;
-		this.settlementType = settlementType;
-		this.currency = currency;
-		this.marginValue = marginValue;
-		this.marginLimits = marginLimits;
-		this.settlementTime = settlementTime;
-		this.marketData = marketData;
-		this.settlementNPV = settlementNPV;
-		this.settlementNPVPrevious = settlementNPVPrevious;
-		this.settlementTimeNext = settlementTimeNext;
-		this.settlementNPVNext = settlementNPVNext;
 	}
 
 	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
@@ -168,6 +149,23 @@ public class Settlement {
 
 	public void setSettlementNPVNext(BigDecimal settlementNPVNext) {
 		this.settlementNPVNext = settlementNPVNext;
+	}
+	public MarketDataList getMarketData() {
+		return marketData;
+	}
+
+	public void setMarketData(MarketDataList marketData) {
+		this.marketData = marketData;
+	}
+
+	@XmlElementWrapper(name="settlementInfos")
+	@XmlElement(name = "settlementInfo")
+	public List<SettlementInfo> getSettlementInfos() {
+		return settlementInfos;
+	}
+
+	public void setSettlementInfos(List<SettlementInfo> settlementInfos) {
+		this.settlementInfos = settlementInfos;
 	}
 }
 

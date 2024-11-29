@@ -8,11 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.FlowPane;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.plots.*;
+import net.finmath.smartcontract.product.IRSwapGenerator;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.valuation.oracle.SmartDerivativeContractSettlementOracle;
 import net.finmath.smartcontract.valuation.oracle.interestrates.ValuationOraclePlainSwap;
-import net.finmath.smartcontract.product.IRSwapGenerator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -68,9 +69,9 @@ public class VisualiserSDC {
 						datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 						datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, fixRate, false, forwardCurveKey, discountCurveKey);
+		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, maturityKey, notional, fixRate, false, forwardCurveKey, discountCurveKey);
 
-		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, notional, scenarioList);
+		final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), scenarioList);
 		final SmartDerivativeContractSettlementOracle margin = new SmartDerivativeContractSettlementOracle(oracle);
 
 		final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).sorted().collect(Collectors.toList());
@@ -83,7 +84,7 @@ public class VisualiserSDC {
 		sdcVisual.updateWithValue(scenarioDates.get(0), marginBuffer, 0, null, 0);
 		Thread.sleep(1000);
 		for (int i = 0; i < scenarioDates.size(); i++) {
-			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)) : 0.0;
+			final double marginCall = i > 0 ? margin.getMargin(scenarioDates.get(i - 1), scenarioDates.get(i)).get("value").doubleValue() : 0.0;
 			//			double marginCall = i==0. ? oracle.getValue(scenarioDates.get(0)) :  oracle.getValue(scenarioDates.get(i)) -  oracle.getValue(scenarioDates.get(i-1));//90*(new Random()).nextDouble()-45;
 			System.out.println(i + "\t" + DateTimeFormatter.ofPattern("dd.MM.yyyy").format(scenarioDates.get(i)) + "\t" + marginCall);
 			marketValue += marginCall;

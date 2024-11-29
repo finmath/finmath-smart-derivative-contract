@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,6 +33,7 @@ class SettlementGeneratorTest {
 				//.settlementNPVPrevious(BigDecimal.ZERO)
 				.settlementTimeNext(ZonedDateTime.now())
 				.settlementNPVNext(BigDecimal.ZERO)
+				.settlementInfo(Map.of())
 				.build();
 
 		System.out.println(settlementString);
@@ -67,6 +69,7 @@ class SettlementGeneratorTest {
 				.settlementNPVPrevious(BigDecimal.ZERO)
 				.settlementTimeNext(ZonedDateTime.now())
 				.settlementNPVNext(BigDecimal.ZERO)
+				.settlementInfo(Map.of())
 				.build();
 
 		System.out.println(settlementString);
