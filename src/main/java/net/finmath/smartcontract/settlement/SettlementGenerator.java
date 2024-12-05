@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SettlementGenerator {
@@ -23,7 +24,7 @@ public class SettlementGenerator {
 
 	public SettlementGenerator generateInitialSettlementXml(String marketDataXml, SmartDerivativeContractDescriptor sdc){
 		generateSettlement(marketDataXml, Settlement.SettlementType.INITIAL, sdc, BigDecimal.ZERO);
-		return this.settlementValuePrevious(BigDecimal.ZERO);
+		return this.settlementNPVPrevious(BigDecimal.ZERO);
 	}
 
 	public SettlementGenerator generateRegularSettlementXml(String marketDataXml, SmartDerivativeContractDescriptor sdc, BigDecimal marginValue){
@@ -48,13 +49,13 @@ public class SettlementGenerator {
 		return this;
 	}
 
-	public SettlementGenerator settlementValue(BigDecimal settlementValue){
-		settlement.setSettlementValue(settlementValue);
+	public SettlementGenerator settlementNPV(BigDecimal settlementNPV){
+		settlement.setSettlementNPV(settlementNPV);
 		return this;
 	}
 
-	public SettlementGenerator settlementValuePrevious(BigDecimal settlementValuePrevious){
-		settlement.setSettlementValuePrevious(settlementValuePrevious);
+	public SettlementGenerator settlementNPVPrevious(BigDecimal settlementNPVPrevious){
+		settlement.setSettlementNPVPrevious(settlementNPVPrevious);
 		return this;
 	}
 
@@ -63,8 +64,13 @@ public class SettlementGenerator {
 		return this;
 	}
 
-	public SettlementGenerator settlementValueNext(BigDecimal settlementValueNext){
-		settlement.setSettlementValueNext(settlementValueNext);
+	public SettlementGenerator settlementNPVNext(BigDecimal settlementNPVNext){
+		settlement.setSettlementNPVNext(settlementNPVNext);
+		return this;
+	}
+
+	public SettlementGenerator settlementInfo(Map<String, BigDecimal> info){
+		settlement.setSettlementInfos(info.entrySet().stream().map(e -> new SettlementInfo(e.getKey(), e.getValue())).toList());
 		return this;
 	}
 

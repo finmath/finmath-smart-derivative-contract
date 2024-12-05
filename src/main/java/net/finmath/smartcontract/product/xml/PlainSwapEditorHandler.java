@@ -617,8 +617,8 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		List<CalibrationDataset> marketDataSets;
 		try {
 			marketDataSets = CalibrationParserDataItems.getScenariosFromJsonString(marketData);
-		} catch (IOException e) {
-			logger.error("Failed to load market data.");
+		} catch (IllegalArgumentException e) {
+			logger.error("Failed to load market data.", e);
 			throw e;
 		}
 		Validate.isTrue(marketDataSets.size() == 1, "Parameter marketData should be only a single market data set");

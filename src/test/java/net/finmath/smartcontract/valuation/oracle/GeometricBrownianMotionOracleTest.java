@@ -28,7 +28,7 @@ class GeometricBrownianMotionOracleTest {
 
 		for (LocalDateTime time = initialTime; time.isBefore(finalTime); time = time.plusDays(1)) {
 
-			final double value = oracle.getValue(time, time);
+			final double value = oracle.getValue(time, time).doubleValue();
 			System.out.println(time.toLocalDate() + "\t" + value);
 
 		}

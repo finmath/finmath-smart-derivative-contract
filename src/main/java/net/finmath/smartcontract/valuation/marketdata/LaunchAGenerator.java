@@ -6,15 +6,17 @@ import io.reactivex.rxjava3.functions.Consumer;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import net.finmath.smartcontract.model.MarketDataList;
-import net.finmath.smartcontract.valuation.marketdata.generators.*;
-import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
+import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
+import net.finmath.smartcontract.valuation.marketdata.generators.MarketDataGeneratorWebsocket;
+import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Properties;
 
 
 public class LaunchAGenerator {

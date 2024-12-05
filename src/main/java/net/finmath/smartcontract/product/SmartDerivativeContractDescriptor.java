@@ -28,6 +28,8 @@ public class SmartDerivativeContractDescriptor {
 	private final List<CalibrationDataItem.Spec> marketdataItemList;
 	private final String currency;
 	private final String marketDataProvider;
+	private final String tradeType;
+	private final String initialSettlementDate;
 
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
@@ -73,7 +75,8 @@ public class SmartDerivativeContractDescriptor {
 		}
 	}
 
-	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider) {
+	//TODO convert constructor into builder pattern or something comparable
+	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType, String initialSettlementDate) {
 		this.dltTradeId = dltTradeId;
 		this.dltAddress = dltAddress;
 		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
@@ -86,6 +89,8 @@ public class SmartDerivativeContractDescriptor {
 		this.underlying = underlying;
 		this.currency = currency;
 		this.marketDataProvider = marketDataProvider;
+		this.tradeType = tradeType;
+		this.initialSettlementDate = initialSettlementDate;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
@@ -153,5 +158,13 @@ public class SmartDerivativeContractDescriptor {
 
 	public String getMarketDataProvider() {
 		return marketDataProvider;
+	}
+
+	public String getTradeType() {
+		return tradeType;
+	}
+
+	public String getInitialSettlementDate() {
+		return initialSettlementDate;
 	}
 }

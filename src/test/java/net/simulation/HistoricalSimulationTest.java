@@ -1,15 +1,16 @@
 package net.simulation;
 
 import net.finmath.marketdata.products.Swap;
+import net.finmath.smartcontract.product.IRSwapGenerator;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataset;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationParserDataItems;
 import net.finmath.smartcontract.valuation.oracle.interestrates.ValuationOraclePlainSwap;
-import net.finmath.smartcontract.product.IRSwapGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class HistoricalSimulationTest {
@@ -38,10 +39,10 @@ class HistoricalSimulationTest {
 							datapoint.getSpec().getProductName().equals("Swap-Rate") &&
 							datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();
 
-			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, fixRate, true, forwardCurveKey, discountCurveKey);
+			final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, notional, fixRate, true, forwardCurveKey, discountCurveKey);
 
 			/* Start Valuation for filter historical scenarios */
-			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(swap, notional, scenarioList);
+			final ValuationOraclePlainSwap oracle = new ValuationOraclePlainSwap(Map.of("value",swap), scenarioList);
 
 			final List<LocalDateTime> scenarioDates = scenarioList.stream().map(scenario -> scenario.getDate()).collect(Collectors.toList());
 

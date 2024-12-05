@@ -11,6 +11,15 @@
                 <xs:element name="dltTradeId" type="xs:string"/>
                 <xs:element name="dltAddress" type="xs:string"/>
                 <xs:element name="uniqueTradeIdentifier" type="xs:string"/>
+                <xs:element name="settlementCurrency" type="xs:string"/>
+                <xs:element name="tradeType">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:anyURI">
+                            <xs:enumeration value="SDCPledgedBalance"/>
+                            <xs:enumeration value="SDCNoPrefunding"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
                 <xs:element name="valuation">
                     <xs:complexType>
                         <xs:sequence>

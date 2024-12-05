@@ -1,5 +1,7 @@
 package net.finmath.smartcontract.settlement;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -20,14 +22,12 @@ import java.util.List;
  *
  * @author Christian Fries
  */
+//@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 @XmlType(propOrder = {"tradeId", "settlementType", "currency", "marginValue",
-		"marginLimits", "settlementTime", "settlementValue", "settlementValuePrevious",
-		"settlementTimeNext", "settlementValueNext", "marketData"})
+		"marginLimits", "settlementTime", "settlementNPV", "settlementNPVPrevious",
+		"settlementTimeNext", "settlementNPVNext", "marketData", "settlementInfos"})
 public class Settlement {
-
-	public Settlement() {
-	}
 
 	public enum SettlementType {
 		INITIAL,
@@ -49,24 +49,25 @@ public class Settlement {
 
 	private ZonedDateTime settlementTime;
 
-
-	private BigDecimal settlementValue;
+	private BigDecimal settlementNPV;
 
 	/// V(T1,M0)
-
-	private BigDecimal settlementValuePrevious;
+	private BigDecimal settlementNPVPrevious;
 
 	/// V(T2,M1) - indicative
 
 	private ZonedDateTime settlementTimeNext;
 
-	private BigDecimal settlementValueNext;
+	private BigDecimal settlementNPVNext;
 
 	private MarketDataList marketData;
 
-	// Custom additional information (e.g. risk figures or szenario values)
+	/// Custom additional information (e.g. risk figures or szenario values)
+	private List<SettlementInfo> settlementInfos;
 
-	//private Map<String, String> info;
+	/*
+	 * Getter and setters
+	 */
 
 	public String getTradeId() {
 		return tradeId;
@@ -117,42 +118,20 @@ public class Settlement {
 		this.settlementTime = settlementTime;
 	}
 
-	public MarketDataList getMarketData() {
-		return marketData;
+	public BigDecimal getSettlementNPV() {
+		return settlementNPV;
 	}
 
-	public void setMarketData(MarketDataList marketData) {
-		this.marketData = marketData;
+	public void setSettlementNPV(BigDecimal settlementNPV) {
+		this.settlementNPV = settlementNPV;
 	}
 
-	public BigDecimal getSettlementValue() {
-		return settlementValue;
+	public BigDecimal getSettlementNPVPrevious() {
+		return settlementNPVPrevious;
 	}
 
-	public void setSettlementValue(BigDecimal settlementValue) {
-		this.settlementValue = settlementValue;
-	}
-
-	public BigDecimal getSettlementValuePrevious() {
-		return settlementValuePrevious;
-	}
-
-	public void setSettlementValuePrevious(BigDecimal settlementValuePrevious) {
-		this.settlementValuePrevious = settlementValuePrevious;
-	}
-
-	public Settlement(String tradeId, SettlementType settlementType, String currency, BigDecimal marginValue, List<BigDecimal> marginLimits, ZonedDateTime settlementTime, MarketDataList marketData, BigDecimal settlementValue, BigDecimal settlementValuePrevious, ZonedDateTime settlementTimeNext, BigDecimal settlementValueNext) {
-		this.tradeId = tradeId;
-		this.settlementType = settlementType;
-		this.currency = currency;
-		this.marginValue = marginValue;
-		this.marginLimits = marginLimits;
-		this.settlementTime = settlementTime;
-		this.marketData = marketData;
-		this.settlementValue = settlementValue;
-		this.settlementValuePrevious = settlementValuePrevious;
-		this.settlementTimeNext = settlementTimeNext;
-		this.settlementValueNext = settlementValueNext;
+	public void setSettlementNPVPrevious(BigDecimal settlementNPVPrevious) {
+		this.settlementNPVPrevious = settlementNPVPrevious;
 	}
 
 	@XmlJavaTypeAdapter(ZonedDateTimeAdapter.class)
@@ -164,12 +143,29 @@ public class Settlement {
 		this.settlementTimeNext = settlementTimeNext;
 	}
 
-	public BigDecimal getSettlementValueNext() {
-		return settlementValueNext;
+	public BigDecimal getSettlementNPVNext() {
+		return settlementNPVNext;
 	}
 
-	public void setSettlementValueNext(BigDecimal settlementValueNext) {
-		this.settlementValueNext = settlementValueNext;
+	public void setSettlementNPVNext(BigDecimal settlementNPVNext) {
+		this.settlementNPVNext = settlementNPVNext;
+	}
+	public MarketDataList getMarketData() {
+		return marketData;
+	}
+
+	public void setMarketData(MarketDataList marketData) {
+		this.marketData = marketData;
+	}
+
+	@XmlElementWrapper(name="settlementInfos")
+	@XmlElement(name = "settlementInfo")
+	public List<SettlementInfo> getSettlementInfos() {
+		return settlementInfos;
+	}
+
+	public void setSettlementInfos(List<SettlementInfo> settlementInfos) {
+		this.settlementInfos = settlementInfos;
 	}
 }
 

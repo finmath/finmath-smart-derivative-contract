@@ -1,0 +1,9 @@
+type: object
+required:
+  - settlementLast
+  - tradeData
+properties:
+  settlementLast:
+    type: string
+  tradeData:
+    type: string
