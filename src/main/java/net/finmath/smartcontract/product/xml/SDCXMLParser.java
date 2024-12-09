@@ -10,16 +10,18 @@ import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.*;
+import java.lang.Exception;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -124,16 +126,19 @@ public class SDCXMLParser {
 
 	/**
 	 * Generic object-to-XML-string converter for all annotated classes
-	 * @param t object to be converted to an XML string
-	 * @return XML formatted String
+	 *
+	 * @param t   object to be converted to an XML string
 	 * @param <T> generic Type, which has the correct XML bind annotations
+	 * @return XML formatted String
 	 */
 	public static <T> String marshalClassToXMLString(T t) {
 		try {
 			JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
 			Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-			if (t instanceof Smartderivativecontract)
+			if (t instanceof Smartderivativecontract){
 				jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "uri:sdc smartderivativecontract.xsd");
+				jaxbMarshaller.setSchema(getSDCSchema());
+			}
 			StringWriter writer = new StringWriter();
 			jaxbMarshaller.marshal(t, writer);
 			return writer.toString();
@@ -143,15 +148,28 @@ public class SDCXMLParser {
 		}
 	}
 
+	private static Schema getSDCSchema() {
+		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		Schema sdcmlSchema = null;
+		try {
+			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
+		} catch (SAXException | IOException e) {
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, "", 400);
+		}
+		return sdcmlSchema;
+	}
+
 	/**
 	 * this version of an SDC-object-to-XML-string conversion includes text replacements to get rid of XML namespace tags like "fpml:dataDocument"
+	 *
 	 * @param smartderivativecontract SDC product data object which will be transformed into an XML string
 	 * @return formatted xml string
 	 */
 	public static String marshalSDCToXMLString(Smartderivativecontract smartderivativecontract) {
 		//TODO took over an old implementation, please review
 		return marshalClassToXMLString(smartderivativecontract)
-				.replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
-				.replaceAll("fpml:", "");
+				.replace("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">")
+				.replace("fpml:", "");
 	}
 }

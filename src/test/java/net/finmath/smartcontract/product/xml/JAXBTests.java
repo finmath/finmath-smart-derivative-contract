@@ -153,15 +153,12 @@ class JAXBTests {
 
 	@Test
 	void handlerTest() throws java.lang.Exception {
-
-		final String generatorFile = "generators/eur_euribor_y_s_with_fixings.xml";
-		final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
+		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
 
 		PlainSwapOperationRequest request = generateRequest(generatorFile);
 
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, request.getCurrentGenerator(), schemaPath);
-
-//		String product = handler.getContractAsXmlString();
 
 		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);

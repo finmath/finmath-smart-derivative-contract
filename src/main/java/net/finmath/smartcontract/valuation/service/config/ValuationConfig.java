@@ -3,7 +3,6 @@ package net.finmath.smartcontract.valuation.service.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 @ConfigurationProperties(prefix = "valuation")
 public class ValuationConfig {
@@ -12,6 +11,7 @@ public class ValuationConfig {
 	private String liveMarketDataProvider;
 	private String internalMarketDataProvider;
 	private String productFixingType;
+	private String fpmlSchemaPath;
 
 	public boolean isLiveMarketData() {
 		return liveMarketData;
@@ -51,5 +51,13 @@ public class ValuationConfig {
 
 	public void setProductFixingType(String productFixingType) {
 		this.productFixingType = productFixingType;
+	}
+
+	public String getFpmlSchemaPath() {
+		return fpmlSchemaPath;
+	}
+
+	public void setFpmlSchemaPath(String fpmlSchemaPath) {
+		this.fpmlSchemaPath = fpmlSchemaPath;
 	}
 }
