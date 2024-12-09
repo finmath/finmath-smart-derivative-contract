@@ -364,4 +364,9 @@
             <timeStamp>20220908-170110</timeStamp>
         </item>
     </marketData>
+    <settlementInfos>
+        <settlementInfo key="value.payerLeg">-111894.26</settlementInfo>
+        <settlementInfo key="value.receiverLeg">-62850.11</settlementInfo>
+        <settlementInfo key="value">49044.15</settlementInfo>
+    </settlementInfos>
 </settlement>
