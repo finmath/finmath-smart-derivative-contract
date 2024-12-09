@@ -21,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
-import java.lang.Exception;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -151,7 +150,7 @@ public class SDCXMLParser {
 	private static Schema getSDCSchema() {
 		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		Schema sdcmlSchema = null;
+		Schema sdcmlSchema;
 		try {
 			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
 		} catch (SAXException | IOException e) {

@@ -38,6 +38,7 @@ class JAXBTests {
 		final URL url = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
 		final JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 
+		assert url != null;
 		Smartderivativecontract sdc = getUnmarshalledObjectFromXML(jaxbContext, url);
 		sdc.setReceiverPartyID("party2");// Change Receiver PartyID
 		Swap swap = (Swap) sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getProduct().getValue();
