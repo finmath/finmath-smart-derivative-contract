@@ -74,6 +74,8 @@ class PlainSwapEditorControllerTest {
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
+				.tradeType("SDCPledgedBalance")
+				.uniqueTradeIdentifier("PlainSwapUTI")
 				.tradeDate(
 						OffsetDateTime.of(
 								LocalDateTime.of(

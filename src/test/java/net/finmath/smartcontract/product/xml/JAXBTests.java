@@ -197,6 +197,8 @@ class JAXBTests {
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
+				.tradeType("SDCPledgedBalance")
+				.uniqueTradeIdentifier("UTI123789")
 				.tradeDate(        //2022-09-07
 						OffsetDateTime.of(
 								LocalDateTime.of(
