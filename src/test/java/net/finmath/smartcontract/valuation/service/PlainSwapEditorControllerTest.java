@@ -54,7 +54,6 @@ class PlainSwapEditorControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorControllerTest.class);
 
-
 	@Test
 	@WithUserDetails("user1")
 	void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
@@ -75,6 +74,8 @@ class PlainSwapEditorControllerTest {
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
+				.tradeType("SDCPledgedBalance")
+				.uniqueTradeIdentifier("PlainSwapUTI")
 				.tradeDate(
 						OffsetDateTime.of(
 								LocalDateTime.of(
@@ -126,7 +127,7 @@ class PlainSwapEditorControllerTest {
 										FrontendItemSpec.class)
 								.readValue(
 										fullSymbolListFromTemplate))
-				.currentGenerator("generators/eur_euribor_y_s_with_fixings.xml");
+				.currentGenerator("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
 		String jsonPlainSwapOperationRequest = objectMapper.writeValueAsString(plainSwapOperationRequest);
 
 		MvcResult serverResponse = mockMvc.perform(

@@ -2,6 +2,7 @@ type: object
 required:
   - firstCounterparty
   - secondCounterparty
+  - tradeType
   - marginBufferAmount
   - terminationFeeAmount
   - notionalAmount
@@ -25,6 +26,8 @@ properties:
     $ref: "Counterparty.yml"
   secondCounterparty:
     $ref: "Counterparty.yml"
+  tradeType:
+    type: string
   marginBufferAmount:
     type: number
     format: double

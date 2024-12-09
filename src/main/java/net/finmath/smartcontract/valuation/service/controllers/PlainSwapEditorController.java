@@ -17,6 +17,7 @@ import net.finmath.smartcontract.valuation.marketdata.database.DatabaseConnector
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.LiveFeedAdapter;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.ReactiveMarketDataUpdater;
+import net.finmath.smartcontract.valuation.service.config.ValuationConfig;
 import net.finmath.smartcontract.valuation.service.utils.ResourceGovernor;
 import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		}
 		return rootFinder.getBestPoint();
 	};
-	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
+	private final String schemaPath;
 	//may be changed to allow for different versions of the schema
 
 	@Value("${hostname:localhost:8080}")
@@ -78,10 +79,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	private final ResourceGovernor resourceGovernor;
 	private final ObjectMapper objectMapper;
 
-	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper, ValuationConfig valuationConfig) {
 		this.databaseConnector = databaseConnector;
 		this.resourceGovernor = resourceGovernor;
 		this.objectMapper = objectMapper;
+		this.schemaPath = valuationConfig.getFpmlSchemaPath();
 	}
 
 	/**

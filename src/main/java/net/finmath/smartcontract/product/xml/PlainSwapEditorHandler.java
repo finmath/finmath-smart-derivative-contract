@@ -33,7 +33,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -58,7 +57,6 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 	private static final String FAILED_MODEL_CALIBRATION = "Failed to calibrate model.";
 	private final Smartderivativecontract smartDerivativeContract;
 	private final Schema sdcmlSchema;
-	private final Marshaller marshaller;
 	private final InterestRateStream floatingLeg;
 	private final InterestRateStream fixedLeg;
 
@@ -90,14 +88,6 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 			throw e;
 		}
-		try {
-			marshaller = jaxbContext.createMarshaller();
-		} catch (JAXBException e) {
-			logger.error("Failed to load JAXB marshaller.");
-
-			throw e;
-		}
-		marshaller.setSchema(sdcmlSchema);
 		final Unmarshaller unmarshaller;
 		try {
 			unmarshaller = jaxbContext.createUnmarshaller();
@@ -107,18 +97,17 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			throw e;
 		}
 		unmarshaller.setSchema(sdcmlSchema);
-		try {
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		} catch (PropertyException e) {
-			logger.error("Failed to configure JAXB marshaller.");
-
-			throw e;
-		}
 
 		// create new SDCmL file as object
 		smartDerivativeContract = new Smartderivativecontract();
+		smartDerivativeContract.setDltTradeId("DLTtest123");
+		smartDerivativeContract.setDltAddress("0x000001");
 		smartDerivativeContract.setUniqueTradeIdentifier("test123");
+		smartDerivativeContract.setSettlementCurrency("EUR");
+		smartDerivativeContract.setTradeType("SDCPledgedBalance");
 		final Smartderivativecontract templateContract;
+
+		System.out.println(templatePath);
 		try {
 			ClassPathResource templateXmlResource = new ClassPathResource(templatePath);
 			templateContract = (Smartderivativecontract) unmarshaller.unmarshal(templateXmlResource.getInputStream());
@@ -136,7 +125,6 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		setSdcValuationHeader(smartDerivativeContract);
 		setSdcPartiesHeader(plainSwapOperationRequest, smartDerivativeContract);
 		setSdcSettlementHeader(plainSwapOperationRequest, smartDerivativeContract);
-
 
 		// clone the template
 		smartDerivativeContract.setUnderlyings(templateContract.getUnderlyings());
@@ -342,40 +330,19 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 	 * Returns the SDCmL string associated with this plain swap handler.
 	 *
 	 * @return the SDCmL document
-	 * @throws IOException   when the conversion of the stream to string fails.
-	 * @throws SAXException  when the marshalled XML file does not validate against the schema.
-	 * @throws JAXBException when the marshalling of the XML fails.
 	 */
-	public String getContractAsXmlString() throws IOException, SAXException, JAXBException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		try {
-			marshaller.marshal(smartDerivativeContract, outputStream);
-		} catch (JAXBException e) {
-			logger.error("Failed to marshall out the generated XML. Check your inputs.");
-
-			throw e;
-		}
-		// marshall xml out
+	public String getContractAsXmlString() {
+		String xmlString = SDCXMLParser.marshalSDCToXMLString(smartDerivativeContract);
 		try {
 			Validator validator = sdcmlSchema.newValidator();
-			validator.validate(new StreamSource(new ByteArrayInputStream(outputStream.toByteArray())));
+			validator.validate(new StreamSource(new ByteArrayInputStream(xmlString.getBytes())));
 			logger.info("Validation successful!");
-			// return outputStream.toString();
 
-			// This solution is suboptimal.
-			logger.info("XML was correctly generated, will now do some suboptimal text handling.");
-			return outputStream.toString().replaceAll("<fpml:dataDocument fpmlVersion=\"5-9\">", "<dataDocument fpmlVersion=\"5-9\" xmlns=\"http://www.fpml.org/FpML-5/confirmation\">").replaceAll("fpml:", "");
-
-		} catch (SAXException e) {
-			logger.error("Failed to validate the generated XML or some unrecoverable error occurred while validating.");
-			logger.error("Details: {}", e.getMessage());
-			throw e;
-		} catch (IOException e) {
-			logger.error("Failed to marshall out the generated XML file.");
-			logger.error("Details: {}", e.getMessage());
-			throw e;
+			return xmlString;
+		} catch (SAXException | IOException e) {
+			logger.error("error in validation", e);
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, "SDC product XML structure is not validated", 400);
 		}
-
 	}
 
 	/**
@@ -435,8 +402,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
 			case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
 			case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
-			default ->
-				throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
+			default -> throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
 		}
 
 		logger.info("Date roll convention detected: {}", dateRollConvention);
@@ -461,11 +427,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 				case 1 -> ScheduleGenerator.Frequency.MONTHLY;
 				case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
 				case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
-				default ->
-					throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
+				default -> throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
 			};
-			default ->
-				throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
+			default -> throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
 		}
 
 		//build schedule
@@ -545,8 +509,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			case FOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.FOLLOWING;
 			case MODFOLLOWING -> dateRollConvention = BusinessdayCalendar.DateRollConvention.MODIFIED_FOLLOWING;
 			case NONE -> dateRollConvention = BusinessdayCalendar.DateRollConvention.UNADJUSTED;
-			default ->
-				throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
+			default -> throw new IllegalArgumentException("Unrecognized date roll convention: " + swapLeg.getPaymentDates().getPaymentDatesAdjustments().getBusinessDayConvention());
 		}
 
 		logger.info("Date roll convention detected: {}", dateRollConvention);
@@ -571,11 +534,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 				case 1 -> ScheduleGenerator.Frequency.MONTHLY;
 				case 3 -> ScheduleGenerator.Frequency.QUARTERLY;
 				case 6 -> ScheduleGenerator.Frequency.SEMIANNUAL;
-				default ->
-					throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
+				default -> throw new IllegalArgumentException("Unknown periodMultiplier " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriodMultiplier().intValue() + ".");
 			};
-			default ->
-				throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
+			default -> throw new IllegalArgumentException("Unknown period " + swapLeg.getPaymentDates().getPaymentFrequency().getPeriod() + ".");
 		}
 
 		//build schedule
@@ -666,7 +627,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		SmartDerivativeContractDescriptor productDescriptor = null;
 		try {
 			productDescriptor = SDCXMLParser.parse(this.getContractAsXmlString());
-		} catch (ParserConfigurationException | SAXException | JAXBException e) {
+		} catch (ParserConfigurationException | SAXException e) {
 			throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, e.getMessage());
 		}
 

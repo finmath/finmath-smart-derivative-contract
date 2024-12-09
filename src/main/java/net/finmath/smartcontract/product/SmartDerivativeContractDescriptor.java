@@ -96,6 +96,7 @@ public class SmartDerivativeContractDescriptor {
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
 		Validate.isTrue(penaltyFeeInitialByPartyID.size() == 2, "Number of penalty fee values must be 2.");
 		Validate.notNull(underlying, "Underlying must not be null.");
+		Validate.notNull(tradeType, "TradeType must not be null.");
 	}
 
 	public String getDltTradeId() {
