@@ -155,11 +155,12 @@ class JAXBTests {
 	@Test
 	void handlerTest() throws java.lang.Exception {
 		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String marketDataProvider = "refinitiv";
 		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
 
-		PlainSwapOperationRequest request = generateRequest(generatorFile);
+		PlainSwapOperationRequest request = generateRequest(marketDataProvider);
 
-		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, request.getCurrentGenerator(), schemaPath);
+		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath);
 
 		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
@@ -173,8 +174,7 @@ class JAXBTests {
 		System.out.println(valuationResult);
 	}
 
-	private PlainSwapOperationRequest generateRequest(String currentGeneratorFile) throws java.lang.Exception {
-
+	private PlainSwapOperationRequest generateRequest(String marketDataProvider) throws java.lang.Exception {
 
 		ObjectMapper objectMapper = JsonMapper.builder()
 				.addModule(new JavaTimeModule())
@@ -185,13 +185,13 @@ class JAXBTests {
 				StandardCharsets.UTF_8);
 
 		final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
-				.fullName("PartyDoubleTest");
+				.fullName("PartyDoubleTest").dltAddress("0x00001");
 		final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
 				.fullName("Semiannual");
 		final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
 				.fullName("Annual");
 		final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
-				.fullName("PartyTest");
+				.fullName("PartyTest").dltAddress("0x00002");
 		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
 						firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
 				.terminationFeeAmount(
@@ -226,6 +226,7 @@ class JAXBTests {
 										14,
 										35),
 								ZoneOffset.UTC))
+				.dailySettlementTime("12:00")
 				.fixedPayingParty(
 						secondCounterparty)
 				.floatingPayingParty(
@@ -250,7 +251,8 @@ class JAXBTests {
 										FrontendItemSpec.class)
 								.readValue(
 										fullSymbolListFromTemplate))
-				.currentGenerator(currentGeneratorFile);
+				.marketDataProvider(marketDataProvider)
+				.receiverPartyID("party2");
 
 		return plainSwapOperationRequest;
 	}

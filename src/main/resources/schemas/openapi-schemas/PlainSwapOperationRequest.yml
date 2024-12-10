@@ -10,17 +10,19 @@ required:
   - tradeDate
   - effectiveDate
   - terminationDate
-  - fixedPayingParty
+  - dailySettlementTime
+#  - fixedPayingParty
   - fixedRate
-  - fixedDayCountFraction
-  - fixedPaymentFrequency
-  - floatingPayingParty
-  - floatingRateIndex
-  - floatingDayCountFraction
-  - floatingFixingDayOffset
-  - floatingPaymentFrequency
-  - valuationSymbols
-  - currentGenerator
+#  - fixedDayCountFraction
+#  - fixedPaymentFrequency
+#  - floatingPayingParty
+#  - floatingRateIndex
+#  - floatingDayCountFraction
+#  - floatingFixingDayOffset
+#  - floatingPaymentFrequency
+#  - valuationSymbols
+  - marketDataProvider
+  - receiverPartyID
 properties:
   firstCounterparty:
     $ref: "Counterparty.yml"
@@ -53,6 +55,9 @@ properties:
   terminationDate:
     type: string
     format: date-time
+  dailySettlementTime:
+    type: string
+    pattern: '[0-9]{2}:[0-9]{2}'
   fixedPayingParty:
     $ref: "Counterparty.yml"
   fixedRate:
@@ -60,24 +65,31 @@ properties:
     format: double
   fixedDayCountFraction:
     type: string
+    default: "30E/360"
   fixedPaymentFrequency:
     $ref: "PaymentFrequency.yml"
   floatingPayingParty:
     $ref: "Counterparty.yml"
   floatingRateIndex:
     type: string
+    default: "EURIBOR 6M"
   floatingDayCountFraction:
     type: string
+    default: "ACT/360"
   floatingFixingDayOffset:
     type: integer
     format: int32
     minimum: -2
     maximum: 2
+    default: -2
   floatingPaymentFrequency:
     $ref: "PaymentFrequency.yml"
   valuationSymbols:
     type: array
     items:
       $ref: "FrontendItemSpec.yml"
-  currentGenerator:
+  marketDataProvider:
+    type: string
+    description: "former known as currentGenerator"
+  receiverPartyID:
     type: string

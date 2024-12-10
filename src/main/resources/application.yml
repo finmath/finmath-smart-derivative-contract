@@ -59,6 +59,9 @@ valuation:
   settlement-currency: "EUR"
   product-fixing-type: "Fixing"
   fpml-schema-path: "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd"
+  market-data-provider-to-template:
+    internal: "net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml"
+    refinitiv: "net.finmath.smartcontract.product.xml/smartderivativecontract.xml"
 
 refinitiv:
   user: ${REFINITIV_USER}

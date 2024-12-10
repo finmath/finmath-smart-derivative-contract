@@ -50,11 +50,15 @@ import java.util.stream.Stream;
  * @version alpha.1
  */
 @SuppressWarnings("java:S125")
-public final class PlainSwapEditorHandler { //TODO: this code needs some cleaning up
+public final class PlainSwapEditorHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorHandler.class);
 	private static final String CONSTANT = "constant";
 	private static final String FAILED_MODEL_CALIBRATION = "Failed to calibrate model.";
+	public static final String DEFAULT_FIXED_PERIOD = "Y";
+	public static final String DEFAULT_FLOATING_PERIOD = "M";
+	public static final BigInteger DEFAULT_FIXED_PERIOD_MULTIPLIER = BigInteger.ONE;
+	public static final BigInteger DEFAULT_FLOATING_PERIOD_MULTIPLIER = BigInteger.valueOf(6);
 	private final Smartderivativecontract smartDerivativeContract;
 	private final Schema sdcmlSchema;
 	private final InterestRateStream floatingLeg;
@@ -80,41 +84,22 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 			throw e;
 		}
-		final JAXBContext jaxbContext;
-		try {
-			jaxbContext = JAXBContext.newInstance("net.finmath.smartcontract.product.xml", this.getClass().getClassLoader());
-		} catch (JAXBException e) {
-			logger.error("Failed to load JAXB context.");
-
-			throw e;
-		}
-		final Unmarshaller unmarshaller;
-		try {
-			unmarshaller = jaxbContext.createUnmarshaller();
-		} catch (JAXBException e) {
-			logger.error("Failed to load JAXB un-marshaller.");
-
-			throw e;
-		}
-		unmarshaller.setSchema(sdcmlSchema);
 
 		// create new SDCmL file as object
 		smartDerivativeContract = new Smartderivativecontract();
-		smartDerivativeContract.setDltTradeId("DLTtest123");
+		smartDerivativeContract.setDltTradeId("tbd");
 		smartDerivativeContract.setDltAddress("0x000001");
-		smartDerivativeContract.setUniqueTradeIdentifier("test123");
-		smartDerivativeContract.setSettlementCurrency("EUR");
-		smartDerivativeContract.setTradeType("SDCPledgedBalance");
+		String uti = plainSwapOperationRequest.getUniqueTradeIdentifier() != null ? plainSwapOperationRequest.getUniqueTradeIdentifier() : "tbd";
+		smartDerivativeContract.setUniqueTradeIdentifier(uti);
+		smartDerivativeContract.setSettlementCurrency(plainSwapOperationRequest.getCurrency());
+		smartDerivativeContract.setTradeType(plainSwapOperationRequest.getTradeType());
 		final Smartderivativecontract templateContract;
 
-		System.out.println(templatePath);
 		try {
 			ClassPathResource templateXmlResource = new ClassPathResource(templatePath);
-			templateContract = (Smartderivativecontract) unmarshaller.unmarshal(templateXmlResource.getInputStream());
-		} catch (JAXBException e) {
-			logger.error("Failed to unmarshall the XML template file.");
 
-			throw e;
+			String templateXmlString = new String(templateXmlResource.getInputStream().readAllBytes());
+			templateContract = SDCXMLParser.unmarshalXml(templateXmlString, Smartderivativecontract.class);
 		} catch (IOException e) {
 			logger.error("An IO error occurred while unmarshalling the template file.");
 
@@ -124,7 +109,11 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		// set the SDC specific stuff in the helper methods
 		setSdcValuationHeader(smartDerivativeContract);
 		setSdcPartiesHeader(plainSwapOperationRequest, smartDerivativeContract);
-		setSdcSettlementHeader(plainSwapOperationRequest, smartDerivativeContract);
+		if(plainSwapOperationRequest.getValuationSymbols() != null && !plainSwapOperationRequest.getValuationSymbols().isEmpty()) {
+			setSdcSettlementHeaderProvidedSymbols(plainSwapOperationRequest, smartDerivativeContract);
+		} else {
+			setSdcSettlementHeaderTemplate(plainSwapOperationRequest, smartDerivativeContract, templateContract);
+		}
 
 		// clone the template
 		smartDerivativeContract.setUnderlyings(templateContract.getUnderlyings());
@@ -190,7 +179,9 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 		}
 
-		if (plainSwapOperationRequest.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)) {
+		//TODO clarify if correct and how to improve
+		//if (plainSwapOperationRequest.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)) {
+		if (plainSwapOperationRequest.getReceiverPartyID().equals(smartDerivativeContract.parties.party.get(1).getId())) {
 			floatingLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(0);
 			floatingLeg.receiverPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
 			fixedLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
@@ -207,38 +198,71 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		logger.info("Reading back floating fixing date offset: {}", floatingLeg.resetDates.fixingDates.periodMultiplier);
 		floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFloatingDayCountFraction();
 		logger.info("Reading back floating day count fraction: {}", floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
-		floatingLeg.paymentDates.paymentFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-		logger.info("Reading back floating payment frequency period multiplier: {}", floatingLeg.paymentDates.paymentFrequency.periodMultiplier);
-		floatingLeg.paymentDates.paymentFrequency.setPeriod(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod());
-		logger.info("Reading back floating payment frequency period: {}", floatingLeg.paymentDates.paymentFrequency.period);
+
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value = plainSwapOperationRequest.getFloatingRateIndex();
 		logger.info("Reading back floating rate index: {}", ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value);
 		fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFixedDayCountFraction();
 		logger.info("Reading back fixed day count fraction {}", fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
 		fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue = BigDecimal.valueOf(plainSwapOperationRequest.getFixedRate()).setScale(12, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(12, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
 		logger.info("Reading back fixed rate: {}", fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
-		fixedLeg.paymentDates.paymentFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
-		logger.info("Reading back fixed period multiplier: {}", fixedLeg.paymentDates.paymentFrequency.periodMultiplier);
-		fixedLeg.paymentDates.paymentFrequency.period = plainSwapOperationRequest.getFixedPaymentFrequency().getPeriod();
-		logger.info("Reading back fixed period: {}", fixedLeg.paymentDates.paymentFrequency.period);
 
-		//TODO: ask people who know more about FPmL if the next lines are actually needed
-		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFixedPaymentFrequency().getPeriodMultiplier().longValue());
-		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(plainSwapOperationRequest.getFixedPaymentFrequency().getPeriod());
-		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.period = plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod();
-		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
-		floatingLeg.resetDates.resetFrequency.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-		floatingLeg.resetDates.resetFrequency.period = plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod();
-		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriodMultiplier().longValue());
-		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.period = PeriodEnum.valueOf(plainSwapOperationRequest.getFloatingPaymentFrequency().getPeriod());
-		// end of dubious lines
+		setFloatingPaymentFrequency(plainSwapOperationRequest.getFloatingPaymentFrequency());
+		setFixedPaymentFrequency(plainSwapOperationRequest.getFixedPaymentFrequency());
 
 
-		smartDerivativeContract.receiverPartyID = "party2";
+		smartDerivativeContract.receiverPartyID = plainSwapOperationRequest.getReceiverPartyID();
 
 		logger.info("Instance built!");
 
+	}
+
+	private void setFixedPaymentFrequency(PaymentFrequency paymentFrequency) {
+
+		BigInteger periodMultiplier;
+		String period;
+		if(paymentFrequency != null) {
+			periodMultiplier = BigInteger.valueOf(paymentFrequency.getPeriodMultiplier().longValue());
+			period = paymentFrequency.getPeriod();
+		} else {
+			periodMultiplier = DEFAULT_FIXED_PERIOD_MULTIPLIER;
+			period = DEFAULT_FIXED_PERIOD;
+		}
+
+		fixedLeg.paymentDates.paymentFrequency.setPeriodMultiplier(periodMultiplier);
+		logger.info("Reading back fixed period multiplier: {}", periodMultiplier);
+		fixedLeg.paymentDates.paymentFrequency.setPeriod(period);
+		logger.info("Reading back fixed period: {}", period);
+		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
+		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
+	}
+
+	private void setFloatingPaymentFrequency(PaymentFrequency paymentFrequency) {
+		BigInteger periodMultiplier;
+		String period;
+		if(paymentFrequency != null) {
+			periodMultiplier = BigInteger.valueOf(paymentFrequency.getPeriodMultiplier().longValue());
+			period = paymentFrequency.getPeriod();
+		} else {
+			periodMultiplier = DEFAULT_FLOATING_PERIOD_MULTIPLIER;
+			period = DEFAULT_FLOATING_PERIOD;
+		}
+
+		floatingLeg.paymentDates.paymentFrequency.setPeriodMultiplier(periodMultiplier);
+		logger.info("Reading back floating period multiplier: {}", periodMultiplier);
+		floatingLeg.paymentDates.paymentFrequency.setPeriod(period);
+		logger.info("Reading back floating period: {}", period);
+
+		//TODO: ask people who know more about FPmL if the next lines are actually needed
+
+		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
+		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
+
+		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
+		floatingLeg.resetDates.resetFrequency.setPeriodMultiplier(periodMultiplier);
+		floatingLeg.resetDates.resetFrequency.setPeriod(period);
+		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.periodMultiplier = periodMultiplier;
+		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.period = PeriodEnum.valueOf(period);
+		// end of dubious lines
 	}
 
 	private static boolean isFloatingLeg(InterestRateStream swapStream) {
@@ -249,12 +273,12 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 		return !Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getFixedRateSchedule()) && Objects.isNull(swapStream.getCalculationPeriodAmount().getCalculation().getRateCalculation());
 	}
 
-	private static void setSdcSettlementHeader(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc) {
+	private static void setSdcSettlementHeaderProvidedSymbols(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc) {
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
 		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
-		settlementHeader.settlementTime.value = "17:00"; //taken from the template
+		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
 		settlementHeader.settlementTime.type = "daily";
 		settlementHeader.marketdata = new Smartderivativecontract.Settlement.Marketdata();
 		settlementHeader.marketdata.provider = "refinitiv";
@@ -272,6 +296,17 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 			marketDataItems.getItem().add(newItem);
 		}
 		settlementHeader.marketdata.marketdataitems = marketDataItems;
+		sdc.setSettlement(settlementHeader);
+	}
+
+	private static void setSdcSettlementHeaderTemplate(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc, Smartderivativecontract templateContract) {
+		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
+
+		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
+		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
+		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
+		settlementHeader.settlementTime.type = "daily";
+		settlementHeader.marketdata = templateContract.getSettlement().getMarketdata();
 		sdc.setSettlement(settlementHeader);
 	}
 
@@ -456,10 +491,7 @@ public final class PlainSwapEditorHandler { //TODO: this code needs some cleanin
 
 			i++;
 		}
-
 		return cashflowPeriods;
-
-
 	}
 
 	/**
