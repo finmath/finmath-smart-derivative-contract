@@ -7,3 +7,5 @@ properties:
     type: string
   tradeData:
     type: string
+  newProvidedMarketData:
+    type: string
