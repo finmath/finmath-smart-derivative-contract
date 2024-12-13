@@ -54,7 +54,6 @@ class PlainSwapEditorControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlainSwapEditorControllerTest.class);
 
-
 	@Test
 	@WithUserDetails("user1")
 	void evaluateFromEditorTest_whenMismatchWithReferenceFails(@Autowired MockMvc mockMvc, @Autowired ObjectMapper objectMapper) throws Exception {
@@ -63,18 +62,20 @@ class PlainSwapEditorControllerTest {
 				"references" + File.separator + "template2_symbolslist.json").getContentAsString(
 				StandardCharsets.UTF_8);
 		final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
-				.fullName("PartyDoubleTest");
-		final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
-				.fullName("Semiannual");
+				.fullName("PartyDoubleTest").dltAddress("0x00001");
+		//final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
+		//		.fullName("Semiannual");
 		final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
 				.fullName("Annual");
 		final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
-				.fullName("PartyTest");
+				.fullName("PartyTest").dltAddress("0x00002");
 		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
 						firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
+				.tradeType("SDCPledgedBalance")
+				.uniqueTradeIdentifier("PlainSwapUTI")
 				.tradeDate(
 						OffsetDateTime.of(
 								LocalDateTime.of(
@@ -102,6 +103,7 @@ class PlainSwapEditorControllerTest {
 										14,
 										35),
 								ZoneOffset.UTC))
+				.dailySettlementTime("12:00")
 				.fixedPayingParty(
 						secondCounterparty)
 				.floatingPayingParty(
@@ -117,8 +119,9 @@ class PlainSwapEditorControllerTest {
 						"ACT/360")
 				.floatingFixingDayOffset(
 						-2)
-				.floatingPaymentFrequency(
-						floatingPaymentFrequency)
+				.receiverPartyID("party2")
+				//.floatingPaymentFrequency(
+				//		floatingPaymentFrequency)
 				.notionalAmount(
 						1000000.00)
 				.valuationSymbols(
@@ -126,7 +129,8 @@ class PlainSwapEditorControllerTest {
 										FrontendItemSpec.class)
 								.readValue(
 										fullSymbolListFromTemplate))
-				.currentGenerator("generators/eur_euribor_y_s_with_fixings.xml");
+				.marketDataProvider("refinitiv");
+				//.currentGenerator("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
 		String jsonPlainSwapOperationRequest = objectMapper.writeValueAsString(plainSwapOperationRequest);
 
 		MvcResult serverResponse = mockMvc.perform(

@@ -17,6 +17,7 @@ import net.finmath.smartcontract.valuation.marketdata.database.DatabaseConnector
 import net.finmath.smartcontract.valuation.marketdata.generators.WebSocketConnector;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.LiveFeedAdapter;
 import net.finmath.smartcontract.valuation.marketdata.generators.legacy.ReactiveMarketDataUpdater;
+import net.finmath.smartcontract.valuation.service.config.ValuationConfig;
 import net.finmath.smartcontract.valuation.service.utils.ResourceGovernor;
 import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		}
 		return rootFinder.getBestPoint();
 	};
-	private final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
+	private final String schemaPath;
 	//may be changed to allow for different versions of the schema
 
 	@Value("${hostname:localhost:8080}")
@@ -77,11 +78,14 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	private final DatabaseConnector databaseConnector;
 	private final ResourceGovernor resourceGovernor;
 	private final ObjectMapper objectMapper;
+	private final ValuationConfig valuationConfig;
 
-	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper) {
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper, ValuationConfig valuationConfig, ValuationConfig valuationConfig1) {
 		this.databaseConnector = databaseConnector;
 		this.resourceGovernor = resourceGovernor;
 		this.objectMapper = objectMapper;
+		this.schemaPath = valuationConfig.getFpmlSchemaPath();
+		this.valuationConfig = valuationConfig1;
 	}
 
 	/**
@@ -94,8 +98,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	public ResponseEntity<String> generatePlainSwapSdcml(PlainSwapOperationRequest plainSwapOperationRequest) {
 
 		try {
+			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
-					plainSwapOperationRequest.getCurrentGenerator(),
+					currentGenerator,
 					schemaPath).getContractAsXmlString());
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             /*
@@ -127,8 +132,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 
 		String sdcmlBody;
 		try {
+			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			sdcmlBody = new PlainSwapEditorHandler(plainSwapOperationRequest,
-					plainSwapOperationRequest.getCurrentGenerator(),
+					currentGenerator,
 					schemaPath).getContractAsXmlString();
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -192,8 +198,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
 		}
 		try {
+			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
-					plainSwapOperationRequest.getCurrentGenerator(),
+					currentGenerator,
 					schemaPath).getSchedule(
 					PlainSwapEditorHandler.LegSelector.FIXED_LEG, marketData));
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
@@ -236,8 +243,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			throw new ErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, pd, e);
 		}
 		try {
+			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
-					plainSwapOperationRequest.getCurrentGenerator(),
+					currentGenerator,
 					schemaPath).getSchedule(
 					PlainSwapEditorHandler.LegSelector.FLOATING_LEG, marketData));
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
@@ -301,8 +309,9 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 				.getPrincipal()).getUsername();
 		SmartDerivativeContractDescriptor sdc;
 		try {
+			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			sdc = SDCXMLParser.parse(new PlainSwapEditorHandler(plainSwapOperationRequest,
-					plainSwapOperationRequest.getCurrentGenerator(),
+					currentGenerator,
 					schemaPath).getContractAsXmlString());
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -443,9 +452,10 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			DoubleUnaryOperator swapValue = swapRate -> {
 				plainSwapOperationRequest.fixedRate(swapRate);
 				try {
+					String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
 									plainSwapOperationRequest.notionalAmount(1E15),
-									plainSwapOperationRequest.getCurrentGenerator(), schemaPath).getContractAsXmlString())
+									currentGenerator, schemaPath).getContractAsXmlString())
 							.getValue().doubleValue();
 				} catch (Exception e) {
 					ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -696,5 +706,11 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 		static final String WEBSOCKET_ERROR_URI = "/websocket-error";
 		static final String STORAGE_ERROR_URI = "/storage-error";
 
+	}
+
+	private String identifyCurrentGenerator(String marketDataProvider){
+		String template = valuationConfig.getMarketDataProviderToTemplate().get(marketDataProvider);
+		logger.info("identifyCurrentGenerator - provided marketDataProvider '{}' has the following product xml template '{}'", marketDataProvider, template);
+		return template;
 	}
 }
