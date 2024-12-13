@@ -1,8 +1,8 @@
 package net.finmath.smartcontract.valuation.implementation;
 
-import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.MarginResult;
 import net.finmath.smartcontract.model.ValueResult;
+import net.finmath.smartcontract.valuation.client.ValuationClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

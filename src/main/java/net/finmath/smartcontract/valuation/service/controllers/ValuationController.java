@@ -8,8 +8,8 @@
 package net.finmath.smartcontract.valuation.service.controllers;
 
 import net.finmath.smartcontract.api.ValuationApi;
-import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.model.*;
+import net.finmath.smartcontract.valuation.client.ValuationClient;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

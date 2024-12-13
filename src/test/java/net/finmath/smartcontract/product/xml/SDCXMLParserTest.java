@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +47,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("0x000000001", sdc.getDltAddress());
 		Assertions.assertEquals("EUR", sdc.getCurrency());
 		Assertions.assertEquals("internal", sdc.getMarketDataProvider());
+		Assertions.assertEquals("2011-12-03T10:15:30", sdc.getInitialSettlementDate());
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
@@ -117,6 +119,7 @@ class SDCXMLParserTest {
 				.settlementNPVNext(BigDecimal.valueOf(20.14))
 				.settlementNPVPrevious(BigDecimal.valueOf(12.12))
 				.settlementTimeNext(ZonedDateTime.now())
+				.settlementInfo(Map.of())
 				.buildObject();
 
 		String xmlString = SDCXMLParser.marshalClassToXMLString(newSettlement);
@@ -154,6 +157,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("0x000000001", sdcDescriptor.getDltAddress());
 		Assertions.assertEquals("EUR", sdcDescriptor.getCurrency());
 		Assertions.assertEquals("internal", sdcDescriptor.getMarketDataProvider());
+		Assertions.assertEquals("2011-12-03T10:15:30", sdcDescriptor.getInitialSettlementDate());
 	}
 
 }

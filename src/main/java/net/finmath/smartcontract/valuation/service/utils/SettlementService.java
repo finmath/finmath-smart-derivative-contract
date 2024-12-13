@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,8 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class SettlementService {
 	private static final Logger logger = LoggerFactory.getLogger(SettlementService.class);
-	public static final String NEW_MARKET_DATA_STRING = "newMarketDataString: {}";
-	public static final String SETTLEMENT_REQUEST_INFO = "sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}";
+	public static final String NEW_MARKET_DATA_STRING = "{} - newMarketDataString: {}";
+	public static final String SETTLEMENT_REQUEST_INFO = "{} - sdc trade id: {}, product marketdata provider: {}, valuation service marketdata provider: {}";
 
 	private final MarginCalculator marginCalculator = new MarginCalculator();
 
@@ -50,7 +51,7 @@ public class SettlementService {
 	public RegularSettlementResult generateRegularSettlementResult(RegularSettlementRequest regularSettlementRequest) {
 		logger.info("Generating regular settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(regularSettlementRequest.getTradeData());
-		logger.info(SETTLEMENT_REQUEST_INFO, sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+		logger.info(SETTLEMENT_REQUEST_INFO, "generateRegularSettlementResult", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 
 		String newMarketDataString;
 
@@ -64,17 +65,19 @@ public class SettlementService {
 			checkMarketDataString(newMarketDataString);
 			logger.info("provided marketData in regularSettlementRequest passed the marketData check");
 		}
-		logger.info(NEW_MARKET_DATA_STRING, newMarketDataString);
+		logger.info(NEW_MARKET_DATA_STRING, "generateRegularSettlementResult", newMarketDataString);
 
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
 
+		// TODO Using now here is a bit strange in the unit test. Results will vary.
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
 		ValueResult settlementValueNext = getValuationValueAtTime(
 				newMarketDataString, regularSettlementRequest.getTradeData(), settlementTimeNext.toLocalDateTime());
 
-		BigDecimal margin = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
+		Map<String, BigDecimal> marginValues = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
+		BigDecimal margin = marginValues.get("value");
 
 		String newSettlement = new SettlementGenerator()
 				.generateRegularSettlementXml(
@@ -86,6 +89,7 @@ public class SettlementService {
 				.settlementNPVPrevious(settlementLast.getSettlementNPV())
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
+				.settlementInfo(marginValues)
 				.build();
 
 		return new RegularSettlementResult()
@@ -98,7 +102,7 @@ public class SettlementService {
 	public InitialSettlementResult generateInitialSettlementResult(InitialSettlementRequest initialSettlementRequest) {
 		logger.info("Generating initial settlement result, liveData: {}, now parsing trade data", valuationConfig.isLiveMarketData());
 		SmartDerivativeContractDescriptor sdc = parseProductData(initialSettlementRequest.getTradeData());
-		logger.info(SETTLEMENT_REQUEST_INFO, sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
+		logger.info(SETTLEMENT_REQUEST_INFO, "generateInitialSettlementResult", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 		String newMarketDataString;
 
 		if (initialSettlementRequest.getNewProvidedMarketData() == null) {
@@ -110,7 +114,7 @@ public class SettlementService {
 			checkMarketDataString(newMarketDataString);
 			logger.info("provided marketData in initialSettlementRequest passed the marketData check");
 		}
-		logger.info(NEW_MARKET_DATA_STRING, newMarketDataString);
+		logger.info(NEW_MARKET_DATA_STRING, "generateInitialSettlementResult", newMarketDataString);
 
 		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
 
@@ -127,6 +131,7 @@ public class SettlementService {
 				//.settlementValuePrevious(BigDecimal.ZERO)
 				.settlementTimeNext(settlementTimeNext)
 				.settlementNPVNext(settlementValueNext.getValue())
+				.settlementInfo(Map.of())
 				.build();
 
 		return new InitialSettlementResult()
@@ -223,9 +228,9 @@ public class SettlementService {
 		}
 	}
 
-	private BigDecimal getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
+	private Map<String, BigDecimal> getMargin(String marketDataStart, String marketDataEnd, String tradeData) {
 		try {
-			return marginCalculator.getValue(marketDataStart, marketDataEnd, tradeData).getValue();
+			return marginCalculator.getValues(marketDataStart, marketDataEnd, tradeData);
 		} catch (Exception e) {
 			logger.error("unable to get margin for market data ", e);
 			throw new SDCException(ExceptionId.SDC_VALUE_CALCULATION_ERROR, "error in MarginCalculator getMargin");
@@ -249,16 +254,15 @@ public class SettlementService {
 
 		//matching symbols from product data xml to last settlement xml marketdataPoints
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
-		List<MarketDataPoint> marketDataPointsLastSettlement = settlementLast.getMarketData().getPoints().stream().filter(marketDataPoint -> {
-			for (String symbol : symbols) {
-				if (marketDataPoint.getId().equalsIgnoreCase(symbol)) return true;
-			}
-			return false;
-		}).findAny().stream().toList();
+		List<MarketDataPoint> fixingsLastSettlement = new ArrayList<>();
+		symbols.forEach(s -> settlementLast.getMarketData().getPoints().forEach(marketDataPoint -> {
+			if (marketDataPoint.getId().equalsIgnoreCase(s))
+				fixingsLastSettlement.add(marketDataPoint);
+		}));
 
 		//add matching marketdataPoints to the new marketdata
-		logger.info("add matching marketdataPoints to product symbols: {}", marketDataPointsLastSettlement);
-		for (MarketDataPoint marketDataPoint : marketDataPointsLastSettlement) {
+		logger.info("add matching marketdataPoints to product symbols: {}", fixingsLastSettlement);
+		for (MarketDataPoint marketDataPoint : fixingsLastSettlement) {
 			newMarketDataList.add(marketDataPoint);
 		}
 	}

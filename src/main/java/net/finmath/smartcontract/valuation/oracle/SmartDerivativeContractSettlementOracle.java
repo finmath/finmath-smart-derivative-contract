@@ -6,7 +6,10 @@
 
 package net.finmath.smartcontract.valuation.oracle;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The margin agreement of a smart derivative contract.
@@ -37,10 +40,16 @@ public class SmartDerivativeContractSettlementOracle {
 	 * @param marginPeriodEnd   Period end time of the margin period.
 	 * @return The margin.
 	 */
-	public Double getMargin(final LocalDateTime marginPeriodStart, final LocalDateTime marginPeriodEnd) {
-		final double valueDerivativeCurrent = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodEnd);
-		final double valueDerivativePrevious = derivativeValuationOracle.getValue(marginPeriodEnd, marginPeriodStart);
+	public Map<String, BigDecimal> getMargin(final LocalDateTime marginPeriodStart, final LocalDateTime marginPeriodEnd) {
+		final Map<String, BigDecimal> valueDerivativeCurrent = derivativeValuationOracle.getValues(marginPeriodEnd, marginPeriodEnd);
+		final Map<String, BigDecimal> valueDerivativePrevious = derivativeValuationOracle.getValues(marginPeriodEnd, marginPeriodStart);
 
-		return valueDerivativeCurrent - valueDerivativePrevious;
+		//
+		Map<String, BigDecimal> margin = valueDerivativeCurrent.keySet().stream().collect(Collectors.toMap(
+				key -> key,
+				key -> valueDerivativeCurrent.get(key).subtract(valueDerivativePrevious.get(key))
+		));
+
+		return margin;
 	}
 }

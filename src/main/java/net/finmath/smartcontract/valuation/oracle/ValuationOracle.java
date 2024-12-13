@@ -7,7 +7,9 @@
 package net.finmath.smartcontract.valuation.oracle;
 
 import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * Interface for Oracles providing a valuation at a given time.
@@ -25,7 +27,9 @@ public interface ValuationOracle {
 	 * @param marketDataTime The market data time.
 	 * @return The value.
 	 */
-	Double getValue(LocalDateTime evaluationTime, LocalDateTime marketDataTime);
+	BigDecimal getValue(LocalDateTime evaluationTime, LocalDateTime marketDataTime);
+
+	Map<String,BigDecimal> getValues(LocalDateTime evaluationTime, LocalDateTime marketDataTime);
 
 	/**
 	 * Provides the value of the Oracle at a given evaluation time.

@@ -1,12 +1,13 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.xml.SDCXMLParser;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,24 +85,7 @@ public class CalibrationParserDataItems implements CalibrationParser {
 			throw e;
 		}
 
-		return getScenariosFromJsonContent(content);
-
-	}
-
-
-	/**
-	 * Static method which parses a json file from its string content and converts it to a list of market data scenarios
-	 *
-	 * @param jsonString Content of the json.
-	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException                  File not found
-	 * @throws UnsupportedEncodingException UnsupportedEncodingException
-	 */
-	public static List<CalibrationDataset> getScenariosFromJsonString(final String jsonString) throws IOException {
-		final String content;
-
-		content = jsonString;
-		return getScenariosFromJsonContent(content);
+		return getScenariosFromJsonString(content);
 
 	}
 
@@ -137,13 +121,19 @@ public class CalibrationParserDataItems implements CalibrationParser {
 	/**
 	 * Static method which parses a json file from its string content and converts it to a list of market data scenarios
 	 *
+	 * @param content Content of the json.
 	 * @return List of <code>IRMarketDataScenario</code>
-	 * @throws IOException                  File not found
-	 * @throws UnsupportedEncodingException UnsupportedEncodingException
+	 * @throws IllegalArgumentException If the JSON format is incorrect.
 	 */
-	private static final List<CalibrationDataset> getScenariosFromJsonContent(final String content) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper();
-		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String, Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
+	public static final List<CalibrationDataset> getScenariosFromJsonString(final String content) {
+		final Map<String, Map<String, Map<String, Map<String, Map<String, Double>>>>> timeSeriesDatamap;
+		try {
+			final ObjectMapper mapper = new ObjectMapper();
+			timeSeriesDatamap = mapper.readValue(content, new LinkedHashMap<String, Map<String, Map<String, Map<String, Map<String, Double>>>>>().getClass());
+		}
+		catch(JsonProcessingException e) {
+			throw new IllegalArgumentException("Bad format.", e);
+		}
 
 		return timeSeriesDatamap.entrySet().stream()
 				.map(

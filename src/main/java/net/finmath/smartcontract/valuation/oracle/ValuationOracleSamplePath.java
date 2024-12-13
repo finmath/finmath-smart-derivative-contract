@@ -11,7 +11,9 @@ import org.javamoney.moneta.Money;
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * A valuation oracle constructed from a simulation providing a stochastic valuation oracle
@@ -38,8 +40,13 @@ public class ValuationOracleSamplePath implements ValuationOracle {
 	}
 
 	@Override
-	public Double getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
-		return stochasticValuationOracle.getValue(evaluationTime, marketDataTime).get(path);
+	public BigDecimal getValue(final LocalDateTime evaluationTime, final LocalDateTime marketDataTime) {
+		return BigDecimal.valueOf(stochasticValuationOracle.getValue(evaluationTime, marketDataTime).get(path));
+	}
+
+	@Override
+	public Map<String, BigDecimal> getValues(LocalDateTime evaluationTime, LocalDateTime marketDataTime) {
+		return Map.of("value", getValue(evaluationTime, marketDataTime));
 	}
 
 	@Override

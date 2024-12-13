@@ -184,4 +184,47 @@ class SettlementServiceTest {
 		assertTrue(settlementString.contains("<settlementType>REGULAR</settlementType>"));
 	}
 
+	@Test
+	void generateRegularSettlement_includes_FixingOfLastSettlement_twice() throws IOException {
+		String settlementLast = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_initial_historical.xml").readAllBytes(), StandardCharsets.UTF_8);
+
+		InputStream inputStream = SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml");
+		String productXml = new String(inputStream.readAllBytes());
+
+		when(valuationConfig.getLiveMarketDataProvider()).thenReturn("internal");
+		when(valuationConfig.getInternalMarketDataProvider()).thenReturn("internal");
+		when(valuationConfig.isLiveMarketData()).thenReturn(false);
+		when(valuationConfig.getProductFixingType()).thenReturn("Fixing");
+
+
+		//first regular settlement request
+		RegularSettlementRequest regularSettlementRequest = new RegularSettlementRequest()
+				.settlementLast(settlementLast)
+				.tradeData(productXml);
+
+		RegularSettlementResult regularSettlementResult = serviceUnderTest.generateRegularSettlementResult(regularSettlementRequest);
+		String settlementString = regularSettlementResult.getGeneratedRegularSettlement();
+		System.out.println("first regular settlementString");
+		System.out.println(settlementString);
+
+		//second regular settlement request
+		RegularSettlementRequest secondSettlementRequest = new RegularSettlementRequest()
+				.settlementLast(regularSettlementResult.getGeneratedRegularSettlement())
+				.tradeData(productXml);
+		RegularSettlementResult secondSettlementResult = serviceUnderTest.generateRegularSettlementResult(secondSettlementRequest);
+
+		settlementString = secondSettlementResult.getGeneratedRegularSettlement();
+		System.out.println("second regular settlementString");
+		System.out.println(settlementString);
+
+		//fixing from initial settlement
+		assertTrue(settlementString.contains("<id>EUB6FIX6M</id><value>0.0521</value><timeStamp>20080917-170000</timeStamp>"));
+		//fixing first settlement request
+		assertTrue(settlementString.contains("<id>EUB6FIX6M</id><value>0.0484</value><timeStamp>20080502-170000</timeStamp>"));
+		//fixing second settlement request
+		assertTrue(settlementString.contains("<id>EUB6FIX6M</id><value>0.0484</value><timeStamp>20080505-170000</timeStamp>"));
+		assertTrue(settlementString.contains("<settlementNPV>72349.58</settlementNPV>"));
+		assertTrue(settlementString.contains("<settlementType>REGULAR</settlementType>"));
+	}
+
 }
