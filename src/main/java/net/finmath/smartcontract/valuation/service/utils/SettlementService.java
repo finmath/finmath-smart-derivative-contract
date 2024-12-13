@@ -246,7 +246,8 @@ public class SettlementService {
 				.findAny();
 		List<String> symbols;
 
-		if (symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();} else {
+		if (symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();}
+		else {
 			logger.warn("no Fixings found in SDC product data XML, marketDataList not changed");
 			return;
 		}
