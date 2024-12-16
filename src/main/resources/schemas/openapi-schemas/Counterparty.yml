@@ -1,8 +1,9 @@
 type: object
 required:
-  - bicCode
+#  - bicCode
   - fullName
-  - baseUrl
+#  - baseUrl
+  - dltAddress
 properties:
   bicCode:
     type: string
@@ -12,3 +13,5 @@ properties:
   baseUrl:
     type: string
     format: url
+  dltAddress:
+    type: string
