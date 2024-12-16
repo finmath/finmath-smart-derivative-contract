@@ -157,10 +157,11 @@ class JAXBTests {
 		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
 		final String marketDataProvider = "refinitiv";
 		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
+		final String projectVersion = "x.y.z";
 
 		PlainSwapOperationRequest request = generateRequest(marketDataProvider);
 
-		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath);
+		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
 
 		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);

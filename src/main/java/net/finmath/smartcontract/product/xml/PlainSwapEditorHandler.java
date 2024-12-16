@@ -75,7 +75,7 @@ public final class PlainSwapEditorHandler {
 	 * @throws JAXBException                  when marshalling/unmarshalling of a SDCmL object/file fails.
 	 * @throws DatatypeConfigurationException when conversion of dates to the FPmL specifications fails.
 	 */
-	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templatePath, String schemaPath) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
+	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templatePath, String schemaPath, String projectVersion) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
 		try {
 			final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
@@ -107,7 +107,7 @@ public final class PlainSwapEditorHandler {
 		}
 
 		// set the SDC specific stuff in the helper methods
-		setSdcValuationHeader(smartDerivativeContract);
+		setSdcValuationHeader(smartDerivativeContract, projectVersion);
 		setSdcPartiesHeader(plainSwapOperationRequest, smartDerivativeContract);
 		if(plainSwapOperationRequest.getValuationSymbols() != null && !plainSwapOperationRequest.getValuationSymbols().isEmpty()) {
 			setSdcSettlementHeaderProvidedSymbols(plainSwapOperationRequest, smartDerivativeContract);
@@ -351,12 +351,12 @@ public final class PlainSwapEditorHandler {
 		smartDerivativeContract.setParties(parties);
 	}
 
-	private static void setSdcValuationHeader(final Smartderivativecontract smartDerivativeContract) {
+	private static void setSdcValuationHeader(final Smartderivativecontract smartDerivativeContract, String projectVersion) {
 		Smartderivativecontract.Valuation valuationHeader = new Smartderivativecontract.Valuation();
 		Smartderivativecontract.Valuation.Artefact artifactHeader = new Smartderivativecontract.Valuation.Artefact();
 		artifactHeader.setGroupId("net.finmath");
 		artifactHeader.setArtifactId("finmath-smart-derivative-contract");
-		artifactHeader.setVersion("0.1.8");
+		artifactHeader.setVersion(projectVersion);
 		valuationHeader.setArtefact(artifactHeader);
 		smartDerivativeContract.setValuation(valuationHeader);
 	}

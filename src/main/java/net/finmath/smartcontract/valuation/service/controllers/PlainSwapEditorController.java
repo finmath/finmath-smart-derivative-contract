@@ -23,6 +23,7 @@ import net.finmath.util.TriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -79,13 +80,15 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 	private final ResourceGovernor resourceGovernor;
 	private final ObjectMapper objectMapper;
 	private final ValuationConfig valuationConfig;
+	private final BuildProperties buildProperties;
 
-	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper, ValuationConfig valuationConfig, ValuationConfig valuationConfig1) {
+	public PlainSwapEditorController(DatabaseConnector databaseConnector, ResourceGovernor resourceGovernor, ObjectMapper objectMapper, ValuationConfig valuationConfig, ValuationConfig valuationConfig1, BuildProperties buildProperties) {
 		this.databaseConnector = databaseConnector;
 		this.resourceGovernor = resourceGovernor;
 		this.objectMapper = objectMapper;
 		this.schemaPath = valuationConfig.getFpmlSchemaPath();
 		this.valuationConfig = valuationConfig1;
+		this.buildProperties = buildProperties;
 	}
 
 	/**
@@ -101,7 +104,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
 					currentGenerator,
-					schemaPath).getContractAsXmlString());
+					schemaPath,
+					buildProperties.getVersion()).getContractAsXmlString());
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
             /*
             You may see this recurring snippet of code in other controller methods as well. Its goal is to report the stack
@@ -135,7 +139,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			sdcmlBody = new PlainSwapEditorHandler(plainSwapOperationRequest,
 					currentGenerator,
-					schemaPath).getContractAsXmlString();
+					schemaPath,
+					buildProperties.getVersion()).getContractAsXmlString();
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.JAXB_ERROR_DETAIL);
@@ -201,7 +206,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
 					currentGenerator,
-					schemaPath).getSchedule(
+					schemaPath,
+					buildProperties.getVersion()).getSchedule(
 					PlainSwapEditorHandler.LegSelector.FIXED_LEG, marketData));
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -246,7 +252,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			return ResponseEntity.ok(new PlainSwapEditorHandler(plainSwapOperationRequest,
 					currentGenerator,
-					schemaPath).getSchedule(
+					schemaPath,
+					buildProperties.getVersion()).getSchedule(
 					PlainSwapEditorHandler.LegSelector.FLOATING_LEG, marketData));
 		} catch (JAXBException | IOException | DatatypeConfigurationException | SAXException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -312,7 +319,8 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 			String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 			sdc = SDCXMLParser.parse(new PlainSwapEditorHandler(plainSwapOperationRequest,
 					currentGenerator,
-					schemaPath).getContractAsXmlString());
+					schemaPath,
+					buildProperties.getVersion()).getContractAsXmlString());
 		} catch (IOException e) {
 			ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
 					ErrorDetails.STORAGE_ERROR_DETAIL);
@@ -455,7 +463,7 @@ public class PlainSwapEditorController implements PlainSwapEditorApi {
 					String currentGenerator = identifyCurrentGenerator(plainSwapOperationRequest.getMarketDataProvider());
 					return (new MarginCalculator()).getValue(marketDataString, new PlainSwapEditorHandler(
 									plainSwapOperationRequest.notionalAmount(1E15),
-									currentGenerator, schemaPath).getContractAsXmlString())
+									currentGenerator, schemaPath, buildProperties.getVersion()).getContractAsXmlString())
 							.getValue().doubleValue();
 				} catch (Exception e) {
 					ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
