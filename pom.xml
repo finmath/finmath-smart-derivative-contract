@@ -661,6 +661,14 @@
                     <imageName>docker.io/finmath/${project.artifactId}:${project.version}</imageName>
                     <jvmArguments>--add-opens java.base/java.time=ALL-UNNAMED</jvmArguments>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -974,6 +982,10 @@
         <!--            <id>finmath-site</id>-->
         <!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
         <!--        </site>-->
+        <repository>
+            <id>gitlab</id>
+            <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
+        </repository>
         <snapshotRepository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>

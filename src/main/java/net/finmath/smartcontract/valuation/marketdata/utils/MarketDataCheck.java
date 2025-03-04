@@ -50,7 +50,7 @@ public class MarketDataCheck {
 		//TODO add checks for
 		// 	data distortion		=> return false
 		// add suspended because invalid data
-		logger.info("marketdata is fine");
+		logger.info("provided marketData is fine compared to the product data xml");
 		return new MarketDataErrors(false);
 	}
 }

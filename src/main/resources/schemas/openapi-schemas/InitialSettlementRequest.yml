@@ -4,3 +4,5 @@ required:
 properties:
   tradeData:
     type: string
+  newProvidedMarketData:
+    type: string

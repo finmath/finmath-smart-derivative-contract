@@ -38,6 +38,7 @@ class JAXBTests {
 		final URL url = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml");
 		final JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
 
+		assert url != null;
 		Smartderivativecontract sdc = getUnmarshalledObjectFromXML(jaxbContext, url);
 		sdc.setReceiverPartyID("party2");// Change Receiver PartyID
 		Swap swap = (Swap) sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getProduct().getValue();
@@ -153,15 +154,14 @@ class JAXBTests {
 
 	@Test
 	void handlerTest() throws java.lang.Exception {
+		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String marketDataProvider = "refinitiv";
+		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
+		final String projectVersion = "x.y.z";
 
-		final String generatorFile = "generators/eur_euribor_y_s_with_fixings.xml";
-		final String schemaPath = "schemas/sdc-schemas/sdcml-contract.xsd";
+		PlainSwapOperationRequest request = generateRequest(marketDataProvider);
 
-		PlainSwapOperationRequest request = generateRequest(generatorFile);
-
-		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, request.getCurrentGenerator(), schemaPath);
-
-//		String product = handler.getContractAsXmlString();
+		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
 
 		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
@@ -175,8 +175,7 @@ class JAXBTests {
 		System.out.println(valuationResult);
 	}
 
-	private PlainSwapOperationRequest generateRequest(String currentGeneratorFile) throws java.lang.Exception {
-
+	private PlainSwapOperationRequest generateRequest(String marketDataProvider) throws java.lang.Exception {
 
 		ObjectMapper objectMapper = JsonMapper.builder()
 				.addModule(new JavaTimeModule())
@@ -187,18 +186,20 @@ class JAXBTests {
 				StandardCharsets.UTF_8);
 
 		final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
-				.fullName("PartyDoubleTest");
+				.fullName("PartyDoubleTest").dltAddress("0x00001");
 		final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
 				.fullName("Semiannual");
 		final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
 				.fullName("Annual");
 		final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
-				.fullName("PartyTest");
+				.fullName("PartyTest").dltAddress("0x00002");
 		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
 						firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
+				.tradeType("SDCPledgedBalance")
+				.uniqueTradeIdentifier("UTI123789")
 				.tradeDate(        //2022-09-07
 						OffsetDateTime.of(
 								LocalDateTime.of(
@@ -226,6 +227,7 @@ class JAXBTests {
 										14,
 										35),
 								ZoneOffset.UTC))
+				.dailySettlementTime("12:00")
 				.fixedPayingParty(
 						secondCounterparty)
 				.floatingPayingParty(
@@ -250,7 +252,8 @@ class JAXBTests {
 										FrontendItemSpec.class)
 								.readValue(
 										fullSymbolListFromTemplate))
-				.currentGenerator(currentGeneratorFile);
+				.marketDataProvider(marketDataProvider)
+				.receiverPartyID("party2");
 
 		return plainSwapOperationRequest;
 	}
