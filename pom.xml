@@ -10,7 +10,7 @@
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
@@ -31,8 +31,8 @@
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
         <spring-boot-dependencies.version>3.2.10</spring-boot-dependencies.version>
-        <finmath-lib.version>6.0.12</finmath-lib.version>
-        <finmath-lib-plot-extensions.version>0.4.8</finmath-lib-plot-extensions.version>
+        <finmath-lib.version>6.0.19</finmath-lib.version>
+        <finmath-lib-plot-extensions.version>0.5.3</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
         <!-- maven plugins -->
         <maven.site-plugin.version>4.0.0-M13</maven.site-plugin.version>
@@ -978,14 +978,12 @@
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
         </site>
-        <!--        <site>-->
-        <!--            <id>finmath-site</id>-->
-        <!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
-        <!--        </site>-->
+        <!-- We need to deploy releases to maven central!
         <repository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </repository>
+        -->
         <snapshotRepository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
