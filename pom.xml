@@ -978,14 +978,12 @@
             <id>github</id>
             <url>scm:git:https://github.com/finmath/finmath-smart-derivative-contract.git</url>
         </site>
-        <!--        <site>-->
-        <!--            <id>finmath-site</id>-->
-        <!--            <url>scp://www.finmath.net/var/www/vhosts/finmath.net/httpdocs/finmath-smart-derivative-contract/</url>-->
-        <!--        </site>-->
+        <!-- We need to deploy releases to maven central!
         <repository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </repository>
+        -->
         <snapshotRepository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
