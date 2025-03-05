@@ -1,6 +1,6 @@
 package net.finmath.smartcontract.product.xml;
 
-import jakarta.xml.bind.*;
+import jakarta.xml.bind.JAXBException;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
 import net.finmath.marketdata.model.curves.Curve;
