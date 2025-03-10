@@ -28,9 +28,15 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @AutoConfigureJsonTesters // manually re-enable Spring Jackson auto-config
 @AutoConfigureJson
 class JAXBTests {
+
+	public static final String PARTY1_DLT_ADDRESS = "0x12345678901";
+	public static final String PARTY2_DLT_ADDRESS = "0x23456789012";
 
 	@Test
 	void checkChangedTradeParams() throws java.lang.Exception {
@@ -56,7 +62,7 @@ class JAXBTests {
 		double origValue = valuationResultOrig.getValue().doubleValue();
 		double changedValue = valuationResultMarshalled.getValue().doubleValue();
 		double modificationMultiplier = -1 * 10;
-		Assertions.assertEquals(origValue * modificationMultiplier, changedValue, 0.1);
+		assertEquals(origValue * modificationMultiplier, changedValue, 0.1);
 
 	}
 
@@ -76,7 +82,7 @@ class JAXBTests {
 
 		ValueResult valuationResultOrig = marginCalculator.getValue(marketData, new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8));
 		ValueResult valuationResultMarshalled = marginCalculator.getValue(marketData, marshalledXML);
-		Assertions.assertEquals(valuationResultOrig.getValue(), valuationResultMarshalled.getValue());
+		assertEquals(valuationResultOrig.getValue(), valuationResultMarshalled.getValue());
 
 	}
 
@@ -162,16 +168,19 @@ class JAXBTests {
 		PlainSwapOperationRequest request = generateRequest(marketDataProvider);
 
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
+		String fpml = handler.getContractAsXmlString();
 
 		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
-		ValueResult valuationResult = marginCalculator.getValue(marketData, handler.getContractAsXmlString());
+		ValueResult valuationResult = marginCalculator.getValue(marketData, fpml);
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(-881079.11, value, 0.005, "Valuation");
+		assertEquals(-881079.11, value, 0.005, "Valuation");
+		assertTrue(fpml.contains("<address>"+PARTY1_DLT_ADDRESS+"</address>"));
+		assertTrue(fpml.contains("<address>"+PARTY2_DLT_ADDRESS+"</address>"));
 		System.out.println(valuationResult);
 	}
 
@@ -186,13 +195,13 @@ class JAXBTests {
 				StandardCharsets.UTF_8);
 
 		final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
-				.fullName("PartyDoubleTest").dltAddress("0x00001");
+				.fullName("PartyDoubleTest").dltAddress(PARTY1_DLT_ADDRESS);
 		final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
 				.fullName("Semiannual");
 		final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
 				.fullName("Annual");
 		final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
-				.fullName("PartyTest").dltAddress("0x00002");
+				.fullName("PartyTest").dltAddress(PARTY2_DLT_ADDRESS);
 		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
 						firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
 				.terminationFeeAmount(

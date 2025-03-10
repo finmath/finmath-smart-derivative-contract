@@ -325,7 +325,7 @@ public final class PlainSwapEditorHandler {
 		Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee1 = new Smartderivativecontract.Parties.Party.PenaltyFee();
 		penaltyFee1.setType(CONSTANT);
 		penaltyFee1.setValue(tradeDescriptor.getTerminationFeeAmount().floatValue());
-		party1.setAddress("0x0");
+		party1.setAddress(tradeDescriptor.getFirstCounterparty().getDltAddress());
 
 		logger.info("Setting id party2 for party {}", tradeDescriptor.getSecondCounterparty());
 		Smartderivativecontract.Parties.Party party2 = new Smartderivativecontract.Parties.Party();
@@ -337,7 +337,7 @@ public final class PlainSwapEditorHandler {
 		Smartderivativecontract.Parties.Party.PenaltyFee penaltyFee2 = new Smartderivativecontract.Parties.Party.PenaltyFee();
 		penaltyFee2.setType(CONSTANT);
 		penaltyFee2.setValue(tradeDescriptor.getTerminationFeeAmount().floatValue());
-		party2.setAddress("0x0");
+		party2.setAddress(tradeDescriptor.getSecondCounterparty().getDltAddress());
 
 		party1.setMarginAccount(marginAccount1);
 		party1.setPenaltyFee(penaltyFee1);
