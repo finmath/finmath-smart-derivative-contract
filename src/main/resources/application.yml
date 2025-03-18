@@ -61,7 +61,7 @@ valuation:
   fpml-schema-path: "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd"
   market-data-provider-to-template:
     internal: "net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml"
-    refinitiv: "net.finmath.smartcontract.product.xml/smartderivativecontract.xml"
+    refinitiv: "net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml"
 
 refinitiv:
   user: ${REFINITIV_USER}
