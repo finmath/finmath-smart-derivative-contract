@@ -179,9 +179,9 @@ public final class PlainSwapEditorHandler {
 
 		}
 
+		logger.info("reading fixedPayerPartyID: {}", plainSwapOperationRequest.getFixPayerPartyID());
 		//TODO clarify if correct and how to improve
-		//if (plainSwapOperationRequest.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)) {
-		if (plainSwapOperationRequest.getReceiverPartyID().equals(smartDerivativeContract.parties.party.get(1).getId())) {
+		if (plainSwapOperationRequest.getFixPayerPartyID().equals(smartDerivativeContract.parties.party.get(1).getId())) {
 			floatingLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(0);
 			floatingLeg.receiverPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
 			fixedLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
