@@ -262,7 +262,8 @@ class JAXBTests {
 								.readValue(
 										fullSymbolListFromTemplate))
 				.marketDataProvider(marketDataProvider)
-				.receiverPartyID("party2");
+				.receiverPartyID("party2")
+				.fixPayerPartyID("party2");
 
 		return plainSwapOperationRequest;
 	}
