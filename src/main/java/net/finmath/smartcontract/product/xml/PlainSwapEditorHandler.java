@@ -257,7 +257,8 @@ public final class PlainSwapEditorHandler {
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
 
-		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
+		//TODO clarify why it was hardcoded to EOM, now get the value from the template fpml
+		//floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
 		floatingLeg.resetDates.resetFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.resetDates.resetFrequency.setPeriod(period);
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.periodMultiplier = periodMultiplier;
