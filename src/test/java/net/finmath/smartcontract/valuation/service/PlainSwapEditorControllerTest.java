@@ -120,6 +120,7 @@ class PlainSwapEditorControllerTest {
 				.floatingFixingDayOffset(
 						-2)
 				.receiverPartyID("party2")
+				.fixPayerPartyID("party2")
 				//.floatingPaymentFrequency(
 				//		floatingPaymentFrequency)
 				.notionalAmount(
