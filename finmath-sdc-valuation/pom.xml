@@ -9,20 +9,15 @@
     </parent>
 
     <groupId>net.finmath</groupId>
-    <artifactId>finmath-smart-derivative-contract</artifactId>
+    <artifactId>finmath-smart-derivative-contract-valuation</artifactId>
     <version>1.2.3-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
-    <name>finmath-smart-derivative-contract</name>
+    <name>finmath-smart-derivative-contract valuation oracle</name>
     <description>
         Project to support the implementation a of smart derivative contract.
     </description>
     <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
-
-    <modules>
-        <module>finmath-sdc-valuation</module>
-        <module>finmath-sdc-legacy</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -164,21 +159,6 @@
             <version>${finmath-lib.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>net.finmath</groupId>
-            <artifactId>finmath-lib-plot-extensions</artifactId>
-            <version>${finmath-lib-plot-extensions.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.finmath</groupId>
-                    <artifactId>finmath-lib</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.itextpdf</groupId>
-                    <artifactId>itextpdf</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -192,17 +172,6 @@
             <version>${httpcore.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.statemachine</groupId>
-            <artifactId>spring-statemachine-autoconfigure</artifactId>
-            <version>${spring-statemachine.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.statemachine</groupId>
-            <artifactId>spring-statemachine-test</artifactId>
-            <version>${spring-statemachine.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.java-websocket</groupId>
@@ -228,14 +197,6 @@
             <artifactId>moneta</artifactId>
             <version>${moneta.version}</version>
             <type>pom</type>
-        </dependency>
-
-        <!-- JFree -->
-
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jcommon</artifactId>
-            <version>${jcommon.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
@@ -517,7 +478,7 @@
         <testSourceDirectory>${src.test.java.dir}</testSourceDirectory>
         <resources>
             <resource>
-                <directory>finmath-sdc-legacy/src/main/resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.html</include>
                     <include>**/*.txt</include>
@@ -531,7 +492,7 @@
         </resources>
         <testResources>
             <testResource>
-                <directory>finmath-sdc-legacy/src/main/resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.xsd</include>
@@ -697,6 +658,136 @@
                             <version>17</version>
                         </requireJavaVersion>
                     </rules>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${jaxb2-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-jaxb-sources</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <locale>en</locale>
+                    <packageName>net.finmath.smartcontract.product.xml</packageName>
+                    <sources>
+                        <source>
+                            src${file.separator}main${file.separator}resources${file.separator}net.finmath.smartcontract.product.xml${file.separator}smartderivativecontract.xsd
+                        </source>
+                    </sources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>apply-jaxb-patch</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                target${file.separator}generated-sources${file.separator}jaxb${file.separator}net${file.separator}finmath${file.separator}smartcontract${file.separator}product${file.separator}xml
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src${file.separator}main${file.separator}resources${file.separator}patches</directory>
+                                    <includes>
+                                        <include>package-info.java</include>
+                                        <!--
+                                        JAXB has a bug that conflicts with the way the TradeIdentifier is specified
+                                        It would be possible to go without this patch by using the versionedTradId
+                                        -->
+                                        <include>TradeIdentifier.java</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>move-yaml-configs</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}${file.separator}openapi</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src${file.separator}main${file.separator}resources</directory>
+                                    <includes>
+                                        <include>**${file.separator}*.yml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- OpenApi Generator Plugin -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}api.yml
+                            </inputSpec>
+                            <generatorName>spring</generatorName>
+                            <library>spring-boot</library>
+                            <configOptions>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <sourceFolder>src/generated/java/main</sourceFolder>
+                                <sourceFolder>src/main/gen</sourceFolder>
+                                <dateLibrary>java8</dateLibrary>
+                                <delegatePattern>true</delegatePattern>
+                                <interfaceOnly>true</interfaceOnly>
+                                <basePackage>net.finmath.smartcontract</basePackage>
+                                <modelPackage>net.finmath.smartcontract.model</modelPackage>
+                                <apiPackage>net.finmath.smartcontract.api</apiPackage>
+                                <configPackage>net.finmath.smartcontract.config</configPackage>
+                            </configOptions>
+                            <generateApiTests>true</generateApiTests>
+                            <generateModelTests>true</generateModelTests>
+                            <supportingFilesToGenerate>
+                                ApiUtil.java
+                            </supportingFilesToGenerate>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JIB / Docker (you can use either  mvn clean compile jib:build  or   mvn spring-boot:build-image    see https://tomgregory.com/jib-vs-spring-boot-for-building-docker-images/-->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <to>
+                        <image>docker.io/finmath/${project.artifactId}:${project.version}</image>
+                    </to>
+                    <container>
+                        <mainClass>
+                            net.finmath.smartcontract.valuation.service.Application
+                        </mainClass>
+                    </container>
                 </configuration>
             </plugin>
 

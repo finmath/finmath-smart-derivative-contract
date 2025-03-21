@@ -1,0 +1,15 @@
+type: object
+required:
+  - period
+  - periodMultiplier
+  - fullName
+properties:
+  periodMultiplier:
+    type: integer
+    format: int32
+    minimum: 1
+  period:
+    type: string
+    pattern: '^[DMY]$'
+  fullName:
+    type: string

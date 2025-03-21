@@ -1,0 +1,30 @@
+a {
+    color: #922;
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+    color: #fff;
+    background-color: #922;
+}
+
+#bodyColumn {
+    font-size: 16pt;
+    line-height: 24pt;
+}
+
+#bodyColumn li {
+    padding-bottom: 6pt;
+    line-height: 20pt;
+}
+
+h1,h2 {
+    margin-top: 20pt;
+}
+
+h3,h4 {
+    margin-top: 18pt;
+}
+
+h5,h6 {
+    margin-top: 16pt;
+}

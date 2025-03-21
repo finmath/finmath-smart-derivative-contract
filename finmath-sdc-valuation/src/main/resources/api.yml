@@ -1,0 +1,584 @@
+openapi: "3.0.3"
+
+info:
+  version: 1.0.0
+  title: SDC Service API
+  license:
+    name: Apache License 2.0
+
+servers:
+  - url: http://34.159.234.113:8080/
+
+paths:
+  /valuation/value:
+    post:
+      summary: Request mapping for the value
+      operationId: value
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/valueAtTime:
+    post:
+      summary: Request mapping for the value at specific evaluationTime
+      operationId: valueAtTime
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/margin:
+    post:
+      summary: Request mapping for the value
+      operationId: margin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - marketDataStart
+                - marketDataEnd
+                - tradeData
+                - valuationDate
+              properties:
+                marketDataStart:
+                  type: string
+                marketDataEnd:
+                  type: string
+                tradeData:
+                  type: string
+                valuationDate:
+                  type: string
+                  format: string
+      responses:
+        "200":
+          description: Margin was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/legacy/margin:
+    post:
+      summary: Request mapping for the margin
+      operationId: legacyMargin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarginRequest"
+      responses:
+        "200":
+          description: Margin was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarginResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /valuation/legacy/test/product:
+    post:
+      summary: Request mapping for the value of a product (using fixed market data)
+      operationId: testProductValue
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - tradeData
+              properties:
+                tradeData:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Value was calculated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /info/git:
+    get:
+      summary: Request info on Git version and tags
+      operationId: info-git
+      responses:
+        "200":
+          description: Info returned
+          content:
+            application/json:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /info/finmath:
+    get:
+      summary: Request info on finmath-lib version and tags
+      operationId: info-finmath
+      responses:
+        "200":
+          description: Info returned
+          content:
+            application/json:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /plain-swap-editor/generate-xml:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for generation of the trade data SDCmL
+      operationId: generate-plain-swap-sdcml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: SDCmL was generated
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /plain-swap-editor/evaluate-from-editor:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for valuation of the trade data coming from the editor.
+      operationId: evaluate-from-plain-swap-editor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/get-fixed-schedule:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request payment schedule for the fixed leg defined in the editor.
+      operationId: get-fixed-schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CashflowPeriod"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /plain-swap-editor/get-floating-schedule:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request payment schedule for the floating leg defined in the editor.
+      operationId: get-floating-schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CashflowPeriod"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/get-par-rate:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request the par rate for the swap defined in the editor.
+      operationId: get-par-rate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Schedule generation successful.
+          content:
+            application/json:
+              schema:
+                type: number
+                format: double
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/get-saved-contracts:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request the list of saved contracts.
+      operationId: get-saved-contracts
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+  /plain-swap-editor/get-saved-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request the list of saved market data.
+      operationId: get-saved-market-data
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+  /plain-swap-editor/load-contract:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request a saved contract.
+      operationId: load-contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlainSwapOperationRequest"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/change-dataset:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request a saved contract.
+      operationId: change-dataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Fetch successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/save-contract:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request to save a contract.
+      operationId: save-contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plainSwapOperationRequest:
+                  $ref: "#/components/schemas/PlainSwapOperationRequest"
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Save successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/upload-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request to upload market data
+      operationId: upload-market-data
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - tradeData
+              properties:
+                tradeData:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Upload successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/refresh-market-data:
+    post:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for valuation of the trade data coming from the editor.
+      operationId: refresh-market-data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlainSwapOperationRequest"
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /plain-swap-editor/grab-market-data:
+    get:
+      tags:
+        - plainSwapEditor
+      summary: Request mapping for transferring the active dataset to the client
+      operationId: grab-market-data
+      responses:
+        "200":
+          description: Valuation successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketDataSet"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /settlement/generate-regular-settlement:
+    post:
+      summary: generate a regular settlement xml based on given settlement and product xml
+      operationId: generateRegularSettlementResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegularSettlementRequest"
+      responses:
+        "200":
+          description: regular settlement xml was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegularSettlementResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /settlement/generate-initial-settlement:
+    post:
+      summary: generate an initial settlement xml based on given product xml
+      operationId: generateInitialSettlementResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitialSettlementRequest"
+      responses:
+        "200":
+          description: initial settlement xml was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitialSettlementResult"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    ValueResult:
+      $ref: "schemas/openapi-schemas/ValueResult.yml"
+    MarginResult:
+      $ref: "schemas/openapi-schemas/MarginResult.yml"
+    RegularSettlementResult:
+      $ref: "schemas/openapi-schemas/RegularSettlementResult.yml"
+    InitialSettlementResult:
+      $ref: "schemas/openapi-schemas/InitialSettlementResult.yml"
+    Error:
+      $ref: "schemas/openapi-schemas/Error.yml"
+    PlainSwapOperationResponse:
+      $ref: "schemas/openapi-schemas/PlainSwapOperationResponse.yml"
+    ValueRequest:
+      $ref: "schemas/openapi-schemas/ValueRequest.yml"
+    MarginRequest:
+      $ref: "schemas/openapi-schemas/MarginRequest.yml"
+    RegularSettlementRequest:
+      $ref: "schemas/openapi-schemas/RegularSettlementRequest.yml"
+    InitialSettlementRequest:
+      $ref: "schemas/openapi-schemas/InitialSettlementRequest.yml"
+    PlainSwapOperationRequest:
+      $ref: "schemas/openapi-schemas/PlainSwapOperationRequest.yml"
+    CashflowPeriod:
+      $ref: "schemas/openapi-schemas/CashflowPeriod.yml"
+    FrontendItemSpec:
+      $ref: "schemas/openapi-schemas/FrontendItemSpec.yml"
+    RefinitivMarketData:
+      $ref: "schemas/openapi-schemas/RefinitivMarketData.yml"
+    MarketDataSet:
+      $ref: "schemas/openapi-schemas/MarketDataSet.yml"

@@ -1,0 +1,77 @@
+data:
+  sdc:
+    users:
+      - username: user1
+        password: password1
+        role: USER_ONE
+      - username: user2
+        password: password2
+        role: USER_TWO
+
+server:
+  ## example to setup SSL
+  #  ssl:
+  #    key-store: config/finmath.p12
+  #    key-store-password: password
+  #    key-store-type: pkcs12
+  #  port: 8080
+  forward-headers-strategy: framework
+  error:
+    include-message: always
+    include-stacktrace: always
+
+springdoc:
+  swagger-ui:
+    path: '/swagger-ui.html'
+    tryItOutEnabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
+#springdoc:
+#  api-docs:
+#    enabled: true
+#    path: '/v3/api-docs'
+#  swagger-ui:
+#    server: 'https://valuation-xva-blockchain.com'
+spring:
+  thymeleaf:
+    prefix: 'src/main/resources/templates/' # Prefix that gets prepended to view names when building a URL.
+
+serviceUrl: 'http://34.159.234.113:4200'
+
+#hostname: localhost:8080
+
+storage:
+  basedir: '/storage'
+  importdir: '/public'
+  internals:
+    marketDataProviderConnectionPropertiesFile: '/config/market_data_connect.properties'
+    databaseConnectionPropertiesFile: '/config/database_connect.properties'
+
+valuation:
+  live-market-data: false
+  live-market-data-provider: "refinitiv"
+  internal-market-data-provider: "internal"
+  settlement-currency: "EUR"
+  product-fixing-type: "Fixing"
+  fpml-schema-path: "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd"
+  market-data-provider-to-template:
+    internal: "net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml"
+    refinitiv: "net.finmath.smartcontract.product.xml/smartderivativecontract.xml"
+
+refinitiv:
+  user: ${REFINITIV_USER}
+  password: ${REFINITIV_PASSWORD}
+  client-id: ${REFINITIV_CLIENT_ID}
+  host-name: ${REFINITIV_HOST_NAME}
+  port: 443
+  auth-url: "https://api.refinitiv.com:443/auth/oauth2/v1/token"
+  use-proxy: "FALSE"
+  proxy-host: ""
+  proxy-port: 9400
+  proxy-user: ""
+  proxy-password: ""

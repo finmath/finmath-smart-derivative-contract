@@ -7,7 +7,7 @@ refinitiv_connect.properties
 
 ### DB properties and credentials ###
 
-src/main/resources/sql/database_connect.properties
+finmath-sdc-legacy/src/main/resources/sql/database_connect.properties
 
 ### Eclipse ###
 
