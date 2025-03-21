@@ -160,7 +160,9 @@ class JAXBTests {
 
 	@Test
 	void handlerTest() throws java.lang.Exception {
-		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String generatorPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String generatorFile = new String(JAXBTests.class.getClassLoader().getResourceAsStream(generatorPath).readAllBytes(), StandardCharsets.UTF_8);
+
 		final String marketDataProvider = "refinitiv";
 		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
 		final String projectVersion = "x.y.z";
@@ -170,8 +172,8 @@ class JAXBTests {
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
 		String fpml = handler.getContractAsXmlString();
 
-		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
+		//final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, fpml);

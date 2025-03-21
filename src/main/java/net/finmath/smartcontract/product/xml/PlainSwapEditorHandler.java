@@ -68,14 +68,14 @@ public final class PlainSwapEditorHandler {
 	 * Returns the plain swap editor handler.
 	 *
 	 * @param plainSwapOperationRequest the JSON request that contains the editor info.
-	 * @param templatePath              path for the SDCmL template XML to be used
+	 * @param templateXml              path for the SDCmL template XML to be used
 	 * @param schemaPath                path for the SDCmL validation schema
 	 * @throws IOException                    when loading settings files fails.
 	 * @throws SAXException                   when validation of the generated contract fails.
 	 * @throws JAXBException                  when marshalling/unmarshalling of a SDCmL object/file fails.
 	 * @throws DatatypeConfigurationException when conversion of dates to the FPmL specifications fails.
 	 */
-	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templatePath, String schemaPath, String projectVersion) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
+	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templateXml, String schemaPath, String projectVersion) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
 		try {
 			final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
@@ -95,16 +95,10 @@ public final class PlainSwapEditorHandler {
 		smartDerivativeContract.setTradeType(plainSwapOperationRequest.getTradeType());
 		final Smartderivativecontract templateContract;
 
-		try {
-			ClassPathResource templateXmlResource = new ClassPathResource(templatePath);
+		//FileSystemResource templateXmlResource = new FileSystemResource(templatePath);
 
-			String templateXmlString = new String(templateXmlResource.getInputStream().readAllBytes());
-			templateContract = SDCXMLParser.unmarshalXml(templateXmlString, Smartderivativecontract.class);
-		} catch (IOException e) {
-			logger.error("An IO error occurred while unmarshalling the template file.");
-
-			throw e;
-		}
+		//String templateXmlString = new String(templateXmlResource.getInputStream().readAllBytes());
+		templateContract = SDCXMLParser.unmarshalXml(templateXml, Smartderivativecontract.class);
 
 		// set the SDC specific stuff in the helper methods
 		setSdcValuationHeader(smartDerivativeContract, projectVersion);
