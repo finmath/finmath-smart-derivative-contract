@@ -5,8 +5,10 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A lean XML parser for the SDC XML format. See smartderivativecontract.xsd
@@ -40,6 +43,17 @@ import java.util.Map;
 public class SDCXMLParser {
 
 	private static final Logger logger = LoggerFactory.getLogger(SDCXMLParser.class);
+
+	private static final Map<String, JAXBContext> CLASS_NAME_CONTEXT_MAP =
+
+			new ConcurrentHashMap<>(
+					Map.of(
+							Smartderivativecontract.class.getCanonicalName(),
+							createContext(Smartderivativecontract.class),//
+							MarketDataList.class.getCanonicalName(), createContext(MarketDataList.class),//
+							Settlement.class.getCanonicalName(), createContext(Settlement.class)//
+					)
+			);
 
 	private SDCXMLParser() {
 	}
@@ -117,12 +131,29 @@ public class SDCXMLParser {
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
 		try {
 			StringReader reader = new StringReader(xml);
-			JAXBContext jaxbContext = JAXBContext.newInstance(t, BigDecimal.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			return (T) unmarshaller.unmarshal(reader);
+
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.get(t.getCanonicalName());
+			if ( context == null) {
+				context = createContext(t);
+				CLASS_NAME_CONTEXT_MAP.put(t.getCanonicalName(),context);
+			}
+
+			//Unmarshaller is not thread safe, but is lightweight so a new one is created on every call
+			return (T) context.createUnmarshaller().unmarshal(reader);
 		} catch (JAXBException e) {
 			logger.error("unmarshalXml: jaxb error, ", e);
 			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
+		}
+	}
+	// JAXBContext creation is very slow
+	private static <T> JAXBContext createContext(Class<T> t) {
+		logger.info("Initializing JAXB context for class {}",t.getCanonicalName());
+		try {
+			return JAXBContext.newInstance(t, BigDecimal.class);
+
+		} catch (JAXBException e) {
+			logger.error("createContext: jaxb error, ", e);
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 500);
 		}
 	}
 
@@ -135,12 +166,20 @@ public class SDCXMLParser {
 	 */
 	public static <T> String marshalClassToXMLString(T t) {
 		try {
-			JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
-			Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-			if (t instanceof Smartderivativecontract){
+
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.get(t.getClass().getCanonicalName());
+			if (context == null) {
+				context = createContext(t.getClass());
+				CLASS_NAME_CONTEXT_MAP.put(t.getClass().getCanonicalName(),context);
+			}
+
+			//Marshaller is not thread safe, but is lightweight so a new one is created on every call
+			Marshaller jaxbMarshaller = context.createMarshaller();
+			if (t instanceof Smartderivativecontract) {
 				jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "uri:sdc smartderivativecontract.xsd");
 				jaxbMarshaller.setSchema(getSDCSchema());
 			}
+
 			StringWriter writer = new StringWriter();
 			jaxbMarshaller.marshal(t, writer);
 			return writer.toString();
