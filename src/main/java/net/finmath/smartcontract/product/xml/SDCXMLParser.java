@@ -132,11 +132,7 @@ public class SDCXMLParser {
 		try {
 			StringReader reader = new StringReader(xml);
 
-			JAXBContext context = CLASS_NAME_CONTEXT_MAP.get(t.getCanonicalName());
-			if ( context == null) {
-				context = createContext(t);
-				CLASS_NAME_CONTEXT_MAP.put(t.getCanonicalName(),context);
-			}
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.computeIfAbsent(t.getCanonicalName(), key -> createContext(t));
 
 			//Unmarshaller is not thread safe, but is lightweight so a new one is created on every call
 			return (T) context.createUnmarshaller().unmarshal(reader);
@@ -167,11 +163,7 @@ public class SDCXMLParser {
 	public static <T> String marshalClassToXMLString(T t) {
 		try {
 
-			JAXBContext context = CLASS_NAME_CONTEXT_MAP.get(t.getClass().getCanonicalName());
-			if (context == null) {
-				context = createContext(t.getClass());
-				CLASS_NAME_CONTEXT_MAP.put(t.getClass().getCanonicalName(),context);
-			}
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.computeIfAbsent(t.getClass().getCanonicalName(), key -> createContext(t.getClass()));
 
 			//Marshaller is not thread safe, but is lightweight so a new one is created on every call
 			Marshaller jaxbMarshaller = context.createMarshaller();
