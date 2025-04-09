@@ -271,7 +271,6 @@ public final class PlainSwapEditorHandler {
 	private static void setSdcSettlementHeaderProvidedSymbols(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc) {
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
-		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
 		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
 		settlementHeader.settlementTime.type = "daily";
@@ -297,7 +296,6 @@ public final class PlainSwapEditorHandler {
 	private static void setSdcSettlementHeaderTemplate(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc, Smartderivativecontract templateContract) {
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
-		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
 		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
 		settlementHeader.settlementTime.type = "daily";

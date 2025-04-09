@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -112,25 +113,32 @@ class JAXBTests {
 			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			Schema sdcSchema = sf.newSchema(new File(xsdFile));
 
-			String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
-			File file = new File(path);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			jaxbUnmarshaller.setSchema(sdcSchema);
+			List<String> filePaths = List.of(
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath(),
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").getPath(),
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml").getPath()
+			);
+			for (String path : filePaths) {
+				File file = new File(path);
+				JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
+				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				jaxbUnmarshaller.setSchema(sdcSchema);
 
-			Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
+				Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
 
-			Assertions.assertNotNull(sdc);
+				Assertions.assertNotNull(sdc);
 
-			Marshaller marshaller = jaxbContext.createMarshaller();
+				Marshaller marshaller = jaxbContext.createMarshaller();
 
-			// If the patch is not applied and the marshaller has the scheme set, it will throw an exception
-			marshaller.setSchema(sdcSchema);
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				// If the patch is not applied and the marshaller has the scheme set, it will throw an exception
+				marshaller.setSchema(sdcSchema);
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			marshaller.marshal(sdc, outputStream);
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				marshaller.marshal(sdc, outputStream);
 
+				System.out.println(path + " checked and validated!");
+			}
 
 		} catch (java.lang.Exception e) {
 			Assertions.fail(e);
@@ -181,8 +189,8 @@ class JAXBTests {
 		double value = valuationResult.getValue().doubleValue();
 
 		assertEquals(-881079.11, value, 0.005, "Valuation");
-		assertTrue(fpml.contains("<address>"+PARTY1_DLT_ADDRESS+"</address>"));
-		assertTrue(fpml.contains("<address>"+PARTY2_DLT_ADDRESS+"</address>"));
+		assertTrue(fpml.contains("<address>" + PARTY1_DLT_ADDRESS + "</address>"));
+		assertTrue(fpml.contains("<address>" + PARTY2_DLT_ADDRESS + "</address>"));
 		System.out.println(valuationResult);
 	}
 

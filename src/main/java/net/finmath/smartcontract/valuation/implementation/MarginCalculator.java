@@ -229,7 +229,7 @@ public class MarginCalculator {
 	private Map<String, BigDecimal> calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product
-		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
+		LocalDate referenceDate = productDescriptor.getTradeDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
@@ -276,7 +276,7 @@ public class MarginCalculator {
 	private BigDecimal calculateValueAtTime(List<CalibrationDataset> marketDataList, LocalDateTime evaluationTime, LocalDateTime marketDataTime, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product - we only support interest rtes swaps here
-		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
+		LocalDate referenceDate = productDescriptor.getTradeDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
