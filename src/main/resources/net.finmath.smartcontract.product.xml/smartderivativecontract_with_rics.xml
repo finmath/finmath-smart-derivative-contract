@@ -10,7 +10,7 @@
         <artefact>
             <groupId>net.finmath</groupId>
             <artifactId>finmath-smart-derivative-contract</artifactId>
-            <version>0.1.8</version>
+            <version>1.2.5-SNAPSHOT</version>
         </artefact>
     </valuation>
     <parties>
@@ -585,7 +585,7 @@
                                         </notionalStepSchedule>
                                     </notionalSchedule>
                                     <floatingRateCalculation>
-                                        <floatingRateIndex>EUR-LIBOR-BBA</floatingRateIndex>
+                                        <floatingRateIndex>EURIBOR 6M</floatingRateIndex>
                                         <indexTenor>
                                             <periodMultiplier>6</periodMultiplier>
                                             <period>M</period>
