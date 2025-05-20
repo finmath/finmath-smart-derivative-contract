@@ -112,6 +112,32 @@ class SettlementServiceTest {
 	}
 
 	@Test
+	void generateRegularSettlement_multipleFixing() throws IOException {
+		String settlementLast = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_initial_historical.xml").readAllBytes(), StandardCharsets.UTF_8);
+		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes());
+
+		String productXml = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8) ;
+
+		RegularSettlementRequest regularSettlementRequest = new RegularSettlementRequest()
+				.settlementLast(settlementLast)
+				.newProvidedMarketData(providedMarketData)
+				.tradeData(productXml);
+
+		when(valuationConfig.getProductFixingType()).thenReturn("Fixing");
+
+		RegularSettlementResult regularSettlementResult = serviceUnderTest.generateRegularSettlementResult(regularSettlementRequest);
+		String settlementString = regularSettlementResult.getGeneratedRegularSettlement();
+		System.out.println(settlementString);
+
+		assertTrue(settlementString.contains("REGULAR"));
+		assertFalse(settlementString.contains("INITIAL"));
+		assertTrue(settlementString.contains("<marginValue>1026868.47</marginValue>"));
+		assertTrue(settlementString.contains("EUB6FIX6M"));
+		assertTrue(settlementString.contains("ESTRFIX1D"));
+		assertTrue(settlementString.contains("<item><id>EUB6FIX6M</id><value>0.0521</value><timeStamp>20080917-170000</timeStamp></item>"));
+	}
+
+	@Test
 	void generateRegularSettlement_providedMarketData() throws IOException {
 		String settlementLast = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/settlement_testset_initial.xml").readAllBytes(), StandardCharsets.UTF_8);
 		String providedMarketData = new String(SettlementServiceTest.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_historical_test_from_initial.xml").readAllBytes());
