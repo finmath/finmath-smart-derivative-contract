@@ -98,9 +98,9 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 						calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
 				AnalyticModel calibratedModel = optionalCalibrationResult.orElseThrow().getCalibratedModel();
 
-				final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(
-						referenceDate.atStartOfDay(),
-						marketDataTime);
+				final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(marketDataTime,evaluationDate);
+						//referenceDate.atStartOfDay(),
+						//marketDataTime);
 
 				Map<String,BigDecimal> values = (
 						products.entrySet().stream().collect(Collectors.toMap(
