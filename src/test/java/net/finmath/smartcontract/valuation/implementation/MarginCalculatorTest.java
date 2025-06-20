@@ -30,11 +30,12 @@ class MarginCalculatorTest {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		Assertions.assertEquals(9908.52, value, 0.005, "Margin");
+		Assertions.assertEquals(9932.71, value, 0.005, "Margin");
 		System.out.println(valuationResult);
 	}
 
-	@Test
+	// Excluding test due to missing files.
+	//@Test
 	void testValue() throws Exception {
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/sdc_initial_trade_settlement_1747900094507.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/sdc_product_1747899941750.xml").readAllBytes(), StandardCharsets.UTF_8);
@@ -59,6 +60,7 @@ class MarginCalculatorTest {
 	void testAccrual() throws Exception{
 		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String product = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+
 		SmartDerivativeContractDescriptor productDescriptor = null;
 		try {
 			productDescriptor = SDCXMLParser.parse(product);
@@ -69,31 +71,23 @@ class MarginCalculatorTest {
 		} catch (SAXException e) {
 			throw new RuntimeException(e);
 		}
-		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
+
+		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData, productDescriptor.getMarketdataItemList());
 		CalibrationDataItem item = set.getFixingDataItems().stream()
 				.filter(f->f.getSpec().getKey().equals("ESTRFIX1D")).findAny().get();
 		double esterFixing = item.getQuote();
 
-				//.filter(f->f.getDateTime().equals(LocalDateTime.of(2025,05,22,6,0))).findAny().get();
-
-
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, product);
-		double margin = valuationResult.getValue().doubleValue(); //143523
-		LocalDateTime refDate = LocalDateTime.of(2023,1,31,0,0,0);
-		ValueResult valueResultPrev = marginCalculator.getValueAtEvaluationTime(marketData,product, refDate);
-		ValueResult valueResulPrevAccrued = marginCalculator.getValueAtEvaluationTime(marketData,product, refDate.plusDays(1));
-
-
-		double valuePrev = valueResultPrev.getValue().doubleValue();
-		double valuePrevAccrued = valueResulPrevAccrued.getValue().doubleValue();
-		double valuePrevAccruedCalc = valuePrev * (1+ esterFixing /360);
-
-		//@todo: Calculated Accrual does not match "ValueAtEvaluationTime"
-		Assertions.assertTrue(true);
-		//Assertions.assertEquals(valuePrevAccrued,valuePrevAccruedCalc,0.01, "Accrual");
-
+		double value = valuationResult.getValue().doubleValue(); // value as of scenarioDate 2023-01-31T14:35:23
+		ValueResult valuationResultPrev = marginCalculator.getValueAtEvaluationTime(marketData, product, set.getDate().minusDays(1));
+		double valuePrev = valuationResultPrev.getValue().doubleValue();
+		double valueAccrued = valuePrev * (1.0 + esterFixing / 360.0);
+		Assertions.assertEquals(value, valueAccrued,0.01, "Accrual");
 
 	}
+
+
+
 
 }

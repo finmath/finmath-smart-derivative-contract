@@ -81,7 +81,6 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
 			final CalibrationDataset scenario = optionalScenario.get();
-			final LocalDate referenceDate = marketDataTime.toLocalDate();
 
 			final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 
@@ -92,10 +91,10 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				List<CalibrationDataItem> fixings = scenario.getDataPoints().stream().filter(
 						cdi -> cdi.getSpec().getProductName().equals("Fixing") || cdi.getSpec().getProductName().equals(
 								"Deposit")).toList();
-				Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(referenceDate, 1E-9));
+				Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
 
 				final Optional<CalibrationResult> optionalCalibrationResult =
-						calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+						calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 				AnalyticModel calibratedModel = optionalCalibrationResult.orElseThrow().getCalibratedModel();
 
 				final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(marketDataTime,evaluationDate);

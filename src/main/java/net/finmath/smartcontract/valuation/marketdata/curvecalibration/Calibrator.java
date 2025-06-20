@@ -9,7 +9,7 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -26,12 +26,12 @@ public class Calibrator {
 	public static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
 
 	private final List<CalibrationDataItem> fixings;
-	private final LocalDate referenceDate;
+	private final LocalDateTime referenceDateTime;
 	private CalibratedCurves calibratedCurves;
 
 	public Calibrator(List<CalibrationDataItem> fixings, CalibrationContext ctx) {
 		this.fixings = fixings;
-		this.referenceDate = ctx.getReferenceDate();
+		this.referenceDateTime = ctx.getReferenceDateTime();
 	}
 
 	protected CalibratedCurves getCalibratedCurves() {
@@ -69,44 +69,33 @@ public class Calibrator {
 		ArrayList<Double> fixingTimesList = new ArrayList<>();
 		ArrayList<Double> dfList = new ArrayList<>();
 		ArrayList<Double> dfTimesList = new ArrayList<>();
+		// We build the curve w.r.t to the reference Date AND Time, i.e. the referenceDateTime represents the time point 0.0 of the curve
+		// Only the fixing dates of the historical fixings are relevant, i.e. we ignore the fixing time within a day and measure the previous fixings relative to the referenceDateTime in whole days (no day fractions)
+		// The calibration items and the swap schedule use LocalDate exclusively, i.e. the curve points and schedule dates are also measured in whole days relative to the referenceDateTime / time 0.0
 		fixings.stream().filter(x -> x.getCurveName().equals("ESTR"))
 				.sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
 				.forEach(x -> {
 					double time = FloatingpointDate.getFloatingPointDateFromDate(
-							referenceDate.atStartOfDay(),
-							x.dateTime);
-
-					Double quote = x.getQuote();
-
+							referenceDateTime,
+							x.dateTime.with(referenceDateTime.toLocalTime()));
 					if (time < 0) {
 						fixingTimesList.add(time);
-						fixingValuesList.add(365.0 * Math.log(1 + quote / 360.0));
+						fixingValuesList.add(365.0 * Math.log(1 + x.quote / 360.0));
 						//conversion from 1-day ESTR (ACT/360) to zero-rate (ACT/ACT)
 						//see https://quant.stackexchange.com/questions/73522/how-does-bloomberg-calculate-the-discount-rate-from-eur-estr-curve
 					}
 				});
+		// Add initial zero entries for calculations
+		fixingTimesList.add(0, 0.0);
 		fixingValuesList.add(0, 0.0);
-		fixingTimesList.add(0, FloatingpointDate.getFloatingPointDateFromDate( // no intraday discounting!
-				referenceDate.atStartOfDay(),
-				referenceDate.atTime(17, 0, 0)));
-		fixingValuesList.add(1, 0.0);
-		fixingTimesList.add(1, 0.0);
-		dfTimesList.add(FloatingpointDate.getFloatingPointDateFromDate(
-				referenceDate.atStartOfDay(),
-				referenceDate.atTime(17, 0, 0)));
-		dfList.add(1.0);
-		dfTimesList.add(0.0);
-		dfList.add(1.0);
-		double dfLast = 1.0;
-		for (int i = 2; i < fixingTimesList.size(); i++) {
-			dfList.add(
-					dfLast * Math.exp(fixingValuesList.get(i) * (fixingTimesList.get(i - 1) - fixingTimesList.get(i)))
-			);
-
-			dfLast = dfList.get(i);
+		// Add time zero discount factor
+		dfTimesList.add(0, 0.0);
+		dfList.add(0, 1.0);
+		IntStream.range(1, fixingTimesList.size()).forEach(i -> {
+			double df = dfList.get(i - 1) * Math.exp(-fixingValuesList.get(i) * (fixingTimesList.get(i) - fixingTimesList.get(i - 1)));
+			dfList.add(df);
 			dfTimesList.add(fixingTimesList.get(i));
-		}
-
+		});
 		boolean[] isParameters = ArrayUtils.toPrimitive(
 				IntStream.range(0, dfTimesList.size()).boxed().map(x -> false).toList().toArray(Boolean[]::new));
 		double[] dfTimes = dfTimesList.stream().mapToDouble(Double::doubleValue).toArray();
@@ -130,7 +119,7 @@ public class Calibrator {
 
 	private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-3M",
@@ -176,7 +165,7 @@ public class Calibrator {
 
 	private ForwardCurve get6MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-6M",
@@ -222,7 +211,7 @@ public class Calibrator {
 
 	private ForwardCurve get1MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate.atStartOfDay(), x))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-1M",
