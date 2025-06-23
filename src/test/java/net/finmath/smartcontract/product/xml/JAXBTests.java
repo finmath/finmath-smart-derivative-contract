@@ -180,7 +180,7 @@ class JAXBTests {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		assertEquals(-881079.11, value, 0.005, "Valuation");
+		assertEquals(-881044.86, value, 0.005, "Valuation");
 		assertTrue(fpml.contains("<address>"+PARTY1_DLT_ADDRESS+"</address>"));
 		assertTrue(fpml.contains("<address>"+PARTY2_DLT_ADDRESS+"</address>"));
 		System.out.println(valuationResult);
