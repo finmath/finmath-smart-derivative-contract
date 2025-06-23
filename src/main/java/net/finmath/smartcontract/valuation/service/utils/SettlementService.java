@@ -50,18 +50,22 @@ public class SettlementService {
 		logger.info(SETTLEMENT_REQUEST_INFO, "generateRegularSettlementResult", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 
 		String newMarketDataString;
+		MarketDataList newMarketDataList;
 
 		if (regularSettlementRequest.getNewProvidedMarketData() == null) {
-			MarketDataList newMarketDataList = retrieveMarketData(sdc);
+			newMarketDataList = retrieveMarketData(sdc);
 			includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
-			newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		} else {
 			logger.info("provided custom marketData per string in regularSettlementRequest");
-			newMarketDataString = regularSettlementRequest.getNewProvidedMarketData();
-			checkMarketDataString(newMarketDataString);
+			String providedMarketData = regularSettlementRequest.getNewProvidedMarketData();
+			checkMarketDataString(providedMarketData);
+			newMarketDataList = SDCXMLParser.unmarshalXml(providedMarketData, MarketDataList.class);
+			includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
 			logger.info("provided marketData in regularSettlementRequest passed the marketData check");
 		}
-		logger.info(NEW_MARKET_DATA_STRING, "generateRegularSettlementResult", newMarketDataString);
+		newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+
+		logger.debug(NEW_MARKET_DATA_STRING, "generateRegularSettlementResult", newMarketDataString);
 
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
@@ -236,14 +240,13 @@ public class SettlementService {
 	private void includeFixingsOfLastSettlement(RegularSettlementRequest regularSettlementRequest, MarketDataList newMarketDataList) {
 		//searching for Fixings in the sdc product data XML
 		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(regularSettlementRequest.getTradeData(), Smartderivativecontract.class);
-		Optional<Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item> symbolsOptional = sdc.getSettlement().getMarketdata()
-				.getMarketdataitems().getItem().stream().filter(
-						item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
-				.findAny();
-		List<String> symbols;
+		List<String> symbols = sdc.getSettlement().getMarketdata()
+				.getMarketdataitems().getItem().stream()
+				.filter(item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
+				.map(item -> item.getSymbol().get(0))
+				.toList();
 
-		if (symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();}
-		else {
+		if (symbols.isEmpty()) {
 			logger.warn("no Fixings found in SDC product data XML, marketDataList not changed");
 			return;
 		}

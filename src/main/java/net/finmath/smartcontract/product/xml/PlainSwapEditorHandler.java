@@ -626,7 +626,7 @@ public final class PlainSwapEditorHandler {
 
 		final Optional<CalibrationResult> optionalCalibrationResult;
 		try {
-			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 		} catch (CloneNotSupportedException e) {
 			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
@@ -681,20 +681,17 @@ public final class PlainSwapEditorHandler {
 		if (optionalScenario.isPresent()) scenario = optionalScenario.get();
 		else throw new IllegalStateException("Failed to load calibration dataset.");
 
-		final LocalDate referenceDate = marketDataTime.toLocalDate();
-
 		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-
 
 		final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
 		Calibrator calibrator = new Calibrator(scenario.getDataPoints().stream().filter(
 				ci -> ci.getSpec().getProductName().equals("Fixing") || ci.getSpec().getProductName().equals(
-						"Deposit")).toList(), new CalibrationContextImpl(referenceDate, 1E-9));
+						"Deposit")).toList(), new CalibrationContextImpl(marketDataTime, 1E-9));
 
 		final Optional<CalibrationResult> optionalCalibrationResult;
 
 		try {
-			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 		} catch (CloneNotSupportedException e) {
 			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
