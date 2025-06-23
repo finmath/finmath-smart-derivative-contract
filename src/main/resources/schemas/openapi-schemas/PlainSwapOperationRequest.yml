@@ -65,23 +65,23 @@ properties:
     format: double
   fixedDayCountFraction:
     type: string
-    default: "30E/360"
+    #default: "30E/360"
   fixedPaymentFrequency:
     $ref: "PaymentFrequency.yml"
   floatingPayingParty:
     $ref: "Counterparty.yml"
   floatingRateIndex:
     type: string
-    default: "EURIBOR 6M"
+    #default: "EURIBOR 6M"
   floatingDayCountFraction:
     type: string
-    default: "ACT/360"
+    #default: "ACT/360"
   floatingFixingDayOffset:
     type: integer
     format: int32
     minimum: -2
     maximum: 2
-    default: -2
+    #default: -2
   floatingPaymentFrequency:
     $ref: "PaymentFrequency.yml"
   valuationSymbols:
