@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
@@ -28,7 +29,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +62,6 @@ public class SDCXMLParser {
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
 		Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
-
-		LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
-
 		String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
 		String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
 		String dltTradeId = sdc.getDltTradeId() == null ? "" : sdc.getDltTradeId().trim();
@@ -118,14 +116,16 @@ public class SDCXMLParser {
 			underlying = underlying.getNextSibling();
 		}
 
+		XMLGregorianCalendar xmlGregorianDate = sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getTradeHeader().getTradeDate().getValue();
+		LocalDate tradeDate = LocalDate.of(xmlGregorianDate.getYear(), xmlGregorianDate.getMonth(), xmlGregorianDate.getDay());
+
 		String currency = sdc.getSettlementCurrency();
 
 		String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
 
 		String tradeType = sdc.getTradeType();
-		String initialSettlementDate = sdc.getSettlement().getSettlementDateInitial().trim();
 
-		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType, initialSettlementDate);
+		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, tradeDate, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType);
 	}
 
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
