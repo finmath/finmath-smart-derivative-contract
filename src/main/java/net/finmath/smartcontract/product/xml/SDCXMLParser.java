@@ -30,6 +30,9 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,9 +126,11 @@ public class SDCXMLParser {
 
 		String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
 
+		OffsetTime settlementTime = getOffSetTimeFromXML(sdc.getSettlement().getSettlementTime().getValue());
+
 		String tradeType = sdc.getTradeType();
 
-		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, tradeDate, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType);
+		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, tradeDate, settlementTime, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType);
 	}
 
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
@@ -191,6 +196,15 @@ public class SDCXMLParser {
 			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, "", 400);
 		}
 		return sdcmlSchema;
+	}
+
+	// TODO Only a temporary workaround: product.xml is missing <timezone> specification within <settlementTime><type>daily</type><value>15:00</value></settlementTime>
+	private static OffsetTime getOffSetTimeFromXML(String timeValue)
+	{
+		ZoneOffset zoneOffset = ZoneOffset.UTC; // timezone offset UTC+0
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm"); // format of settlement.settlementTime.value in tradeData.xml
+		OffsetTime offsetTime = OffsetTime.parse(timeValue, timeFormatter.withZone(zoneOffset));
+		return offsetTime;
 	}
 
 	/**

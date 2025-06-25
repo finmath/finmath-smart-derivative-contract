@@ -79,11 +79,11 @@ class MarginCalculatorTest {
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, product);
-		double value = valuationResult.getValue().doubleValue(); // value as of scenarioDate 2023-01-31T14:35:23
-		ValueResult valuationResultPrev = marginCalculator.getValueAtEvaluationTime(marketData, product, set.getDate().minusDays(1));
-		double valuePrev = valuationResultPrev.getValue().doubleValue();
+		double valuePrev = valuationResult.getValue().doubleValue(); // value as of scenarioDate 2023-01-31T14:35:23
+		ValueResult valuationResultNext = marginCalculator.getValueAtEvaluationTime(marketData, product, set.getDate().plusDays(1));
+		double valueNext = valuationResultNext.getValue().doubleValue();
 		double valueAccrued = valuePrev * (1.0 + esterFixing / 360.0);
-		Assertions.assertEquals(value, valueAccrued,0.01, "Accrual");
+		Assertions.assertEquals(valueNext, valueAccrued,0.01, "Accrual: " + (valueNext - valueAccrued));
 
 	}
 

@@ -167,7 +167,7 @@ class CalibrationTests {
 				.getForward(
 						calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
 								calibrationContext.getReferenceDateTime(),
-								item.getDateTime().with(calibrationContext.getReferenceDateTime().toLocalTime())));
+								item.getDateTime()));
 
 		calibrationDataItems.stream()
 				.filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("Euribor6M")).forEach(
@@ -176,7 +176,7 @@ class CalibrationTests {
 												.getForward(
 														calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
 																calibrationContext.getReferenceDateTime(),
-																f.getDateTime().with(calibrationContext.getReferenceDateTime().toLocalTime()))) - f.getQuote()), Math.abs(
+																f.getDateTime())) - f.getQuote()), Math.abs(
 												calibratedModel.getForwardCurve("forward-EUR-6M").getForward(
 														calibratedModel,
 														FloatingpointDate.getFloatingPointDateFromDate(
