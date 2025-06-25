@@ -77,7 +77,7 @@ public class Calibrator {
 				.forEach(x -> {
 					double time = FloatingpointDate.getFloatingPointDateFromDate(
 							referenceDateTime,
-							x.dateTime.with(referenceDateTime.toLocalTime()));
+							x.dateTime);
 					if (time < 0) {
 						fixingTimesList.add(time);
 						fixingValuesList.add(365.0 * Math.log(1 + x.quote / 360.0));
@@ -119,7 +119,7 @@ public class Calibrator {
 
 	private ForwardCurve get3MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor3M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-3M",
@@ -165,7 +165,7 @@ public class Calibrator {
 
 	private ForwardCurve get6MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-6M",
@@ -211,7 +211,7 @@ public class Calibrator {
 
 	private ForwardCurve get1MForwardCurve(final CalibrationContext ctx) {
 		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor1M")).map(x -> x.dateTime)
-				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x.with(referenceDateTime.toLocalTime())))
+				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
 			return new ForwardCurveInterpolation("forward-EUR-1M",

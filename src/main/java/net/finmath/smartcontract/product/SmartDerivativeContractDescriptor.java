@@ -5,7 +5,7 @@ import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Node;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetTime;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +21,8 @@ public class SmartDerivativeContractDescriptor {
 	private final String dltAddress;
 	private final String uniqueTradeIdentifier;
 	private final LocalDate tradeDate;
+	// TODO create new class SettlementTime with all infos: type, time, timezone, ...
+	private final OffsetTime settlementTime;
 	private final List<Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
@@ -76,11 +78,12 @@ public class SmartDerivativeContractDescriptor {
 	}
 
 	//TODO convert constructor into builder pattern or something comparable
-	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDate tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType) {
+	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDate tradeDate, OffsetTime settlementTime, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType) {
 		this.dltTradeId = dltTradeId;
 		this.dltAddress = dltAddress;
 		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
 		this.tradeDate = tradeDate;
+		this.settlementTime = settlementTime;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
 		this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
@@ -113,6 +116,8 @@ public class SmartDerivativeContractDescriptor {
 	public LocalDate getTradeDate() {
 		return tradeDate;
 	}
+
+	public OffsetTime getSettlementTime() { return settlementTime; }
 
 	public List<Party> getCounterparties() {
 		return counterparties;

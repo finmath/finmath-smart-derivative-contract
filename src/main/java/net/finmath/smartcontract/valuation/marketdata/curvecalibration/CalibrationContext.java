@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
  * @author Peter Kohl-Landgraf
  * @author Christian Fries
  */
+// TODO replace LocalDateTime with ZonedDateTime -> current Problem net.finmath.time.FloatingpointDate getFloatingPointDateFromDate uses LocalDateTime
 public interface CalibrationContext {
+
 	LocalDate getReferenceDate();
 
 	LocalDateTime getReferenceDateTime();

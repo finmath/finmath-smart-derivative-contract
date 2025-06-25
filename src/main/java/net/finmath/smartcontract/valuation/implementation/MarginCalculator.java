@@ -179,12 +179,9 @@ public class MarginCalculator {
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
 		BigDecimal valueAtTime = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
-
-		// TODO Remove hardcoded currency
-		String currency = "EUR";
-
 		logger.info("calculated value at time: {}", valueAtTime);
 
+		String currency = productDescriptor.getCurrency();
 		return new ValueResult().value(valueAtTime).currency(currency).valuationDate(evaluationTime.toString());
 	}
 
