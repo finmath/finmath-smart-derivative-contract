@@ -93,3 +93,6 @@ properties:
     description: "former known as currentGenerator"
   receiverPartyID:
     type: string
+    description: "point of view for the valuation results"
+  fixPayerPartyID:
+    type: string

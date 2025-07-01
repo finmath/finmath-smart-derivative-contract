@@ -42,10 +42,29 @@ class CalibrationTests {
 		final String productData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 		SmartDerivativeContractDescriptor productDescriptor = SDCXMLParser.parse(productData);
 
+		final CalibrationDataset calibrationDataset = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData, productDescriptor.getMarketdataItemList());
 
-		final CalibrationDataset calibrationDataset = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
+		/*
+		16.06.2025: Until now the classes CalibrationContext.java and Calibrator.java stored the referenceDate as LocalDate type and when calibrating the interest rate curves the time points of the past fixings were calculated/stored as:
+		"referenceDate.atStartOfDay() - quote.dateTime()", whereby quote.dateTime() represents the fixing date of the index AND the fixing time of that day, usually 09:00:00 or 13:00:00 UCT.
+		By using referenceDate.atStartOfDay() for the Calibration's reference point , we set the time 0.0 of the calibrated interest rate curves to time 00:00:00 of the market data date.
+		As a result, the historical fixings were measured relative to referenceDate.atStartOfDay(), leading to historical fixing times that account for intraday fractions, e.g.
+			- the original market data time 05.05.2023 14:35:23 is within the Calibrator stored as 05.05.2023 and will be set by referenceDate.atStartOfDay() to 05.05.2023 00:00:00
+			- the relative past fixing time for a historical fixing as of 02.05.2023 13:00:00 will be stored as -(2 days & 11 hours) or approximately -(2.4583/365.0)
 
-		calibrationContext = new CalibrationContextImpl(calibrationDataset.getDate().toLocalDate(), 1E-9);
+		However, the class SwapLeg.java, specifically the corresponding swap schedule (ScheduleFromPeriods.java and Period.java) only uses LocalDates for the reference, fixing, period start, period end, and payment dates of the swap.
+		Thus, the relative distance between these days and the reference date are always multiples of whole days (n * 1/365.0).
+		As a result, when valuing a swap leg we always request forward rates and discount factors for times equal to whole day multiples. This also holds for periods, where the valuation date lies between the fixing and payment date, and we need to call the forward curve with a negative relative time (t<0) to obtain an already fixed forward rate.
+		But since the historical fixings were calculated as the distance between referenceDate.atStartOfDay() and quote.dateTime(), which differ in hours:minutes:seconds, and, therefore, are NOT whole day multiples, we never request one of the stored past fixing times and wrongly interpolate the already fixed forward rate.
+
+		To fix this issue, for now, we replaced the LocalDate type of CalibrationContext.java and Calibrator.java to LocalDateTime, set the referenceDateTime, i.e. the time 0.0 of the calibrated curves, to the exact marketDataTime, e.g. 05.05.2023 14:35:23, and store the historical relative fixing times as:
+		"referenceDataTime - quote.dateTime.with(referenceDateTime.toLocalTime())", i.e. we set the past index fixing times equal to the market data time.
+		With this approach the relative distance of the historical fixings are always measured in whole days and align exactly with the swap schedule, which does not care about the intraday fixing time.
+
+		In the next step, we will work on revising the finmath-library and converting the classes ScheduleFromPeriods.java and Period.java to LocalDateTime, thereby also taking intraday discounting into account.
+		 */
+
+		calibrationContext = new CalibrationContextImpl(calibrationDataset.getDate(), 1E-9);
 
 		/* Recover calibration products spec */
 		Stream<CalibrationSpecProvider> calibrationSpecsDataPointStream =
@@ -147,8 +166,8 @@ class CalibrationTests {
 		double quote = calibratedModel.getForwardCurve("forward-EUR-6M")
 				.getForward(
 						calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
-								calibrationContext.getReferenceDate().atStartOfDay(),
-								item.getDate().atTime(13, 0, 0)));
+								calibrationContext.getReferenceDateTime(),
+								item.getDateTime()));
 
 		calibrationDataItems.stream()
 				.filter(i -> i.getProductName().equals("Fixing") && i.getCurveName().equals("Euribor6M")).forEach(
@@ -156,13 +175,13 @@ class CalibrationTests {
 										Math.abs(calibratedModel.getForwardCurve("forward-EUR-6M")
 												.getForward(
 														calibratedModel, FloatingpointDate.getFloatingPointDateFromDate(
-																calibrationContext.getReferenceDate().atStartOfDay(),
-																f.getDate().atTime(13, 0, 0))) - f.getQuote()), Math.abs(
+																calibrationContext.getReferenceDateTime(),
+																f.getDateTime())) - f.getQuote()), Math.abs(
 												calibratedModel.getForwardCurve("forward-EUR-6M").getForward(
 														calibratedModel,
 														FloatingpointDate.getFloatingPointDateFromDate(
-																calibrationContext.getReferenceDate().atStartOfDay(),
-																f.getDate().atTime(13, 0, 0))) - f.getQuote())), 5E-5,
+																calibrationContext.getReferenceDateTime(),
+																f.getDateTime().with(calibrationContext.getReferenceDateTime().toLocalTime()))) - f.getQuote())), 5E-5,
                                 /* EURIBOR is fixed at 09:00 UTC (11:00 CEST), or refixed at 13:00 UTC (15:00 CEST)
                                 So if testing at first fixing fails we check if the calibrator used a refixing.
                                  */

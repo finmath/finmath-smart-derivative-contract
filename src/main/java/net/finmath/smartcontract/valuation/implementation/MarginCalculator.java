@@ -179,12 +179,9 @@ public class MarginCalculator {
 
 		CalibrationDataset set = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData,productDescriptor.getMarketdataItemList());
 		BigDecimal valueAtTime = calculateValueAtTime(List.of(set),evaluationTime,set.getDate(),productDescriptor,underlying);
-
-		// TODO Remove hardcoded currency
-		String currency = "EUR";
-
 		logger.info("calculated value at time: {}", valueAtTime);
 
+		String currency = productDescriptor.getCurrency();
 		return new ValueResult().value(valueAtTime).currency(currency).valuationDate(evaluationTime.toString());
 	}
 
@@ -229,7 +226,7 @@ public class MarginCalculator {
 	private Map<String, BigDecimal> calculateMargin(List<CalibrationDataset> marketDataList, LocalDateTime startDate, LocalDateTime endState, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product
-		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
+		LocalDate referenceDate = productDescriptor.getTradeDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);
@@ -276,7 +273,7 @@ public class MarginCalculator {
 	private BigDecimal calculateValueAtTime(List<CalibrationDataset> marketDataList, LocalDateTime evaluationTime, LocalDateTime marketDataTime, SmartDerivativeContractDescriptor productDescriptor, InterestRateSwapProductDescriptor underlying) {
 
 		// Build product - we only support interest rtes swaps here
-		LocalDate referenceDate = productDescriptor.getTradeDate().toLocalDate();
+		LocalDate referenceDate = productDescriptor.getTradeDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
 		InterestRateSwapLegProductDescriptor legPayer = (InterestRateSwapLegProductDescriptor) underlying.getLegPayer();
 		InterestRateAnalyticProductFactory productFactory = new InterestRateAnalyticProductFactory(referenceDate);

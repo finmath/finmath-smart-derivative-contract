@@ -1,0 +1,11 @@
+= Change Log
+
+== Version 1.2.5
+
+=== Added
+- flexible product-xml definition
+
+=== Changed
+- removed settlementDateInitial from SmartDerivativeContract xsd / xml cause its not needed for the product description
+
+=== Fixed

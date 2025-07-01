@@ -38,16 +38,12 @@ class SDCXMLParserTest {
 
 		SmartDerivativeContractDescriptor sdc = SDCXMLParser.parse(sdcXML);
 
-		// Get the date
-		LocalDateTime date = sdc.getTradeDate();
-		System.out.println(date);
-
 		Assertions.assertEquals("UTI12345", sdc.getUniqueTradeIdentifier());
 		Assertions.assertEquals("ID-Test123", sdc.getDltTradeId());
 		Assertions.assertEquals("0x000000001", sdc.getDltAddress());
 		Assertions.assertEquals("EUR", sdc.getCurrency());
 		Assertions.assertEquals("internal", sdc.getMarketDataProvider());
-		Assertions.assertEquals("2011-12-03T10:15:30", sdc.getInitialSettlementDate());
+		Assertions.assertEquals("2022-09-05", sdc.getTradeDate().toString());
 
 		// Get parties
 		List<SmartDerivativeContractDescriptor.Party> parties = sdc.getCounterparties();
@@ -77,8 +73,6 @@ class SDCXMLParserTest {
 		final String fpml = new String(SDCXMLParserTest.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(fpml, Smartderivativecontract.class);
-
-		System.out.println(sdc.getSettlement().getSettlementDateInitial().trim());
 
 		assertEquals("net.finmath", sdc.getValuation().getArtefact().getGroupId().trim());
 		assertEquals("UTI12345", sdc.getUniqueTradeIdentifier().trim());
@@ -157,7 +151,7 @@ class SDCXMLParserTest {
 		Assertions.assertEquals("0x000000001", sdcDescriptor.getDltAddress());
 		Assertions.assertEquals("EUR", sdcDescriptor.getCurrency());
 		Assertions.assertEquals("internal", sdcDescriptor.getMarketDataProvider());
-		Assertions.assertEquals("2011-12-03T10:15:30", sdcDescriptor.getInitialSettlementDate());
+		Assertions.assertEquals("2022-09-05", sdcDescriptor.getTradeDate().toString());
 	}
 
 }

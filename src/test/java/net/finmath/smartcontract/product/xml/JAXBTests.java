@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -112,25 +113,32 @@ class JAXBTests {
 			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			Schema sdcSchema = sf.newSchema(new File(xsdFile));
 
-			String path = JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath();
-			File file = new File(path);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			jaxbUnmarshaller.setSchema(sdcSchema);
+			List<String> filePaths = List.of(
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").getPath(),
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract_simulated_historical_marketdata.xml").getPath(),
+					JAXBTests.class.getClassLoader().getResource("net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml").getPath()
+			);
+			for (String path : filePaths) {
+				File file = new File(path);
+				JAXBContext jaxbContext = JAXBContext.newInstance(Smartderivativecontract.class);
+				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				jaxbUnmarshaller.setSchema(sdcSchema);
 
-			Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
+				Smartderivativecontract sdc = (Smartderivativecontract) jaxbUnmarshaller.unmarshal(file);
 
-			Assertions.assertNotNull(sdc);
+				Assertions.assertNotNull(sdc);
 
-			Marshaller marshaller = jaxbContext.createMarshaller();
+				Marshaller marshaller = jaxbContext.createMarshaller();
 
-			// If the patch is not applied and the marshaller has the scheme set, it will throw an exception
-			marshaller.setSchema(sdcSchema);
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				// If the patch is not applied and the marshaller has the scheme set, it will throw an exception
+				marshaller.setSchema(sdcSchema);
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			marshaller.marshal(sdc, outputStream);
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				marshaller.marshal(sdc, outputStream);
 
+				System.out.println(path + " checked and validated!");
+			}
 
 		} catch (java.lang.Exception e) {
 			Assertions.fail(e);
@@ -160,7 +168,9 @@ class JAXBTests {
 
 	@Test
 	void handlerTest() throws java.lang.Exception {
-		final String generatorFile = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String generatorPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String generatorFile = new String(JAXBTests.class.getClassLoader().getResourceAsStream(generatorPath).readAllBytes(), StandardCharsets.UTF_8);
+
 		final String marketDataProvider = "refinitiv";
 		final String schemaPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xsd";
 		final String projectVersion = "x.y.z";
@@ -170,15 +180,15 @@ class JAXBTests {
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
 		String fpml = handler.getContractAsXmlString();
 
-		//final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
+		//final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		MarginCalculator marginCalculator = new MarginCalculator();
 		ValueResult valuationResult = marginCalculator.getValue(marketData, fpml);
 
 		double value = valuationResult.getValue().doubleValue();
 
-		assertEquals(-881079.11, value, 0.005, "Valuation");
+		assertEquals(-881044.86, value, 0.005, "Valuation");
 		assertTrue(fpml.contains("<address>"+PARTY1_DLT_ADDRESS+"</address>"));
 		assertTrue(fpml.contains("<address>"+PARTY2_DLT_ADDRESS+"</address>"));
 		System.out.println(valuationResult);
@@ -262,7 +272,8 @@ class JAXBTests {
 								.readValue(
 										fullSymbolListFromTemplate))
 				.marketDataProvider(marketDataProvider)
-				.receiverPartyID("party2");
+				.receiverPartyID("party2")
+				.fixPayerPartyID("party2");
 
 		return plainSwapOperationRequest;
 	}

@@ -35,6 +35,10 @@ public class CalibrationDataset {
 		return new CalibrationDataset(scaledSet, scenarioDate);
 	}
 
+	public Set<CalibrationDataItem> getCalibrationDataItems() {
+		return this.calibrationDataItems;
+	}
+
 	public Set<CalibrationDataItem> getFixingDataItems() {
 		return this.fixingDataItems;
 	}

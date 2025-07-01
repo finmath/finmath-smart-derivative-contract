@@ -5,8 +5,10 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import net.finmath.smartcontract.model.ExceptionId;
+import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
@@ -26,11 +29,15 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A lean XML parser for the SDC XML format. See smartderivativecontract.xsd
@@ -41,15 +48,23 @@ public class SDCXMLParser {
 
 	private static final Logger logger = LoggerFactory.getLogger(SDCXMLParser.class);
 
+	private static final Map<String, JAXBContext> CLASS_NAME_CONTEXT_MAP =
+
+			new ConcurrentHashMap<>(
+					Map.of(
+							Smartderivativecontract.class.getCanonicalName(),
+							createContext(Smartderivativecontract.class),//
+							MarketDataList.class.getCanonicalName(), createContext(MarketDataList.class),//
+							Settlement.class.getCanonicalName(), createContext(Settlement.class)//
+					)
+			);
+
 	private SDCXMLParser() {
 	}
 
 	public static SmartDerivativeContractDescriptor parse(String sdcxml) throws ParserConfigurationException, IOException, SAXException {
 
 		Smartderivativecontract sdc = unmarshalXml(sdcxml, Smartderivativecontract.class);
-
-		LocalDateTime settlementDateInitial = LocalDateTime.parse(sdc.getSettlement().settlementDateInitial.trim());
-
 		String uniqueTradeIdentifier = sdc.getUniqueTradeIdentifier().trim();
 		String dltAddress = sdc.getDltAddress() == null ? "" : sdc.getDltAddress().trim();
 		String dltTradeId = sdc.getDltTradeId() == null ? "" : sdc.getDltTradeId().trim();
@@ -104,25 +119,42 @@ public class SDCXMLParser {
 			underlying = underlying.getNextSibling();
 		}
 
+		XMLGregorianCalendar xmlGregorianDate = sdc.getUnderlyings().getUnderlying().getDataDocument().getTrade().get(0).getTradeHeader().getTradeDate().getValue();
+		LocalDate tradeDate = LocalDate.of(xmlGregorianDate.getYear(), xmlGregorianDate.getMonth(), xmlGregorianDate.getDay());
+
 		String currency = sdc.getSettlementCurrency();
 
 		String marketDataProvider = sdc.getSettlement().getMarketdata().getProvider().trim();
 
-		String tradeType = sdc.getTradeType();
-		String initialSettlementDate = sdc.getSettlement().getSettlementDateInitial().trim();
+		OffsetTime settlementTime = getOffSetTimeFromXML(sdc.getSettlement().getSettlementTime().getValue());
 
-		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, settlementDateInitial, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType, initialSettlementDate);
+		String tradeType = sdc.getTradeType();
+
+		return new SmartDerivativeContractDescriptor(dltTradeId, dltAddress, uniqueTradeIdentifier, tradeDate, settlementTime, parties, marginAccountInitialByPartyID, penaltyFeeInitialByPartyID, receiverPartyID, underlying, marketdataItems, currency, marketDataProvider, tradeType);
 	}
 
 	public static <T> T unmarshalXml(String xml, Class<T> t) {
 		try {
 			StringReader reader = new StringReader(xml);
-			JAXBContext jaxbContext = JAXBContext.newInstance(t, BigDecimal.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			return (T) unmarshaller.unmarshal(reader);
+
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.computeIfAbsent(t.getCanonicalName(), key -> createContext(t));
+
+			//Unmarshaller is not thread safe, but is lightweight so a new one is created on every call
+			return (T) context.createUnmarshaller().unmarshal(reader);
 		} catch (JAXBException e) {
 			logger.error("unmarshalXml: jaxb error, ", e);
 			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 400);
+		}
+	}
+	// JAXBContext creation is very slow
+	private static <T> JAXBContext createContext(Class<T> t) {
+		logger.info("Initializing JAXB context for class {}",t.getCanonicalName());
+		try {
+			return JAXBContext.newInstance(t, BigDecimal.class);
+
+		} catch (JAXBException e) {
+			logger.error("createContext: jaxb error, ", e);
+			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, e.getMessage(), 500);
 		}
 	}
 
@@ -135,12 +167,16 @@ public class SDCXMLParser {
 	 */
 	public static <T> String marshalClassToXMLString(T t) {
 		try {
-			JAXBContext jaxbContextSettlement = JAXBContext.newInstance(t.getClass());
-			Marshaller jaxbMarshaller = jaxbContextSettlement.createMarshaller();
-			if (t instanceof Smartderivativecontract){
+
+			JAXBContext context = CLASS_NAME_CONTEXT_MAP.computeIfAbsent(t.getClass().getCanonicalName(), key -> createContext(t.getClass()));
+
+			//Marshaller is not thread safe, but is lightweight so a new one is created on every call
+			Marshaller jaxbMarshaller = context.createMarshaller();
+			if (t instanceof Smartderivativecontract) {
 				jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "uri:sdc smartderivativecontract.xsd");
 				jaxbMarshaller.setSchema(getSDCSchema());
 			}
+
 			StringWriter writer = new StringWriter();
 			jaxbMarshaller.marshal(t, writer);
 			return writer.toString();
@@ -160,6 +196,15 @@ public class SDCXMLParser {
 			throw new SDCException(ExceptionId.SDC_JAXB_ERROR, "", 400);
 		}
 		return sdcmlSchema;
+	}
+
+	// TODO Only a temporary workaround: product.xml is missing <timezone> specification within <settlementTime><type>daily</type><value>15:00</value></settlementTime>
+	private static OffsetTime getOffSetTimeFromXML(String timeValue)
+	{
+		ZoneOffset zoneOffset = ZoneOffset.UTC; // timezone offset UTC+0
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm"); // format of settlement.settlementTime.value in tradeData.xml
+		OffsetTime offsetTime = OffsetTime.parse(timeValue, timeFormatter.withZone(zoneOffset));
+		return offsetTime;
 	}
 
 	/**

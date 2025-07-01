@@ -4,7 +4,8 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrati
 import org.apache.commons.lang3.Validate;
 import org.w3c.dom.Node;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.OffsetTime;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,9 @@ public class SmartDerivativeContractDescriptor {
 	private final String dltTradeId;
 	private final String dltAddress;
 	private final String uniqueTradeIdentifier;
-	private final LocalDateTime tradeDate;
+	private final LocalDate tradeDate;
+	// TODO create new class SettlementTime with all infos: type, time, timezone, ...
+	private final OffsetTime settlementTime;
 	private final List<Party> counterparties;
 	private final Map<String, Double> marginAccountInitialByPartyID;
 	private final Map<String, Double> penaltyFeeInitialByPartyID;
@@ -29,7 +32,6 @@ public class SmartDerivativeContractDescriptor {
 	private final String currency;
 	private final String marketDataProvider;
 	private final String tradeType;
-	private final String initialSettlementDate;
 
 	/**
 	 * Descriptor for a smart derivative contract counterparty. Unified access to a party definition in an XML.
@@ -76,11 +78,12 @@ public class SmartDerivativeContractDescriptor {
 	}
 
 	//TODO convert constructor into builder pattern or something comparable
-	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDateTime tradeDate, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType, String initialSettlementDate) {
+	public SmartDerivativeContractDescriptor(String dltTradeId, String dltAddress, String uniqueTradeIdentifier, LocalDate tradeDate, OffsetTime settlementTime, List<Party> counterparties, Map<String, Double> marginAccountInitialByPartyID, Map<String, Double> penaltyFeeInitialByPartyID, String recervicePartyID, Node underlying, List<CalibrationDataItem.Spec> marketdataItems, String currency, String marketDataProvider, String tradeType) {
 		this.dltTradeId = dltTradeId;
 		this.dltAddress = dltAddress;
 		this.uniqueTradeIdentifier = uniqueTradeIdentifier;
 		this.tradeDate = tradeDate;
+		this.settlementTime = settlementTime;
 		this.counterparties = counterparties;
 		this.marginAccountInitialByPartyID = marginAccountInitialByPartyID;
 		this.penaltyFeeInitialByPartyID = penaltyFeeInitialByPartyID;
@@ -90,7 +93,6 @@ public class SmartDerivativeContractDescriptor {
 		this.currency = currency;
 		this.marketDataProvider = marketDataProvider;
 		this.tradeType = tradeType;
-		this.initialSettlementDate = initialSettlementDate;
 
 		Validate.isTrue(counterparties.size() == 2, "Number of counterparties must be 2.");
 		Validate.isTrue(marginAccountInitialByPartyID.size() == 2, "Number of margin accounts values must be 2.");
@@ -111,9 +113,11 @@ public class SmartDerivativeContractDescriptor {
 		return uniqueTradeIdentifier;
 	}
 
-	public LocalDateTime getTradeDate() {
+	public LocalDate getTradeDate() {
 		return tradeDate;
 	}
+
+	public OffsetTime getSettlementTime() { return settlementTime; }
 
 	public List<Party> getCounterparties() {
 		return counterparties;
@@ -163,9 +167,5 @@ public class SmartDerivativeContractDescriptor {
 
 	public String getTradeType() {
 		return tradeType;
-	}
-
-	public String getInitialSettlementDate() {
-		return initialSettlementDate;
 	}
 }

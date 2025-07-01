@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,28 +52,33 @@ public class SettlementService {
 		logger.info(SETTLEMENT_REQUEST_INFO, "generateRegularSettlementResult", sdc.getDltTradeId(), sdc.getMarketDataProvider(), valuationConfig.getLiveMarketDataProvider());
 
 		String newMarketDataString;
+		MarketDataList newMarketDataList;
 
 		if (regularSettlementRequest.getNewProvidedMarketData() == null) {
-			MarketDataList newMarketDataList = retrieveMarketData(sdc);
+			newMarketDataList = retrieveMarketData(sdc);
 			includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
-			newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
 		} else {
 			logger.info("provided custom marketData per string in regularSettlementRequest");
-			newMarketDataString = regularSettlementRequest.getNewProvidedMarketData();
-			checkMarketDataString(newMarketDataString);
+			String providedMarketData = regularSettlementRequest.getNewProvidedMarketData();
+			checkMarketDataString(providedMarketData);
+			newMarketDataList = SDCXMLParser.unmarshalXml(providedMarketData, MarketDataList.class);
+			includeFixingsOfLastSettlement(regularSettlementRequest, newMarketDataList);
 			logger.info("provided marketData in regularSettlementRequest passed the marketData check");
 		}
-		logger.info(NEW_MARKET_DATA_STRING, "generateRegularSettlementResult", newMarketDataString);
+		newMarketDataString = SDCXMLParser.marshalClassToXMLString(newMarketDataList);
+
+		logger.debug(NEW_MARKET_DATA_STRING, "generateRegularSettlementResult", newMarketDataString);
 
 		Settlement settlementLast = SDCXMLParser.unmarshalXml(regularSettlementRequest.getSettlementLast(), Settlement.class);
 		String marketDataLastString = SDCXMLParser.marshalClassToXMLString(settlementLast.getMarketData());
 
-		// TODO Using now here is a bit strange in the unit test. Results will vary.
-		ZonedDateTime settlementTimeNext = ZonedDateTime.now().plusDays(1);
-
+		// TODO Mixing LocalDateTime and ZonedDateTime across modules needs to be cleaned up!!
+		// referenceDateTime t=0 of calibration curves is set to <marketDataList><requestTimeStamp>20250624-094625</requestTimeStamp>...</marketDataList>
+		ZonedDateTime settlementTimeNext = getNextSettlementDateTime(newMarketDataList.getRequestTimeStamp(), sdc.getSettlementTime());
+		// Convert to LocalDateTime and retain correct time plus zone offset
+		LocalDateTime settlementTimeNextLocal = settlementTimeNext.withZoneSameInstant(ZoneId.of("Europe/Berlin")).toLocalDateTime();
 		ValueResult settlementValueNext = getValuationValueAtTime(
-				newMarketDataString, regularSettlementRequest.getTradeData(), settlementTimeNext.toLocalDateTime());
-
+				newMarketDataString, regularSettlementRequest.getTradeData(), settlementTimeNextLocal);
 		Map<String, BigDecimal> marginValues = getMargin(marketDataLastString, newMarketDataString, regularSettlementRequest.getTradeData());
 		BigDecimal margin = marginValues.get("value");
 
@@ -236,14 +243,13 @@ public class SettlementService {
 	private void includeFixingsOfLastSettlement(RegularSettlementRequest regularSettlementRequest, MarketDataList newMarketDataList) {
 		//searching for Fixings in the sdc product data XML
 		Smartderivativecontract sdc = SDCXMLParser.unmarshalXml(regularSettlementRequest.getTradeData(), Smartderivativecontract.class);
-		Optional<Smartderivativecontract.Settlement.Marketdata.Marketdataitems.Item> symbolsOptional = sdc.getSettlement().getMarketdata()
-				.getMarketdataitems().getItem().stream().filter(
-						item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
-				.findAny();
-		List<String> symbols;
+		List<String> symbols = sdc.getSettlement().getMarketdata()
+				.getMarketdataitems().getItem().stream()
+				.filter(item -> item.getType().get(0).equalsIgnoreCase(valuationConfig.getProductFixingType()))
+				.map(item -> item.getSymbol().get(0))
+				.toList();
 
-		if (symbolsOptional.isPresent()) {symbols = symbolsOptional.get().getSymbol();}
-		else {
+		if (symbols.isEmpty()) {
 			logger.warn("no Fixings found in SDC product data XML, marketDataList not changed");
 			return;
 		}
@@ -262,5 +268,18 @@ public class SettlementService {
 		for (MarketDataPoint marketDataPoint : fixingsLastSettlement) {
 			newMarketDataList.add(marketDataPoint);
 		}
+	}
+
+	// TODO current implementation only works for daily settlements and does not take weekends and holidays into account!
+	private ZonedDateTime getNextSettlementDateTime(LocalDateTime referenceDateTime, OffsetTime settlementTime) {
+		// if time of referenceDateTime < daily settlementTime -> settlement takes place on the same day.
+		// otherwise settlement will happen on next day at settlementTime
+		ZonedDateTime nextSettlementDateTime;
+		if (referenceDateTime.toLocalTime().isBefore(settlementTime.toLocalTime())) {
+			nextSettlementDateTime = ZonedDateTime.of(referenceDateTime.toLocalDate(), settlementTime.toLocalTime(), settlementTime.getOffset());
+		} else {
+			nextSettlementDateTime = ZonedDateTime.of(referenceDateTime.toLocalDate().plusDays(1), settlementTime.toLocalTime(), settlementTime.getOffset());
+		}
+		return nextSettlementDateTime;
 	}
 }

@@ -68,14 +68,14 @@ public final class PlainSwapEditorHandler {
 	 * Returns the plain swap editor handler.
 	 *
 	 * @param plainSwapOperationRequest the JSON request that contains the editor info.
-	 * @param templatePath              path for the SDCmL template XML to be used
+	 * @param templateXml              path for the SDCmL template XML to be used
 	 * @param schemaPath                path for the SDCmL validation schema
 	 * @throws IOException                    when loading settings files fails.
 	 * @throws SAXException                   when validation of the generated contract fails.
 	 * @throws JAXBException                  when marshalling/unmarshalling of a SDCmL object/file fails.
 	 * @throws DatatypeConfigurationException when conversion of dates to the FPmL specifications fails.
 	 */
-	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templatePath, String schemaPath, String projectVersion) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
+	public PlainSwapEditorHandler(final PlainSwapOperationRequest plainSwapOperationRequest, String templateXml, String schemaPath, String projectVersion) throws IOException, SAXException, JAXBException, DatatypeConfigurationException {
 		try {
 			final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sdcmlSchema = schemaFactory.newSchema((new ClassPathResource(schemaPath)).getURL());
@@ -95,16 +95,10 @@ public final class PlainSwapEditorHandler {
 		smartDerivativeContract.setTradeType(plainSwapOperationRequest.getTradeType());
 		final Smartderivativecontract templateContract;
 
-		try {
-			ClassPathResource templateXmlResource = new ClassPathResource(templatePath);
+		//FileSystemResource templateXmlResource = new FileSystemResource(templatePath);
 
-			String templateXmlString = new String(templateXmlResource.getInputStream().readAllBytes());
-			templateContract = SDCXMLParser.unmarshalXml(templateXmlString, Smartderivativecontract.class);
-		} catch (IOException e) {
-			logger.error("An IO error occurred while unmarshalling the template file.");
-
-			throw e;
-		}
+		//String templateXmlString = new String(templateXmlResource.getInputStream().readAllBytes());
+		templateContract = SDCXMLParser.unmarshalXml(templateXml, Smartderivativecontract.class);
 
 		// set the SDC specific stuff in the helper methods
 		setSdcValuationHeader(smartDerivativeContract, projectVersion);
@@ -179,9 +173,9 @@ public final class PlainSwapEditorHandler {
 
 		}
 
+		logger.info("reading fixedPayerPartyID: {}", plainSwapOperationRequest.getFixPayerPartyID());
 		//TODO clarify if correct and how to improve
-		//if (plainSwapOperationRequest.getFloatingPayingParty().getFullName().equals(smartDerivativeContract.parties.party.get(0).name)) {
-		if (plainSwapOperationRequest.getReceiverPartyID().equals(smartDerivativeContract.parties.party.get(1).getId())) {
+		if (plainSwapOperationRequest.getFixPayerPartyID().equals(smartDerivativeContract.parties.party.get(1).getId())) {
 			floatingLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(0);
 			floatingLeg.receiverPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
 			fixedLeg.payerPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
@@ -257,7 +251,8 @@ public final class PlainSwapEditorHandler {
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
 
-		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
+		//TODO clarify why it was hardcoded to EOM, now get the value from the template fpml
+		//floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
 		floatingLeg.resetDates.resetFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.resetDates.resetFrequency.setPeriod(period);
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.periodMultiplier = periodMultiplier;
@@ -276,7 +271,6 @@ public final class PlainSwapEditorHandler {
 	private static void setSdcSettlementHeaderProvidedSymbols(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc) {
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
-		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
 		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
 		settlementHeader.settlementTime.type = "daily";
@@ -302,7 +296,6 @@ public final class PlainSwapEditorHandler {
 	private static void setSdcSettlementHeaderTemplate(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc, Smartderivativecontract templateContract) {
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
-		settlementHeader.setSettlementDateInitial(plainSwapOperationRequest.getTradeDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T12:00:00");
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
 		settlementHeader.settlementTime.value = plainSwapOperationRequest.getDailySettlementTime(); //taken from the template
 		settlementHeader.settlementTime.type = "daily";
@@ -633,7 +626,7 @@ public final class PlainSwapEditorHandler {
 
 		final Optional<CalibrationResult> optionalCalibrationResult;
 		try {
-			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 		} catch (CloneNotSupportedException e) {
 			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;
@@ -688,20 +681,17 @@ public final class PlainSwapEditorHandler {
 		if (optionalScenario.isPresent()) scenario = optionalScenario.get();
 		else throw new IllegalStateException("Failed to load calibration dataset.");
 
-		final LocalDate referenceDate = marketDataTime.toLocalDate();
-
 		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-
 
 		final Stream<CalibrationSpecProvider> allCalibrationItems = scenario.getDataAsCalibrationDataPointStream(parser);
 		Calibrator calibrator = new Calibrator(scenario.getDataPoints().stream().filter(
 				ci -> ci.getSpec().getProductName().equals("Fixing") || ci.getSpec().getProductName().equals(
-						"Deposit")).toList(), new CalibrationContextImpl(referenceDate, 1E-9));
+						"Deposit")).toList(), new CalibrationContextImpl(marketDataTime, 1E-9));
 
 		final Optional<CalibrationResult> optionalCalibrationResult;
 
 		try {
-			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(referenceDate, 1E-9));
+			optionalCalibrationResult = calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 		} catch (CloneNotSupportedException e) {
 			logger.error(FAILED_MODEL_CALIBRATION);
 			throw e;

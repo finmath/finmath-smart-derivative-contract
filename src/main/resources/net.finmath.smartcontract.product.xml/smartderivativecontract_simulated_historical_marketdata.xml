@@ -42,9 +42,6 @@
         </party>
     </parties>
     <settlement>
-        <settlementDateInitial>
-            2008-05-05T00:15:30
-        </settlementDateInitial>
         <settlementTime>
             <type>daily</type>
             <value>17:00</value>

@@ -1,6 +1,7 @@
 package net.finmath.smartcontract.valuation.marketdata.curvecalibration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * A calibration context in terms of a reference date and calibration info.
@@ -10,17 +11,22 @@ import java.time.LocalDate;
  * @author Christian Fries
  */
 public class CalibrationContextImpl implements CalibrationContext {
-	private final LocalDate referenceDate;
+	private final LocalDateTime referenceDateTime;
 	private final double accuracy;
 
-	public CalibrationContextImpl(final LocalDate referenceDate, final double accuracy) {
-		this.referenceDate = referenceDate;
+	public CalibrationContextImpl(final LocalDateTime referenceDateTime, final double accuracy) {
+		this.referenceDateTime = referenceDateTime;
 		this.accuracy = accuracy;
 	}
 
 	@Override
 	public LocalDate getReferenceDate() {
-		return referenceDate;
+		return referenceDateTime.toLocalDate();
+	}
+
+	@Override
+	public LocalDateTime getReferenceDateTime() {
+		return referenceDateTime;
 	}
 
 	@Override
