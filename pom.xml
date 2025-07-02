@@ -2,11 +2,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
+    <!--
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+    -->
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
@@ -98,8 +100,8 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependencies>
 
+    <dependencies>
         <!-- BEGINNING OF UPDATED STUFF -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -141,7 +143,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -336,7 +337,6 @@
         </dependency>
     </dependencies>
 
-
     <profiles>
         <profile>
             <id>i-need-node</id>
@@ -503,7 +503,6 @@
             </properties>
         </profile>
     </profiles>
-
 
     <build>
         <defaultGoal>clean install javadoc:javadoc</defaultGoal>
@@ -924,6 +923,16 @@
                     </gitDescribe>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -983,11 +992,11 @@
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </repository>
-        -->
         <snapshotRepository>
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </snapshotRepository>
+        -->
     </distributionManagement>
 
     <scm>
