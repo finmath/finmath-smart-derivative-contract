@@ -2,15 +2,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- For publishing to sonatype / central maven repo -->
+    <!--
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+    -->
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.2.8-SNAPSHOT</version>
+    <version>1.2.11-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
@@ -924,6 +926,30 @@
                     </gitDescribe>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -988,6 +1014,7 @@
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </snapshotRepository>
+        -->
     </distributionManagement>
 
     <scm>
