@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 public class CalibrationDataset {
 
 	private static final String FIXING = "Fixing";
+	private static final String DEPOSIT = "Deposit";
 	LocalDateTime scenarioDate;
 	Set<CalibrationDataItem> calibrationDataItems;
 	Set<CalibrationDataItem> fixingDataItems;
@@ -109,15 +110,15 @@ public class CalibrationDataset {
 
 	/**
 	 * Returns a Stream of CalibrationSpecs, curveData provided as calibration data points, will be converted to calibration specs
-	 * Currently Swap-Rates, FRAS and Deposit Specs are used.
+	 * Currently Swap-Rates, FRAs and Deposit Specs are used.
 	 *
 	 * @param parser Object implementing a CalibrationParser.
 	 * @return Stream of calibration spec providers.
 	 */
 	public Stream<CalibrationSpecProvider> getDataAsCalibrationDataPointStream(final CalibrationParser parser) {
-		// TODO There are possilby items that have maturity 0D. These are filteres out here. TODO - check why items with maturity 0D occure.
-		/* Return only calibraiton specs EXCEPT Past Fixings and spot data */
-		return parser.parse(calibrationDataItems.stream().filter(dataItem -> !dataItem.getProductName().equals(FIXING) && !dataItem.getProductName().equals("Deposit") && !dataItem.getSpec().getMaturity().equals("0D")));
+		// TODO There are possibly items that have maturity 0D. These are filtered out here. TODO - check why items with maturity 0D occur.
+		/* Return only calibration specs EXCEPT Past Fixings and spot data */
+		return parser.parse(calibrationDataItems.stream().filter(dataItem -> !dataItem.getProductName().equals(FIXING) && !dataItem.getProductName().equals(DEPOSIT) && !dataItem.getSpec().getMaturity().equals("0D")));
 	}
 
 	public Set<CalibrationDataItem> getDataPoints() {
