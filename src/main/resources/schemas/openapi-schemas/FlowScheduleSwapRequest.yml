@@ -1,0 +1,9 @@
+type: object
+required:
+  - tradeData
+  - marketData
+properties:
+  tradeData:
+    type: string
+  marketData:
+    type: string

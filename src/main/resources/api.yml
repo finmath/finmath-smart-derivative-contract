@@ -207,6 +207,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /valuation/generate-flow-schedule:
+    post:
+      summary: Generate a swap's flow schedule xml based on given marketdata and product xml
+      operationId: generate-flow-schedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwapFlowScheduleRequest"
+      responses:
+        "200":
+          description: swap flow schedule xml was generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SwapFlowScheduleResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /plain-swap-editor/evaluate-from-editor:
     post:
       tags:
@@ -582,3 +605,7 @@ components:
       $ref: "schemas/openapi-schemas/RefinitivMarketData.yml"
     MarketDataSet:
       $ref: "schemas/openapi-schemas/MarketDataSet.yml"
+    SwapFlowScheduleRequest:
+      $ref: "schemas/openapi-schemas/FlowScheduleSwapRequest.yml"
+    SwapFlowScheduleResponse:
+      $ref: "schemas/openapi-schemas/FlowScheduleSwapResponse.yml"

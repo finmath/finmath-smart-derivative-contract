@@ -39,6 +39,8 @@ public class CalibrationParserDataItems implements CalibrationParser {
 			case "ESTR", "EONIA" -> {
 				if (datapoint.getProductName().equals("Swap-Rate"))
 					return Optional.of(new CalibrationSpecProviderOis(datapoint.getMaturity(), "annual", datapoint.getQuote()));
+				if (datapoint.getProductName().equals("Overnight-Rate"))
+					return Optional.of(new CalibrationSpecProviderON(datapoint.getMaturity(), "tenor", datapoint.getQuote()));
 				else
 					return Optional.empty();
 			}

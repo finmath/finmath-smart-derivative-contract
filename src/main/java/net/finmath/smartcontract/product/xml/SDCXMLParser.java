@@ -8,6 +8,7 @@ import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.MarketDataList;
 import net.finmath.smartcontract.model.SDCException;
 import net.finmath.smartcontract.product.SmartDerivativeContractDescriptor;
+import net.finmath.smartcontract.product.flowschedule.FlowScheduleSwap;
 import net.finmath.smartcontract.settlement.Settlement;
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationDataItem;
 import org.slf4j.Logger;
@@ -52,10 +53,10 @@ public class SDCXMLParser {
 
 			new ConcurrentHashMap<>(
 					Map.of(
-							Smartderivativecontract.class.getCanonicalName(),
-							createContext(Smartderivativecontract.class),//
-							MarketDataList.class.getCanonicalName(), createContext(MarketDataList.class),//
-							Settlement.class.getCanonicalName(), createContext(Settlement.class)//
+							Smartderivativecontract.class.getCanonicalName(), createContext(Smartderivativecontract.class),
+							MarketDataList.class.getCanonicalName(), createContext(MarketDataList.class),
+							Settlement.class.getCanonicalName(), createContext(Settlement.class),
+							FlowScheduleSwap.class.getCanonicalName(), createContext(FlowScheduleSwap.class)
 					)
 			);
 
