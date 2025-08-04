@@ -187,15 +187,26 @@ public final class PlainSwapEditorHandler {
 			fixedLeg.receiverPartyReference.href = smartDerivativeContract.underlyings.underlying.dataDocument.party.get(1);
 		}
 
-
-		floatingLeg.resetDates.fixingDates.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingFixingDayOffset().longValue());
+		if(plainSwapOperationRequest.getFloatingFixingDayOffset() != null){
+			logger.info("floatingFixingDayOffSet manually set to: '{}'", plainSwapOperationRequest.getFloatingFixingDayOffset());
+			floatingLeg.resetDates.fixingDates.periodMultiplier = BigInteger.valueOf(plainSwapOperationRequest.getFloatingFixingDayOffset().longValue());
+		}
 		logger.info("Reading back floating fixing date offset: {}", floatingLeg.resetDates.fixingDates.periodMultiplier);
-		floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFloatingDayCountFraction();
+		if(plainSwapOperationRequest.getFloatingDayCountFraction() != null && !plainSwapOperationRequest.getFloatingDayCountFraction().isEmpty()) {
+			logger.info("floatingDayCountFraction manually set to: '{}'", plainSwapOperationRequest.getFloatingDayCountFraction());
+			floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFloatingDayCountFraction();
+		}
 		logger.info("Reading back floating day count fraction: {}", floatingLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
 
-		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value = plainSwapOperationRequest.getFloatingRateIndex();
+		if(plainSwapOperationRequest.getFloatingRateIndex() != null && !plainSwapOperationRequest.getFloatingRateIndex().isEmpty()) {
+			logger.info("floatingRateIndex manually set to: '{}'", plainSwapOperationRequest.getFloatingRateIndex());
+			((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value = plainSwapOperationRequest.getFloatingRateIndex();
+		}
 		logger.info("Reading back floating rate index: {}", ((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).floatingRateIndex.value);
-		fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFixedDayCountFraction();
+		if(plainSwapOperationRequest.getFixedDayCountFraction() != null && !plainSwapOperationRequest.getFixedDayCountFraction().isEmpty()) {
+			logger.info("fixedDayCountFraction manually set to: '{}'", plainSwapOperationRequest.getFixedDayCountFraction());
+			fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value = plainSwapOperationRequest.getFixedDayCountFraction();
+		}
 		logger.info("Reading back fixed day count fraction {}", fixedLeg.calculationPeriodAmount.calculation.dayCountFraction.value);
 		fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue = BigDecimal.valueOf(plainSwapOperationRequest.getFixedRate()).setScale(12, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(12, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
 		logger.info("Reading back fixed rate: {}", fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
@@ -294,6 +305,8 @@ public final class PlainSwapEditorHandler {
 	}
 
 	private static void setSdcSettlementHeaderTemplate(final PlainSwapOperationRequest plainSwapOperationRequest, final Smartderivativecontract sdc, Smartderivativecontract templateContract) {
+		logger.info("setSdcSettlementHeaderTemplate with template");
+
 		Smartderivativecontract.Settlement settlementHeader = new Smartderivativecontract.Settlement();
 
 		settlementHeader.settlementTime = new Smartderivativecontract.Settlement.SettlementTime();
