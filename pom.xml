@@ -1014,7 +1014,6 @@
             <id>gitlab</id>
             <url>https://gitlab.com/api/v4/projects/33978063/packages/maven</url>
         </snapshotRepository>
-        -->
     </distributionManagement>
 
     <scm>
