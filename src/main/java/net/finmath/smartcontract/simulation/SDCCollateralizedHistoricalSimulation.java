@@ -10,8 +10,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
-
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.AnalyticProduct;
 import net.finmath.marketdata.products.Swap;
@@ -19,6 +17,8 @@ import net.finmath.marketdata.products.SwapLeg;
 import net.finmath.modelling.DescribedProduct;
 import net.finmath.modelling.ProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
+import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
+import net.finmath.modelling.descriptor.xmlparser.FPMLParser;
 import net.finmath.modelling.productfactory.InterestRateAnalyticProductFactory;
 import net.finmath.smartcontract.model.ExceptionId;
 import net.finmath.smartcontract.model.SDCException;
@@ -36,19 +36,24 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrati
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrator;
 import net.finmath.time.FloatingpointDate;
 
+
 public class SDCCollateralizedHistoricalSimulation {
 	
 	private static final String FIXING = "Fixing";
 	private static final String DEPOSIT = "Deposit";
+	private static final String FORWARD_EUR_6M = "forward-EUR-6M";
+	private static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
 	
-	private TreeMap<LocalDateTime, Double> marketValueChange = new TreeMap<>(); // Y_i
-	private TreeMap<LocalDateTime, Double> cappedMarketValueChange  = new TreeMap<>(); // X_i
-	private TreeMap<LocalDateTime, Double> collateralAccount = new TreeMap<>(); // C_i
-	private TreeMap<LocalDateTime, Double> gapAmount = new TreeMap<>(); // Z_i
-	private TreeMap<LocalDateTime, Double> gapAccount = new TreeMap<>(); //D_i
+	// TODO initialize LocalDate keys with marketData dates
+	private static TreeMap<LocalDate, Double> marketValueMap = new TreeMap<>(); // V_i
+	private static TreeMap<LocalDate, Double> marketValueChangeMap = new TreeMap<>(); // Y_i
+	private static TreeMap<LocalDate, Double> cappedMarketValueChangeMap  = new TreeMap<>(); // X_i
+	private static TreeMap<LocalDate, Double> collateralAccountMap = new TreeMap<>(); // C_i
+	private static TreeMap<LocalDate, Double> gapAmountMap = new TreeMap<>(); // Z_i
+	private static TreeMap<LocalDate, Double> gapAccountMap = new TreeMap<>(); //D_i
 	
-	private double marginLimitLower;
-	private double marginLimitUpper;
+	private static double marginLimitLower = 0.0;
+	private static double marginLimitUpper = 0.0;
 	
 	
 	public static void main(String args[]) throws Exception {
@@ -65,6 +70,9 @@ public class SDCCollateralizedHistoricalSimulation {
 			throw new RuntimeException(e);
 		}
 		
+		String ownerPartyID = productDescriptor.getUnderlyingReceiverPartyID();
+		InterestRateSwapProductDescriptor underlying = (InterestRateSwapProductDescriptor) new FPMLParser(ownerPartyID, FORWARD_EUR_6M, DISCOUNT_EUR_OIS).getProductDescriptor(productDescriptor.getUnderlying());
+		
 		// Build product
 		LocalDate referenceDate = productDescriptor.getTradeDate();
 		InterestRateSwapLegProductDescriptor legReceiver = (InterestRateSwapLegProductDescriptor) underlying.getLegReceiver();
@@ -73,39 +81,45 @@ public class SDCCollateralizedHistoricalSimulation {
 		DescribedProduct<? extends ProductDescriptor> legReceiverProduct = productFactory.getProductFromDescriptor(legReceiver);
 		DescribedProduct<? extends ProductDescriptor> legPayerProduct = productFactory.getProductFromDescriptor(legPayer);
 
-		// Swap will be calculated outside
 		Swap swap = new Swap((SwapLeg) legReceiverProduct, (SwapLeg) legPayerProduct);
 		
+		// Float and fix leg have same payment dates
+		// TODO get Payment dates/times of the swap
 		
-		// Loop over list of daily marketData for valuation
-		TreeMap<LocalDateTime, CalibrationDataset> scenarioList = null;
-		for (Map.Entry<LocalDateTime, CalibrationDataset> valuationDate : scenarioList.entrySet()) {
-			
+		// First entry of marketDataMap equals product referenceDate?
+		TreeMap<LocalDate, CalibrationDataset> marketDataMap = null;
+		for (Map.Entry<LocalDate, CalibrationDataset> marketDataCurrent : marketDataMap.entrySet()) {
+		    Map.Entry<LocalDate, CalibrationDataset> marketDataPrevious = marketDataMap.lowerEntry(marketDataCurrent.getKey()); // direktes Vorgänger-Datum
+		    if (marketDataPrevious != null) {
+				AnalyticModel calibratedModelPrevious = getCalibratedModel(marketDataPrevious.getValue(), marketDataPrevious.getKey().atStartOfDay());		    	
+				AnalyticModel calibratedModelCurrent = getCalibratedModel(marketDataCurrent.getValue(), marketDataCurrent.getKey().atStartOfDay());
+				
+				double valuePrevious = swap.getValue(0.0, calibratedModelPrevious); 
+				double valueCurrent = swap.getValue(0.0, calibratedModelCurrent); 
+				// Y-i = V(t_i) - V(t_{i-1})*(1+r_{i-1}*(t_i-t_{i-1}))
+				double marketValueChange = valueCurrent - valuePrevious; 
+				// X_i
+				double cappedMarketValueChange = Math.min(Math.max(marketValueChange, -marginLimitLower), marginLimitUpper); // X_i
+				
+				double dt = FloatingpointDate.getFloatingPointDateFromDate(marketDataPrevious.getKey(),  marketDataCurrent.getKey());
+				double accrualRate = 1 / calibratedModelPrevious.getDiscountCurve(DISCOUNT_EUR_OIS).getDiscountFactor(dt);
+				// C_i = C_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + X_i
+				double collateralAccount = collateralAccountMap.get(marketDataPrevious.getKey()) * accrualRate + cappedMarketValueChange;
+				// Z_i = X_i - Y_i 
+				double gapAmount = cappedMarketValueChange - marketValueChange;
+				// D_i = D_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + Z_i
+				double gapAccount = gapAccountMap.get(marketDataPrevious.getKey()) * accrualRate + gapAmount;
+				
+				// TODO handling of value on paymentDate inclusive / exclusive
+
+		    }
 		
 		}
 		
 	}
 
-
-	private double getValue(AnalyticProduct product, AnalyticModel current, AnalyticModel previous) {
-		double valueCurrent = product.getValue(0, current);
-		double valuePrevious = product.getValue(0, previous);
-
-		// Y_i = V(t_i) - V(t_{i-1})*(1+r_{i-1}*(t_i-t_{i-1})
-		double marketValueChange = valueCurrent - valuePrevious;
-
-		// X_i = min(max(Y_i, -M^-), M^+)
-		double cappedFloorMarketValueChange = Math.min(Math.max(marketValueChange, -10), 10);
-
-		// Z_i = X_i - Y_i
-		double gapAmount = cappedFloorMarketValueChange - marketValueChange;
-
-		// need product schedule to handle / know about coupon payment dates
-
-		return 0;
-	}
 	
-	private AnalyticModel getCalibratedModel(CalibrationDataset calibrationDataset, LocalDateTime marketDataTime) {
+	private static AnalyticModel getCalibratedModel(CalibrationDataset calibrationDataset, LocalDateTime marketDataTime) {
 		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 		try {
 			final Stream<CalibrationSpecProvider> calibrationItems = calibrationDataset.getDataAsCalibrationDataPointStream(parser);
@@ -122,25 +136,5 @@ public class SDCCollateralizedHistoricalSimulation {
 		}
 	}
 	
-	// Search for the nearest ESTR fixing and add it to the calibration items as 1-day discount rate proxy
-	private void addOvernightDepositRate(CalibrationDataset calibrationDataset) {
-		List<CalibrationDataItem> estrFixings = calibrationDataset.getFixingDataItems().stream().filter(fixingItem ->
-				fixingItem.getSpec().getCurveName().equals("ESTR") &&
-						fixingItem.getSpec().getMaturity().equals("1D")).toList();
-		if (!estrFixings.isEmpty()) {
-			CalibrationDataItem nearestFixing = estrFixings.stream()
-					.min((item1, item2) -> {
-						double diff1 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item1.getDateTime());
-						double diff2 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item2.getDateTime());
-						return Double.compare(Math.abs(diff1), Math.abs(diff2));
-					})
-					.orElse(null);
-			if (nearestFixing != null) {
-				CalibrationDataItem.Spec calibrationItemSpecON = new CalibrationDataItem.Spec("EUREST1D", "ESTR","Overnight-Rate","1D");
-				CalibrationDataItem calibrationItemON = new CalibrationDataItem(calibrationItemSpecON, nearestFixing.getQuote(), nearestFixing.getDateTime());
-				calibrationDataset.getCalibrationDataItems().add(calibrationItemON);
-			}
-		}
-	}
 
 }
