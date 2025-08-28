@@ -1,4 +1,4 @@
-package net.finmath.smartcontract.collateralized;
+package net.finmath.smartcontract.simulation;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrati
 import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrator;
 import net.finmath.time.FloatingpointDate;
 
-public class SmartDerivativeContractCollateralizedSimulationTest {
+public class SDCCollateralizedHistoricalSimulation {
 	
 	private static final String FIXING = "Fixing";
 	private static final String DEPOSIT = "Deposit";
