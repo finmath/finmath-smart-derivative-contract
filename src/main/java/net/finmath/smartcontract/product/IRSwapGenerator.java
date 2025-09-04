@@ -46,7 +46,7 @@ public class IRSwapGenerator {
 		final double[] spreadsFix = new double[scheduleFix.getNumberOfPeriods()];
 		Arrays.fill(notionalsFix, notional);
 		Arrays.fill(spreadsFix, fixRate);
-		final SwapLeg fixLeg = new SwapLeg(Optional.of(LocalDateTime.of(startDate, LocalTime.of(0, 0))), scheduleFix, "", fixRate, discountCurveName);
+		final SwapLeg fixLeg = new SwapLeg(Optional.of(cashFlowEffectiveDate), scheduleFix, "", notionalsFix, spreadsFix, discountCurveName, isNotionalExchanged);
 
 		return isReceiveFix ? new Swap(fixLeg, floatLeg) : new Swap(floatLeg, fixLeg);
 	}
