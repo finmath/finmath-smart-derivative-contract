@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import net.bytebuddy.asm.Advice;
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.products.Swap;
 import net.finmath.marketdata.products.SwapLeg;
@@ -24,7 +24,6 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrato
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.Period;
 import net.finmath.time.Schedule;
-import org.antlr.v4.runtime.tree.Tree;
 
 
 public class SDCCollateralizedHistoricalSimulation {
@@ -35,22 +34,19 @@ public class SDCCollateralizedHistoricalSimulation {
 	private static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
 
 	private static double notional = 1.0E7;
-	private static double marginLimitLower = notional * 0.01;
-	private static double marginLimitUpper = notional * 0.01;
+	private static double marginLimitLower = notional * 0.005;
+	private static double marginLimitUpper = notional * 0.005;
 
-	private static TreeMap<LocalDateTime, Double> marketValueMap = new TreeMap<>(); // V_i
-	private static TreeMap<LocalDateTime, Double> marketValueChangeMap = new TreeMap<>(); // Y_i
-	private static TreeMap<LocalDateTime, Double> cappedMarketValueChangeMap  = new TreeMap<>(); // X_i
+	private static TreeMap<LocalDateTime, Double> valueMap = new TreeMap<>(); // V_i
+	private static TreeMap<LocalDateTime, Double> valueChangeMap = new TreeMap<>(); // Y_i
+	private static TreeMap<LocalDateTime, Double> cappedValueChangeMap  = new TreeMap<>(); // X_i
 	private static TreeMap<LocalDateTime, Double> collateralAccountMap = new TreeMap<>(); // C_i
 	private static TreeMap<LocalDateTime, Double> gapAmountMap = new TreeMap<>(); // Z_i
 	private static TreeMap<LocalDateTime, Double> gapAccountMap = new TreeMap<>(); //D_i
 
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	private static String dailyFormat = "%-22s %20s %20s %20s %20s %20s %20s%n";
-	private static String paymentFormat = "%-22s %20s %20s %20s %20s%n";
-
-	private static String dataRowDailyFormat = "%-22s %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f%n";
-	private static String dataRowPaymentFormat = "%-22s %20.2f %20.2f %20.2f %20.2f%n";
+	private static String headerFormat = "%-22s %20s %20s %20s %20s %20s %20s %20s%n";
+	private static String dataRowFormat = "%-22s %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f%n";
 
 	public static void main(String args[]) throws Exception {
 
@@ -81,11 +77,11 @@ public class SDCCollateralizedHistoricalSimulation {
 		// Legs can have different payment dates, e.g. fix leg pays only annually while float leg pays semiannually
 		SwapLeg receiverLeg = (SwapLeg) swap.getLegReceiver();
 		SwapLeg payerLeg = (SwapLeg) swap.getLegPayer();
-		List<LocalDate> paymentDatesReceiver = getPaymentDates(receiverLeg);
-		List<LocalDate> paymentDatesPayer = getPaymentDates(payerLeg);
+		List<LocalDate> paymentDatesReceiverLeg = getPaymentDates(receiverLeg);
+		List<LocalDate> paymentDatesPayerLeg = getPaymentDates(payerLeg);
 
 		// TODO check payment date logic
-		// Add row with isPaymentDate == 1
+		// Add row with isPaymentDate == 1 or add net cash flow A_k to outputs
 		/*
 		The swap schedule is based on LocalDate, i.e. if we value the swap on a paymentDate t_i the cash flow is already excluded in the valuation.
 		If the SDC settles daily at 15:UTC with the current value V(t_i) we assume that the cash flow occurs after the collateralization:
@@ -95,117 +91,93 @@ public class SDCCollateralizedHistoricalSimulation {
 			- Reduce the collateral accordingly C_k^+ = C_k - (A_k - D_k)
 			- Set D_K^+ to zero
 		 */
-		System.out.printf(dailyFormat, "Scenario Date", "Current Value V(t)", "Value Change Y", "Capped Change X", "Gap Amount Z", "Gap Account D", "Collateral Acct C");
-		AnalyticModel calibratedModelPrevious = getCalibratedModel(scenarioList.get(0), scenarioList.get(0).getDate());
-		double valuePrevious = swap.getValue(0.0, calibratedModelPrevious); // V(t-1)
+		System.out.printf(headerFormat, "Valuation Date", "Value V(t)", "Value Change Y_i", "Capped Change X_i", "Gap Amount Z_i", "Gap Account D_i", "Coll Account C_i", "Net Cashflow A_k");
+		LocalDateTime scenarioDatePrevious = scenarioList.get(0).getDate();
+		AnalyticModel calibratedModelPrevious = getCalibratedModel(scenarioList.get(0), scenarioDatePrevious);
+		double valuePrevious = swap.getValue(0.0, calibratedModelPrevious); // V(t_{i-1})
 
 		double dt, accrualRate, valueCurrent;
-		double marketValueChange, cappedMarketValueChange;
+		double valueChange, cappedValueChange;
 		double collateralAccount, gapAmount, gapAccount, netCashFlow;
 		for (int i = 1; i < scenarioList.size(); i++) {
-			LocalDateTime scenarioDatePrevious = scenarioList.get(i-1).getDate();
 			LocalDateTime scenarioDateCurrent = scenarioList.get(i).getDate();
 			AnalyticModel calibratedModelCurrent = getCalibratedModel(scenarioList.get(i), scenarioDateCurrent);
 
 			dt = FloatingpointDate.getFloatingPointDateFromDate(scenarioDatePrevious, scenarioDateCurrent);
 			accrualRate = 1 / calibratedModelPrevious.getDiscountCurve(DISCOUNT_EUR_OIS).getDiscountFactor(dt); // 1+r(t_{i-1})*(t_i-t_{i-1})
 
-			valueCurrent = swap.getValue(0.0, calibratedModelCurrent);
-			netCashFlow = 0.0;
-			// TODO switch to contains()
+			valueCurrent = swap.getValue(0.0, calibratedModelCurrent); // V(t_i)
+			netCashFlow = 0.0; // A_k
 			// If the evaluation date equals a payment date t_k of the swap, the returned value is already reduced by the cash-flow of that day
-			if (paymentDatesReceiver.contains(scenarioDateCurrent.toLocalDate())) {
-				netCashFlow += getCashFlow();
+			// Assumption that payment of cash flows occur after daily settlement
+			if (paymentDatesReceiverLeg.contains(scenarioDateCurrent.toLocalDate())) {
+				netCashFlow += getLegCashFlow(receiverLeg, scenarioDateCurrent.toLocalDate(), scenarioList);
 			}
-			if (paymentDatesPayer.contains(scenarioDateCurrent.toLocalDate())) {
-				netCashFlow += getCashFlow();
-			}
-			if (scenarioDateCurrent.toLocalDate().equals(paymentDates.get(periodIndex))) {
-				// Assumption that payment of cash flows occur after daily settlement
-				netCashFlow = getNetCashFlow(swap, isReceiveFix, scenarioList, periodIndex);
+			if (paymentDatesPayerLeg.contains(scenarioDateCurrent.toLocalDate())) {
+				netCashFlow -= getLegCashFlow(payerLeg, scenarioDateCurrent.toLocalDate(), scenarioList);
 			}
 			valueCurrent = valueCurrent + netCashFlow;
-			marketValueMap.put(scenarioDateCurrent, valueCurrent);
+			valueMap.put(scenarioDateCurrent, valueCurrent);
 			// Y_i = V(t_i) - V(t_{i-1})*(1+r_{i-1}*(t_i-t_{i-1}))
-			marketValueChange = valueCurrent - valuePrevious * accrualRate;
-			marketValueChangeMap.put(scenarioDateCurrent, marketValueChange);
+			valueChange = valueCurrent - valuePrevious * accrualRate;
+			valueChangeMap.put(scenarioDateCurrent, valueChange);
 			// X_i
-			cappedMarketValueChange = Math.min(Math.max(marketValueChange, -marginLimitLower), marginLimitUpper);
-			cappedMarketValueChangeMap.put(scenarioDateCurrent, cappedMarketValueChange);
-			// (1+r_{i-1}*(t_i-t_{i-1}))
+			cappedValueChange = Math.min(Math.max(valueChange, -marginLimitLower), marginLimitUpper);
+			cappedValueChangeMap.put(scenarioDateCurrent, cappedValueChange);
 			// C_i = C_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + X_i == C_k on payment date
-			collateralAccount = collateralAccountMap.lastEntry().getValue() * accrualRate + cappedMarketValueChange;
+			collateralAccount = collateralAccountMap.lastEntry().getValue() * accrualRate + cappedValueChange;
 			collateralAccountMap.put(scenarioDateCurrent, collateralAccount);
-			// Z_i = X_i - Y_i
-			gapAmount = cappedMarketValueChange - marketValueChange;
+			// Z_i = Y_i - X_i
+			gapAmount = valueChange - cappedValueChange;
 			gapAmountMap.put(scenarioDateCurrent, gapAmount);
 			// D_i = D_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + Z_i
 			gapAccount = gapAccountMap.lastEntry().getValue() * accrualRate + gapAmount;
 			gapAccountMap.put(scenarioDateCurrent, gapAccount);
 
-			System.out.printf(dataRowDailyFormat, formatter.format(scenarioDateCurrent), valueCurrent, marketValueChange, cappedMarketValueChange, gapAmount, gapAccount, collateralAccount);
+			System.out.printf(dataRowFormat, formatter.format(scenarioDateCurrent), valueCurrent, valueChange, cappedValueChange, gapAmount, gapAccount, collateralAccount, 0.0); // cash-flow occurs after daily settlement
 
-			if (scenarioDateCurrent.toLocalDate().equals(paymentDates.get(0))) {
-				paymentDates.remove(0);
-				paymentIndex++;
+			if (paymentDatesReceiverLeg.contains(scenarioDateCurrent.toLocalDate()) || paymentDatesPayerLeg.contains(scenarioDateCurrent.toLocalDate())) {
 				// Synthetic time to track the values in the result map after the payment of the cash flow
 				LocalDateTime scenarioDateCurrentAfterPayment = scenarioDateCurrent.plusMinutes(1);
 				// V(t_k+) = V(t_k) - A_k 
-				marketValueMap.put(scenarioDateCurrentAfterPayment, valueCurrent - netCashFlow);
+				valueCurrent = valueCurrent - netCashFlow;
+				valueMap.put(scenarioDateCurrentAfterPayment, valueCurrent);
 				// Reduce the collateral account by C_k^+ = C_k - (A_k - D_k)
 				gapAccount = gapAccountMap.lastEntry().getValue();
 				collateralAccount = collateralAccount - (netCashFlow - gapAccount);
 				collateralAccountMap.put(scenarioDateCurrentAfterPayment, collateralAccount);
 				gapAccountMap.put(scenarioDateCurrentAfterPayment, 0.0);
+				// Placeholder values
+				valueChangeMap.put(scenarioDateCurrentAfterPayment, 0.0);
+				cappedValueChangeMap.put(scenarioDateCurrentAfterPayment, 0.0);
+				gapAmountMap.put(scenarioDateCurrentAfterPayment, 0.0);
 
-				// Placeholder values, nothing happens here
-				marketValueChangeMap.put(scenarioDateCurrentAfterPayment, marketValueChange);
-				cappedMarketValueChangeMap.put(scenarioDateCurrentAfterPayment, cappedMarketValueChange);
-				gapAmountMap.put(scenarioDateCurrentAfterPayment, gapAmount);
-				System.out.println("Starting payment process");
-				System.out.printf(paymentFormat, "Payment Time", "Cash flow A", "Current Value", "Gap Account D", "Collateral Acct C");
-
-				System.out.printf(dataRowPaymentFormat, formatter.format(scenarioDateCurrentAfterPayment), netCashFlow, valueCurrent - netCashFlow, gapAccountMap.lastEntry(), collateralAccount);
+				System.out.printf(dataRowFormat, formatter.format(scenarioDateCurrentAfterPayment), valueCurrent, valueChangeMap.lastEntry().getValue(), cappedValueChangeMap.lastEntry().getValue(), 
+						gapAmountMap.lastEntry().getValue(), gapAccountMap.lastEntry().getValue(), collateralAccount, netCashFlow);
 
 			}
+			scenarioDatePrevious = scenarioDateCurrent;
 			valuePrevious = valueCurrent;
 			calibratedModelPrevious = calibratedModelCurrent;
 		}
 		
 	}
 
-	// Does not work due to different schedules
-	// Returns the net cash-flow of the current period on the payment date
-	// Assumes float and fix leg have the same schedule
-	private static double getNetCashFlow(SwapLeg receiverLeg, SwapLeg payerLeg, boolean isReceiveFix, List<CalibrationDataset> scenarioList, LocalDate paymentDate) {
-		if(receiverLeg.getSchedule().getPeriods())
 
-		SwapLeg swapLeg;
-		if (isReceiveFix)
-			swapLeg = ((SwapLeg) swap.getLegReceiver());
-		else
-			swapLeg = ((SwapLeg)swap.getLegPayer());
-		Schedule swapSchedule = ((SwapLeg) swap.getLegReceiver()).getSchedule();
-		LocalDate fixingDate = swapSchedule.getPeriods().get(periodIndex).getFixing();
-		double fixedRate =  swapLeg.getSpreads()[periodIndex];
-		double periodLength = swapSchedule.getPeriodLength(periodIndex);
-		double forwardRate = getFixedForwardRate(scenarioList, fixingDate);
+	// Returns the cash-flow for a swap leg on the payment date, i.e. P(T;t) = P(T;T) = 1
+	private static double getLegCashFlow (SwapLeg swapLeg, LocalDate paymentDate, List<CalibrationDataset> marketData) {
+		Schedule legSchedule = swapLeg.getSchedule();
+		int periodIndex 	 = getCurrentPeriodIndex(swapLeg, paymentDate);
+		double spread 		 = swapLeg.getSpreads()[periodIndex];
+		double periodLength  = legSchedule.getPeriodLength(periodIndex);
+		
+		double forwardRate = 0.0;
+		if(swapLeg.getForwardCurveName() != null) {
+			LocalDate fixingDate = swapLeg.getSchedule().getPeriods().get(periodIndex).getFixing();
+			forwardRate = getFixedForwardRate(marketData, fixingDate);
+		}
 
-		double netCashFlow;
-		if (isReceiveFix)
-			netCashFlow = fixedRate - forwardRate;
-		else
-			netCashFlow = forwardRate - fixedRate;
-
-		return netCashFlow * periodLength * notional;
-	}
-
-	private static double getCashFlow (SwapLeg swapLeg, boolean isFixLeg, LocalDate paymentDate, List<CalibrationDataset> marketData) {
-		Period period = getCurrentPeriod(swapLeg, paymentDate);
-		LocalDate fixingDate = period.getFixing();
-
-
-		return notional;
+		return notional * (spread + forwardRate) * periodLength;
 	}
 
 	private static List<LocalDate> getPaymentDates(SwapLeg swapLeg) {
@@ -214,17 +186,18 @@ public class SDCCollateralizedHistoricalSimulation {
 				.sorted().toList();
 	}
 
-	private static Period getCurrentPeriod(SwapLeg swapLeg, LocalDate paymentDate) {
-		return swapLeg.getSchedule().getPeriods().stream()
-				.filter(period -> period.getPayment().equals(paymentDate))
-				.findFirst()
-				.orElseThrow(() -> new IllegalStateException(
-						"Assumption violated: Could not find a payment period for date: " + paymentDate
-				));
+	private static int getCurrentPeriodIndex(SwapLeg swapLeg, LocalDate paymentDate) {
+	    List<Period> periods = swapLeg.getSchedule().getPeriods();
+	    return IntStream.range(0, periods.size())
+	            .filter(i -> periods.get(i).getPayment().equals(paymentDate))
+	            .findFirst()
+	            .orElseThrow(() -> new IllegalStateException(
+	                "Assumption violated: Could not find a payment period for date: " + paymentDate
+	            ));
 	}
 
-	private static double getFixedForwardRate(List<CalibrationDataset> scenarioList, LocalDate fixingDate) {
-		return scenarioList.stream()
+	private static double getFixedForwardRate(List<CalibrationDataset> marketData, LocalDate fixingDate) {
+		return marketData.stream()
 				.filter(scenario -> scenario.getDate().toLocalDate().equals(fixingDate))
 				.findFirst()
 				.flatMap(scenario -> scenario.getDataPoints().stream()
@@ -238,9 +211,9 @@ public class SDCCollateralizedHistoricalSimulation {
 
 	private static void initializeValueMaps(LocalDateTime scenarioStartDate) {
 		Stream.of(
-				marketValueMap,
-				marketValueChangeMap,
-				cappedMarketValueChangeMap,
+				valueMap,
+				valueChangeMap,
+				cappedValueChangeMap,
 				collateralAccountMap,
 				gapAmountMap,
 				gapAccountMap
