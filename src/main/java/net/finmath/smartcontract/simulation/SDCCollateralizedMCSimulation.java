@@ -2,7 +2,9 @@ package net.finmath.smartcontract.simulation;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.finmath.exception.CalculationException;
@@ -14,29 +16,30 @@ import net.finmath.marketdata.model.curves.DiscountCurve;
 import net.finmath.marketdata.model.curves.DiscountCurveInterpolation;
 import net.finmath.marketdata.model.curves.ForwardCurve;
 import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
-import net.finmath.marketdata.model.volatilities.SwaptionMarketData;
 import net.finmath.montecarlo.BrownianMotionFromMersenneRandomNumbers;
-import net.finmath.montecarlo.RandomVariableFactory;
 import net.finmath.montecarlo.RandomVariableFromArrayFactory;
+import net.finmath.montecarlo.RandomVariableFromDoubleArray;
 import net.finmath.montecarlo.interestrate.CalibrationProduct;
 import net.finmath.montecarlo.interestrate.LIBORMarketModel;
 import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationModel;
 import net.finmath.montecarlo.interestrate.LIBORMonteCarloSimulationFromLIBORModel;
 import net.finmath.montecarlo.interestrate.models.LIBORMarketModelFromCovarianceModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCorrelationModelExponentialDecay;
-import net.finmath.montecarlo.interestrate.models.covariance.LIBORCovarianceModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCovarianceModelFromVolatilityAndCorrelation;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORVolatilityModelFromGivenMatrix;
+import net.finmath.montecarlo.interestrate.products.Swap;
 import net.finmath.montecarlo.interestrate.products.SwapLeg;
 import net.finmath.montecarlo.interestrate.products.components.Notional;
 import net.finmath.montecarlo.interestrate.products.components.NotionalFromConstant;
 import net.finmath.montecarlo.interestrate.products.indices.AbstractIndex;
 import net.finmath.montecarlo.interestrate.products.indices.LIBORIndex;
 import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
+import net.finmath.stochastic.RandomVariable;
+import net.finmath.stochastic.Scalar;
+import net.finmath.time.FloatingpointDate;
+import net.finmath.time.Period;
 import net.finmath.time.Schedule;
-import net.finmath.time.ScheduleFromPeriods;
 import net.finmath.time.ScheduleGenerator;
-import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
@@ -45,84 +48,121 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
 public class SDCCollateralizedMCSimulation {
 
 	
-	private static double notional = 1.0E7;
-	private static double marginLimitLower = notional * 0.005;
-	private static double marginLimitUpper = notional * 0.005;
+	private static double notionalDouble = 1E7;
+	private static RandomVariable marginLimitLower = new Scalar((-1.0) * notionalDouble * 0.000001);
+	private static RandomVariable marginLimitUpper = new Scalar(notionalDouble * 0.000001);
 	
-	
-	private static SwapLeg legReceiver;
-	private static SwapLeg legPayer;
-
-	private static LIBORMonteCarloSimulationFromLIBORModel liborModel;
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private static String headerFormat = "%-22s %20s %20s %20s %20s %20s %20s %n";
+	private static String dataRowFormat = "%-22s %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f %n";
 	
 	public static void main(String args[]) throws Exception {
 
+		LocalDate referenceDate = LocalDate.of(2014,  Month.AUGUST,  12);
 		/*
 		 * Create Monte-Carlo model
 		 */
-		final int numberOfPaths = 10000;
+		final int numberOfPaths = 1000;
 		final int numberOfFactors = 5;
 		final double correlationDecayParam = 0.2;
-		final LIBORModelMonteCarloSimulationModel model = createMultiCurveLIBORMarketModel(numberOfPaths, numberOfFactors, correlationDecayParam);
+		final LIBORModelMonteCarloSimulationModel model = createMultiCurveLIBORMarketModel(referenceDate, numberOfPaths, numberOfFactors, correlationDecayParam);
 
-		// TODO get weekdays based on holiday calendar and evaluate product on every business day
-		// new BusinessdayCalendarExcludingTARGETHolidays()
-		// product ends at schedule.getPeriod(schedule.getPeriods().size() - 1).getPayment()
-		double maturity = 5.0;
-		for (double evaluationTime = 0.0; evaluationTime <= maturity; evaluationTime += 1/365.0) {
-			// V(t_{i-1}) * (1+r_{i-1}*(t_i-t_{i-1})
-			
+		BusinessdayCalendar businessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
+		Schedule schedule = createScheduleFromConventions(referenceDate, businessdayCalendar);
+		List<LocalDate> paymentDates = getPaymentDates(schedule);
+		LocalDate lastPaymentDate = paymentDates.get(paymentDates.size() - 1);
+		
+		SwapLeg fixLeg 	 = createFixLeg(schedule);
+		SwapLeg floatLeg = createFloatLeg(schedule);	
+		Swap swap = new Swap(fixLeg, floatLeg); //receiver swap
 
-			
+		double timePrevious = 0.0;
+		LocalDate datePrevious = referenceDate;
+		RandomVariable valuePrevious = swap.getValue(timePrevious, model);
+		RandomVariable valueCurrent, valueChange, cappedValueChange;
+		RandomVariable accrual, gapAmount;
+		// Trade has initially a non-zero value -> collateral needs to be set up by an upfront payment
+		RandomVariable collateralAccount = valuePrevious; 
+		RandomVariable gapAccount = new RandomVariableFromDoubleArray(0.0);
+		
+		System.out.printf(headerFormat, "Valuation Date", "Value V(t)", "Value Change Y_i", "Capped Change X_i", "Gap Amount Z_i", "Gap Account D_i", "Coll Account C_i");
+
+		for (LocalDate dateCurrent = referenceDate.plusDays(1); dateCurrent.isBefore(lastPaymentDate.plusDays(1)); dateCurrent = dateCurrent.plusDays(1)) {
+			if (businessdayCalendar.isBusinessday(dateCurrent)) {
+				double dt = FloatingpointDate.getFloatingPointDateFromDate(datePrevious, dateCurrent);
+				double timeCurrent = FloatingpointDate.getFloatingPointDateFromDate(referenceDate, dateCurrent);
+				// V(t_i)
+				valueCurrent = swap.getValue(timeCurrent, model);
+				// (1 + r_{i-1}*(t_i - t_{i-1}))
+				accrual = model.getForwardRate(timePrevious, timePrevious, timeCurrent).mult(dt).add(1.0);		
+				// Y_i = V(t_i) - V(t_{i-1}) * (1+r_{i-1}*(t_i-t_{i-1})
+				valueChange = valueCurrent.sub(valuePrevious.mult(accrual)); 
+				// X_i
+				cappedValueChange = valueChange.floor(marginLimitLower).cap(marginLimitUpper);
+				// Z_i = Y_i - X_i
+				gapAmount = valueChange.sub(cappedValueChange);
+				
+				if (paymentDates.contains(dateCurrent)) {
+					// C_k+ = C_k - (A_k - D_k) = C_{i-1}*(1+rt) + D_{i-1}(1+rt) + V(t_k+) - V(i-1)*(1+rt)
+					collateralAccount = collateralAccount.mult(accrual).add(gapAccount.mult(accrual)).add(valueCurrent).sub(valuePrevious.mult(accrual));
+					gapAccount = gapAccount.mult(0.0);
+				} else {
+					// C_i = C_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + X_i
+					collateralAccount = collateralAccount.mult(accrual).add(cappedValueChange);
+					// D_i = D_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + Z_i
+					gapAccount = gapAccount.mult(accrual).add(gapAmount);
+				}
+				// Simple control path
+				System.out.printf(dataRowFormat, formatter.format(dateCurrent), valueCurrent.get(0), valueChange.get(0), cappedValueChange.get(0), gapAmount.get(0), gapAccount.get(0), collateralAccount.get(0));
+				timePrevious  = timeCurrent;
+				datePrevious  = dateCurrent;
+				valuePrevious = valueCurrent;
+			}
 		}
 		
-		
-		
-
-	
 	}
 	
+	
 
-	private static SwapLeg createFloatLeg() {
-		final LocalDate	referenceDate = LocalDate.of(2014,  Month.AUGUST,  12);
-		final int			spotOffsetDays = 2;
-		final String		forwardStartPeriod = "0D";
-		final String		maturity = "35Y";
-		final String		frequency = "semiannual";
-		final String		daycountConvention = "30/360";
-
+	private static SwapLeg createFloatLeg(Schedule schedule) {
 		/*
 		 * Create Monte-Carlo leg
 		 */
-		final Notional notional = new NotionalFromConstant(1.0);
+		final Notional notional = new NotionalFromConstant(notionalDouble);
 		final AbstractIndex index = new LIBORIndex(0.0, 0.5);
 		final double spread = 0.0;
-		final Schedule schedule = ScheduleGenerator.createScheduleFromConventions(referenceDate, spotOffsetDays, forwardStartPeriod, maturity, frequency, daycountConvention, "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 		return new SwapLeg(schedule, notional, index, spread, false /* isNotionalExchanged */);
 	}
 	
-	private static SwapLeg createFixLeg() {
-		final LocalDate	referenceDate = LocalDate.of(2014, Month.AUGUST, 12);
-		final int			spotOffsetDays = 2;
-		final String		forwardStartPeriod = "0D";
-		final String		maturity = "35Y";
-		final String		frequency = "semiannual";
-		final String		daycountConvention = "30/360";
-
+	private static SwapLeg createFixLeg(Schedule schedule) {
 		/*
 		 * Create Monte-Carlo leg
 		 */
-		final Notional notional = new NotionalFromConstant(1.0);
+		final Notional notional = new NotionalFromConstant(notionalDouble);
 		final AbstractIndex index = null;
 		final double spread = 0.05;
-		final Schedule schedule = ScheduleGenerator.createScheduleFromConventions(referenceDate, spotOffsetDays, forwardStartPeriod, maturity, frequency, daycountConvention, "first", "following", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 		return new SwapLeg(schedule, notional, index, spread, false /* isNotionalExchanged */);
 	}
 	
 	
-	public static LIBORModelMonteCarloSimulationModel createMultiCurveLIBORMarketModel(final int numberOfPaths, final int numberOfFactors, final double correlationDecayParam) throws CalculationException {
+	private static List<LocalDate> getPaymentDates(Schedule schedule) {
+		return schedule.getPeriods().stream()
+				.map(Period::getPayment)
+				.sorted().toList();
+	}
+	
+	private static Schedule createScheduleFromConventions(LocalDate referenceDate, BusinessdayCalendar businessdayCalendar) {
+		final int			spotOffsetDays = 2;
+		final String		forwardStartPeriod = "0D";
+		final String		maturity = "2Y";
+		final String		frequency = "semiannual";
+		final String		daycountConvention = "30/360";
 
-		final LocalDate	referenceDate = LocalDate.of(2014, Month.AUGUST, 12);
+		return ScheduleGenerator.createScheduleFromConventions(referenceDate, spotOffsetDays, forwardStartPeriod, maturity, frequency, daycountConvention, "first", "following", businessdayCalendar, -2, 0);	
+	}
+	
+	
+	public static LIBORModelMonteCarloSimulationModel createMultiCurveLIBORMarketModel(LocalDate referenceDate, final int numberOfPaths, final int numberOfFactors, final double correlationDecayParam) throws CalculationException {
 
 		// Create the forward curve (initial value of the LIBOR market model)
 		final ForwardCurveInterpolation forwardCurveInterpolation = ForwardCurveInterpolation.createForwardCurveFromForwards(
@@ -137,14 +177,14 @@ public class SDCCollateralizedMCSimulation {
 				ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
 				null,
 				null,
-				new double[] {0.5 , 1.0 , 2.0 , 5.0 , 40.0}	/* fixings of the forward */,
+				new double[] {0.5 , 1.0 , 2.0 , 5.0 , 10.0}	/* fixings of the forward */,
 				new double[] {0.05, 0.05, 0.05, 0.05, 0.05}	/* forwards */
 				);
 
 		// Create the discount curve
 		final DiscountCurveInterpolation discountCurveInterpolation = DiscountCurveInterpolation.createDiscountCurveFromZeroRates(
 				"discountCurve"								/* name of the curve */,
-				new double[] {0.5 , 1.0 , 2.0 , 5.0 , 40.0}	/* maturities */,
+				new double[] {0.5 , 1.0 , 2.0 , 5.0 , 10.0}	/* maturities */,
 				new double[] {0.04, 0.04, 0.04, 0.04, 0.05}	/* zero rates */
 				);
 
@@ -160,14 +200,14 @@ public class SDCCollateralizedMCSimulation {
 		 * Create the libor tenor structure and the initial values
 		 */
 		final double liborPeriodLength	= 0.5;
-		final double liborRateTimeHorzion	= 40.0;
+		final double liborRateTimeHorzion	= 10.0;
 		final TimeDiscretizationFromArray liborPeriodDiscretization = new TimeDiscretizationFromArray(0.0, (int) (liborRateTimeHorzion / liborPeriodLength), liborPeriodLength);
 
 		/*
 		 * Create a simulation time discretization
 		 */
-		final double lastTime	= 40.0;
-		final double dt		= 0.5;
+		final double lastTime	= 10.0;
+		final double dt		= 1.0/400.0;
 
 		final TimeDiscretizationFromArray timeDiscretizationFromArray = new TimeDiscretizationFromArray(0.0, (int) (lastTime / dt), dt);
 
