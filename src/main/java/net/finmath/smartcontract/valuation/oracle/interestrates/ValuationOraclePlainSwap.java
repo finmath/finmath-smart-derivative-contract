@@ -91,8 +91,7 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				final Stream<CalibrationSpecProvider> allCalibrationItems =
 						scenario.getDataAsCalibrationDataPointStream(parser);
 				List<CalibrationDataItem> fixings = scenario.getDataPoints().stream().filter(
-						cdi -> cdi.getSpec().getProductName().equals("Fixing") || cdi.getSpec().getProductName().equals(
-								"Deposit")).toList();
+						cdi -> cdi.getSpec().getProductName().equals("Fixing")).toList();
 				Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
 				// TODO check conventions for 1-day OIS -> uses CalibrationSpecProviderOis
 				final Optional<CalibrationResult> optionalCalibrationResult =

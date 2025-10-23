@@ -131,7 +131,7 @@ class SettlementServiceTest {
 
 		assertTrue(settlementString.contains("REGULAR"));
 		assertFalse(settlementString.contains("INITIAL"));
-		assertTrue(settlementString.contains("<marginValue>1390792.42</marginValue>"));
+		assertTrue(settlementString.contains("<marginValue>1393334.34</marginValue>"));
 		assertTrue(settlementString.contains("EUB6FIX6M"));
 		assertTrue(settlementString.contains("ESTRFIX1D"));
 		assertTrue(settlementString.contains("<item><id>EUB6FIX6M</id><value>0.0521</value><timeStamp>20080917-170000</timeStamp></item>"));
