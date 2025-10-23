@@ -219,7 +219,7 @@ public class FlowScheduleCalculator {
 		try {
 			final Stream<CalibrationSpecProvider> calibrationItems = calibrationDataset.getDataAsCalibrationDataPointStream(parser);
 			List<CalibrationDataItem> fixings = calibrationDataset.getDataPoints().stream().filter(
-					cdi -> cdi.getSpec().getProductName().equals(FIXING) || cdi.getSpec().getProductName().equals(DEPOSIT)).toList();
+					cdi -> cdi.getSpec().getProductName().equals(FIXING)).toList();
 
 			Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
 			final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(calibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
