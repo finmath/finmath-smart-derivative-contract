@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Calculation of the settlement using Smart Derivative Contract with an Swap contained in a FPML,
+ * Calculation of the settlement using Smart Derivative Contract with a Swap contained in a FPML,
  * using a valuation oracle with historic market data.
  * For details see the corresponding white paper at SSRN.
  *

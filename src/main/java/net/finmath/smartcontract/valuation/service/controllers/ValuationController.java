@@ -10,6 +10,7 @@ package net.finmath.smartcontract.valuation.service.controllers;
 import net.finmath.smartcontract.api.ValuationApi;
 import net.finmath.smartcontract.model.*;
 import net.finmath.smartcontract.valuation.client.ValuationClient;
+import net.finmath.smartcontract.valuation.implementation.FlowScheduleCalculator;
 import net.finmath.smartcontract.valuation.implementation.MarginCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,6 +166,24 @@ public class ValuationController implements ValuationApi {
 			throw new SDCException(ExceptionId.SDC_MARGIN_CALCULATION_ERROR, e.getMessage());
 		}
 	}
+
+	@Override
+	public ResponseEntity<SwapFlowScheduleResponse> generateFlowSchedule(SwapFlowScheduleRequest swapFlowScheduleRequest) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add(RESPONDED, "swapSchedule");
+		SwapFlowScheduleResponse swapScheduleResponse;
+		try {
+			FlowScheduleCalculator flowScheduleCalculator = new FlowScheduleCalculator();
+			String flowScheduleSwapXml = flowScheduleCalculator.getFlowScheduleSwapXml(swapFlowScheduleRequest.getTradeData(), swapFlowScheduleRequest.getMarketData());
+			swapScheduleResponse = new SwapFlowScheduleResponse();
+			swapScheduleResponse.setGeneratedSwapSchedule(flowScheduleSwapXml);
+			return ResponseEntity.ok(swapScheduleResponse);
+		} catch (Exception e) {
+			logger.error(FAILED_CALCULATION, e);
+			throw new SDCException(ExceptionId.SDC_FLOW_SCHEDULE_ERROR, e.getMessage());
+		}
+	}
+
 
 	/**
 	 * Request mapping for test

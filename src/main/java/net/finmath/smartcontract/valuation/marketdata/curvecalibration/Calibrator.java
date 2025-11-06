@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public class Calibrator {
 
 	public static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
+	public static final String FORWARD_EUR_6M = "forward-EUR-6M";
 
 	private final List<CalibrationDataItem> fixings;
 	private final LocalDateTime referenceDateTime;
@@ -64,14 +65,16 @@ public class Calibrator {
 				ctx), get6MForwardCurve(ctx)};
 	}
 
+	/*
+	We build the curve w.r.t to the reference Date AND Time, i.e. the referenceDateTime represents the time point 0.0 of the curve
+	Only the fixing dates of the historical fixings are relevant, i.e. we ignore the fixing time within a day and measure the previous fixings relative to the referenceDateTime in whole days (no day fractions)
+	The calibration items and the swap schedule use LocalDate exclusively, i.e. the curve points and schedule dates are also measured in whole days relative to the referenceDateTime / time 0.0
+	*/
 	private DiscountCurveInterpolation getOisDiscountCurve(final CalibrationContext ctx) {
 		ArrayList<Double> fixingValuesList = new ArrayList<>();
 		ArrayList<Double> fixingTimesList = new ArrayList<>();
 		ArrayList<Double> dfList = new ArrayList<>();
 		ArrayList<Double> dfTimesList = new ArrayList<>();
-		// We build the curve w.r.t to the reference Date AND Time, i.e. the referenceDateTime represents the time point 0.0 of the curve
-		// Only the fixing dates of the historical fixings are relevant, i.e. we ignore the fixing time within a day and measure the previous fixings relative to the referenceDateTime in whole days (no day fractions)
-		// The calibration items and the swap schedule use LocalDate exclusively, i.e. the curve points and schedule dates are also measured in whole days relative to the referenceDateTime / time 0.0
 		fixings.stream().filter(x -> x.getCurveName().equals("ESTR"))
 				.sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
 				.forEach(x -> {
@@ -168,7 +171,7 @@ public class Calibrator {
 				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDateTime, x))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
-			return new ForwardCurveInterpolation("forward-EUR-6M",
+			return new ForwardCurveInterpolation(FORWARD_EUR_6M,
 					ctx.getReferenceDate(),
 					"6M",
 					new BusinessdayCalendarExcludingTARGETHolidays(),
@@ -192,7 +195,7 @@ public class Calibrator {
 				CurveInterpolation.InterpolationEntity.VALUE,
 				ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
 				DISCOUNT_EUR_OIS, null, fixingTimes, fixingValues);
-		ForwardCurve forwardPart = new ForwardCurveInterpolation("forward-EUR-6M",
+		ForwardCurve forwardPart = new ForwardCurveInterpolation(FORWARD_EUR_6M,
 				ctx.getReferenceDate(),
 				"6M",
 				new BusinessdayCalendarExcludingTARGETHolidays(),

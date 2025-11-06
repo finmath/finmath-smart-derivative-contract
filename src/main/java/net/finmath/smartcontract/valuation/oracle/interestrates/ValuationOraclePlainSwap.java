@@ -38,6 +38,9 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 		VALUE_PAYER_LEG
 	}
 
+	private static final String FIXING = "Fixing";
+	private static final String DEPOSIT = "Deposit";
+
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
 	private final List<CalibrationDataset> scenarioList;
 	private final Map<String, AnalyticProduct> products;
@@ -81,53 +84,42 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
 			final CalibrationDataset scenario = optionalScenario.get();
-			// TODO this is only a hotfix, the ESTR OIS MUST be included in the calibration items!!
-			addMissingOverNightRate(scenario);
+			// Add most recent published overnight rate as proxy for discounting from t=0 to t+1
+			addOvernightDepositRate(scenario);
+			AnalyticModel calibratedModel = getCalibratedModel(scenario, marketDataTime);
+			final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(marketDataTime, evaluationDate);
 
-			final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-
-			try {
-
-				final Stream<CalibrationSpecProvider> allCalibrationItems =
-						scenario.getDataAsCalibrationDataPointStream(parser);
-				List<CalibrationDataItem> fixings = scenario.getDataPoints().stream().filter(
-						cdi -> cdi.getSpec().getProductName().equals("Fixing") || cdi.getSpec().getProductName().equals(
-								"Deposit")).toList();
-				Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
-				// TODO check conventions for 1-day OIS -> uses CalibrationSpecProviderOis
-				final Optional<CalibrationResult> optionalCalibrationResult =
-						calibrator.calibrateModel(allCalibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
-				AnalyticModel calibratedModel = optionalCalibrationResult.orElseThrow().getCalibratedModel();
-
-				final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(marketDataTime,evaluationDate);
-						//referenceDate.atStartOfDay(),
-						//marketDataTime);
-
-				Map<String,BigDecimal> values = (
-						products.entrySet().stream().collect(Collectors.toMap(
-								e -> e.getKey(),
-								e -> BigDecimal.valueOf(e.getValue().getValue(evaluationTime, calibratedModel)).setScale(scale,RoundingMode.HALF_UP))));
-
-//				final double valueWithCurves = product.getValue(evaluationTime, calibratedModel) * notionalAmount;
-
-				return values;
-//				return rounding.applyAsDouble(valueWithCurves);
-			} catch (final Exception e) {
-				throw new SDCException(ExceptionId.SDC_CALIBRATION_ERROR, e.getMessage());
-			}
+			Map<String,BigDecimal> values = (
+					products.entrySet().stream().collect(Collectors.toMap(
+							e -> e.getKey(),
+							e -> BigDecimal.valueOf(e.getValue().getValue(evaluationTime, calibratedModel)).setScale(scale,RoundingMode.HALF_UP))));
+			return values;
 		} else {
 			return null;
 		}
 	}
 
-	private void addMissingOverNightRate(CalibrationDataset calibrationDataset) {
-		// If overnight rate is present in calibration data items, do nothing
-		Optional<CalibrationDataItem> oisRateOptional = calibrationDataset.getDataPoints().stream().filter(
-				cdi -> cdi.getSpec().getKey().equals("EURESTSD") || cdi.getSpec().getKey().equals("EUREST1D")).findAny(); // Correct key name for OIS instrument?
-		if (oisRateOptional.isPresent()) {
-			return;
+
+	private AnalyticModel getCalibratedModel(CalibrationDataset calibrationDataset, LocalDateTime marketDataTime) {
+		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
+		try {
+			final Stream<CalibrationSpecProvider> calibrationItems = calibrationDataset.getDataAsCalibrationDataPointStream(parser);
+			List<CalibrationDataItem> fixings = calibrationDataset.getDataPoints().stream().filter(
+					cdi -> cdi.getSpec().getProductName().equals(FIXING)).toList();
+
+			Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
+			final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(calibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
+
+			AnalyticModel calibratedModel = optionalCalibrationResult.orElseThrow().getCalibratedModel();
+			return calibratedModel;
+		} catch (final Exception e) {
+			throw new SDCException(ExceptionId.SDC_CALIBRATION_ERROR, e.getMessage());
 		}
-		// Search for nearest ESTR fixing
+	}
+
+
+	// Search for the nearest ESTR fixing and add it to the calibration items as 1-day discount rate proxy
+	private void addOvernightDepositRate(CalibrationDataset calibrationDataset) {
 		List<CalibrationDataItem> estrFixings = calibrationDataset.getFixingDataItems().stream().filter(fixingItem ->
 				fixingItem.getSpec().getCurveName().equals("ESTR") &&
 						fixingItem.getSpec().getMaturity().equals("1D")).toList();
@@ -140,9 +132,9 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 					})
 					.orElse(null);
 			if (nearestFixing != null) {
-				CalibrationDataItem.Spec oisCalibrationItemSpec = new CalibrationDataItem.Spec("EUREST1D", "ESTR","Swap-Rate","1D");
-				CalibrationDataItem oisCalibrationItem = new CalibrationDataItem(oisCalibrationItemSpec, nearestFixing.getQuote(), nearestFixing.getDateTime());
-				calibrationDataset.getCalibrationDataItems().add(oisCalibrationItem);
+				CalibrationDataItem.Spec calibrationItemSpecON = new CalibrationDataItem.Spec("EUREST1D", "ESTR","Overnight-Rate","1D");
+				CalibrationDataItem calibrationItemON = new CalibrationDataItem(calibrationItemSpecON, nearestFixing.getQuote(), nearestFixing.getDateTime());
+				calibrationDataset.getCalibrationDataItems().add(calibrationItemON);
 			}
 		}
 	}

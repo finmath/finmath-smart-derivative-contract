@@ -926,7 +926,9 @@
                     </gitDescribe>
                 </configuration>
             </plugin>
-
+            <!--build does not work when this plugin is enabled
+            and the download is blocked by the IT department-->
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -941,6 +943,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>

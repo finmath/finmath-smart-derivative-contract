@@ -168,7 +168,7 @@ class JAXBTests {
 
 	@Test
 	void handlerTest() throws java.lang.Exception {
-		final String generatorPath = "net.finmath.smartcontract.product.xml/smartderivativecontract.xml";
+		final String generatorPath = "net.finmath.smartcontract.product.xml/smartderivativecontract_with_rics.xml";
 		final String generatorFile = new String(JAXBTests.class.getClassLoader().getResourceAsStream(generatorPath).readAllBytes(), StandardCharsets.UTF_8);
 
 		final String marketDataProvider = "refinitiv";
@@ -180,6 +180,8 @@ class JAXBTests {
 		PlainSwapEditorHandler handler = new PlainSwapEditorHandler(request, generatorFile, schemaPath, projectVersion);
 		String fpml = handler.getContractAsXmlString();
 
+		System.out.println(fpml);
+
 		//final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/legacy/md_testset_refinitiv.xml").readAllBytes(), StandardCharsets.UTF_8);
 		final String marketData = new String(JAXBTests.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_rics.xml").readAllBytes(), StandardCharsets.UTF_8);
 
@@ -188,32 +190,35 @@ class JAXBTests {
 
 		double value = valuationResult.getValue().doubleValue();
 
-		assertEquals(-881044.86, value, 0.005, "Valuation");
+		assertEquals(-890732.84, value, 0.005, "Valuation");
 		assertTrue(fpml.contains("<address>"+PARTY1_DLT_ADDRESS+"</address>"));
 		assertTrue(fpml.contains("<address>"+PARTY2_DLT_ADDRESS+"</address>"));
 		System.out.println(valuationResult);
 	}
 
+	//commented out values are optional, if not set they are retrieved via the defined template
 	private PlainSwapOperationRequest generateRequest(String marketDataProvider) throws java.lang.Exception {
-
+		/*
 		ObjectMapper objectMapper = JsonMapper.builder()
 				.addModule(new JavaTimeModule())
 				.build();
 
 		final String fullSymbolListFromTemplate = new ClassPathResource(
 				"references" + File.separator + "template2_symbolslist.json").getContentAsString(
-				StandardCharsets.UTF_8);
+				StandardCharsets.UTF_8);*/
 
 		final Counterparty firstCounterparty = new Counterparty().baseUrl("aaa").bicCode("ABCDXXXX")
 				.fullName("PartyDoubleTest").dltAddress(PARTY1_DLT_ADDRESS);
-		final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
+		/*final PaymentFrequency floatingPaymentFrequency = new PaymentFrequency().period("M").periodMultiplier(6)
 				.fullName("Semiannual");
 		final PaymentFrequency fixedPaymentFrequency = new PaymentFrequency().period("Y").periodMultiplier(1)
-				.fullName("Annual");
+				.fullName("Annual");*/
 		final Counterparty secondCounterparty = new Counterparty().baseUrl("bbb").bicCode("EFDGXXXX")
 				.fullName("PartyTest").dltAddress(PARTY2_DLT_ADDRESS);
-		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest().firstCounterparty(
-						firstCounterparty).secondCounterparty(secondCounterparty).marginBufferAmount(30000.0)
+		final PlainSwapOperationRequest plainSwapOperationRequest = new PlainSwapOperationRequest()
+				.firstCounterparty(firstCounterparty)
+				.secondCounterparty(secondCounterparty)
+				.marginBufferAmount(30000.0)
 				.terminationFeeAmount(
 						10000.0)
 				.currency("EUR")
@@ -252,25 +257,19 @@ class JAXBTests {
 				.floatingPayingParty(
 						firstCounterparty)
 				.fixedRate(3.95)
-				.fixedDayCountFraction(
-						"30E/360")
-				.fixedPaymentFrequency(
-						fixedPaymentFrequency)
-				.floatingRateIndex(
-						"EURIBOR 6M")
-				.floatingDayCountFraction(
-						"ACT/360")
-				.floatingFixingDayOffset(
-						-2)
-				.floatingPaymentFrequency(
-						floatingPaymentFrequency)
+				//.fixedDayCountFraction("30E/360")
+				//.fixedPaymentFrequency(fixedPaymentFrequency)
+				//.floatingRateIndex("EURIBOR 6M")
+				//.floatingDayCountFraction("ACT/360")
+				//.floatingFixingDayOffset(-2)
+				//.floatingPaymentFrequency(floatingPaymentFrequency)
 				.notionalAmount(
 						10000000.00)
-				.valuationSymbols(
+				/*.valuationSymbols(
 						objectMapper.readerForListOf(
 										FrontendItemSpec.class)
 								.readValue(
-										fullSymbolListFromTemplate))
+										fullSymbolListFromTemplate))*/
 				.marketDataProvider(marketDataProvider)
 				.receiverPartyID("party2")
 				.fixPayerPartyID("party2");
