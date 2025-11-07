@@ -45,6 +45,8 @@
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-central-publishing-maven.version>0.8.0</maven-central-publishing-maven.version>
         <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
         <spring-boot-maven-plugin.version>3.0.5</spring-boot-maven-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
@@ -926,13 +928,10 @@
                     </gitDescribe>
                 </configuration>
             </plugin>
-            <!--build does not work when this plugin is enabled
-            and the download is blocked by the IT department-->
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven-gpg-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -943,7 +942,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
