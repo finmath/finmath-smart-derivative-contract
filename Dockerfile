@@ -14,5 +14,5 @@ RUN mvn -f /usr/src/app/pom.xml clean package spring-boot:repackage -DskipTests
 # finmath-smart-derivative-contract-1.2.10
 #
 FROM openjdk:17 as RunStage
-COPY --from=BuildStage /usr/src/app/target/finmath-smart-derivative-contract-1.2.10.jar /usr/app/finmath-smart-derivative-contract-1.2.10.jar
-ENTRYPOINT ["java", "-jar", "/usr/app/finmath-smart-derivative-contract-1.2.10.jar"]
+COPY --from=BuildStage /usr/src/app/target/finmath-smart-derivative-contract-1.2.12.jar /usr/app/finmath-smart-derivative-contract-1.2.12.jar
+ENTRYPOINT ["java", "-jar", "/usr/app/finmath-smart-derivative-contract-1.2.12.jar"]
