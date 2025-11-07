@@ -4,6 +4,7 @@ net.finmath.smartcontract.contract
 net.finmath.smartcontract.demo
 net.finmath.smartcontract.model
 net.finmath.smartcontract.product
+net.finmath.smartcontract.product.flowschedule
 net.finmath.smartcontract.product.xml
 net.finmath.smartcontract.settlement
 net.finmath.smartcontract.statemachine
