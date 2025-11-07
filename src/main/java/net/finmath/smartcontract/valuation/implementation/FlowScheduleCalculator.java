@@ -2,6 +2,7 @@ package net.finmath.smartcontract.valuation.implementation;
 
 import net.finmath.marketdata.model.AnalyticModel;
 import net.finmath.marketdata.model.curves.DiscountCurve;
+import net.finmath.marketdata.model.curves.ForwardCurve;
 import net.finmath.marketdata.products.AnalyticProduct;
 import net.finmath.modelling.descriptor.InterestRateSwapLegProductDescriptor;
 import net.finmath.modelling.descriptor.InterestRateSwapProductDescriptor;
@@ -165,20 +166,27 @@ public class FlowScheduleCalculator {
 			InterestRateSwapLegProductDescriptor singlePeriodSwapLeg = new InterestRateSwapLegProductDescriptor(forwardCurveName, discountCurveName, scheduleDescriptor, notionals[i], spreads[i], isNotionalExchanged);
 			AnalyticProduct product = (AnalyticProduct) productFactory.getProductFromDescriptor(singlePeriodSwapLeg);
 			DiscountCurve discountCurve = model.getDiscountCurve(discountCurveName);
-
-			double flowAmount 		= product.getValue(0.0, model); // Flow schedule is always calculated as of marketDataTime = 0.0
-			double periodLength   	= schedule.getPeriodLength(0); // always periodIndex 0 for single period swap leg
+			ForwardCurve forwardCurve 	= model.getForwardCurve(forwardCurveName);
+			double npv 				= product.getValue(0.0, model); // Flow schedule is always calculated as of marketDataTime = 0.0
 			double discountFactor 	= discountCurve.getDiscountFactor(scheduleFromPeriods.getPayment(i) + productToModelTimeOffset); // payment time relative to marketDataTime
-			double rate 			= flowAmount / discountFactor / periodLength / notionals[i]; // "reverse" swap leg getValue() for each period
-			if (legType.equals(LegType.LEG_PAYER)) {
-				flowAmount = (-1.0) * flowAmount;
+			double periodLength   	= schedule.getPeriodLength(0); // always periodIndex 0 for single period swap leg
+			double rate;
+			if (forwardCurve != null) {
+				rate = forwardCurve.getForward(model, scheduleFromPeriods.getFixing(i) + productToModelTimeOffset);
+			} else {
+				rate = npv / discountFactor / periodLength / notionals[i]; // "reverse" swap leg getValue() for each period
 			}
-			flowScheduleSwapLegPeriods.add(createFlowScheduleSwapLegPeriod(period, notionals[i], flowAmount, rate));
+			double flow = notionals[i] * periodLength * rate;
+			if (legType.equals(LegType.LEG_PAYER)) {
+				flow = (-1.0) * flow;
+				npv  = (-1.0) * npv;
+			}
+			flowScheduleSwapLegPeriods.add(createFlowScheduleSwapLegPeriod(period, notionals[i], rate, flow, npv));
 		}
 		return flowScheduleSwapLegPeriods;
 	}
 
-	private FlowScheduleSwapLegPeriod createFlowScheduleSwapLegPeriod(Period period, double notional, double flowAmount, double rate) {
+	private FlowScheduleSwapLegPeriod createFlowScheduleSwapLegPeriod(Period period, double notional, double rate, double flow, double npv) {
 		FlowScheduleSwapLegPeriod flowScheduleSwapLegPeriod = new FlowScheduleSwapLegPeriod();
 		// TODO Replace atStartOfDay with correct settlementTime
 		flowScheduleSwapLegPeriod.setFixingDate(period.getFixing().atStartOfDay());
@@ -187,8 +195,8 @@ public class FlowScheduleCalculator {
 		flowScheduleSwapLegPeriod.setPaymentDate(period.getPayment().atStartOfDay());
 		flowScheduleSwapLegPeriod.setNotional(notional);
 		flowScheduleSwapLegPeriod.setRate(rate);
-		flowScheduleSwapLegPeriod.setFlowAmount(flowAmount);
-
+		flowScheduleSwapLegPeriod.setFlow(flow);
+		flowScheduleSwapLegPeriod.setNpv(npv);
 		return flowScheduleSwapLegPeriod;
 	}
 
@@ -212,8 +220,6 @@ public class FlowScheduleCalculator {
 	private AnalyticModel calibrateModel(String productData, String marketData) {
 		SmartDerivativeContractDescriptor productDescriptor = getSmartderivativeContractDescriptor(productData);
 		CalibrationDataset calibrationDataset = CalibrationParserDataItems.getCalibrationDataSetFromXML(marketData, productDescriptor.getMarketdataItemList());
-		// Add most recent published overnight rate as proxy for discounting from t=0 to t+1
-		addOvernightDepositRate(calibrationDataset);
 		LocalDateTime marketDataTime = calibrationDataset.getDate();
 		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 		try {
@@ -228,27 +234,6 @@ public class FlowScheduleCalculator {
 			return calibratedModel;
 		} catch (final Exception e) {
 			throw new SDCException(ExceptionId.SDC_CALIBRATION_ERROR, e.getMessage());
-		}
-	}
-
-	// Search for the nearest ESTR fixing and add it to the calibration items as 1-day discount rate proxy
-	private void addOvernightDepositRate(CalibrationDataset calibrationDataset) {
-		List<CalibrationDataItem> estrFixings = calibrationDataset.getFixingDataItems().stream().filter(fixingItem ->
-				fixingItem.getSpec().getCurveName().equals("ESTR") &&
-						fixingItem.getSpec().getMaturity().equals("1D")).toList();
-		if (!estrFixings.isEmpty()) {
-			CalibrationDataItem nearestFixing = estrFixings.stream()
-					.min((item1, item2) -> {
-						double diff1 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item1.getDateTime());
-						double diff2 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item2.getDateTime());
-						return Double.compare(Math.abs(diff1), Math.abs(diff2));
-					})
-					.orElse(null);
-			if (nearestFixing != null) {
-				CalibrationDataItem.Spec calibrationItemSpecON = new CalibrationDataItem.Spec("EUREST1D", "ESTR","Overnight-Rate","1D");
-				CalibrationDataItem calibrationItemON = new CalibrationDataItem(calibrationItemSpecON, nearestFixing.getQuote(), nearestFixing.getDateTime());
-				calibrationDataset.getCalibrationDataItems().add(calibrationItemON);
-			}
 		}
 	}
 

@@ -17,12 +17,12 @@ import static net.finmath.smartcontract.valuation.marketdata.curvecalibration.Ca
  *
  * @author Raphael Prandtl
  */
-public class CalibrationSpecProviderON implements CalibrationSpecProvider {
+public class CalibrationSpecProviderOvernightRate implements CalibrationSpecProvider {
 	private final String maturityLabel;
 	private final String frequency;
 	private final double overnightRate;
 
-	public CalibrationSpecProviderON(final String maturityLabel, final String frequency, final double overnightRate) {
+	public CalibrationSpecProviderOvernightRate(final String maturityLabel, final String frequency, final double overnightRate) {
 		this.maturityLabel = maturityLabel;
 		this.frequency = frequency;
 		this.overnightRate = overnightRate;

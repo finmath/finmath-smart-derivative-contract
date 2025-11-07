@@ -24,7 +24,8 @@ import java.time.LocalDateTime;
 		"paymentDate",
 		"notional",
 		"rate",
-		"flowAmount"
+		"flow",
+		"npv"
 })
 public class FlowScheduleSwapLegPeriod {
 	LocalDateTime 	fixingDate;
@@ -33,7 +34,8 @@ public class FlowScheduleSwapLegPeriod {
 	LocalDateTime 	paymentDate;
 	double		  	notional;
 	double 		 	rate;
-	double 		  	flowAmount;
+	double 		  	flow;
+	double 			npv;
 
 	@XmlElement(name = "fixingDate")
 	@XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
@@ -93,15 +95,22 @@ public class FlowScheduleSwapLegPeriod {
 		this.rate = rate;
 	}
 
-	@XmlElement(name = "flowAmount")
-	public double getFlowAmount() {
-		return flowAmount;
+	@XmlElement(name = "flow")
+	public double getFlow() {
+		return flow;
 	}
 
-	public void setFlowAmount(final double flowAmount) {
-		this.flowAmount = flowAmount;
+	public void setFlow(final double flow) {
+		this.flow = flow;
 	}
 
+	@XmlElement(name = "npv")
+	public double getNpv() {
+		return npv;
+	}
 
+	public void setNpv(final double npv) {
+		this.npv = npv;
+	}
 
 }

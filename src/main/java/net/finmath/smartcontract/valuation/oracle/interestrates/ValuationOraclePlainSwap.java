@@ -39,7 +39,6 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 	}
 
 	private static final String FIXING = "Fixing";
-	private static final String DEPOSIT = "Deposit";
 
 	private final CurrencyUnit currency = Monetary.getCurrency("EUR");
 	private final List<CalibrationDataset> scenarioList;
@@ -84,8 +83,6 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 				scenarioList.stream().filter(scenario -> scenario.getDate().equals(marketDataTime)).findAny();
 		if (optionalScenario.isPresent()) {
 			final CalibrationDataset scenario = optionalScenario.get();
-			// Add most recent published overnight rate as proxy for discounting from t=0 to t+1
-			addOvernightDepositRate(scenario);
 			AnalyticModel calibratedModel = getCalibratedModel(scenario, marketDataTime);
 			final double evaluationTime = FloatingpointDate.getFloatingPointDateFromDate(marketDataTime, evaluationDate);
 
@@ -117,25 +114,4 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 		}
 	}
 
-
-	// Search for the nearest ESTR fixing and add it to the calibration items as 1-day discount rate proxy
-	private void addOvernightDepositRate(CalibrationDataset calibrationDataset) {
-		List<CalibrationDataItem> estrFixings = calibrationDataset.getFixingDataItems().stream().filter(fixingItem ->
-				fixingItem.getSpec().getCurveName().equals("ESTR") &&
-						fixingItem.getSpec().getMaturity().equals("1D")).toList();
-		if (!estrFixings.isEmpty()) {
-			CalibrationDataItem nearestFixing = estrFixings.stream()
-					.min((item1, item2) -> {
-						double diff1 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item1.getDateTime());
-						double diff2 = FloatingpointDate.getFloatingPointDateFromDate(calibrationDataset.getDate(), item2.getDateTime());
-						return Double.compare(Math.abs(diff1), Math.abs(diff2));
-					})
-					.orElse(null);
-			if (nearestFixing != null) {
-				CalibrationDataItem.Spec calibrationItemSpecON = new CalibrationDataItem.Spec("EUREST1D", "ESTR","Overnight-Rate","1D");
-				CalibrationDataItem calibrationItemON = new CalibrationDataItem(calibrationItemSpecON, nearestFixing.getQuote(), nearestFixing.getDateTime());
-				calibrationDataset.getCalibrationDataItems().add(calibrationItemON);
-			}
-		}
-	}
 }
