@@ -17,7 +17,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,9 +106,10 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
 		try {
 			final Stream<CalibrationSpecProvider> calibrationItems = calibrationDataset.getDataAsCalibrationDataPointStream(parser);
-			List<CalibrationDataItem> fixings = calibrationDataset.getDataPoints().stream().filter(
-					cdi -> cdi.getSpec().getProductName().equals(FIXING)).toList();
-
+			List<CalibrationDataItem> fixings = calibrationDataset.getDataPoints().stream()
+					.filter(cdi -> cdi.getSpec().getProductName().equals(FIXING))
+					.collect(Collectors.toCollection(ArrayList::new));
+			fixings.add(addMissingFixing());
 			Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
 			final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(calibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
 
@@ -117,6 +120,17 @@ public class ValuationOraclePlainSwap implements ValuationOracle {
 		}
 	}
 
+	/*
+    <item>
+        <id>EURIBOR6MD=</id>
+        <value>0.02146</value>
+        <timeStamp>20251113-140046</timeStamp>
+    </item>
+ 	*/
+	private CalibrationDataItem addMissingFixing() {
+		CalibrationDataItem.Spec missingFixingSpec = new CalibrationDataItem.Spec("EURIBOR6MD=", "Euribor6M", "Fixing", "6M");
+		return new CalibrationDataItem(missingFixingSpec, 0.02146, LocalDateTime.of(LocalDate.of(2025,11,13), LocalTime.of(14, 00, 46)));
+	}
 
 	// Search for the nearest ESTR fixing and add it to the calibration items as 1-day discount rate proxy
 	private void addOvernightDepositRate(CalibrationDataset calibrationDataset) {
