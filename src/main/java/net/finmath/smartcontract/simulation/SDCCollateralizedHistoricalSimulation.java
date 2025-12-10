@@ -1,5 +1,6 @@
 package net.finmath.smartcontract.simulation;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,15 +25,12 @@ import net.finmath.smartcontract.valuation.marketdata.curvecalibration.Calibrato
 import net.finmath.time.FloatingpointDate;
 import net.finmath.time.Period;
 import net.finmath.time.Schedule;
+import net.finmath.time.ScheduleGenerator;
+import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
 
 
 public class SDCCollateralizedHistoricalSimulation {
 	
-	private static final String FIXING = "Fixing";
-	private static final String DEPOSIT = "Deposit";
-	private static final String FORWARD_EUR_6M = "forward-EUR-6M";
-	private static final String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
-
 	private static double notional = 1.0E7;
 	private static double marginLimitLower = notional * 0.005;
 	private static double marginLimitUpper = notional * 0.005;
@@ -50,50 +48,36 @@ public class SDCCollateralizedHistoricalSimulation {
 
 	public static void main(String args[]) throws Exception {
 
-		final LocalDate startDate = LocalDate.of(2007, 1, 1);
-		final LocalDate maturity = LocalDate.of(2012, 1, 3);
-		final String fileName = "timeseriesdatamap.json";
-		final List<CalibrationDataset> scenarioList = CalibrationParserDataItems.getScenariosFromJsonFile(fileName).stream().filter(S -> S.getDate().toLocalDate().isAfter(startDate)).filter(S -> S.getDate().toLocalDate().isBefore(maturity)).collect(Collectors.toList());
-
-		/* Initialize result maps with first scenario date*/
-		initializeValueMaps(scenarioList.get(0).getDate());
-
-		/*Generate Sample Product */
-		final String MaturityKey = "5Y";
-		final String forwardCurveKey = "forward-EUR-6M";
-		final String discountCurveKey = "discount-EUR-OIS";
-		final LocalDate productStartDate = scenarioList.get(0).getDate().toLocalDate();
+		/*Load historical market rates for curve bootstrapping*/
+		MarketDataLoader discountCurveLoader = new MarketDataLoader(Path.of("D:/Papers/MarketData/20251203-20150101_ESTR.csv"));
+		List<MarketDataSnapshot> discountCurveSnapshots = discountCurveLoader.load();
+		MarketDataLoader forwardCurveLoader = new MarketDataLoader(Path.of("D:/Papers/MarketData/20251203-20150101_6M.csv"));
+		List<MarketDataSnapshot> forwardCurveSnapshots = forwardCurveLoader.load();
+		
+		MarketDataSnapshot initialForwardRates = forwardCurveSnapshots.get(forwardCurveSnapshots.size() - 1);
+		final LocalDate startDate = initialForwardRates.getValuationDate();
+		
+		/*Generate 6M Payer Swap */
+		final String maturityKey = "5Y";
+		final Schedule scheduleRec = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityKey, "semiannual", "ACT/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
+		final Schedule schedulePay = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityKey, "annual", "E30/360", "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 		/* Product starts at Par */
-		/*final double fixRate = scenarioList.get(0).getDataPoints().stream()
-				.filter(datapoint -> datapoint.getSpec().getCurveName().equals("Euribor6M") &&
-						datapoint.getSpec().getProductName().equals("Swap-Rate") &&
-						datapoint.getSpec().getMaturity().equals("5Y")).mapToDouble(e -> e.getQuote()).findAny().getAsDouble();*/
-		// dataset swap rate = 0.0442 -> we use the calibrated par swap rate
-		final double fixRate = 0.04419229093193379;
-		boolean isReceiveFix = true;
-		final Swap swap = IRSwapGenerator.generateAnalyticSwapObject(productStartDate, MaturityKey, notional, fixRate, isReceiveFix, forwardCurveKey, discountCurveKey);
-		//double swapRate = swap.getForwardSwapRate(((SwapLeg) swap.getLegReceiver()).getSchedule(), ((SwapLeg) swap.getLegPayer()).getSchedule(), calibratedModelPrevious.getForwardCurve(forwardCurveKey), calibratedModelPrevious);
+		final double fixRate = initialForwardRates.getQuotes()[11]; // TBSEUREUR03MEUR06M05Y
+		final Swap swap = new Swap(scheduleRec, InterestRateAnalyticCalibration.FORWARD_EUR_6M, 0.0, InterestRateAnalyticCalibration.DISCOUNT_EUR_OIS, // receiver leg
+									schedulePay, "", fixRate, InterestRateAnalyticCalibration.DISCOUNT_EUR_OIS, false); // payer leg
+		
+		/* Get combined payment dates, as legs can have different payment dates, e.g. fix leg pays only annually while float leg pays semi-annually */
+		TreeSet<LocalDate> paymentDates = getPaymentDates(scheduleRec, schedulePay);
 
-		// Legs can have different payment dates, e.g. fix leg pays only annually while float leg pays semiannually
-		SwapLeg receiverLeg = (SwapLeg) swap.getLegReceiver();
-		SwapLeg payerLeg = (SwapLeg) swap.getLegPayer();
-		List<LocalDate> paymentDatesReceiverLeg = getPaymentDates(receiverLeg);
-		List<LocalDate> paymentDatesPayerLeg = getPaymentDates(payerLeg);
-
-		// TODO check payment date logic
-		// Add row with isPaymentDate == 1 or add net cash flow A_k to outputs
-		/*
-		The swap schedule is based on LocalDate, i.e. if we value the swap on a paymentDate t_i the cash flow is already excluded in the valuation.
-		If the SDC settles daily at 15:UTC with the current value V(t_i) we assume that the cash flow occurs after the collateralization:
-			- V(t_{i-1}) and V(t_i) include the cash flow
-			- The amount Y_i of the SDC is given by: (V(t_i) + A_k) - V(t_{i-1})*(1+r_{i-1}*(t_i-t_{i-1}))
-			- After the settlement we pay (A_k - D_k) as cash
-			- Reduce the collateral accordingly C_k^+ = C_k - (A_k - D_k)
-			- Set D_K^+ to zero
-		 */
+		
 		System.out.printf(headerFormat, "Valuation Date", "Value V(t)", "Value Change Y_i", "Capped Change X_i", "Gap Amount Z_i", "Gap Account D_i", "Coll Account C_i", "Net Cashflow A_k");
-		LocalDateTime scenarioDatePrevious = scenarioList.get(0).getDate();
-		AnalyticModel calibratedModelPrevious = getCalibratedModel(scenarioList.get(0), scenarioDatePrevious);
+		
+		/* Initialize calibrator*/
+		InterestRateAnalyticCalibration calibrator = new InterestRateAnalyticCalibration();
+
+		
+		LocalDate valuationDatePrevious = startDate;
+		AnalyticModel calibratedModelPrevious = calibrator.getCalibratedModel(valuationDatePrevious, initialForww, null);
 		double valuePrevious = swap.getValue(0.0, calibratedModelPrevious); // V(t_{i-1})
 
 		double dt, accrualRate, valueCurrent;
@@ -163,6 +147,17 @@ public class SDCCollateralizedHistoricalSimulation {
 		
 	}
 
+	private CalibrationDataItem createFixingItemEur6M(LocalDate fixingDate, Double fixing) {
+		CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec("EURIBOR06M", "Euribor6M", "FIXING", "6M");
+		CalibrationDataItem item = new CalibrationDataItem(spec, fixing, fixingDate.atStartOfDay());
+		return item;
+	}
+	
+	private CalibrationDataItem createFixingItemEurOIS(LocalDate fixingDate, Double fixing) {
+		CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec("IREURDRFO_N", "ESTR", "FIXING", "1D");
+		CalibrationDataItem item = new CalibrationDataItem(spec, fixing, fixingDate.atStartOfDay());
+		return item;
+	}
 
 	// Returns the cash-flow for a swap leg on the payment date, i.e. P(T;t) = P(T;T) = 1
 	private static double getLegCashFlow (SwapLeg swapLeg, LocalDate paymentDate, List<CalibrationDataset> marketData) {
@@ -179,11 +174,13 @@ public class SDCCollateralizedHistoricalSimulation {
 
 		return notional * (spread + forwardRate) * periodLength;
 	}
-
-	private static List<LocalDate> getPaymentDates(SwapLeg swapLeg) {
-		return swapLeg.getSchedule().getPeriods().stream()
-				.map(Period::getPayment)
-				.sorted().toList();
+	
+	
+	private static TreeSet<LocalDate> getPaymentDates(Schedule... schedules) {
+	    return Arrays.stream(schedules)
+	            .flatMap(schedule -> schedule.getPeriods().stream())
+	            .map(Period::getPayment)
+	            .collect(Collectors.toCollection(TreeSet::new));
 	}
 
 	private static int getCurrentPeriodIndex(SwapLeg swapLeg, LocalDate paymentDate) {
@@ -209,32 +206,5 @@ public class SDCCollateralizedHistoricalSimulation {
 				));
 	}
 
-	private static void initializeValueMaps(LocalDateTime scenarioStartDate) {
-		Stream.of(
-				valueMap,
-				valueChangeMap,
-				cappedValueChangeMap,
-				collateralAccountMap,
-				gapAmountMap,
-				gapAccountMap
-		).forEach(map -> map.put(scenarioStartDate, 0.0));
-	}
-
-	private static AnalyticModel getCalibratedModel(CalibrationDataset calibrationDataset, LocalDateTime marketDataTime) {
-		final CalibrationParserDataItems parser = new CalibrationParserDataItems();
-		try {
-			final Stream<CalibrationSpecProvider> calibrationItems = calibrationDataset.getDataAsCalibrationDataPointStream(parser);
-			List<CalibrationDataItem> fixings = calibrationDataset.getDataPoints().stream().filter(
-					cdi -> cdi.getSpec().getProductName().equals(FIXING) || cdi.getSpec().getProductName().equals(DEPOSIT)).toList();
-
-			Calibrator calibrator = new Calibrator(fixings, new CalibrationContextImpl(marketDataTime, 1E-9));
-			final Optional<CalibrationResult> optionalCalibrationResult = calibrator.calibrateModel(calibrationItems, new CalibrationContextImpl(marketDataTime, 1E-9));
-
-			AnalyticModel calibratedModel = optionalCalibrationResult.orElseThrow().getCalibratedModel();
-			return calibratedModel;
-		} catch (final Exception e) {
-			throw new SDCException(ExceptionId.SDC_CALIBRATION_ERROR, e.getMessage());
-		}
-	}
 
 }
