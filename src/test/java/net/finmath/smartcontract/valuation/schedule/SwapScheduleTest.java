@@ -21,8 +21,8 @@ public class SwapScheduleTest {
 
 	@Test
 	void testSwapScheduleGeneration() throws Exception {
-		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_testset_with_fixings.xml").readAllBytes(), StandardCharsets.UTF_8);
-		final String productData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String marketData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net/finmath/smartcontract/valuation/client/md_settlement_oracle_refinement.xml").readAllBytes(), StandardCharsets.UTF_8);
+		final String productData = new String(ValuationClient.class.getClassLoader().getResourceAsStream("net.finmath.smartcontract.product.xml/smartderivativecontract_oracle_refinement.xml").readAllBytes(), StandardCharsets.UTF_8);
 
 		FlowScheduleCalculator flowScheduleCalculator = new FlowScheduleCalculator();
 		FlowScheduleSwap flowScheduleSwap = flowScheduleCalculator.getFlowScheduleSwap(productData, marketData);
@@ -31,7 +31,7 @@ public class SwapScheduleTest {
 		for (FlowScheduleSwapLeg flowScheduleSwapLeg : flowScheduleSwapLegs) {
 			List<FlowScheduleSwapLegPeriod> flowScheduleSwapLegPeriods = flowScheduleSwapLeg.getFlowScheduleSwapLegPeriods();
 			for (FlowScheduleSwapLegPeriod flowScheduleSwapLegPeriod : flowScheduleSwapLegPeriods) {
-				valueFlowScheduleCalculator += flowScheduleSwapLegPeriod.getFlowAmount();
+				valueFlowScheduleCalculator += flowScheduleSwapLegPeriod.getNpv();
 			}
 		}
 

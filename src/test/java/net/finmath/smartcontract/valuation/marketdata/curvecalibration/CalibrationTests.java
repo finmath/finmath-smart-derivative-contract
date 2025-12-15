@@ -57,8 +57,8 @@ class CalibrationTests {
 		As a result, when valuing a swap leg we always request forward rates and discount factors for times equal to whole day multiples. This also holds for periods, where the valuation date lies between the fixing and payment date, and we need to call the forward curve with a negative relative time (t<0) to obtain an already fixed forward rate.
 		But since the historical fixings were calculated as the distance between referenceDate.atStartOfDay() and quote.dateTime(), which differ in hours:minutes:seconds, and, therefore, are NOT whole day multiples, we never request one of the stored past fixing times and wrongly interpolate the already fixed forward rate.
 
-		To fix this issue, for now, we replaced the LocalDate type of CalibrationContext.java and Calibrator.java to LocalDateTime, set the referenceDateTime, i.e. the time 0.0 of the calibrated curves, to the exact marketDataTime, e.g. 05.05.2023 14:35:23, and store the historical relative fixing times as:
-		"referenceDataTime - quote.dateTime.with(referenceDateTime.toLocalTime())", i.e. we set the past index fixing times equal to the market data time.
+		To fix this issue, for now, we only use LocalDate for the Calibrator.java and set the referenceDateTime, i.e. the time 0.0 of the calibrated curves, to the marketDataTime.toLocalDate() and store the historical relative fixing times as:
+		"referenceDateTime.toLocalDate() - quote.dateTime.toLocalTime()"
 		With this approach the relative distance of the historical fixings are always measured in whole days and align exactly with the swap schedule, which does not care about the intraday fixing time.
 
 		In the next step, we will work on revising the finmath-library and converting the classes ScheduleFromPeriods.java and Period.java to LocalDateTime, thereby also taking intraday discounting into account.
@@ -210,6 +210,5 @@ class CalibrationTests {
 								"Error exceeded tolerance for fixing " + f.getDate() + "."));
 
 	}
-
 
 }
