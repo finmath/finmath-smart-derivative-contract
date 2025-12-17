@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
+
 public class MarketDataLoader {
 
     private final Path csvPath;
@@ -17,7 +19,7 @@ public class MarketDataLoader {
         this.csvPath = csvPath;
     }
 
-    public List<MarketDataSnapshot> load() throws IOException {
+    public List<MarketDataSnapshot> load(BusinessdayCalendar businessdayCalendar) throws IOException {
         List<MarketDataSnapshot> snapshots = new ArrayList<>();
 
         try (BufferedReader reader = Files.newBufferedReader(csvPath)) {
@@ -41,8 +43,9 @@ public class MarketDataLoader {
                 }
 
                 LocalDate date = LocalDate.parse(fields[0], dateFormatter);
+                if(!businessdayCalendar.isBusinessday(date)) continue;
+                
                 double[] quotes = new double[fields.length - 1];
-
                 for (int i = 1; i < fields.length; i++) {
                     quotes[i-1] = Double.parseDouble(fields[i]) / 100.0;
                 }

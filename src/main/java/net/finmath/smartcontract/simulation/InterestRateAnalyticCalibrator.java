@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,20 +33,28 @@ import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHo
 import net.finmath.time.daycount.DayCountConvention_ACT_360;
 
 
-public class InterestRateAnalyticCalibration {
+public class InterestRateAnalyticCalibrator {
 
 	public static String DISCOUNT_EUR_OIS = "discount-EUR-OIS";
 	public static String FORWARD_EUR_6M = "forward-EUR-6M";
 	private static String FORWARD_EUR_OIS = "forward-EUR-OIS";
 	private static String FIXED_EUR_6M = "fixed-EUR-6M";
 	
-	private List<CalibrationDataItem> fixings;	
-
-	public InterestRateAnalyticCalibration() {
-		this.fixings = new ArrayList<>();
+	
+	public enum CURVE_NAME {
+		ESTR,
+		EURIBOR06M
 	}
 	
 	
+	
+	private HashMap<CURVE_NAME, List<CalibrationDataItem>> fixings = new HashMap<>();
+	
+	public InterestRateAnalyticCalibrator() {
+	}
+	
+	
+
 	public AnalyticModel getCalibratedModel(LocalDate referenceDate, double[] discountCurveQuotes, double[] forwardCurveQuotes) throws CloneNotSupportedException, SolverException {
 		
 		final AnalyticModelFromCurvesAndVols model = new AnalyticModelFromCurvesAndVols(new Curve[] { getDiscountCurveEurOIS(referenceDate), getForwardCurveEurOIS(referenceDate), getForwardCurveEur6M(referenceDate)});
@@ -58,19 +67,37 @@ public class InterestRateAnalyticCalibration {
 		return calibratedCurves.getModel();
 	}
 	
+
+	public void addFixingItem(CURVE_NAME curveName, LocalDate fixingDate, Double fixing) {
+		switch(curveName) {
+		case ESTR:
+			this.fixings.computeIfAbsent(curveName, k -> new ArrayList<>()).add(createFixingItemEurOIS(fixingDate, fixing));
+			break;
+		case EURIBOR06M:
+			this.fixings.computeIfAbsent(curveName, k -> new ArrayList<>()).add(createFixingItemEur6M(fixingDate, fixing));
+			break;
+		}
+	}
+		
 	
-	public void addFixingItem(CalibrationDataItem fixingItem) {
-		this.fixings.add(fixingItem);
+	private CalibrationDataItem createFixingItemEur6M(LocalDate fixingDate, Double fixing) {
+		CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec("EURIBOR06M", "Euribor6M", "FIXING", "6M");
+		CalibrationDataItem item = new CalibrationDataItem(spec, fixing, fixingDate.atStartOfDay());
+		return item;
 	}
 	
+	private CalibrationDataItem createFixingItemEurOIS(LocalDate fixingDate, Double fixing) {
+		CalibrationDataItem.Spec spec = new CalibrationDataItem.Spec("IREURDRFO_N", "ESTR", "FIXING", "1D");
+		CalibrationDataItem item = new CalibrationDataItem(spec, fixing, fixingDate.atStartOfDay());
+		return item;
+	}
 	
 	private DiscountCurveInterpolation getDiscountCurveEurOIS(LocalDate referenceDate) {
 		ArrayList<Double> fixingValuesList = new ArrayList<>();
 		ArrayList<Double> fixingTimesList = new ArrayList<>();
 		ArrayList<Double> dfList = new ArrayList<>();
 		ArrayList<Double> dfTimesList = new ArrayList<>();
-		fixings.stream().filter(x -> x.getCurveName().equals("ESTR"))
-				.sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
+		this.fixings.getOrDefault(CURVE_NAME.ESTR, new ArrayList<>()).stream().sorted(Comparator.comparing(CalibrationDataItem::getDate).reversed())
 				.forEach(x -> {
 					double time = FloatingpointDate.getFloatingPointDateFromDate(
 							referenceDate,
@@ -116,7 +143,7 @@ public class InterestRateAnalyticCalibration {
 	}
 		
 	private ForwardCurve getForwardCurveEur6M(LocalDate referenceDate) {
-		double[] fixingTimes = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M")).map(x -> x.getDate())
+		double[] fixingTimes = this.fixings.getOrDefault(CURVE_NAME.EURIBOR06M, new ArrayList<>()).stream().map(x -> x.getDate())
 				.map(x -> FloatingpointDate.getFloatingPointDateFromDate(referenceDate, x))
 				.mapToDouble(Double::doubleValue).sorted().toArray();
 		if (fixingTimes.length == 0) { //if there are no fixings return empty curve
@@ -131,7 +158,7 @@ public class InterestRateAnalyticCalibration {
 					ForwardCurveInterpolation.InterpolationEntityForward.FORWARD,
 					DISCOUNT_EUR_OIS);
 		}
-		double[] fixingValues = fixings.stream().filter(x -> x.getCurveName().equals("Euribor6M"))
+		double[] fixingValues = this.fixings.getOrDefault(CURVE_NAME.EURIBOR06M, new ArrayList<>()).stream()
 				.sorted(Comparator.comparing(CalibrationDataItem::getDate)).map(CalibrationDataItem::getQuote)
 				.mapToDouble(Double::doubleValue).toArray();
 		ForwardCurve fixedPart = ForwardCurveInterpolation.createForwardCurveFromForwards(FIXED_EUR_6M,
@@ -165,6 +192,10 @@ public class InterestRateAnalyticCalibration {
 		final String[] maturities		= { "1D", "7D", "14D", "21D", "1M", "2M", "3M", "4M", "5M", "6M", "7M", "8M", "9M", "10M", "11M", "1Y", "15M", "18M", "21M", "2Y", "3Y", "4Y", "5Y", "6Y", "7Y", "8Y", "9Y", "10Y", "12Y", "15Y", "20Y", "25Y", "30Y"};
 		final String[] frequency		= { "tenor", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual", "annual"};
 		
+		if (quotes.length != maturities.length) {
+			throw new IllegalArgumentException("Size of provided quotes does not match the number of EUR-OIS bootstrapp instruments");
+		}
+		
 		CalibratedCurves.CalibrationSpec[] specs = new CalibratedCurves.CalibrationSpec[maturities.length];
 		BusinessdayCalendar calendar = new BusinessdayCalendarExcludingTARGETHolidays();
 		// The first product is an overnight cash deposit, followed by 32 swaps
@@ -190,10 +221,14 @@ public class InterestRateAnalyticCalibration {
 		final String[] daycountConventionsFloat	= { "", "", "", "", "", "", "", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360"};
 		final String[] daycountConventions		= { "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "ACT/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360", "E30/360"};
 		
+		if (quotes.length != maturities.length) {
+			throw new IllegalArgumentException("Size of provided quotes does not match the number of EUR-6M bootstrapp instruments");
+		}
+		
 		CalibratedCurves.CalibrationSpec[] specs = new CalibratedCurves.CalibrationSpec[maturities.length];
 		BusinessdayCalendar calendar = new BusinessdayCalendarExcludingTARGETHolidays();
 		// The first 7 product are FRAs, followed by 14 swaps
-		for (int i=0; i < 8; i++) {
+		for (int i=0; i < 7; i++) {
 			int nMonthMaturity = Integer.parseInt(maturities[i].replace("M", ""));
 			int nMonthOffset = nMonthMaturity - Integer.parseInt(tenorLabel.replace("M", ""));
 			String startOffsetLabel = nMonthOffset + "M";
