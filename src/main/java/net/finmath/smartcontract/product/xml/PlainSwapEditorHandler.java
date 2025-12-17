@@ -211,8 +211,8 @@ public final class PlainSwapEditorHandler {
 		fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue = BigDecimal.valueOf(plainSwapOperationRequest.getFixedRate()).setScale(12, RoundingMode.HALF_EVEN).divide(BigDecimal.valueOf(100L).setScale(12, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
 		logger.info("Reading back fixed rate: {}", fixedLeg.calculationPeriodAmount.calculation.fixedRateSchedule.initialValue);
 
-		setFloatingPaymentFrequency(plainSwapOperationRequest.getFloatingPaymentFrequency());
-		setFixedPaymentFrequency(plainSwapOperationRequest.getFixedPaymentFrequency());
+		setFloatingPaymentFrequency(plainSwapOperationRequest.getFloatingPaymentFrequency(), plainSwapOperationRequest.getFloatingRollConvention());
+		setFixedPaymentFrequency(plainSwapOperationRequest.getFixedPaymentFrequency(), plainSwapOperationRequest.getFixedRollConvention());
 
 
 		smartDerivativeContract.receiverPartyID = plainSwapOperationRequest.getReceiverPartyID();
@@ -221,7 +221,7 @@ public final class PlainSwapEditorHandler {
 
 	}
 
-	private void setFixedPaymentFrequency(PaymentFrequency paymentFrequency) {
+	private void setFixedPaymentFrequency(PaymentFrequency paymentFrequency, String rollConvention) {
 
 		BigInteger periodMultiplier;
 		String period;
@@ -239,9 +239,15 @@ public final class PlainSwapEditorHandler {
 		logger.info("Reading back fixed period: {}", period);
 		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
 		fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
+		if(rollConvention != null && !rollConvention.isEmpty()) {
+			if(!PlainSwapValidityCheck.isRollConventionEnumValid(rollConvention)) {
+				throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, "The fixed roll convention '" + rollConvention + "' is not valid.", 400);
+			}
+			fixedLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention(rollConvention);
+		}
 	}
 
-	private void setFloatingPaymentFrequency(PaymentFrequency paymentFrequency) {
+	private void setFloatingPaymentFrequency(PaymentFrequency paymentFrequency, String rollConvention) {
 		BigInteger periodMultiplier;
 		String period;
 		if(paymentFrequency != null) {
@@ -261,9 +267,12 @@ public final class PlainSwapEditorHandler {
 
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setPeriod(period);
-
-		//TODO clarify why it was hardcoded to EOM, now get the value from the template fpml
-		//floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention("EOM");
+		if(rollConvention != null && !rollConvention.isEmpty()) {
+			if(!PlainSwapValidityCheck.isRollConventionEnumValid(rollConvention)) {
+				throw new SDCException(ExceptionId.SDC_XML_PARSE_ERROR, "The floating roll convention '" + rollConvention + "' is not valid.", 400);
+			}
+			floatingLeg.calculationPeriodDates.calculationPeriodFrequency.setRollConvention(rollConvention);
+		}
 		floatingLeg.resetDates.resetFrequency.setPeriodMultiplier(periodMultiplier);
 		floatingLeg.resetDates.resetFrequency.setPeriod(period);
 		((FloatingRateCalculation) floatingLeg.calculationPeriodAmount.calculation.getRateCalculation().getValue()).indexTenor.periodMultiplier = periodMultiplier;
