@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { interval } from "rxjs";
-import { singleSpaPropsSubject } from "src/single-spa/single-spa-props";
 
 /**
  * Application root component
@@ -55,7 +54,7 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    singleSpaPropsSubject.subscribe((props: any) => {
+    /*singleSpaPropsSubject.subscribe((props: any) => {
       if(props.standalone) {
         this.authTest();
       } else {
@@ -75,7 +74,7 @@ export class AppComponent implements OnInit {
           this._unsetValuationServiceAuth();
         }
       });
-    }); 
+    });*/
   }
 
   //@todo: rewrite it after getting AccessToken
