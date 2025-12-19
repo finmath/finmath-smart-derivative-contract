@@ -214,6 +214,10 @@ public final class PlainSwapEditorHandler {
 		setFloatingPaymentFrequency(plainSwapOperationRequest.getFloatingPaymentFrequency(), plainSwapOperationRequest.getFloatingRollConvention());
 		setFixedPaymentFrequency(plainSwapOperationRequest.getFixedPaymentFrequency(), plainSwapOperationRequest.getFixedRollConvention());
 
+		if (plainSwapOperationRequest.getFixedRollConvention() != null)
+			fixedLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().setRollConvention(	plainSwapOperationRequest.getFixedRollConvention().getValue());
+		if (plainSwapOperationRequest.getFloatingRollConvention() != null)
+			floatingLeg.getCalculationPeriodDates().getCalculationPeriodFrequency().setRollConvention(plainSwapOperationRequest.getFloatingRollConvention().getValue());
 
 		smartDerivativeContract.receiverPartyID = plainSwapOperationRequest.getReceiverPartyID();
 
