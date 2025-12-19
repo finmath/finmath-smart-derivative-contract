@@ -96,3 +96,7 @@ properties:
     description: "point of view for the valuation results"
   fixPayerPartyID:
     type: string
+  fixedRollConvention:
+    $ref: "RollConvention.yml"
+  floatingRollConvention:
+    $ref: "RollConvention.yml"
