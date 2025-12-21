@@ -1,6 +1,7 @@
 package net.finmath.smartcontract.simulation;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 
 public class MarketDataSnapshot {
@@ -21,13 +22,8 @@ public class MarketDataSnapshot {
     }
     
     // Assumes the fixing is stored in the first entry of quotes
-    // TODO google for optimization
     public double[] getQuotesWithoutFixing() {
-    	double[] quotesWithoutFixing = new double[this.quotes.length - 1];
-    	for (int i = 1; i < quotes.length; i++) {
-    		quotesWithoutFixing[i - 1] = this.quotes[i]; 
-    	}
-    	return quotesWithoutFixing;
+    	 return Arrays.copyOfRange(this.quotes, 1, this.quotes.length);
     }
     
     // Assumes the fixing is stored in the first entry of quotes

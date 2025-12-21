@@ -45,15 +45,11 @@ public class InterestRateAnalyticCalibrator {
 		ESTR,
 		EURIBOR06M
 	}
-	
-	
-	
+
 	private HashMap<CURVE_NAME, List<CalibrationDataItem>> fixings = new HashMap<>();
 	
 	public InterestRateAnalyticCalibrator() {
 	}
-	
-	
 
 	public AnalyticModel getCalibratedModel(LocalDate referenceDate, double[] discountCurveQuotes, double[] forwardCurveQuotes) throws CloneNotSupportedException, SolverException {
 		
@@ -246,7 +242,7 @@ public class InterestRateAnalyticCalibrator {
 			specs[i] = new CalibratedCurves.CalibrationSpec("EUR-" + tenorLabel + maturities[i], "FRA", scheduleInterfaceFinal, FORWARD_EUR_6M, quotes[i], DISCOUNT_EUR_OIS, null, "", 0.0, null, FORWARD_EUR_6M, calibrationTime);
 		}
 		// 6M Swaps
-		for (int i=8; i < quotes.length; i++) {
+		for (int i=7; i < quotes.length; i++) {
 			Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(referenceDate, 2, "0D", maturities[i], frequencyFloat[i], daycountConventionsFloat[i], "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 			Schedule scheduleInterfacePay = ScheduleGenerator.createScheduleFromConventions(referenceDate, 2, "0D", maturities[i], frequency[i], daycountConventions[i], "first", "modfollow", new BusinessdayCalendarExcludingTARGETHolidays(), -2, 0);
 			double calibrationTime = scheduleInterfaceRec.getFixing(scheduleInterfaceRec.getNumberOfPeriods() - 1);

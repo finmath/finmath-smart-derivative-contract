@@ -19,6 +19,7 @@ public class MarketDataLoader {
         this.csvPath = csvPath;
     }
 
+    // Skips all entries that are not business dates
     public List<MarketDataSnapshot> load(BusinessdayCalendar businessdayCalendar) throws IOException {
         List<MarketDataSnapshot> snapshots = new ArrayList<>();
 
@@ -52,6 +53,7 @@ public class MarketDataLoader {
 
                 snapshots.add(new MarketDataSnapshot(date, quotes));
             }
+            Collections.reverse(snapshots);
         }
 
         return snapshots;
