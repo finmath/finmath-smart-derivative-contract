@@ -34,7 +34,8 @@ public class SDCCollateralizedHistoricalSimulation {
 		MarketDataLoader forwardCurveLoader = new MarketDataLoader(Path.of("D:\\Papers\\MarketData\\20251203-20150101_6M.csv"));
 		List<MarketDataSnapshot> forwardCurveSnapshots = forwardCurveLoader.load(businessdayCalendar);
 		
-		MarketDataSnapshot initialForwardRates = forwardCurveSnapshots.get(0);
+		int valuationStartIndex = 1100;
+		MarketDataSnapshot initialForwardRates = forwardCurveSnapshots.get(valuationStartIndex);
 		final LocalDate startDate = initialForwardRates.getValuationDate();
 		
 		/*Generate 6M Payer Swap with notional 1 */
@@ -43,12 +44,8 @@ public class SDCCollateralizedHistoricalSimulation {
 		final Schedule schedulePay = ScheduleGenerator.createScheduleFromConventions(startDate, 2, "0D", maturityKey, "annual", "E30/360", "first", "modfollow", businessdayCalendar, -2, 0);
 		/* Product starts at Par */
 		final double fixRate = initialForwardRates.getQuotes()[11]; // TBSEUREUR03MEUR06M05Y
-		//final Swap swap = new Swap(scheduleRec, InterestRateAnalyticCalibrator.FORWARD_EUR_6M, 0.0, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, // receiver leg
-		//							schedulePay, "", fixRate, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, false); // payer leg
-		
-		
-		final Swap swap = new Swap(schedulePay, "", fixRate, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, // receiver leg
-				scheduleRec, InterestRateAnalyticCalibrator.FORWARD_EUR_6M, 0.0, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, false); // payer leg
+		final Swap swap = new Swap(scheduleRec, InterestRateAnalyticCalibrator.FORWARD_EUR_6M, 0.0, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, // receiver leg
+									schedulePay, "", fixRate, InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS, false); // payer leg
 
 		// Get combined payment dates, as legs can have different payment dates, e.g. fix leg pays only annually while float leg pays semi-annually
 		TreeSet<LocalDate> paymentDates = getPaymentDates(scheduleRec, schedulePay);
@@ -59,17 +56,17 @@ public class SDCCollateralizedHistoricalSimulation {
 		double fundingSpread = 0.005;
 
 		// Get last scenario index based on maturity
-		int lastValuationIndex = getLastValuationIndex(forwardCurveSnapshots, paymentDates.last());
+		int valuationEndIndex = getLastValuationIndex(forwardCurveSnapshots, paymentDates.last());
 		
-		int numberOfMarginIncrements = 10;
+		int numberOfMarginIncrements = 20;
 		List<Double> margin = new ArrayList<>(numberOfMarginIncrements);
 		List<Double> cashFlow = new ArrayList<>(numberOfMarginIncrements);
 		List<Double> funding = new ArrayList<>(numberOfMarginIncrements);
 		// Loop over increasing margin limits 
 		for (int j = 0; j <= numberOfMarginIncrements; j++) {
 			// Margin limits
-			double marginFloor	= j * 0.0001;
-			double marginCap	= j * 0.0001;
+			double marginFloor	= j * 0.0005;
+			double marginCap	= j * 0.0005;
 			
 			/* Initialize calibrator*/
 			InterestRateAnalyticCalibrator calibrator = new InterestRateAnalyticCalibrator();
@@ -87,7 +84,7 @@ public class SDCCollateralizedHistoricalSimulation {
 			double collateralAccount = valuePrevious;		
 			
 			//System.out.printf(headerFormat, "Valuation Date", "Value V(t)", "Value Change Y_i", "Capped Change X_i", "Gap Amount Z_i", "Gap Account D_i", "Coll Account C_i", "Net Cashflow A_k");
-			for (int i = 1; i < lastValuationIndex; i++) {
+			for (int i = valuationStartIndex + 1; i < valuationEndIndex; i++) {
 				LocalDate valuationDateCurrent = forwardCurveSnapshots.get(i).getValuationDate();
 				// We need the 6m Fixings for the fixing dates of the swap
 				if (fixingDates.contains(valuationDateCurrent)) {

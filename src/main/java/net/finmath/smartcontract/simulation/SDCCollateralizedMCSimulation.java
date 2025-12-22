@@ -69,21 +69,22 @@ public class SDCCollateralizedMCSimulation {
 	private static String headerFormat = "%-22s %20s %20s %20s %20s %20s %20s %n";
 	private static String dataRowFormat = "%-22s %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f %n";
 	
-	private static double NOTIONAL = 1E7;
+	private static double NOTIONAL = 1E6;
 	private static double FUNDING_SPREAD = 0.005; //50bp
-	private static final LocalDate REFERENCE_DATE =  LiborMarketModelCalibration.REFERENCE_DATE;
+	private static final LocalDate REFERENCE_DATE =  LiborMarketModelCalibrator.REFERENCE_DATE;
 	
 	public static void main(String args[]) throws Exception {
 
-		// Create a payer swap
+		/*Generate 6M Payer Swap*/
+		final String maturityKey = "5Y";
 		BusinessdayCalendar businessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
-		final Schedule scheduleInterfaceRec = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", "4Y", "semiannual","ACT/360", "first", "modfollow", businessdayCalendar, -2, 0);
-		final Schedule scheduleInterfacePay = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", "4Y", "annual", "E30/360", "first", "modfollow", businessdayCalendar, -2, 0);
+		final Schedule scheduleRec = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", maturityKey, "semiannual", "ACT/360", "first", "modfollow", businessdayCalendar, -2, 0);
+		final Schedule schedulePay = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", maturityKey, "annual", "E30/360", "first", "modfollow", businessdayCalendar, -2, 0);
 		final Notional notional = new NotionalFromConstant(NOTIONAL);
 		final AbstractIndex index = new LIBORIndex(2.0/365.0, 0.5);
-		final Swap swap = new Swap(notional, scheduleInterfaceRec, index, 0.0, scheduleInterfacePay, null, 0.022825);
+		final Swap swap = new Swap(notional, scheduleRec, index, 0.0, schedulePay, null, 0.02349);
 		
-		TreeSet<LocalDate> paymentDates = getPaymentDates(scheduleInterfaceRec, scheduleInterfacePay);
+		TreeSet<LocalDate> paymentDates = getPaymentDates(scheduleRec, schedulePay);
 		LocalDate lastPaymentDate = paymentDates.last();
 
 		// Model has been calibrated in LiborMarketModelCalibration.java
@@ -273,25 +274,18 @@ public class SDCCollateralizedMCSimulation {
 	}
 	
 	
-	/* 	t = 0.0025, T = 5.0
-	 * 	double[] volatility = new double[] {0.007591548384595914, 0.011095652816495716, 0.01200036830413657, 0.005, 0.012046448653940332, 0.00957408113098317, 0.014340517874257861, 0.013186967560500052, 0.01260050854197083, 0.006641826359237182, 0.005};
-	 *	double displacementParameter =  0.5006196831925163;
-	 *	t = 0.00125, T = 5.0
-	 * 	double[] volatility = new double[] {0.0076171397477439815, 0.01115875158560738, 0.012315531067898795, 0.005, 0.011846880953767819, 0.009133345869718132, 0.013829599620604734, 0.012534418906836074, 0.01170494492395721, 0.006371646572199523, 0.005}; 
-	 *	double displacementParameter =  0.5005569139318871;
-	 *  t = 0.5, T = 5.0
-	 *	double[] volatility = new double[] {0.00712435456254336, 0.00890703919721209, 0.011966564823574471, 0.0049999999999993505, 0.02119390974353589, 0.005303011727031433, 0.013936900686557618, -0.004543848662533013, 0.014729087694969436, 0.010290294585667078, 0.005};
-	 *	double displacementParameter =  0.5007563782560908;
-	 */
 	public static LIBORModelMonteCarloSimulationModel getModel() throws CloneNotSupportedException, CalculationException {
-		int numberOfPaths = LiborMarketModelCalibration.NUMBER_OF_PATHS;
-		int numberOfFactors = LiborMarketModelCalibration.NUMBER_OF_FACTORS;
-		double liborRateTimeHorizon = LiborMarketModelCalibration.LIBOR_TIME_HORIZON;
-		double liborPeriodLength = LiborMarketModelCalibration.LIBOR_PERIOD_LENGTH;
-		double simulationTimeStep = LiborMarketModelCalibration.SIMULATION_TIME_STEP;
+		int numberOfPaths = LiborMarketModelCalibrator.NUMBER_OF_PATHS;
+		int numberOfFactors = LiborMarketModelCalibrator.NUMBER_OF_FACTORS;
+		double liborRateTimeHorizon = LiborMarketModelCalibrator.LIBOR_TIME_HORIZON;
+		double liborPeriodLength = LiborMarketModelCalibrator.LIBOR_PERIOD_LENGTH;
+		double simulationTimeStep = LiborMarketModelCalibrator.SIMULATION_TIME_STEP;
+		
+		// new [9.503986828492626E-4, 0.0013854091244639847, 0.0015504532773712853, 6.79485126080056E-4, 0.0014231156592602748, 0.0010011866484630283, 0.0016485503338307087, 0.004999999999999998, 0.0016961125989920181, 0.0012383973801516235, 0.002003164809383976, 0.005, 0.005]
+
 		double[] volatility = new double[] {0.007917640152172153, 0.008444828514918408, 0.011903094386501008, 0.005000000000000346, 0.021676871474132164, 0.004841279913803049, 0.013640963631216477, -0.00863984710409209, 0.014914764783913457, 0.009332835587252468, 0.005000000000000001};
 		double displacementParameter =  0.5006868746387496;
-		final AnalyticModel curveModel = LiborMarketModelCalibration.calibrateCurves().orElseThrow().getCalibratedModel();
+		final AnalyticModel curveModel = LiborMarketModelCalibrator.calibrateCurves().orElseThrow().getCalibratedModel();
 		return createLIBORMarketModel(numberOfPaths, numberOfFactors, liborRateTimeHorizon, liborPeriodLength, simulationTimeStep, curveModel, volatility, displacementParameter); 
 	}
 
@@ -300,8 +294,8 @@ public class SDCCollateralizedMCSimulation {
 			final double liborRateTimeHorzion, final double liborPeriodLength, final double simulationTimeStep, 
 			final AnalyticModel curveModel, double[] volatility, double displacementParameter) throws CalculationException {
 
-		final ForwardCurve forwardCurve = curveModel.getForwardCurve(LiborMarketModelCalibration.FORWARD_EUR_6M);
-		final DiscountCurve discountCurve = curveModel.getDiscountCurve(LiborMarketModelCalibration.DISCOUNT_EUR_OIS);
+		final ForwardCurve forwardCurve = curveModel.getForwardCurve(LiborMarketModelCalibrator.FORWARD_EUR_6M);
+		final DiscountCurve discountCurve = curveModel.getDiscountCurve(LiborMarketModelCalibrator.DISCOUNT_EUR_OIS);
 		
 		/*
 		 * Create a simulation time discretization

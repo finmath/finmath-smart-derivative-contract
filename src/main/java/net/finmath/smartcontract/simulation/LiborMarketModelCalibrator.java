@@ -9,25 +9,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 
 import net.finmath.exception.CalculationException;
-import net.finmath.marketdata.calibration.CalibratedCurves;
 import net.finmath.marketdata.model.AnalyticModel;
-import net.finmath.marketdata.model.AnalyticModelFromCurvesAndVols;
-import net.finmath.marketdata.model.curves.Curve;
-import net.finmath.marketdata.model.curves.CurveInterpolation;
 import net.finmath.marketdata.model.curves.DiscountCurve;
-import net.finmath.marketdata.model.curves.DiscountCurveInterpolation;
 import net.finmath.marketdata.model.curves.ForwardCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveFromDiscountCurve;
-import net.finmath.marketdata.model.curves.ForwardCurveInterpolation;
-import net.finmath.marketdata.model.curves.ForwardCurveWithFixings;
-import net.finmath.marketdata.model.curves.CurveInterpolation.ExtrapolationMethod;
-import net.finmath.marketdata.model.curves.CurveInterpolation.InterpolationEntity;
-import net.finmath.marketdata.model.curves.CurveInterpolation.InterpolationMethod;
 import net.finmath.montecarlo.BrownianMotion;
 import net.finmath.montecarlo.BrownianMotionFromMersenneRandomNumbers;
 import net.finmath.montecarlo.RandomVariableFromArrayFactory;
@@ -37,7 +23,7 @@ import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationModel;
 import net.finmath.montecarlo.interestrate.LIBORMonteCarloSimulationFromLIBORModel;
 import net.finmath.montecarlo.interestrate.models.LIBORMarketModelFromCovarianceModel;
 import net.finmath.montecarlo.interestrate.models.covariance.AbstractLIBORCovarianceModelParametric;
-import net.finmath.montecarlo.interestrate.models.covariance.BlendedLocalVolatilityModel;
+import net.finmath.montecarlo.interestrate.models.covariance.DisplacedLocalVolatilityModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCorrelationModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCorrelationModelExponentialDecay;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCovarianceModelFromVolatilityAndCorrelation;
@@ -50,33 +36,34 @@ import net.finmath.optimizer.OptimizerFactory;
 import net.finmath.optimizer.OptimizerFactoryLevenbergMarquardt;
 import net.finmath.optimizer.SolverException;
 import net.finmath.optimizer.LevenbergMarquardt.RegularizationMethod;
-import net.finmath.smartcontract.valuation.marketdata.curvecalibration.CalibrationResult;
-import net.finmath.time.Period;
-import net.finmath.time.Schedule;
-import net.finmath.time.ScheduleFromPeriods;
-import net.finmath.time.ScheduleGenerator;
+import net.finmath.smartcontract.simulation.InterestRateAnalyticCalibrator.CURVE_NAME;
 import net.finmath.time.TimeDiscretizationFromArray;
-import net.finmath.time.businessdaycalendar.BusinessdayCalendar;
 import net.finmath.time.businessdaycalendar.BusinessdayCalendarExcludingTARGETHolidays;
-import net.finmath.time.daycount.DayCountConvention_ACT_360;
 import net.finmath.time.daycount.DayCountConvention_ACT_365;
 
-public class LiborMarketModelCalibration {
+public class LiborMarketModelCalibrator {
 	
 	private static DecimalFormat formatterValue		= new DecimalFormat(" ##0.0000%;-##0.0000%", new DecimalFormatSymbols(Locale.ENGLISH));
 	private static DecimalFormat formatterDeviation	= new DecimalFormat(" 0.00000E00;-0.00000E00", new DecimalFormatSymbols(Locale.ENGLISH));
 	
 	public static LocalDate REFERENCE_DATE = LocalDate.of(2025, Month.OCTOBER, 30);
-	public static int NUMBER_OF_PATHS = 10000;
-	public static int NUMBER_OF_FACTORS = 4;
-	public static double LIBOR_TIME_HORIZON = 5.0;
+	public static int NUMBER_OF_PATHS = 5000;
+	public static int NUMBER_OF_FACTORS = 5;
+	public static double LIBOR_TIME_HORIZON = 6.0;
 	public static double LIBOR_PERIOD_LENGTH = 0.5;
-	public static double SIMULATION_TIME_STEP= 0.5;
+	public static double SIMULATION_TIME_STEP= 0.0025;
 
 
-	public static void main(String[] args) throws CloneNotSupportedException, CalculationException {
+	public static void main(String[] args) throws CloneNotSupportedException, CalculationException, SolverException {
+		
+		/* Initialize IRA calibrator*/
+		InterestRateAnalyticCalibrator calibrator = new InterestRateAnalyticCalibrator();
+		calibrator.addFixingItem(CURVE_NAME.EURIBOR06M, REFERENCE_DATE, 0.02127);
 		// Create the forward and discount curve (initial value of the LIBOR market model)
-		final AnalyticModel curveModel = calibrateCurves().orElseThrow().getCalibratedModel();
+		double[] forwardCurveQuotes	= new double[] {0.02113,0.02102,0.02087,0.02074,0.02054,0.02046,0.02068,0.02141,0.022105,0.022825,0.02349,0.02413,0.02474,0.02533,0.02588,0.026395,0.027295,0.02825,0.02884,0.02879,0.028615};
+		double[] discountCurveQuotes = new double[] {0.01931,0.0192885,0.019292,0.0192995,0.0193025,0.019294,0.0192815,0.0192525,0.019192,0.019129,0.0190685,0.019008,0.018942,0.0188925,0.0188515,0.018821,0.0187145,0.018719,0.01881,0.018953,0.019661,0.020461,0.0212175,0.021926,0.0226005,0.023262,0.023891,0.0244875,0.025499,0.0266305,0.027421,0.027506,0.027422};
+		AnalyticModel curveModel = calibrator.getCalibratedModel(REFERENCE_DATE, discountCurveQuotes, forwardCurveQuotes);
+		
 		// Create a set of calibration products.
 		final ArrayList<String>				calibrationItemNames	= new ArrayList<>();
 		final ArrayList<CalibrationProduct>	calibrationProducts		= new ArrayList<>();
@@ -158,7 +145,7 @@ public class LiborMarketModelCalibration {
 			final double	weight = 1.0;
 
 
-			calibrationProducts.add(createCalibrationItem(weight, exercise, swapPeriodLength, numberOfPeriods, moneyness, targetVolatility, targetVolatilityType, curveModel.getForwardCurve(FORWARD_EUR_6M), curveModel.getDiscountCurve(DISCOUNT_EUR_OIS)));
+			calibrationProducts.add(createCalibrationItem(weight, exercise, swapPeriodLength, numberOfPeriods, moneyness, targetVolatility, targetVolatilityType, curveModel.getForwardCurve(InterestRateAnalyticCalibrator.FORWARD_EUR_6M), curveModel.getDiscountCurve(InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS)));
 			calibrationItemNames.add(atmExpiries[i]+"\t"+atmTenors[i]);
 		}
 
@@ -172,17 +159,19 @@ public class LiborMarketModelCalibration {
 		final BrownianMotion brownianMotion = new BrownianMotionFromMersenneRandomNumbers(timeDiscretizationFromArray, NUMBER_OF_FACTORS, NUMBER_OF_PATHS, 31415 /* seed */);
 
 		// Create a volatility model: Piecewise constant volatility
-		LIBORVolatilityModel volatilityModel = new LIBORVolatilityModelPiecewiseConstant(new RandomVariableFromArrayFactory(), timeDiscretizationFromArray, liborPeriodDiscretization, new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new double[]{0.50 / 100}, true);
+		//LIBORVolatilityModel volatilityModel = new LIBORVolatilityModelPiecewiseConstant(new RandomVariableFromArrayFactory(), timeDiscretizationFromArray, liborPeriodDiscretization, new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new double[]{0.50 / 100}, true);
+		final LIBORVolatilityModel volatilityModel = new LIBORVolatilityModelPiecewiseConstant(timeDiscretizationFromArray, liborPeriodDiscretization, new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), 0.50 / 100);
 
 		// Create a correlation model
-		LIBORCorrelationModel correlationModel = new LIBORCorrelationModelExponentialDecay(timeDiscretizationFromArray, liborPeriodDiscretization, NUMBER_OF_FACTORS, 0.05, true);
+		final LIBORCorrelationModel correlationModel = new LIBORCorrelationModelExponentialDecay(timeDiscretizationFromArray, liborPeriodDiscretization, NUMBER_OF_FACTORS, 0.05, false);
 
 		// Create a covariance model
-		AbstractLIBORCovarianceModelParametric covarianceModelParametric = new LIBORCovarianceModelFromVolatilityAndCorrelation(timeDiscretizationFromArray, liborPeriodDiscretization, volatilityModel, correlationModel);
+		final AbstractLIBORCovarianceModelParametric covarianceModelParametric = new LIBORCovarianceModelFromVolatilityAndCorrelation(timeDiscretizationFromArray, liborPeriodDiscretization, volatilityModel, correlationModel);
 
-		// Create blended local volatility model with fixed parameter 0.0 (that is "lognormal").
-		AbstractLIBORCovarianceModelParametric covarianceModelBlended = new BlendedLocalVolatilityModel(new RandomVariableFromArrayFactory(), covarianceModelParametric, 0.5, true);
-
+		// Create blended local volatility model with fixed parameter (0=lognormal, > 1 = almost a normal model).
+		//AbstractLIBORCovarianceModelParametric covarianceModelBlended = new BlendedLocalVolatilityModel(new RandomVariableFromArrayFactory(), covarianceModelParametric, 4.0, true);
+		final AbstractLIBORCovarianceModelParametric covarianceModelDisplaced = new DisplacedLocalVolatilityModel(covarianceModelParametric, 1.0/0.25, false /* isCalibrateable */);
+		
 		// Set model properties
 		final Map<String, Object> properties = new HashMap<>();
 		// Choose the simulation measure
@@ -199,9 +188,9 @@ public class LiborMarketModelCalibration {
 				RegularizationMethod.LEVENBERG, lambda,
 				maxIterations, accuracy, numberOfThreads);
 
-		final double[] parameterStandardDeviation = new double[covarianceModelBlended.getParameterAsDouble().length];
-		final double[] parameterLowerBound = new double[covarianceModelBlended.getParameterAsDouble().length];
-		final double[] parameterUpperBound = new double[covarianceModelBlended.getParameterAsDouble().length];
+		final double[] parameterStandardDeviation = new double[covarianceModelDisplaced.getParameterAsDouble().length];
+		final double[] parameterLowerBound = new double[covarianceModelDisplaced.getParameterAsDouble().length];
+		final double[] parameterUpperBound = new double[covarianceModelDisplaced.getParameterAsDouble().length];
 		Arrays.fill(parameterStandardDeviation, 0.20/100.0);
 		Arrays.fill(parameterLowerBound, 0.0);
 		Arrays.fill(parameterUpperBound, Double.POSITIVE_INFINITY);
@@ -224,10 +213,10 @@ public class LiborMarketModelCalibration {
 		final LIBORMarketModel liborMarketModelCalibrated = LIBORMarketModelFromCovarianceModel.of(
 				liborPeriodDiscretization,
 				curveModel,
-				curveModel.getForwardCurve(FORWARD_EUR_6M),
-				curveModel.getDiscountCurve(DISCOUNT_EUR_OIS),
+				curveModel.getForwardCurve(InterestRateAnalyticCalibrator.FORWARD_EUR_6M),
+				curveModel.getDiscountCurve(InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS),
 				new RandomVariableFromArrayFactory(),
-				covarianceModelBlended,
+				covarianceModelDisplaced,
 				calibrationItemsLMM, properties);
 
 
