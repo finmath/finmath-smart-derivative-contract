@@ -79,7 +79,6 @@ public class SDCCollateralizedHistoricalSimulation {
 			double accrualFactor, valueCurrent, valueChange, cappedValueChange, gapAmount;
 			double gapAccount = 0.0;
 			double realizedCashFlows = 0.0;
-			double fundingCosts = 0.0;
 			// If trade has initially a non-zero value -> collateral needs to be set up by an up-front payment
 			double collateralAccount = valuePrevious;		
 			
@@ -115,10 +114,7 @@ public class SDCCollateralizedHistoricalSimulation {
 					collateralAccount = collateralAccount + accrualFactor * cappedValueChange;
 					// D_i = D_{i-1}*(1+rt) + Z_i
 					gapAccount = gapAccount * accrualFactor + gapAmount;
-				}
-						
-				// Sum up funding costs. Margin buffer and funding spread can be time dependent
-				fundingCosts += marginFloor * fundingSpread * FloatingpointDate.getFloatingPointDateFromDate(valuationDatePrevious, valuationDateCurrent);			
+				}		
 				// Reuse current values as previous ones for next iteration
 				valuationDatePrevious = valuationDateCurrent;
 				valuePrevious = valueCurrent;
@@ -130,6 +126,8 @@ public class SDCCollateralizedHistoricalSimulation {
 			// Add increment results to result array
 			margin.add(marginFloor);
 			cashFlow.add(realizedCashFlows);
+			// Constant Margin buffer and funding spread, but can be time dependent
+			double fundingCosts = marginFloor * (1.0 - Math.exp(-fundingSpread * FloatingpointDate.getFloatingPointDateFromDate(startDate, forwardCurveSnapshots.get(valuationEndIndex - 1).getValuationDate())));			
 			funding.add(fundingCosts);
 		}
 		

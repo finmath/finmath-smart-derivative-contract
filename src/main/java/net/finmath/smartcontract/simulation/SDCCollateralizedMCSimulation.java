@@ -1,12 +1,7 @@
 package net.finmath.smartcontract.simulation;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,13 +11,6 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import net.finmath.exception.CalculationException;
 import net.finmath.marketdata.model.AnalyticModel;
@@ -38,7 +26,7 @@ import net.finmath.montecarlo.interestrate.LIBORModelMonteCarloSimulationModel;
 import net.finmath.montecarlo.interestrate.LIBORMonteCarloSimulationFromLIBORModel;
 import net.finmath.montecarlo.interestrate.models.LIBORMarketModelFromCovarianceModel;
 import net.finmath.montecarlo.interestrate.models.covariance.AbstractLIBORCovarianceModelParametric;
-import net.finmath.montecarlo.interestrate.models.covariance.BlendedLocalVolatilityModel;
+import net.finmath.montecarlo.interestrate.models.covariance.DisplacedLocalVolatilityModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCorrelationModel;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCorrelationModelExponentialDecay;
 import net.finmath.montecarlo.interestrate.models.covariance.LIBORCovarianceModelFromVolatilityAndCorrelation;
@@ -50,6 +38,8 @@ import net.finmath.montecarlo.interestrate.products.components.NotionalFromConst
 import net.finmath.montecarlo.interestrate.products.indices.AbstractIndex;
 import net.finmath.montecarlo.interestrate.products.indices.LIBORIndex;
 import net.finmath.montecarlo.process.EulerSchemeFromProcessModel;
+import net.finmath.optimizer.SolverException;
+import net.finmath.smartcontract.simulation.InterestRateAnalyticCalibrator.CURVE_NAME;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.stochastic.Scalar;
 import net.finmath.time.FloatingpointDate;
@@ -67,10 +57,8 @@ public class SDCCollateralizedMCSimulation {
 	
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static String headerFormat = "%-22s %20s %20s %20s %20s %20s %20s %n";
-	private static String dataRowFormat = "%-22s %20.2f %20.2f %20.2f %20.2f %20.2f %20.2f %n";
+	private static String dataRowFormat = "%-22s %20.6f %20.6f %20.6f %20.6f %20.6f %20.6f %n";
 	
-	private static double NOTIONAL = 1E6;
-	private static double FUNDING_SPREAD = 0.005; //50bp
 	private static final LocalDate REFERENCE_DATE =  LiborMarketModelCalibrator.REFERENCE_DATE;
 	
 	public static void main(String args[]) throws Exception {
@@ -80,46 +68,42 @@ public class SDCCollateralizedMCSimulation {
 		BusinessdayCalendar businessdayCalendar = new BusinessdayCalendarExcludingTARGETHolidays();
 		final Schedule scheduleRec = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", maturityKey, "semiannual", "ACT/360", "first", "modfollow", businessdayCalendar, -2, 0);
 		final Schedule schedulePay = ScheduleGenerator.createScheduleFromConventions(REFERENCE_DATE, 2, "0D", maturityKey, "annual", "E30/360", "first", "modfollow", businessdayCalendar, -2, 0);
-		final Notional notional = new NotionalFromConstant(NOTIONAL);
+		final Notional notional = new NotionalFromConstant(1.0);
 		final AbstractIndex index = new LIBORIndex(2.0/365.0, 0.5);
 		final Swap swap = new Swap(notional, scheduleRec, index, 0.0, schedulePay, null, 0.02349);
 		
 		TreeSet<LocalDate> paymentDates = getPaymentDates(scheduleRec, schedulePay);
 		LocalDate lastPaymentDate = paymentDates.last();
 
-		// Model has been calibrated in LiborMarketModelCalibration.java
-		final LIBORModelMonteCarloSimulationModel model = getModel();
+		// Model has been calibrated in LiborMarketModelCalibrator.java
+		final LIBORModelMonteCarloSimulationModel model = getLIBORMarketModel();
+		
+		// Constant funding spread 50bp 
+		double fundingSpread = 0.005;
 		
 		// Result lists for Excel export
-		int steps = 100;
-		List<Double> marginLimitUpperResult = new ArrayList<>(steps);
-		List<Double> marginLimitLowerResult = new ArrayList<>(steps);
-		List<Double> mvaUpperResult			= new ArrayList<>(steps);
-		List<Double> mvaLowerResult			= new ArrayList<>(steps);
-		List<Double> cashFlowPaymentsResult	= new ArrayList<>(steps);
+		int numberOfMarginIncrements = 20;
+		List<Double> margin 	= new ArrayList<>(numberOfMarginIncrements);
+		List<Double> cashFlow 	= new ArrayList<>(numberOfMarginIncrements);
+		List<Double> funding	= new ArrayList<>(numberOfMarginIncrements);
 		
-		for (int i = 1; i <= steps; i++) {    
-			// TODO refine
-		    double scaling = i / 100000.0;
-			marginLimitUpperResult.add(NOTIONAL * scaling);
-			marginLimitLowerResult.add((-1.0) * NOTIONAL * scaling);
-
-			RandomVariable marginLimitUpper = new Scalar(NOTIONAL * scaling);
-			RandomVariable marginLimitLower = new Scalar((-1.0) * NOTIONAL * scaling);
+		for (int i = 0; i <= numberOfMarginIncrements; i++) {    
+			// Margin limits
+			RandomVariable marginFloor = new Scalar((-1.0) * i * 0.0005);
+			RandomVariable marginCap = new Scalar(i * 0.0005);
 			
 			LocalDate datePrevious = REFERENCE_DATE;
 			double timePrevious = 0.0;
 			RandomVariable valuePrevious = swap.getValue(timePrevious, model);
 			RandomVariable valueCurrent, valueChange, cappedValueChange;
-			RandomVariable accrual, gapAmount;
+			RandomVariable accrualFactor, gapAmount;
+			RandomVariable gapAccount = new RandomVariableFromDoubleArray(0.0);
 			// Trade has initially a non-zero value -> collateral needs to be set up by an up-front payment
 			RandomVariable collateralAccount = valuePrevious; 
-			RandomVariable gapAccount = new RandomVariableFromDoubleArray(0.0);
 			
 			// Sum over T_k of E[(A_k - D_k)/N_k]
-			RandomVariable cashFlowPayments = new RandomVariableFromDoubleArray(0.0);
-			RandomVariable mvaLower = new RandomVariableFromDoubleArray(0.0);
-			RandomVariable mvaUpper = new RandomVariableFromDoubleArray(0.0);
+			RandomVariable payments = new RandomVariableFromDoubleArray(0.0);
+			RandomVariable mva = new RandomVariableFromDoubleArray(0.0);
 			RandomVariable numerairePrevious = model.getNumeraire(timePrevious);
 			RandomVariable numeraireCurrent, fundingNumeraire;
 			
@@ -130,34 +114,32 @@ public class SDCCollateralizedMCSimulation {
 					double dt = FloatingpointDate.getFloatingPointDateFromDate(datePrevious, dateCurrent);
 					// V(t_i)
 					valueCurrent = swap.getValue(timeCurrent, model);
-					// (1 + r_{i-1}*(t_i - t_{i-1})) = 1 / P^OIS(T;t)
-					accrual = model.getForwardRate(timePrevious, timePrevious, timeCurrent).mult(dt).add(1.0);
-					//accrual = getForwardBondOIS(model, timeCurrent, timePrevious).invert();
-					// Y_i = V(t_i) - V(t_{i-1}) * (1+r_{i-1}*(t_i-t_{i-1})
-					valueChange = valueCurrent.sub(valuePrevious.mult(accrual)); 
-					// X_i
-					cappedValueChange = valueChange.floor(marginLimitLower).cap(marginLimitUpper);
-					// Z_i = Y_i - X_i
-					gapAmount = valueChange.sub(cappedValueChange);
 					// N(t_i)
 					numeraireCurrent = model.getNumeraire(timeCurrent);
+					// (1 + r_{i-1}*(t_i - t_{i-1})) = N(t_i) / N(t_{i-1})
+					accrualFactor = numeraireCurrent.div(numerairePrevious);
+					// Y_i = V(t_i) - V(t_{i-1}) * (1+r_{i-1}*(t_i-t_{i-1})
+					valueChange = valueCurrent.sub(valuePrevious.mult(accrualFactor)); 
+					// X_i
+					cappedValueChange = valueChange.floor(marginFloor).cap(marginCap);
+					// Z_i = Y_i - X_i
+					gapAmount = valueChange.sub(cappedValueChange);
 					if (paymentDates.contains(dateCurrent)) {
-						// C_k+ = C_k - (A_k - D_k) = C_{i-1}*(1+rt) + D_{i-1}(1+rt) + V(t_k+) - V(i-1)*(1+rt)
-						collateralAccount = collateralAccount.mult(accrual).add(gapAccount.mult(accrual)).add(valueCurrent).sub(valuePrevious.mult(accrual));
-						// (A_k - D_k)/N_k
-						cashFlowPayments = cashFlowPayments.add((valueCurrent.sub(valuePrevious.mult(accrual)).sub(gapAccount)).div(numeraireCurrent));
-						gapAccount = gapAccount.mult(0.0);
+						// C_k+ = C_k - (A_k - D_k) = C_{i-1}*(1+rt) + D_{i-1}(1+rt) + V(t_k+) - V(i-1)*(1+rt) = V(t_k+) + (1+rt) * (C_{i-1} + D_{i-1} - V_{i-1})
+						collateralAccount = valueCurrent.add(accrualFactor.mult(collateralAccount.add(gapAccount).sub(valuePrevious)));
+						// (A_k - D_k)/N_k = (V(t_k) - V(t_{i-1}) * (1+rt) - D_k)/N_k = (Y_i - D_k)/N_k
+						payments = payments.add((valueChange.sub(gapAccount)).div(numeraireCurrent));
+						gapAccount = new RandomVariableFromDoubleArray(0.0);
 					} else {
 						// C_i = C_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + X_i
-						collateralAccount = collateralAccount.mult(accrual).add(cappedValueChange);
+						collateralAccount = collateralAccount.mult(accrualFactor).add(cappedValueChange);
 						// D_i = D_{i-1}*(1+r_{i-1}*(t_i-t_{i-1})) + Z_i
-						gapAccount = gapAccount.mult(accrual).add(gapAmount);
+						gapAccount = gapAccount.mult(accrualFactor).add(gapAmount);
 					}
 					// d(1/N^fd(t)) = 1/N^fd(t_i+1) - 1/N^fd(t_i)
-					fundingNumeraire = numeraireCurrent.mult(Math.exp((timeCurrent) * FUNDING_SPREAD)).invert();
-					fundingNumeraire = fundingNumeraire.sub(numerairePrevious.mult(Math.exp(timePrevious * FUNDING_SPREAD)).invert());
-					mvaLower = mvaLower.add(fundingNumeraire.mult(marginLimitLower));
-					mvaUpper = mvaUpper.add(fundingNumeraire.mult(marginLimitUpper));
+					fundingNumeraire = numeraireCurrent.mult(Math.exp((timeCurrent) * fundingSpread)).invert();
+					fundingNumeraire = fundingNumeraire.sub(numerairePrevious.mult(Math.exp(timePrevious * fundingSpread)).invert());
+					mva = mva.add(fundingNumeraire.mult(marginCap));
 
 					// Simple control path
 					System.out.printf(dataRowFormat, formatter.format(dateCurrent), valueCurrent.get(0), valueChange.get(0), cappedValueChange.get(0), gapAmount.get(0), gapAccount.get(0), collateralAccount.get(0));
@@ -167,104 +149,15 @@ public class SDCCollateralizedMCSimulation {
 					numerairePrevious = numeraireCurrent;
 				}
 			}
-			mvaUpperResult.add(-mvaUpper.getAverage());			
-			mvaLowerResult.add(-mvaLower.getAverage());	
-			cashFlowPaymentsResult.add(cashFlowPayments.getAverage());	
-		}
-		
-		writeToExcel(marginLimitUpperResult, marginLimitLowerResult, mvaUpperResult, mvaLowerResult, cashFlowPaymentsResult, "D:/Papers/SDC Collateralized/Margin Analysis.xlsx");
+			// Store margin increment results to result array
+			margin.add(i * 0.0005);
+			cashFlow.add(payments.getAverage());
+			funding.add(-mva.getAverage());			
+		}	
+		// Write result arrays to Excel
+		//writeToExcel(marginLimitUpperResult, marginLimitLowerResult, mvaUpperResult, mvaLowerResult, cashFlowPaymentsResult, "D:/Papers/SDC Collateralized/Margin Analysis.xlsx");
 
-	}
-	
-	public static void writeToExcel(List<Double> marginLimitsUpper, List<Double> marginLimitsLower, List<Double> mvaUpper, List<Double> mvaLower, List<Double> cashFlowPayments, String filePath) throws IOException {
-			    
-		try {
-            // Check if file exists
-            if (!Files.exists(Paths.get(filePath))) {
-                System.out.println("File does not exist.");
-                return;
-            }
-            FileInputStream fileIn = new FileInputStream(filePath);
-            Workbook wb = WorkbookFactory.create(fileIn);
-            Sheet sheet = wb.createSheet("Data");
-
-            // Optional: numeric cell format (preserves up to ~15 decimals without scientific notation)
-            CellStyle numeric = wb.createCellStyle();
-            short fmt = wb.createDataFormat().getFormat("0.###############");
-            numeric.setDataFormat(fmt);
-
-            // Header row
-            Row header = sheet.createRow(0);
-            String[] headers = {
-                    "marginLimitsUpper", "marginLimitsLower",
-                    "mvaUpper", "mvaLower",
-                    "cashFlowPayments"
-            };
-            for (int c = 0; c < headers.length; c++) {
-                Cell cell = header.createCell(c, CellType.STRING);
-                cell.setCellValue(headers[c]);
-            }
-
-            // Data rows
-            for (int i = 0; i < marginLimitsUpper.size(); i++) {
-                Row row = sheet.createRow(i + 1);
-
-                Cell c0 = row.createCell(0);
-                c0.setCellValue(marginLimitsUpper.get(i));
-                c0.setCellStyle(numeric);
-
-                Cell c1 = row.createCell(1);
-                c1.setCellValue(marginLimitsLower.get(i));
-                c1.setCellStyle(numeric);
-
-                Cell c2 = row.createCell(2);
-                c2.setCellValue(mvaUpper.get(i));
-                c2.setCellStyle(numeric);
-
-                Cell c3 = row.createCell(3);
-                c3.setCellValue(mvaLower.get(i));
-                c3.setCellStyle(numeric);
-
-                Cell c4 = row.createCell(4);
-                c4.setCellValue(cashFlowPayments.get(i));
-                c4.setCellStyle(numeric);
-            }
-
-            // Autosize columns
-            for (int c = 0; c < headers.length; c++) {
-                sheet.autoSizeColumn(c);
-            }
-
-            // Write file
-            try (FileOutputStream out = new FileOutputStream(filePath)) {
-                wb.write(out);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }	
-	}
-	
-	
-	private static RandomVariable getForwardBondOIS(LIBORModelMonteCarloSimulationModel model, double T, double t) throws CalculationException {
-		// P^OIS(T;t) = P^L(T;t)*a_t/a_T
-		RandomVariable adjustment_t = getNumeraireOISAdjustmentFactor(model, t);
-		RandomVariable adjustment_T = getNumeraireOISAdjustmentFactor(model, T);
-		return getForwardBondLibor(model, T, t).mult(adjustment_t).div(adjustment_T);
-	}
-	
-	
-	// TODO double check
-	private static RandomVariable getNumeraireOISAdjustmentFactor(LIBORModelMonteCarloSimulationModel model, double time) throws CalculationException {
-		if(time == 0) return new Scalar(1.0);
-		return getForwardBondLibor(model, time, 0).mult(time).add(1.0).mult(model.getModel().getDiscountCurve().getDiscountFactor(time));
-	}
-	
-	
-	public static RandomVariable getForwardBondLibor(LIBORModelMonteCarloSimulationModel model, double T, double t) throws CalculationException {
-		if(t > T) return new Scalar(0);
-		return model.getLIBOR(t, t, T).mult(T - t).add(1.0).invert();
-	}
-	
+	}	
 	
 	private static TreeSet<LocalDate> getPaymentDates(Schedule... schedules) {
 	    return Arrays.stream(schedules)
@@ -273,47 +166,39 @@ public class SDCCollateralizedMCSimulation {
 	            .collect(Collectors.toCollection(TreeSet::new));
 	}
 	
-	
-	public static LIBORModelMonteCarloSimulationModel getModel() throws CloneNotSupportedException, CalculationException {
+
+	public static LIBORModelMonteCarloSimulationModel getLIBORMarketModel() throws CalculationException, CloneNotSupportedException, SolverException {
+		
 		int numberOfPaths = LiborMarketModelCalibrator.NUMBER_OF_PATHS;
 		int numberOfFactors = LiborMarketModelCalibrator.NUMBER_OF_FACTORS;
 		double liborRateTimeHorizon = LiborMarketModelCalibrator.LIBOR_TIME_HORIZON;
 		double liborPeriodLength = LiborMarketModelCalibrator.LIBOR_PERIOD_LENGTH;
 		double simulationTimeStep = LiborMarketModelCalibrator.SIMULATION_TIME_STEP;
 		
-		// new [9.503986828492626E-4, 0.0013854091244639847, 0.0015504532773712853, 6.79485126080056E-4, 0.0014231156592602748, 0.0010011866484630283, 0.0016485503338307087, 0.004999999999999998, 0.0016961125989920181, 0.0012383973801516235, 0.002003164809383976, 0.005, 0.005]
-
-		double[] volatility = new double[] {0.007917640152172153, 0.008444828514918408, 0.011903094386501008, 0.005000000000000346, 0.021676871474132164, 0.004841279913803049, 0.013640963631216477, -0.00863984710409209, 0.014914764783913457, 0.009332835587252468, 0.005000000000000001};
-		double displacementParameter =  0.5006868746387496;
-		final AnalyticModel curveModel = LiborMarketModelCalibrator.calibrateCurves().orElseThrow().getCalibratedModel();
-		return createLIBORMarketModel(numberOfPaths, numberOfFactors, liborRateTimeHorizon, liborPeriodLength, simulationTimeStep, curveModel, volatility, displacementParameter); 
-	}
-
-	public static LIBORModelMonteCarloSimulationModel createLIBORMarketModel(
-			final int numberOfPaths, final int numberOfFactors, 
-			final double liborRateTimeHorzion, final double liborPeriodLength, final double simulationTimeStep, 
-			final AnalyticModel curveModel, double[] volatility, double displacementParameter) throws CalculationException {
-
-		final ForwardCurve forwardCurve = curveModel.getForwardCurve(LiborMarketModelCalibrator.FORWARD_EUR_6M);
-		final DiscountCurve discountCurve = curveModel.getDiscountCurve(LiborMarketModelCalibrator.DISCOUNT_EUR_OIS);
-		
-		/*
-		 * Create a simulation time discretization
-		 */
+		/* Initialize IRA calibrator*/
+		InterestRateAnalyticCalibrator calibrator = new InterestRateAnalyticCalibrator();
+		calibrator.addFixingItem(CURVE_NAME.EURIBOR06M, REFERENCE_DATE, 0.02127);
+		// Create the forward and discount curve (initial value of the LIBOR market model)
+		double[] forwardCurveQuotes	= new double[] {0.02113,0.02102,0.02087,0.02074,0.02054,0.02046,0.02068,0.02141,0.022105,0.022825,0.02349,0.02413,0.02474,0.02533,0.02588,0.026395,0.027295,0.02825,0.02884,0.02879,0.028615};
+		double[] discountCurveQuotes = new double[] {0.01931,0.0192885,0.019292,0.0192995,0.0193025,0.019294,0.0192815,0.0192525,0.019192,0.019129,0.0190685,0.019008,0.018942,0.0188925,0.0188515,0.018821,0.0187145,0.018719,0.01881,0.018953,0.019661,0.020461,0.0212175,0.021926,0.0226005,0.023262,0.023891,0.0244875,0.025499,0.0266305,0.027421,0.027506,0.027422};
+		AnalyticModel curveModel = calibrator.getCalibratedModel(REFERENCE_DATE, discountCurveQuotes, forwardCurveQuotes);
+				
+		final ForwardCurve forwardCurve = curveModel.getForwardCurve(InterestRateAnalyticCalibrator.FORWARD_EUR_6M);
+		final DiscountCurve discountCurve = curveModel.getDiscountCurve(InterestRateAnalyticCalibrator.DISCOUNT_EUR_OIS);
+	
+		// Create a simulation time discretization
 		// If simulation time is below libor time, exceptions will be hard to track.;
-		TimeDiscretizationFromArray timeDiscretizationFromArray = new TimeDiscretizationFromArray(0.0, (int) (liborRateTimeHorzion / simulationTimeStep), simulationTimeStep);
+		TimeDiscretizationFromArray timeDiscretizationFromArray = new TimeDiscretizationFromArray(0.0, (int) (liborRateTimeHorizon / simulationTimeStep), simulationTimeStep);
 
-		/*
-		 * Create the libor tenor structure and the initial values
-		 */
-		TimeDiscretizationFromArray liborPeriodDiscretization = new TimeDiscretizationFromArray(0.0, (int) (liborRateTimeHorzion / liborPeriodLength), liborPeriodLength);
+		// Create the libor tenor structure and the initial values
+		TimeDiscretizationFromArray liborPeriodDiscretization = new TimeDiscretizationFromArray(0.0, (int) (liborRateTimeHorizon / liborPeriodLength), liborPeriodLength);
 
-		/*
-		 * Create Brownian motions
-		 */
+		// Create Brownian motions
 		final BrownianMotion brownianMotion = new BrownianMotionFromMersenneRandomNumbers(timeDiscretizationFromArray, numberOfFactors, numberOfPaths, 31415 /* seed */);
 
 		// Create a volatility model: Piecewise constant volatility
+		double[] volatility = new double[] {9.503986828492626E-4, 0.0013854091244639847, 0.0015504532773712853, 6.79485126080056E-4, 0.0014231156592602748, 0.0010011866484630283, 0.0016485503338307087, 0.004999999999999998, 0.0016961125989920181, 0.0012383973801516235, 0.002003164809383976, 0.005, 0.005};
+		//double[] volatility = new double[] {0.007917640152172153, 0.008444828514918408, 0.011903094386501008, 0.005000000000000346, 0.021676871474132164, 0.004841279913803049, 0.013640963631216477, -0.00863984710409209, 0.014914764783913457, 0.009332835587252468, 0.005000000000000001};	
 		LIBORVolatilityModel volatilityModel = new LIBORVolatilityModelPiecewiseConstant(new RandomVariableFromArrayFactory(), timeDiscretizationFromArray, liborPeriodDiscretization, new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), new TimeDiscretizationFromArray(0.00, 1.0, 2.0, 5.0, 10.0, 20.0, 30.0, 40.0), volatility, false);
 
 		// Create a correlation model
@@ -322,9 +207,10 @@ public class SDCCollateralizedMCSimulation {
 		// Create a covariance model
 		AbstractLIBORCovarianceModelParametric covarianceModelParametric = new LIBORCovarianceModelFromVolatilityAndCorrelation(timeDiscretizationFromArray, liborPeriodDiscretization, volatilityModel, correlationModel);
 
-		// Create blended local volatility model with fixed parameter 0.0 (that is "lognormal").
-		AbstractLIBORCovarianceModelParametric covarianceModelBlended = new BlendedLocalVolatilityModel(new RandomVariableFromArrayFactory(), covarianceModelParametric, displacementParameter, false);
-
+		// Create blended local volatility model with fixed parameter (0=lognormal, > 1 = almost a normal model).
+		final AbstractLIBORCovarianceModelParametric covarianceModelDisplaced = new DisplacedLocalVolatilityModel(covarianceModelParametric, 1.0/0.25, false /* isCalibrateable */);
+		
+		
 		// Set model properties
 		final Map<String, String> properties = new HashMap<>();
 
@@ -342,7 +228,7 @@ public class SDCCollateralizedMCSimulation {
 		 */		
 		final LIBORMarketModel liborMarketModel = new LIBORMarketModelFromCovarianceModel(
 				liborPeriodDiscretization, curveModel, forwardCurve, discountCurve, 
-				new RandomVariableFromArrayFactory(), covarianceModelBlended, calibrationItems, properties);
+				new RandomVariableFromArrayFactory(), covarianceModelDisplaced, calibrationItems, properties);
 
 		final EulerSchemeFromProcessModel process = new EulerSchemeFromProcessModel(liborMarketModel, brownianMotion);
 
