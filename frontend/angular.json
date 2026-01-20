@@ -15,11 +15,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/sdc-frontend",
             "index": "src/index.html",
-            "main": "src/main.single-spa.ts",
+            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -34,11 +34,6 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "customWebpackConfig": {
-              "path": "extra-webpack.config.js",
-              "libraryName": "sdc-frontend",
-              "libraryTarget": "umd"
-            },
             "deployUrl": "http://localhost:4200/"
           },
           "configurations": {
@@ -76,7 +71,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "browserTarget": "sdc-frontend:build:production"
