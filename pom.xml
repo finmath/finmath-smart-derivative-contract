@@ -12,12 +12,12 @@
 
     <groupId>net.finmath</groupId>
     <artifactId>finmath-smart-derivative-contract</artifactId>
-    <version>1.2.13-SNAPSHOT</version>
+    <version>1.2.14-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>finmath-smart-derivative-contract</name>
     <description>
-        Project to support the implementation a of smart derivative contract.
+        Project to support the implementation of a smart derivative contract.
     </description>
     <url>https://www.finmath.net/finmath-smart-derivative-contract</url>
 
@@ -32,7 +32,7 @@
         <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <commons-cli.version>1.5.0</commons-cli.version>
-        <spring-boot-dependencies.version>3.2.10</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.5.11</spring-boot-dependencies.version>
         <finmath-lib.version>6.0.19</finmath-lib.version>
         <finmath-lib-plot-extensions.version>0.5.3</finmath-lib-plot-extensions.version>
         <spring-statemachine.version>3.2.0</spring-statemachine.version>
@@ -56,11 +56,10 @@
         <openapi-generator-maven-plugin.version>6.4.0</openapi-generator-maven-plugin.version>
         <jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
         <wagon-ssh.version>3.5.3</wagon-ssh.version>
-        <doxia-sitetools.version>2.0.0-M6</doxia-sitetools.version>
-        <doxia-skin-model.version>2.0.0-M6</doxia-skin-model.version>
-        <doxia-module-markdown.version>2.0.0-M6</doxia-module-markdown.version>
+        <doxia-sitetools.version>2.0.0</doxia-sitetools.version>
+        <doxia-skin-model.version>2.0.0</doxia-skin-model.version>
+        <doxia-module-markdown.version>2.0.0</doxia-module-markdown.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
-        <httpcore.version>5.3</httpcore.version>
     </properties>
 
     <developers>
@@ -182,13 +181,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>${httpcore.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents.core5</groupId>
             <artifactId>httpcore5</artifactId>
-            <version>${httpcore.version}</version>
         </dependency>
 
         <dependency>
@@ -437,7 +434,7 @@
             <properties>
                 <node.version>v18.15.0</node.version>
                 <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
-                <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+                <exec-maven-plugin.version>3.6.0</exec-maven-plugin.version>
                 <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
             </properties>
             <dependencies>
