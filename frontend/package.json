@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
-    "generate:api": "openapi-generator-cli generate -g typescript-angular -i ../src/main/resources/api.yml -o ./src/app/openapi",
+    "generate:api": "openapi-generator-cli generate -g typescript-angular -i ../app/src/main/resources/api.yml -o ./src/app/openapi",
     "prestart": "npm run generate:api",
     "start": "ng serve",
     "prebuild": "npm run generate:api",

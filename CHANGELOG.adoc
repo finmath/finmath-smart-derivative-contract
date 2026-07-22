@@ -1,5 +1,22 @@
 = Change Log
 
+== Version 1.3.0
+
+=== Added
+- split the project into dedicated `app` and `core` modules
+- added the missing `smartderivativecontract.xsd` to the core module
+
+=== Changed
+- moved the Spring Boot application and service layer into the `app` module
+- moved the valuation, settlement, XML, and market data support code into the `core` module
+- moved the tests into the matching modules
+- updated parent/version handling for the module split
+- removed the unused Gson dependency
+- updated the schema location in `smartderivativecontract.xsd`
+
+=== Fixed
+- moved the `TradeIdentifier` patch to the core module where it is needed
+
 == Version 1.2.5
 
 === Added
